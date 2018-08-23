@@ -1,0 +1,35 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>邮件：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>邮件id</th>
+        <th>邮件类型</th>
+        <th>邮件发送者</th>
+        <th>邮件标题</th>
+        <th>邮件内容</th>
+        <th>邮件奖励</th>
+        <th>删除</th>
+    </tr>
+{% if mail %}
+{% for mail_id, mail_dict in sorted(mail.iteritems(), key=lambda x: x[1]['send_time'], reverse=True) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/mail/mail_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="mail_id" value="{{mail_id}}" />
+        <td>{{ mail_id }}</td>
+        <td>{{ mail_dict['sort'] }}</td>
+        <td>{{ mail_dict['send_uid'] }}</td>
+        <td>{{ mail_dict.get('title','') }}</td>
+        <td>{{ mail_dict['content'] }}</td>
+        <td>{{ mail_dict['gift'] }}</td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+{% end %}

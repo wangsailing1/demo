@@ -1,0 +1,17 @@
+<html>
+<body>
+    <form action="" method="get" accept-charset="utf-8">
+        输入分服编号：<input type="text" name="server_name" value="">
+    <p><input type="submit" value="Continue"></p>
+
+    </form>
+    <table border="1">
+    {%for i in l%}
+        <tr>
+            <td><a target='content' href="/{{url_partition}}/admin/user/?uid={{i[0]}}">{{i[0]}}</a></td>
+            <td>{{i[1]}}</td>
+        </tr>
+    {%end%}
+    </table>
+</body>
+</html>

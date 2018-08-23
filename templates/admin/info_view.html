@@ -1,0 +1,19 @@
+<html>
+<body>
+{% from admin import admin_config %}
+<table border="0">
+    <tr>
+    {% set menu_sort = getattr(admin_config, '%s_sort'%menu, []) %}
+    {% if not menu_sort %}
+        {% set menu_sort =  admin_config.menu_config.get(menu, {}).keys() %}
+    {% end %}
+    {% for subname in menu_sort %}
+        {% set subvalue = admin_config.menu_config.get(menu, {}).get(subname, {}) %}
+        {% for v in subvalue %}
+            <td><a target='content' href="/{{url_partition}}/admin/{{subname}}/{{v['sub'][0][0]}}/">{{v['name']}}</a></td>
+        {% end %}
+    {% end %}
+    </tr>
+</table>
+</body>
+</html>

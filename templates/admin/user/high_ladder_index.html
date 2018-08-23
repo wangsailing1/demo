@@ -1,0 +1,30 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% import settings %}
+
+自己排名：
+<form action="/{{url_partition}}/admin/user/modify_high_ladder_rank/" method="post">
+    <input type="text" name="self_rank" value="{{self_rank}}"/>
+    <input type="hidden" name="uid" value="{{mm.uid}}">
+    {% if settings.DEBUG %}
+        <input value="modify1" name="modify"  type="submit" />
+    {% end %}
+</form>
+<br>
+
+当前敌方排名：
+{% if mm %}
+{% for index, i in enumerate(mm.high_ladder.def_enemy) %}
+    <form action="/{{url_partition}}/admin/user/modify_high_ladder_enemy/" method="post">
+        <input type="hidden" name="def_enemy" value="{{index}}">
+        <input type="hidden" name="uid" value="{{mm.uid}}">
+        <input type="text" name="rank" value="{{i}}"/>
+        {% if settings.DEBUG %}
+            <input value="modify2" name="modify"  type="submit" />
+        {% end %}
+    </form>
+{% end %}
+{% end %}
+
+{% end %}
+

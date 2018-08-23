@@ -1,0 +1,34 @@
+<body>
+{% from gconfig import game_config %}
+{% from gconfig import get_str_words %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<h3>赠送队长技能：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/item/add_leader_skill/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid" value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>技能id</th>
+        <th>技能名字</th>
+        <th>技能数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for skill_id, skill_info in sorted(game_config.main_hero_skill.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{skill_id}}</td>
+        <!--<td>{{get_str_words('1',skill_info['name'])}}</td>-->
+        <td>{{skill_info['name']}}</td>
+        <td><input type="text" name="skill_{{skill_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+
+</body>

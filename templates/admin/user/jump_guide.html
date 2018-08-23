@@ -1,0 +1,12 @@
+<body>
+{%if success %}
+    成功跳过：<span style='color: red'>{{success}}</span> 人
+{% end %}
+<form action="/{{url_partition}}/admin/user/by_name_jump_guide/" method="get">
+    <font color="red">用户id(*)：</font>
+    <input type="text" width="10px" value="{{uid}}" name="uid"/></br>
+    name集合（用英文逗号分割）</br>
+    <textarea name='name_list' rows="40" cols="50"></textarea></br>
+    <input type="submit" value="跳过" id="submit" name="submit" onclick="return confirm('确定跳过吗。')"/>
+</form>
+<hr/>

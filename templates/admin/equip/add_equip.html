@@ -1,0 +1,30 @@
+<body>
+{% from gconfig import game_config %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>赠送装备：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/equip/add_equip/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>配置id</th>
+        <th>名字</th>
+        <th>数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for equip_id, equip_info in sorted(game_config.equip_basis.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{equip_id}}</td>
+        <td>{{equip_info['name']}}</td>
+        <td><input type="text" name="equip_{{equip_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

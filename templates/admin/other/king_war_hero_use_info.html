@@ -1,0 +1,29 @@
+<body>
+总场次： {{battle_times_info.get('times', 0)}}<br/>
+npc场次： {{battle_times_info.get('npc_room', 0)}}<br/>
+pvp场次： {{battle_times_info.get('times', 0) - battle_times_info.get('npc_room', 0)}}<br/>
+场均时间： {{battle_times_info.get('duration_time', 0) / battle_times_info.get('times', 1)}} 秒<br/>
+<h3>英雄胜率：</h3>
+<table border="1" cellpadding="2" cellspacing="0" >
+    <tr>
+        <th>NO.</th>
+        <th>配置id</th>
+        <th>英雄名字</th>
+        <th>使用次数</th>
+        <th>胜利次数</th>
+        <th>胜率</th>
+    </tr>
+
+{% for idx, info in enumerate(hero_log, start=1) %}
+    <tr align="center">
+        <td>{{idx}}</td>
+        <td>{{info['hero_id']}}</td>
+        <td>{{info['name']}}</td>
+        <td>{{info['use_times']}}</td>
+        <td>{{info['win_times']}}</td>
+        <td>{{info['win_rate']}}</td>
+    </tr>
+{% end %}
+
+</table>
+</body>

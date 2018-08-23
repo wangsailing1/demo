@@ -1,0 +1,55 @@
+<style>
+.item {width: 150px; padding: 2px; float: left;}
+</style>
+
+<body>
+{% import json %}
+<h3>前端配置：</h3>
+<hr>
+<hr>
+<span style='color: red'>{{msg}}</span>
+<!--
+<table style="width: 100%">
+    {% for index, (config, value) in enumerate(mapping_config.iteritems()) %}
+        {% if index % 4 == 0 %}
+        <tr>
+        {% end %}
+            <td style="width:20%;border-width:2px; border-style:solid; text-align:center">
+                <a href="/{{url_partition}}/admin/config/front_select/?config_key={{config}}&">{{ value[0] if value[0] else config }}</a>
+            </td>
+        {% if index % 4 == 3 %}
+        </tr>
+        {% end %}
+    {%end%}
+</table>
+-->
+<div style="float: left; width: 45%; overflow:auto;">
+    {% for config, value in sorted(mapping_config.iteritems()) %}
+        <div class="item"><a href="/{{url_partition}}/admin/config/front_select/?config_key={{config}}&">{{ value[0] if value[0] else config }}</a></div>
+    {% end %}
+</div>
+
+<div>
+    <br/>
+    {{config_key}} 上次修改时间<{{last_update_time}}>
+    -- size: {{round(len(json.dumps(config_data, separators=(',', ':')))/1024.0, 2)}} K
+    <br/>
+
+    <textarea style="width:50%;height: 100%">
+        {{json.dumps(config_data, ensure_ascii=False, indent=4, sort_keys=True)}}
+    </textarea><br/>
+     <p>
+        <form action="/{{url_partition}}/admin/config/upload_local_config/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="back_config" value="0">
+            <fieldset>
+                <legend>上传local_config_front.py配置文件</legend>
+                <input type="file" name="local_config" />
+                <input type="submit" value="上传" onclick="return confirm('确定上传？')"/>
+            </fieldset>
+        </form>
+        <a href="/{{url_partition}}/admin/config/get_all_config_front/">下载测试用配置</a>
+    </p>
+</div>
+<br/>
+
+</body>

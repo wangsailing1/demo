@@ -1,0 +1,53 @@
+
+<body>
+
+<p> 当前环境: {{environment}} </p>
+<hr>
+
+<form action="/{{url_partition}}/admin/user/earn_log/" method="post">
+    用户id：<input type="text" value="{{user_id}}" name="user_id"/><input type="submit" value="查看" id="submit" name="submit" />
+</form>
+
+<hr>
+
+<table border="1" cellpadding="0" cellspacing="0" id='stat'>
+  钻石获得记录
+        <tr>
+          <td align="center">序号</td>
+          <td align="center" name="user_id">用户ID</td>
+          <td align="center" name="name">玩家名</td>
+          <td align="center" name="level">玩家等级</td>
+          <td align="center" name="subtime">获得时间</td>
+          <td align="center" name="goods_type">类型</td>
+          <td align="center" name="diamond_num">获得数量</td>
+          <td align="center" name="diamond_1st">获得前钻石数</td>
+          <td align="center" name="diamond_2nd">获得后钻石数</td>
+        </tr>
+        {% for i, st in enumerate(st_list_0) %}
+        <tr bgcolor="cornsilk">
+          <td align="center" width="0">{{i+1}}</td>
+          <td align="center" width="0">{{ user_id }}</td>
+          <td align="center" width="0">{{ mm.user.name }}</td>
+          <td align="center" width="0">{{ mm.user.level }}</td>
+          <td align="left"   width="0">{{st['subtime']}}</td>
+          <td align="center" width="0">{{st['goods_type']}}</td>
+          <td align="center" width="0">{{st['diamond_num']}}</td>
+          <td align="center" width="0">{{st['old_diamond']}}</td>
+          <td align="center" width="0">{{st['old_diamond'] + st['diamond_num']}}</td>
+                  </tr>
+        {% end %}
+        <tr>
+          <td align="center" width="0">合计</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0">{{total}}</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+        </tr>
+</table>
+
+</body>

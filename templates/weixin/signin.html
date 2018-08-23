@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>签到有礼</title>
+    <link href="{{ url_partition }}/static/css/weixin/normalize.css" type="text/css" rel="stylesheet"/>
+    <link href="{{ url_partition }}/static/css/weixin/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ url_partition }}/static/css/weixin/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<div class="wrap">
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/img_01.jpg" class="ui_block">
+        <div class="cnb">
+
+            <div class="ui_awm_btn">
+              <p>当前绑定角色：<span>{{ uname }}</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/loginbg_02.jpg" class="ui_block">
+        <div class="cnb">
+            <div class="ui_s1c clearfix">
+                <div class="clt">
+                    <div class="ui_gd_c">
+
+                    </div>
+                </div>
+            </div>
+            <div class="ui_s2c">
+                <div class="items" id="items">
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/firstimg.png" id="btn_1" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/seconimg.png" id="btn_2" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/sanimg.png" id="btn_3" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/siimg.png" id="btn_4" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/wuimg.png" id="btn_5" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/liuimg.png" id="btn_6" class="img_btn"/>
+                    </div>
+                    <div class="item_div">
+                      <img src="{{ url_partition }}/static/images/weixin/qiimg.png" id="btn_7" class="img_btn"/>
+                    </div>
+
+
+                </div>
+                <div style="clear:both"></div>
+
+
+            </div>
+            <div class="form-actions">
+                <div class="col-xs-4 col-xs-offset-4 ">
+                    <div class="putin" id="submit_btn">
+                      <button id="signin" style="background:none; border:none">
+                        <img src="{{ url_partition }}/static/images/weixin/lingqu.png">
+                        <input type="hidden" name="openid" value="{{ openid }}">
+                        <input type="hidden" name="access_token" value="{{ access_token }}">
+                      </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tishi">
+            <p>1、本活动需要进行账号绑定后方可参加。</p>
+            <p>2、每天每个微信号、游戏id仅可领取一次奖励，领取七天后将重置，可循环领取。</p>
+            <p>3、重新绑定账号签到天数将重置。</p>
+            <p>4、游戏奖励将通过游戏内奖励中心进行发放。</p>
+
+        </div>
+    </div>
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/bottom_02.jpg" class="ui_block">
+        <div class="cnb">
+            <div class="ui_navc clearfix">
+            </div>
+        </div>
+    </div>
+    <div class="reveal-modal-bg"></div>
+
+    <!--成功领取-->
+    <a href="javascript:void(0);" id="Alert_lb_tip_btn" data-reveal-id="Alert_lb_tip"></a>
+    <div id="Alert_lb_tip" class="reveal-modal">
+        <div class="reveal-msgbox">
+            <div class="msgbox_b">
+                <div class="close-reveal-modal close-reveal-modal2"></div>
+                <img src="{{ url_partition }}/static/images/weixin/success.png" class="ui_block">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="{{ url_partition }}/static/js/jquery.min.js"></script>
+<script type="text/javascript">
+    function xinshou() {
+        $("#Alert_lb_tip_btn").trigger('click')
+    }
+</script>
+<script type="text/javascript" src="{{ url_partition }}/static/js/jquery.reveal.js"></script>
+<script type="text/javascript">
+  (function(){
+    var itemarr = $('#items').children('.item_div');
+    for (var i = 0; i < {{ signin_days }}; i++) {
+        //var taritem=$(itemarr[i]).attr('class');
+        if (!($(itemarr[i]).hasClass("itemimg"))) {
+            $(itemarr[i]).addClass("itemimg");
+        }
+    }
+  })();
+    function get_item() {
+        var itemarr = $('#items').children('.item_div');
+        for (var i = 0; i < itemarr.length; i++) {
+            //var taritem=$(itemarr[i]).attr('class');
+            if (!($(itemarr[i]).hasClass("itemimg"))) {
+                $(itemarr[i]).addClass("itemimg");
+                return;
+            }
+        }
+    }
+  $("#signin").click(function(){
+      var openid = $('input[name="openid"]').val();
+      var access_token = $('input[name="access_token"]').val();
+      $.ajax({
+        url: '{{ url_partition }}/weixin/signin/',
+        type: 'POST',
+        data: {
+          openid: openid,
+          access_token: access_token,
+        },
+        dataType: 'json',
+        success: function(data) {
+          if (data.status == 0){
+            get_item();
+          }
+          else if (data.status == 2){
+            alert('今日已签到, 请明天再来');
+          }
+          else if (data.status == 1){
+            alert('未绑定');
+          }
+          else if (data.status == 3){
+            alert('签到失败，请重试。');
+          }
+        }
+      });
+    });
+
+
+</script>
+</body>
+</html>

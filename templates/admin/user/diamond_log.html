@@ -1,0 +1,58 @@
+
+<body>
+
+<p> 当前环境: {{environment}} </p>
+<hr>
+
+<form action="/{{url_partition}}/admin/user/diamond_log/" method="post">
+    用户id：<input type="text" value="{{user_id}}" name="user_id"/><input type="submit" value="查看" id="submit" name="submit" />
+</form>
+
+<hr>
+
+<table border="1" cellpadding="0" cellspacing="0" id='stat'>
+  钻石记录
+        <tr>
+          <td align="center">序号</td>
+          <td align="center" name="user_id">用户ID</td>
+          <td align="center" name="name">玩家名</td>
+          <td align="center" name="level">玩家等级</td>
+          <td align="center" name="subtime">时间</td>
+          <td align="center" name="goods_type">类型</td>
+          <td align="center" name="diamond_num">获得钻石</td>
+          <td align="center" name="diamond_num">消费钻石</td>
+          <td align="center" name="diamond_1st">前钻石数</td>
+          <td align="center" name="diamond_2nd">后钻石数</td>
+          <td align="center" name="args">参数</td>
+        </tr>
+        {% for i, st in enumerate(st_list_0) %}
+        <tr bgcolor="cornsilk">
+          <td align="center" width="0">{{i+1}}</td>
+          <td align="center" width="0">{{ user_id }}</td>
+          <td align="center" width="0">{{ mm.user.name }}</td>
+          <td align="center" width="0">{{ mm.user.level }}</td>
+          <td align="left"   width="0">{{st['subtime']}}</td>
+          <td align="center" width="0">{{st['goods_type']}}</td>
+          <td align="center" width="0">{{st['diamond_num'] if st['flag'] > 0 else ''}}</td>
+          <td align="center" width="0">{{st['diamond_num'] if st['flag'] < 0 else ''}}</td>
+          <td align="center" width="0">{{st['diamond_1st'] if st['flag'] < 0 else st['old_diamond']}}</td>
+          <td align="center" width="0">{{st['diamond_2nd'] if st['flag'] < 0 else st['old_diamond'] + st['diamond_num']}}</td>
+          <td align="center" width="0">{{st.get('args')}}</td>
+                  </tr>
+        {% end %}
+        <tr>
+          <td align="center" width="0">合计</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0">{{total1}}</td>
+          <td align="center" width="0">{{total2}}</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+        </tr>
+</table>
+
+</body>

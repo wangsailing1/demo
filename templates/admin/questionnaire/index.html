@@ -1,0 +1,218 @@
+
+<body>
+<h3>调查问卷：</h3>
+<hr>
+
+{% if msg %}
+<span style='color: red'>{{msg}}</span>
+{% else %}
+<form action="/{{url_partition}}/admin/questionnaire/commit/" method="post">
+    <table>
+        <tr>
+            <td>1. 你对战斗玩法感觉如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s1" value="A" /><label>A 很有趣</label><br/>&nbsp;&nbsp;<input type="radio" name="s1" value="B" /><label>B 一般般</label><br/>&nbsp;&nbsp;<input type="radio" name="s1" value="C" /><label>C 没什么意思</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>2. 战斗玩法接受程度如何？（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s2" value="A" /><label>A 很简单</label><br/>&nbsp;&nbsp;<input type="radio" name="s2" value="B" /><label>B 有点复杂</label><br/>&nbsp;&nbsp;<input type="radio" name="s2" value="C" /><label>C 根本没玩明白</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>3. 你觉得战斗中操作的乐趣如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s3" value="A" /><label>A 很爽</label><br/>&nbsp;&nbsp;<input type="radio" name="s3" value="B" /><label>B 一般般</label><br/>&nbsp;&nbsp;<input type="radio" name="s3" value="C" /><label>C 就是随便扔而已</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>4. 战斗中英雄的动画表现如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s4" value="A" /><label>A 很赞</label><br/>&nbsp;&nbsp;<input type="radio" name="s4" value="B" /><label>B 一般般</label><br/>&nbsp;&nbsp;<input type="radio" name="s4" value="C" /><label>C 跟超级英雄比差远了</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>5. 你使用道具的时候会根据敌我双方的英雄技能来决定使用道具的时间么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s5" value="A" /><label>A 会</label><br/>&nbsp;&nbsp;<input type="radio" name="s5" value="B" /><label>B 偶尔</label><br/>&nbsp;&nbsp;<input type="radio" name="s5" value="C" /><label>C 老爷想扔就扔，才不管呢</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>6. 你觉得战斗中还欠缺什么？（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s6" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>7. 你对采集-生产-挂机的玩法感觉如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s7" value="A" /><label>A 很有趣</label><br/>&nbsp;&nbsp;<input type="radio" name="s7" value="B" /><label>B 一般般</label><br/>&nbsp;&nbsp;<input type="radio" name="s7" value="C" /><label>C 没意思</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>8. 你对采集的接受程度如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s8" value="A" /><label>A 很简单</label><br/>&nbsp;&nbsp;<input type="radio" name="s8" value="B" /><label>B 看了一会就明白了</label><br/>&nbsp;&nbsp;<input type="radio" name="s8" value="C" /><label>C 没看懂</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>9. 你知道自动采集和手动采集的区别么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s9" value="A" /><label>A 很了解</label><br/>&nbsp;&nbsp;<input type="radio" name="s9" value="B" /><label>B 大概知道</label><br/>&nbsp;&nbsp;<input type="radio" name="s9" value="C" /><label>C 什么？自动采集是啥？</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>10. 你觉得采集的材料是否足够？（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s10" value="A" /><label>A 都不知道这么多材料干嘛用</label><br/>&nbsp;&nbsp;<input type="radio" name="s10" value="B" /><label>B 刚好够用</label><br/>&nbsp;&nbsp;<input type="radio" name="s10" value="C" /><label>C 完全不够用</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>11. 你觉得生产功能复杂么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s11" value="A" /><label>A 很简单</label><br/>&nbsp;&nbsp;<input type="radio" name="s11" value="B" /><label>B 需要了解一下</label><br/>&nbsp;&nbsp;<input type="radio" name="s11" value="C" /><label>C 压根不明白</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>12. 你会经常使用生产功能么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s12" value="A" /><label>A 我家的工人一周加班50个小时</label><br/>&nbsp;&nbsp;<input type="radio" name="s12" value="B" /><label>B 经常会看</label><br/>&nbsp;&nbsp;<input type="radio" name="s12" value="C" /><label>C 随缘</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>13. 你主要生产什么东西（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s13" value="A" /><label>A 装备</label><br/>&nbsp;&nbsp;<input type="radio" name="s13" value="B" /><label>B 道具</label><br/>&nbsp;&nbsp;<input type="radio" name="s13" value="C" /><label>C 看到什么生产什么</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>14. 你希望采集加入什么功能（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s14" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>15. 你希望生产加入什么功能（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s15" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>16. 你对指挥中心的玩法了解么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s16" value="A" /><label>A 很了解</label><br/>&nbsp;&nbsp;<input type="radio" name="s16" value="B" /><label>B 大概知道</label><br/>&nbsp;&nbsp;<input type="radio" name="s16" value="C" /><label>C 压根不懂</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>17. 你会经常使用指挥中心的功能么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s17" value="A" /><label>A 每个人都在合适的位置</label><br/>&nbsp;&nbsp;<input type="radio" name="s17" value="B" /><label>B 偶尔会去看一下</label><br/>&nbsp;&nbsp;<input type="radio" name="s17" value="C" /><label>C 指挥中心干嘛的？</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>18. 你认为指挥中心这种挂机玩法如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s18" value="A" /><label>A 很不错</label><br/>&nbsp;&nbsp;<input type="radio" name="s18" value="B" /><label>B 就那么回事</label><br/>&nbsp;&nbsp;<input type="radio" name="s18" value="C" /><label>C 很无聊</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>19. 你认为指挥中心还有什么需要改善的？（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s19" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>20. 你有尝试过跟其他人通过好友或竞技场进行切磋么（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s20" value="A" /><label>A 没事就干</label><br/>&nbsp;&nbsp;<input type="radio" name="s20" value="B" /><label>B 偶尔尝试</label><br/>&nbsp;&nbsp;<input type="radio" name="s20" value="C" /><label>C 什么？还能PVP？</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>21. 你觉得PVP体验如何（单选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="radio" name="s21" value="A" /><label>A 太爽了</label><br/>&nbsp;&nbsp;<input type="radio" name="s21" value="B" /><label>B 有点意思</label><br/>&nbsp;&nbsp;<input type="radio" name="s21" value="C" /><label>C 不好玩</label></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>22. 你认为PVP有什么问题？（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s22" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>23. 你认为PVP还应该加入什么功能？（文字回答）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<textarea name="s23" style="width:500px;height:150px;" ></textarea></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>24. 请勾选你觉得还不错的玩法（复选）</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" name="s24" value="1" /><label>战斗</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="2" /><label>PVP</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="3" /><label>采集</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="4" /><label>生产</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="5" /><label>指挥中心</label><br/>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="6" /><label>竞技场</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="7" /><label>任务</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="8" /><label>好友切磋</label>
+                &nbsp;&nbsp;<input type="checkbox" name="s24" value="9" /><label>商店</label>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td rowspan="2"><input type="submit" value="提交" style="font-size: 20px; height: 33px; width: 73px;"/></td>
+        </tr>
+    </table>
+</form>
+{% end %}
+</body>

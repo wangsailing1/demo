@@ -1,0 +1,94 @@
+<body>
+{% import time %}
+{% import settings %}
+{% from gconfig import game_config %}
+{% from scripts.server_config.ipip import get_ip_addr %}
+
+<input type="button" value="返回" onclick="javascript:history.go(-1)"/>
+{% block content1 %}
+{% end %}
+    {% if mm %}
+        id：{{mm.user.uid}}&nbsp;<br/>
+        账号：{{mm.user.account}}&nbsp;<br/>
+        名字：{{mm.user.name}}<br/>
+        服务器：{{mm.user.father_server_name}} &nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【渠道id: {{mm.user.tpid}}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;渠道名字: {{settings.get_channel_name(mm.user.tpid)}}】
+
+        <br/>
+        注册时间：{{time.strftime('%F %T', time.localtime(mm.user.reg_time))}}&nbsp;<br/>
+        最后活跃：{{time.strftime('%F %T', time.localtime(mm.user.active_time))}}&nbsp;<br/>
+        注册ip：{{mm.user.register_ip}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{get_ip_addr(mm.user.register_ip)}}<br/>
+        活跃ip：{{mm.user.active_ip}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{get_ip_addr(mm.user.active_ip)}}<br/>
+    <hr>
+        <table>
+            <tr>
+                 <td>
+                    <form action="/{{url_partition}}/admin/hero/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="英雄数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/hero/select_attr/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="英雄属性" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/item/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="道具数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/item/select_commander/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="统帅数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/item/select_commander_part/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="统帅碎片" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/equip/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="装备数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/gene/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="基因数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/private_city/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="关卡数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/mail/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="查询邮件" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/user/select_high_ladder/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="竞技场" />
+                    </form>
+                </td>
+            </tr>
+        </table>
+    <hr>
+    {% end %}
+<br>
+<hr>
+{% block content %}
+{% end %}
+</body>

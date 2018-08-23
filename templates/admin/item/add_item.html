@@ -1,0 +1,34 @@
+<body>
+{% from gconfig import game_config, front_game_config %}
+{% from gconfig import get_str_words %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<h3>赠送道具：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/item/add_item/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具名字</th>
+        <th>道具数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for item_id, item_info in sorted(front_game_config.use_item.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{item_id}}</td>
+        <td>{{get_str_words('1',item_info['name'])}}</td>
+        <!--<td>{{item_info['name']}}</td>-->
+        <td><input type="text" name="item_{{item_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+
+</body>

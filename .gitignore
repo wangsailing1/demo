@@ -1,0 +1,13 @@
+*.pyc
+*.pyo
+.idea
+.vscode
+.DS_Store*
+cmake-build-debug/
+
+statistic
+logs
+upload_xls
+test/local_config.py
+
+dump.rdb

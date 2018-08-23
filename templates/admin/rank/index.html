@@ -1,0 +1,182 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+<body>
+<div>
+<form action="/{{url_partition}}/admin/rank/select/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid" value="{{uid}}">
+    TOPN: <input type="text" id="rank_num" name="rank_num" value="{{rank_num}}">
+    <input id="submit" name="submit" type="submit" value="提交" />
+</form>
+</div>
+<hr>
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+{% from lib.core.environ import ModelManager %}
+{% from gconfig import front_game_config %}
+<h3 style="color:red">等级排行榜TOP{{rank_num}}：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>排名</th>
+        <th>角色名</th>
+        <th>角色uid</th>
+        <th>等级</th>
+    </tr>
+{% if level_rank %}
+{% for seq, (user_id, level) in enumerate(level_rank) %}
+    <tr align="center">
+        <td>{{ seq+1 }}</td>
+        <th>{{ ModelManager(user_id).user.name }}</th>
+        <td>{{ user_id }}</td>
+        <td>{{ int(level) }}</td>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+
+<h3 style="color:red">单英雄战力排行榜TOP{{rank_num}}：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>排名</th>
+        <th>角色名</th>
+        <th>角色uid</th>
+        <th>英雄名</th>
+        <th>英雄id</th>
+        <th>战力</th>
+    </tr>
+{% if top_hero_rank %}
+{% for seq, (user_id, hero_combat) in enumerate(top_hero_rank) %}
+    <tr align="center">
+        <td>{{ seq+1 }}</td>
+        <th>{{ ModelManager(user_id).user.name }}</th>
+        <td>{{ user_id }}</td>
+        {% set hero_oid = top_hero.get(user_id, '') %}
+        {% if hero_oid %}
+        <td>{{ front_game_config.hero_basis.get(int(hero_oid.split('-')[0]), {}).get('name', '') }}</td>
+        {% else %}
+        <td></td>
+        {% end %}
+        <td>{{ hero_oid }}</td>
+        <td>{{ int(hero_combat) }}</td>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+
+<h3 style="color:red">总战力排行榜TOP{{rank_num}}：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>排名</th>
+        <th>角色名</th>
+        <th>角色uid</th>
+        <th>战力</th>
+    </tr>
+{% if combat_rank %}
+{% for seq, (user_id, combat) in enumerate(combat_rank) %}
+    <tr align="center">
+        <td>{{ seq+1 }}</td>
+        <th>{{ ModelManager(user_id).user.name }}</th>
+        <td>{{ user_id }}</td>
+        <td>{{ int(combat) }}</td>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+
+<h3 style="color:red">副本进度排行榜TOP{{rank_num}}：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>排名</th>
+        <th>角色名</th>
+        <th>角色uid</th>
+        <th>关卡</th>
+    </tr>
+{% if private_city_rank %}
+{% for seq, (user_id, stage_team) in enumerate(private_city_rank) %}
+    <tr align="center">
+        <td>{{ seq+1 }}</td>
+        <th>{{ ModelManager(user_id).user.name }}</th>
+        <td>{{ user_id }}</td>
+        <td>{{ int(stage_team) }}</td>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+</body>
+
+
+<hr/>
+<h2>排行榜</h2>
+<form action="/{{url_partition}}/admin/rank/select_rank/" method="get">
+<input type="hidden" name="which_rank" value="level_rank">
+<table id="data">
+<tr>
+    <td>
+        选择日期:
+        <select name="day" value="1">
+            {% for day in sorted(day_data, reverse=True) %}
+                {% if day == select_day %}
+                <option value="{{ day }}" selected>{{ day }}</option>
+                {% else %}
+                <option value="{{ day }}">{{ day }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+     <td>
+        选择排行榜:
+        <select name="which_rank" value="1">
+            {% for rank in sorted(rank_data, reverse=False) %}
+                {% if day == select_rank %}
+                <option value="{{ rank[0] }}" selected>{{ rank[1] }}</option>
+                {% else %}
+                <option value="{{ rank[0] }}">{{ rank[1] }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+    <td>
+        选择服务器:
+        <select name="server_name" value="1">
+            {% for server in sorted(server_data, reverse=True) %}
+                {% if day == select_server %}
+                <option value="{{ server }}" selected>{{ server }}</option>
+                {% else %}
+                <option value="{{ server }}">{{ server }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+    <td>
+    前N名: <input type="text" name="rank_num" value="{{rank_num}}">
+    </td>
+    <td><button type="submit" style="color: red;">查询</button></td>
+</tr>
+</table>
+</form>
+
+<table id="data">
+    <tr>
+        <th>rank</th>
+        <th>名字</th>
+        <th>uid</th>
+        <th>score</th>
+    </tr>
+    {% if channel_data %}
+    {% for i in channel_data %}
+      <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+          <td>{{ i[0] }}</td>
+          <td>{{ i[1] }}</td>
+          <td>{{ i[2] }}</td>
+          <td>{{ i[3] }}</td>
+      </tr>
+      {% end %}
+    {% end %}
+
+</table>
+{% end %}

@@ -1,0 +1,31 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<table border="1">
+    <tr>
+        <th>统帅id</th>
+        <th>统帅名字</th>
+        <th>统帅等级</th>
+        <th>统帅经验</th>
+        <th>修改</th>
+    </tr>
+{% if commander_attrs %}
+{% from gconfig import front_game_config %}
+{% for commander_id, commander_config in sorted(front_game_config.commander.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/commander_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="commander_id" value="{{commander_id}}" />
+        <td>{{ commander_id }}</td>
+        <td>{{ commander_config['name'] }}</td>
+        <td><input type="text" name="commander_lv" value="{{ commander_attrs.get(commander_id, {}).get('lv', 0) }}" size="5" /></td>
+        <td><input type="text" name="commander_exp" value="{{ commander_attrs.get(commander_id, {}).get('exp', 0) }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+{% end %}

@@ -1,0 +1,59 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+<div>
+<form action="/{{url_partition}}/admin/hero/select_attr/" method="post">
+    <input type="hidden" id="uid" name="uid" value="{{mm.user.uid}}">
+    输入英雄id: <input type="text" id="hid" name="hid" value="{{hid}}">
+    <input id="submit" name="submit" type="submit" value="提交" />
+</form>
+</div>
+<hr>
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+{% if hero_data %}
+<table border="1">
+    <tr>
+        <th>唯一id</th>
+        <th>英雄基础</th>
+        <th>装备基础</th>
+        <th>基因基础</th>
+        <th>总属性</th>
+    </tr>
+    <tr>
+        <td>{{hero_data['oid']}}</td>
+        <td>
+            {% for i, j in hero_data['effect'].get('hero', {}).iteritems() %}
+                {% if attr_mapping.get(i) %}
+                    {{attr_mapping.get(i)}}: {{j}} <br>
+                {% end %}
+            {% end %}
+        </td>
+        <td>
+            {% for i, j in hero_data['effect'].get('equip', {}).iteritems() %}
+                {% if attr_mapping.get(i) %}
+                    {{attr_mapping.get(i)}}: {{j}} <br>
+                {% end %}
+            {% end %}
+        </td>
+        <td>
+            {% for i, j in hero_data['effect'].get('gene', {}).iteritems() %}
+                {% if attr_mapping.get(i) %}
+                    {{attr_mapping.get(i)}}: {{j}} <br>
+                {% end %}
+            {% end %}
+        </td>
+        <td>
+            {% for i, j in hero_data.iteritems() %}
+                {% if attr_mapping.get(i) %}
+                    {{attr_mapping.get(i)}}: {{j}} <br>
+                {% end %}
+            {% end %}
+        </td>
+    </tr>
+</table>
+
+{% end %}
+
+{% end %}

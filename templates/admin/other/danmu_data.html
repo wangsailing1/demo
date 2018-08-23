@@ -1,0 +1,35 @@
+<body>
+
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<form action="/{{url_partition}}/admin/other/select_danmu_data" method="post">
+    服务器:<input type="text" id="server" name="server" value="{{server}}">
+    关卡id(10100):<input type="text" id="flag" name="stage_id" value="{{stage_id}}">
+    <input name="submit" type="submit" value="提交" />
+</form>
+
+<form action="/{{url_partition}}/admin/other/delete_danmu_data" method="post">
+    <input type="hidden" id="server1" name="server" value="{{server}}">
+    <input type="hidden" id="stage_id1" name="stage_id" value="{{stage_id}}">
+<h3>弹幕数据：</h3>
+<table border="1" >
+    <tr>
+        <th>NO.</th>
+        <th>uid</th>
+        <th>内容</th>
+    </tr>
+{% for idx, info in enumerate(data, start=1) %}
+    <tr align="center">
+        <td>{{idx}}</td>
+        <td>{{info.get('uid', '')}}</td>
+        <td>{{info.get('data', '')}}</td>
+        <td><input type="checkbox" name="sign_id" value="{{info}}" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

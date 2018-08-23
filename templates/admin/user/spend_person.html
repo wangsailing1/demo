@@ -1,0 +1,56 @@
+
+<body>
+
+<p> 当前环境: {{environment}} </p>
+<hr>
+
+<form action="/{{url_partition}}/admin/user/spend_person/" method="post">
+    用户id：<input type="text" value="{{user_id}}" name="user_id"/><input type="submit" value="查看" id="submit" name="submit" />
+</form>
+
+<hr>
+
+<table border="1" cellpadding="0" cellspacing="0" id='stat'>
+  消费记录
+        <tr>
+          <td align="center">序号</td>
+          <td align="center" name="user_id">用户ID</td>
+          <td align="center" name="name">玩家名</td>
+          <td align="center" name="level">玩家等级</td>
+          <td align="center" name="subtime">消费时间</td>
+          <td align="center" name="goods_type">消费项类型</td>
+          <td align="center" name="diamond_num">本次消费量</td>
+          <td align="center" name="diamond_1st">消费前钻石数</td>
+          <td align="center" name="diamond_2nd">消费后钻石数</td>
+          <td align="center" name="args">参数</td>
+        </tr>
+        {% for i, st in enumerate(st_list_0) %}
+        <tr bgcolor="cornsilk">
+          <td align="center" width="0">{{i+1}}</td>
+          <td align="center" width="0">{{st['user_id']}}</td>
+          <td align="center" width="0">{{st['name']}}</td>
+          <td align="center" width="0">{{st['level']}}</td>
+          <td align="left"   width="0">{{st['subtime']}}</td>
+          <td align="center" width="0">{{st['goods_type']}}</td>
+          <td align="center" width="0">{{st['diamond_num']}}</td>
+          <td align="center" width="0">{{st['diamond_1st']}}</td>
+          <td align="center" width="0">{{st['diamond_2nd']}}</td>
+          <td align="center" width="0">{{st['args']}}</td>
+                  </tr>
+        {% end %}
+        <tr>
+          <td align="center" width="0">合计</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0">{{total}}</td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+          <td align="center" width="0"></td>
+        </tr>
+</table>
+
+</body>

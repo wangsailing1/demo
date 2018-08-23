@@ -1,0 +1,36 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+{% import time %}
+{% import datetime %}
+
+<!--{% for stats in data %}-->
+    <!--{{stats}}-->
+<!--{% end %}-->
+
+{{time.strftime('%F %T')}}
+<br/>
+<br/>
+<table id="data" class="hovertable">
+    <tr>
+        <th>服id：</th>
+        <th>开服时间</th>
+        <th>总进入人数</th>
+        <th>今日登陆人数</th>
+        <th>今日新增人数</th>
+        <th>当前在线人数</th>
+    </tr>
+    {% for status in data %}
+        <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+            <td>{{ status['return_data']['server_id'] }}</td>
+            <td>{{ datetime.datetime.fromtimestamp(status['return_data']['start_time']) }}</td>
+            <td>{{ status['return_data']['all_player_num'] }}</td>
+            <td>{{ status['return_data'].get('today_login', 0) }}</td>
+            <td>{{ status['return_data'].get('daily_regist_num', 0) }}</td>
+            <td>{{ status['return_data']['online_num'] }}</td>
+        </tr>
+    {% end %}
+</table>
+
+{% end %}

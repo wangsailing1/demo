@@ -1,0 +1,33 @@
+<body>
+{% from gconfig import game_config %}
+{% from gconfig import get_str_words %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<h3>赠送采集物道具：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/item/add_citem/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>采集物道具id</th>
+        <th>采集物道具名字</th>
+        <th>采集物道具数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for citem_id, citem_info in sorted(game_config.collection_resource.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{citem_id}}</td>
+        <td>{{citem_info['name']}}</td>
+        <td><input type="text" name="citem_{{citem_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+
+</body>

@@ -1,0 +1,134 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>道具：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if item %}
+{% for item_id, item_num in sorted(item.items.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/item_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="item_id" value="{{item_id}}" />
+        <td>{{ item_id }}</td>
+        <td><input type="text" name="item_num" value="{{ item_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+<hr>
+
+<h3>进阶道具：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if gitem %}
+{% for gitem_id, gitem_num in sorted(gitem.items.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/gitem_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="gitem_id" value="{{gitem_id}}" />
+        <td>{{ gitem_id }}</td>
+        <td><input type="text" name="gitem_num" value="{{ gitem_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+<hr>
+
+<h3>采集物道具：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if citem %}
+{% for citem_id, citem_num in sorted(citem.items.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/citem_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="citem_id" value="{{citem_id}}" />
+        <td>{{ citem_id }}</td>
+        <td><input type="text" name="citem_num" value="{{ citem_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+
+<hr>
+
+<h3>公会礼物道具：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if ggitem %}
+{% for ggitem_id, ggitem_num in sorted(ggitem.items.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/ggitem_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="ggitem_id" value="{{ggitem_id}}" />
+        <td>{{ ggitem_id }}</td>
+        <td><input type="text" name="ggitem_num" value="{{ ggitem_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+<hr>
+
+<h3>觉醒道具：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>道具id</th>
+        <th>道具数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if aitem %}
+{% for aitem_id, aitem_num in sorted(aitem.items.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/aitem_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="aitem_id" value="{{aitem_id}}" />
+        <td>{{ aitem_id }}</td>
+        <td><input type="text" name="aitem_num" value="{{ aitem_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+{% end %}

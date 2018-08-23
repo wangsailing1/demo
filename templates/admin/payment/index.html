@@ -1,0 +1,99 @@
+
+<body>
+
+<p> 当前环境: {{environment}} </p>
+<hr>
+
+<form id="form" name="form" method="get" action="/{{url_partition}}/admin/payment/select_pay/">
+    <p>查询日期
+    start_day: <select  name="start_day" value="">
+            {% for day in day_interval %}
+                {% if day == start_day %}
+                    <option value="{{day}}" selected>{{day}}</option>
+                {% else %}
+                    <option value="{{day}}">{{day}}</option>
+                {% end %}
+            {% end %}
+            </select>
+    end_day: <select  name="end_day" value="">
+            {% for day in day_interval %}
+                {% if day == end_day %}
+                    <option value="{{day}}" selected>{{day}}</option>
+                {% else %}
+                    <option value="{{day}}">{{day}}</option>
+                {% end %}
+            {% end %}
+        </select>
+    <span>若end_day < start_day, 默认为今天</span>
+    <input type="submit" name="button" id="submit_by_user" value="查询"  />
+    </p>
+</form>
+
+<hr />
+
+<table border="1" cellspacing="0" cellpadding="1" cellpadding="0" cellspacing="0" id='stat'>
+   充值记录
+  <tr>
+        <td align="center" rowspan='2' width="95">日期</td>
+        <td align="center" rowspan='2' width="55">充值次数</td>
+        <td align="center" rowspan='2' width="55">充值人数</td>
+        <td align="center" rowspan='2' width="75">总额(钻石)</td>
+        <td align="center" rowspan='2' width="75">总额(人民币)</td>
+        <td align="center" rowspan='2' width="75">总额(美元)</td>
+        <td align="center" colspan='3'>MyCard充值(RMB)</td>
+        <td align="center" colspan='3'>Apple充值(RMB)</td>
+        <td align="center" colspan='3'>Google充值(RMB)</td>
+        <td align="center" rowspan='2' width="75">平台充值&后台代充</td>
+        <td align="center" rowspan='2' width="75">管理员测试</td>
+        <td align="center" rowspan='2' width="75">&nbsp;</td>
+  </tr>
+  <tr>
+          <td>EN</td>
+          <td>CN</td>
+          <td>TW</td>
+          <td>EN</td>
+          <td>CN</td>
+          <td>TW</td>
+          <td>EN</td>
+          <td>CN</td>
+          <td>TW</td>
+  </tr>
+  {% for i, st in enumerate(st_list_0) %}
+  <tr bgcolor="cornsilk">
+        <td align="center" width="45">{{st['day']}}</td>
+        <td align="center" width="45">{{st['pay_times']}}</td>
+        <td align="center" width="45">{{st['person_times']}}</td>
+        <td align="center" width="45">{{st['pay_diamonds']}}</td>
+        <td align="center" width="45">{{st['pay_rmbs']}}</td>
+        <td align="center" width="45">{{st['pay_usd']}}</td>
+        <td align="center" width="45">{{st['really_mycard_rmbs_EN']}}</td>
+        <td align="center" width="45">{{st['really_mycard_rmbs_CN']}}</td>
+        <td align="center" width="45">{{st['really_mycard_rmbs_TW']}}</td>
+        <td align="center" width="45">{{st['really_apple_rmbs_EN']}}</td>
+        <td align="center" width="45">{{st['really_apple_rmbs_CN']}}</td>
+        <td align="center" width="45">{{st['really_apple_rmbs_TW']}}</td>
+        <td align="center" width="45">{{st['really_google_rmbs_EN']}}</td>
+        <td align="center" width="45">{{st['really_google_rmbs_CN']}}</td>
+        <td align="center" width="45">{{st['really_google_rmbs_TW']}}</td>
+        <td align="center" width="45">{{st['really_pay_rmbs']}}</td>
+        <td align="center" width="45">{{st['admin_pay_rmbs']}}</td>
+        <td align="center" width="45"><a href="/{{url_partition}}/admin/payment/pay_day/?day={{st['day']}}">查看详情</a></td>
+  </tr>
+  {% end %}
+  <tr>
+    <td>合计</td>
+        <td align="center" width="45" height="25" id='pay_times'>{{all_data['all_pay_times']}}</td>
+        <td align="center" width="45" height="25" id='person_times'>{{all_data['all_person_times']}}</td>
+        <td align="center" width="45" height="25" id='pay_diamonds'>{{all_data['all_pay_diamonds']}}</td>
+        <td align="center" width="45" height="25" id='pay_rmbs'>{{all_data['all_pay_rmbs']}}</td>
+        <td align="center" width="45" height="25" id='pay_usd'>{{all_data['all_pay_usd']}}</td>
+        <td align="center" width="45" height="25" id='all_really_mycard_rmbs' colspan='3'>{{all_data['all_mycard_rmbs']}}</td>
+        <td align="center" width="45" height="25" id='all_really_apple_rmbs' colspan='3'>{{all_data['all_apple_rmbs']}}</td>
+        <td align="center" width="45" height="25" id='all_really_google_rmbs' colspan='3'>{{all_data['all_google_rmbs']}}</td>
+        <td align="center" width="45" height="25" id='all_platform_pay_rmbs'>{{all_data['all_platform_pay_rmbs']}}</td>
+        <td align="center" width="45" height="25" id='all_admin_pay_rmbs'>{{all_data['all_admin_pay_rmbs']}}</td>
+        <td align="center" width="45" height="25" >&nbsp;</td>
+  </tr>
+</table>
+
+</body>

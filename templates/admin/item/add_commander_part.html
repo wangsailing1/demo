@@ -1,0 +1,32 @@
+<body>
+{% from gconfig import front_game_config %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<h3>赠送统帅碎片：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/item/add_commander_part/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid" value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>碎片id</th>
+        <th>碎片名字</th>
+        <th>碎片数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for part_id, part_info in sorted(front_game_config.commander_part.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{part_id}}</td>
+        <td>{{part_info['name']}}</td>
+        <td><input type="text" name="part_{{part_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+
+</body>

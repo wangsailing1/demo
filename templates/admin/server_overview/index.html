@@ -1,0 +1,229 @@
+<html>
+<style type="text/css">
+    #data, #redis_data {border-collapse:collapse;border:1px solid #BEBEBE;font-size:12px;}
+    #data th, #redis_data th {background:#BEBEBE;border-bottom:1px solid #BEBEBE;line-height:24px;
+            font-weight:lighter;padding:4px;text-align:center}
+    #data td, #redis_data td{border:1px solid #BEBEBE;padding:2px;text-align:center;font-size:12px}
+    #mindata{border-collapse:collapse;font-size:12px;}
+    .link{font-size:11px;}
+    #reset_link{font-size:11px;color:red}
+</style>
+<script type="text/javascript" src="/{{url_partition}}/static/js/Chart.js"></script>
+    <head>
+        <title>server_overview</title>
+    </head>
+    <script>
+        function mySwitch(id) {
+            var o = document.getElementById(id);
+            o.style.display = (o.style.display=="")?"none":"";
+        }
+        function redis_switch(id) {
+            mySwitch(id);
+            mySwitch('redis_chart');
+        }
+    </script>
+    <body>
+        <h1>游戏概况</h1>
+        <table width="50%" border="0">
+            <tr align="left">
+                <td>今日登录：</td>
+                <td>
+                    {{today_online_users_count}} 人
+                </td>
+                <td>
+                <a onclick="mySwitch('myChart')" style="cursor:pointer; color: #592903; font-size: small; border-bottom:1px solid">历史在线</a>
+                </td>
+            </tr>
+            <tr align="left">
+                <td>当前在线: 最近 {{ONLINE_USERS_TIME_RANGE/60}}分钟<{{now}}></td>
+                <td>
+                    {{cur_online_uids}} 人
+                </td>
+                <td>
+                    <a href="/{{url_partition}}/admin/server_overview/server_online_user/" >详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>今日累计充值:</td>
+                <td>
+                    {{len(user_pay)}} 人 - {{sum(user_pay.values())}} {{currency_type}}
+                </td>
+                <td>
+                    <a  href="/{{url_partition}}/admin/payment/pay_day/?day={{today}}">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>充值No.1服务器：</td>
+                <td>{{pay_top_server}}</td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td>充值No.1玩家：</td>
+                <td>{{big_brother_uid}} - {{big_brother_pay}} {{currency_type}} /{{big_brother_server}}</td>
+                <td>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <canvas id="myChart" width="200" height="50" style="display: none;"></canvas>
+        <table width="50%">
+            <tr>
+                <td>昨日平均一回：</td><td>0</td>
+                <td>昨日平均3回：</td><td>0</td>
+            </tr>
+            <tr>
+                <td>昨日付费率：</td><td>0</td>
+                <td>昨日ARPPU：</td><td>0</td>
+            </tr>
+            <tr>
+                <td>昨日累计计费：</td><td>0</td>
+                <td>本月累计计费：</td><td>0</td>
+            </tr>
+        </table>
+
+        <hr/>
+        <h1>最近新开服务</h1>(master、public 非游戏业务服)
+        <table width="95%" border="1" cellspacing="0" cellpadding="1" cellpadding="2" cellspacing="0" id="data">
+            <tr align="center">
+                <td>服务器id:</td>
+                <td>服务器名称:</td>
+                <td>开服时间</td>
+                <td>新/老服(1:新2:老)</td>
+                <td>开服天数</td>
+                <td>总激活用户(new_user)<br/>{{sum([i.get('server_user_count', 0) for i in cur_uid_per_server.values()])}}</td>
+                <td>总登录用户(main_page)<br/>{{sum([i.get('real_server_user_count', 0) for i in cur_uid_per_server.values()])}}</td>
+                <td>当日新增注册<br/>{{sum([i.get('newbie_count', 0) for i in cur_uid_per_server.values()])}}</td>
+                <td>当日登录</td>
+                <td>当前充值</td>
+                <td>充值用户</td>
+                <td>付费率</td>
+                <td>当前在线:</td>
+                <td>used/peak/rss/ratio/clients</td>
+                <td>used/总激活(KB)</td>
+                <td>used/总登录(KB)</td>
+            </tr>
+            {% for server, info in sorted(cur_uid_per_server.iteritems(), key=lambda x:x[1].get('open_time', ''), reverse=1)%}
+            <tr align="center">
+                <td>{{server}}</td>
+                <td>{{info.get('server_name')}}</td>
+                <td>{{info.get('open_time')}}</td>
+                <td>{{info.get('config_type')}}</td>
+                <td>{{info.get('open_days')}}</td>
+                <td>{{info.get('server_user_count')}}</td>
+                <td>{{info.get('real_server_user_count')}}</td>
+                <td>{{info.get('newbie_count')}}</td>
+                <td>{{info.get('today_online')}}</td>
+                <td>{{info['pay_rmb']}}</td>
+                <td>{{len(info['pay_users'])}}</td>
+                <td>{{'%2.2f' % (len(info['pay_users'])*100.0/(info.get('today_online') or 1))}}</td>
+                <td>{{info['user_count']}}</td>
+                <td>{{info.get('redis_used_memory', '')}}</td>
+                <td>{{'%0.2fKB' % (float(info.get('redis_used_memory_byte', 0) / 1024.0)/(info.get('all_server_user_count', 1) or 1))}}</td>
+                <td>{{'%0.2fKB' % (float(info.get('redis_used_memory_byte', 0)/ 1024.0)/(info.get('all_real_server_user_count', 1) or 1))}}</td>
+            </tr>
+            {%end%}
+        </table>
+
+        <button type="button" onclick="redis_switch('redis_display')" ><font color="red"> <big>显示/隐藏 redis使用率</big></font></button>
+        <canvas id="redis_chart" width="150" height="40" style="display: none;"></canvas>
+        <div id="redis_display" style="display:none">
+            <table width="80%" border="1" cellspacing="0" cellpadding="1" cellpadding="2" cellspacing="0" id="redis_data">
+                <tr align="center">
+                    <td>NO.</td>
+                    <td>ip:</td>
+                    <td>sum: rss|used</td>
+                    <td>per_port: rss | used | ratio </td>
+                </tr>
+            {% for idx, (ip, info) in enumerate(redis_server_memory_info.iteritems(), start=1) %}
+                <tr align="center">
+                    <td>{{idx}}</td>
+                    <td>{{ip or "localhost"}}</td>
+                    <td>{{'%0.2f ' % (sum([v['rss'] for k, v in info.iteritems()]) / 1024.0 ** 3)}}G |
+                        {{'%0.2f ' % (sum([v['used'] for k, v in info.iteritems()]) / 1024.0 ** 3)}}G
+                    </td>
+                    <td>
+                        {% for port, memory_info in sorted(info.iteritems()) %}
+                            {{port}}: {{'%0.2f ' % (memory_info['rss'] / 1024.0 ** 2)}}M |
+                            {{'%0.2f ' % (memory_info['used'] / 1024.0 ** 2)}}M |
+                            {{memory_info['mem_fragmentation_ratio']}}<br/>
+                        {% end %}
+                    </td>
+                </tr>
+            {% end %}
+            </table>
+            <br/>
+        </div>
+
+    </body>
+</html>
+
+
+<script>
+    var redis_ctx = document.getElementById("redis_chart").getContext('2d');
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                {% for step in sorted(recent_online_info) %}
+                    "{{step}}",
+                {% end %}
+            ],
+            datasets: [{
+                label: '# online user',
+                data: {{[int(v) for k, v in sorted(recent_online_info.items(), key=lambda x: x[0])]}},
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            }
+        }
+    });
+    var my_redis = new Chart(redis_ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for ip in sorted(redis_server_memory_info) %}
+                        "{{ip or 'localhost'}}",
+                    {% end %}
+                ],
+                datasets: [{
+                    label: '# redis memory G',
+                    data: {{[(sum([v['rss'] for port, v in info.iteritems()]) / 1024.0 ** 3)
+                                for ip, info in sorted(redis_server_memory_info.items(), key=lambda x: x[0])]}},
+                    backgroundColor: [
+                        {% for i in redis_server_memory_info %}
+                            'rgba(54, 162, 235, 0.2)',
+                        {%end%}
+                    ],
+                    borderColor: [
+                        // 'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+</script>

@@ -1,0 +1,124 @@
+<body>
+    <h2>客服&gt;&gt;玩家问题</h2>
+    <form action="/{{url_partition}}/admin/gs/game_service" method="get">
+    <input type="hidden" value="{{ page }}">
+    <table id="query" class="hovertable">
+        <tr>
+            <td>UID: <input name="user_id" type="text" value="{{ user_id }}" /></td>
+            <td>回复人: <input name="gs_name" type="text" value="{{ gs_name }}" /></td>
+            <td>回复状态:
+                <select name="status">
+                    <option value="2" {{ "selected" if status == "2" else "" }}></option>
+                    <option value="0" {{ "selected" if status == "0" else "" }}>未回复</option>
+                    <option value="1" {{ "selected" if status == "1" else "" }}>已回复</option>
+                </select>
+            </td>
+            <td>处理状态:
+                <select name="solve_status">
+                    <option value="2" {{ "selected" if solve_status == "2" else "" }}></option>
+                    <option value="0" {{ "selected" if solve_status == "0" else "" }}>未解决</option>
+                    <option value="1" {{ "selected" if solve_status == "1" else "" }}>已解决</option>
+                </select>
+            </td>
+            <td><input type="submit" value="查询" /></td>
+            <td><input type="reset" value="重置" onclick="window.location.href='/{{url_partition}}/admin/gs/game_service';"/></td>
+
+        </tr>
+    </table>
+    </form>
+    <table id="data" border="1" class="hovertable" style="table-layout:fixed;word-wrap:break-word;">
+        <tr>
+            <th>问题ID</th>
+            <th>玩家ID</th>
+            <th>vip</th>
+            <th>平台</th>
+            <th>类型</th>
+            <th>问题描述</th>
+            <th>状态</th>
+
+            <th>提问时间</th>
+            <th>回复内容</th>
+            <th>回复人</th>
+            <th>回复时间</th>
+            <th>解决状态</th>
+            <th>解决时间</th>
+
+            <th>回复/修改</th>
+            <th>关闭问题</th>
+
+        </tr>
+        {% set msg_type_mapping = {1: '意见', 2: 'bug反馈', 3: '举报'} %}
+        {% for v in gs_data %}
+        <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+            <td style="width:40px;">{{v[0]}}</td>
+            <td style="width:80px;">{{v[1]}}</td>
+            <td style="width:40px;">{{v[2]}}</td>
+            <td style="width:80px;">{{v[3]}}</td>
+            <td style="width:40px;">
+                {{msg_type_mapping.get(v[4], '其他')}}
+            </td>
+            <td style="width:120px;">
+                {% set a = v[5] %}
+                {% set aa = eval(repr(a)[1:]) %}
+                {% if aa.startswith('\\u') or all(ord(w) < 128 for w in aa) %}
+                    {{v[5]}}
+                {% else %}
+                    {% set d = aa.decode('utf-8', 'replace') %}
+                    {{d}}
+                {% end %}
+            </td>
+            <td style="width:40px;">
+                {% if v[6] %}
+                    已回复
+                {% else %}
+                    未回复
+                {% end %}
+            </td>
+
+            <td>{{ v[10] }}</td><!--提问时间-->
+            <td>{{ v[11] }}</td><!--回复内容-->
+            <td style="width:80px;">                <!--回复人-->
+                {% if v[7] %}
+                    {{ v[7] }}
+                {% end %}
+            </td>
+            <td>{{ v[12] }}</td>
+            <td style="width:80px;">
+                {% if v[13] %}
+                    已解决
+                {% else %}
+                    未解决
+                {% end %}
+            </td>
+            <td style="width:80px;">{{ v[14] }}</td>
+
+            <td style="width:80px;"><a href="/{{url_partition}}/admin/gs/send_gs_notify/?ques_id={{v[0]}}" type="button">回复/修改</a></td>
+            <td style="width:80px;"><a href="/{{url_partition}}/admin/gs/game_service/?close_qid={{v[0]}}&page={{page}}" type="button">删除</a></td>
+
+        <tr>
+        {%end%}
+    </table>
+    <table>
+        <tr>
+            <td><a href="/{{url_partition}}/admin/gs/game_service/?page={{page-1}}&user_id={{user_id}}&gs_name={{gs_name}}&status={{status}}&solve_status={{solve_status}}">上一页</a></td>
+            <td><a href="/{{url_partition}}/admin/gs/game_service/?page={{page+1}}&user_id={{user_id}}&gs_name={{gs_name}}&status={{status}}&solve_status={{solve_status}}">下一页</a></td>
+            <td>跳转到<input type="text" value={{page}} />页<a href="/{{url_partition}}/admin/gs/game_service/?page={{page}}" type="button">确定</a></td>
+        </tr>
+    </table>
+
+    <script type="text/javascript">
+        function reset_input(){
+            var a_select = document.getElementByTag('select');
+            for (var i=0; i < a_select.length; i++) {
+                a_option = a_select[i].getElementByTag('option')
+                for (var j=0; j < a_option.length; j++){
+                    if (j==0){
+                        j.selected = true;
+                    }else{
+                        j.selected = false;
+                    }
+                }
+            }
+        }
+    </script>
+</body>

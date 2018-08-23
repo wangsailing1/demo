@@ -1,0 +1,32 @@
+<body>
+{% from gconfig import game_config %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<h3>赠送公会礼物道具：</h3>
+<div style="color: red">每次最大赠送数量{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/item/add_ggitem/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>公会礼物道具id</th>
+        <th>公会礼物道具名字</th>
+        <th>公会礼物道具数量</th>
+        <th>增加</th>
+    </tr>
+
+{% for ggitem_id, ggitem_info in sorted(game_config.guild_herogift.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{ggitem_id}}</td>
+        <td>{{ggitem_info['name']}}</td>
+        <td><input type="text" name="ggitem_{{ggitem_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+
+</body>

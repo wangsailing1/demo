@@ -1,0 +1,43 @@
+<body>
+
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+<form action="/{{url_partition}}/admin/other/select_chat_data" method="post">
+    服务器:<input type="text" id="server" name="server" value="{{server}}">
+    标识(world,all_world):<input type="text" id="flag" name="flag" value="{{flag}}">
+    <input name="submit" type="submit" value="提交" />
+</form>
+
+<form action="/{{url_partition}}/admin/other/delete_chat_data" method="post">
+    <input type="hidden" id="server1" name="server" value="{{server}}">
+    <input type="hidden" id="flag1" name="flag" value="{{flag}}">
+<h3>聊天数据：</h3>
+<table border="1" >
+    <tr>
+        <th>NO.</th>
+        <th>sign(唯一标识)</th>
+        <th>uid</th>
+        <th>名字</th>
+        <th>等级</th>
+        <th>vip</th>
+        <th>内容</th>
+    </tr>
+{% for idx, info in enumerate(data, start=1) %}
+    <tr align="center">
+        <td>{{idx}}</td>
+        <td>{{info.get('sign', '')}}</td>
+        <td>{{info.get('uid', '')}}</td>
+        <td>{{info.get('name', '')}}</td>
+        <td>{{info.get('level', 0)}}</td>
+        <td>{{info.get('vip', 0)}}</td>
+        <td>{{info.get('msg', '')}}</td>
+        <td><input type="checkbox" name="sign_id" value="{{info.get('sign', '')}}" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

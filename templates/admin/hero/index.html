@@ -1,0 +1,87 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>英雄：</h3>
+<table border="1" cellspacing="0" cellpadding="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>唯一id</th>
+        <th>父id</th>
+        <th>名字</th>
+        <th>等级</th>
+        <th>经验</th>
+        <th>进阶等级</th>
+        <th>星级</th>
+        <th>战力</th>
+        <th>力量</th>
+        <th>敏捷</th>
+        <th>智力</th>
+        <th>血</th>
+        <th>物攻</th>
+        <th>物防</th>
+        <th>魔强</th>
+        <th>魔抗</th>
+        <th>技能</th>
+        <th>操作</th>
+    </tr>
+{% if hero %}
+{% for hero_oid, hero_dict in \
+    sorted(hero.heros.iteritems(), key=lambda x: (x[1]['lv'], x[1]['exp'], x[1]['evo'], x[1]['star'], int(x[1]['id'])), reverse=True) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/hero/hero_update/" method="post">
+        <input type="hidden" name="hero_oid" value="{{hero_oid}}" />
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <td>{{ hero_oid }}</td>
+        <td>fid:{{ hero.get_father_id_by_oid(hero_oid) }}</td>
+        <td>{{ game_config.hero_basis.get(hero_dict['id'], {}).get('name', '') }}</td>
+        <td><input type="text" name="lv" value="{{ hero_dict['lv'] }}" size="5" /></td>
+        <td>{{ hero_dict['exp'] }}</td>
+        <td><input type="text" name="evo" value="{{ hero_dict['evo'] }}" size="5" /></td>
+        <td><input type="text" name="star" value="{{ hero_dict['star'] }}" size="5" /></td>
+        <td>{{ hero_dict['combat'] }}</td>
+        <td>{{ hero_dict.get('strength', 0) }}</td>
+        <td>{{ hero_dict.get('agility', 0) }}</td>
+        <td>{{ hero_dict.get('intelligence', 0) }}</td>
+        <td>{{ hero_dict['hp'] }}</td>
+        <td>{{ hero_dict['phy_atk'] }}</td>
+        <td>{{ hero_dict['phy_def'] }}</td>
+        <td>{{ hero_dict['mag_atk'] }}</td>
+        <td>{{ hero_dict['mag_def'] }}</td>
+        <td>{{ '%s|%s|%s' % (hero_dict['skill'][1]['avail'], hero_dict['skill'][1]['s'], hero_dict['skill'][1]['lv']) }}<br/>
+        {{ '%s|%s|%s' % (hero_dict['skill'][2]['avail'], hero_dict['skill'][2]['s'], hero_dict['skill'][2]['lv']) }}<br/>
+        {{ '%s|%s|%s' % (hero_dict['skill'][3]['avail'], hero_dict['skill'][3]['s'], hero_dict['skill'][3]['lv']) }}<br/>
+        <td><input value="修改" name="modify"  type="submit" onclick="return confirm('确认需要修改吗?')" /><br/>
+            <input value="删除" name="delete"  type="submit" onclick="return confirm('确认需要删除吗?')" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+<hr>
+
+<h3>灵魂石：</h3>
+<table border="1" cellspacing="0" cellpadding="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>灵魂id</th>
+        <th>灵魂数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if hero %}
+{% for stone_id, stone_num in sorted(hero.stones.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/hero/stone_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="stone_id" value="{{stone_id}}" />
+        <td>{{ stone_id }}</td>
+        <td><input type="text" name="stone_num" value="{{ stone_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+{% end %}

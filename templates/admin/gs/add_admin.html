@@ -1,0 +1,145 @@
+<head>
+<link rel="stylesheet" href="/{{url_partition}}/static/js/jqwidgets/styles/jqx.base.css" type="text/css" />
+<script type="text/javascript" src="/{{url_partition}}/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxcore.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxbuttons.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxscrollbar.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxpanel.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxtree.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxcheckbox.js"></script>
+<script language="javascript">
+    $(document).ready(function () {
+        // create jqxTree
+        $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px'});
+        $('#jqxTree').css('visibility', 'visible');
+
+        function clear_cache(){
+            var nameObj = document.getElementById('username');
+            var pwdObj = document.getElementById('password');
+            nameObj.value = '';
+            pwdObj.value = '';
+        }
+        clear_cache();
+
+        function chk(){
+            var nameObj = document.getElementById('username');
+            if (nameObj.value.length==0){
+                alert("请输入帐号！");
+                nameObj.focus();
+                return false;
+            }
+
+            var pwdObj = document.getElementById('password');
+            var pwdObj1 = document.getElementById('password1');
+            if (!pwdObj.value){
+                alert("密码不能为空");
+                pwdObj.value = '';
+                pwdObj1.value = '';
+                pwdObj.focus();
+                return false;
+            }
+            if (pwdObj.value != pwdObj1.value){
+                alert("前后密码不一致, 请重新输入");
+                pwdObj.value = '';
+                pwdObj1.value = '';
+                pwdObj.focus();
+                return false;
+            }
+
+            var emailObj = document.getElementById('email');
+        　　var Regex = /^(?:\w+\.?)*\w+@(?:\w+\.)*\w+$/;
+        　　if (!Regex.test(emailObj.value)){
+            　　alert("请输入有效的email地址");
+                emailObj.value = "";
+                emailObj.focus();
+            　　return false;
+        　　}
+
+            return true;
+        }
+    });
+    function get_checkbox(){
+        var items = $('#jqxTree').jqxTree('getCheckedItems');
+        var permissions = "";
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.id.indexOf("=") > 0) {
+                permissions += item.id + "&";
+            }
+        }
+        var params = {username: $('#username').val(),
+            password: $('#password').val(),
+            password1: $('#password1').val(),
+            email: $('#email').val(),
+            permissions: permissions};
+        $.post("/{{url_partition}}/admin/gs/add_admin/", params, function(result){
+            alert(result);
+            window.location.reload();
+        });
+    }
+</script>
+</head>
+
+<body >
+    {% if msg %}
+        <p style="color:red;"> {{msg}}</p>
+    {% end %}
+    <h2>添加新用户</h2>
+    <table border="1" width= "700" >
+        <tr>
+            <td>帐号：</td>
+            <td><input type="text" id="username" name="username" placeholder="用户名" autocomplete="off"/></td>
+        </tr>
+        <tr>
+            <td>密码：</td>
+            <td><input type="password" id="password" name="password" placeholder="密码" autocomplete="off"></td>
+        </tr>
+        <tr>
+            <td>确认密码：</td>
+            <td><input type="password" id="password1" name="password1" placeholder="确认密码" autocomplete="off"></td>
+        </tr>
+        <tr>
+            <td>邮件地址: </td>
+            <td><input type="email" id="email" name="email" autocomplete="off"></td>
+        </tr>
+        <tr>
+            <td>用户权限</td>
+            <td><div id='jqxWidget'>
+                <div style='float: left;'>
+                    <div id='jqxTree' style='visibility: hidden; float: left; margin-left: 20px;'>
+                        <ul>
+                            {% for mkey, mname in menu_name %}
+                            {% if [sort for module_key, config in menu_config[mkey].iteritems() for c in config for sub_key, sub_name, sort in c['sub'] if sort == 0] %}
+                            <li item-expanded='true'>{{mname}}
+                            {% else %}
+                            <li item-checked='true' item-expanded='true'>{{mname}}
+                            {% end %}
+                                <ul>
+                                    {% for module_key, config in menu_config[mkey].iteritems() %}
+                                    {% for c in config %}
+                                    <li>{{c['name']}}
+                                        <ul>
+                                            {% for sub_key, sub_name, sort in c['sub'] %}
+                                            {% if sort == 1 %}
+                                            <li item-checked='true' id="{{module_key}}={{sub_key}}">{{sub_name}}</li>
+                                            {% else %}
+                                            <li id="{{module_key}}={{sub_key}}">{{sub_name}}</li>
+                                            {% end %}
+                                            {% end %}
+                                        </ul>
+                                    </li>
+                                    {% end %}
+                                    {% end %}
+                                </ul>
+                            </li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+            </div></td>
+        </tr>
+        <tr>
+        <td colspan="2" align="center"><input id="submit" name="submit" type="submit" value="添加" onclick="get_checkbox()" /></td>
+        </tr>
+    </table>
+</body>

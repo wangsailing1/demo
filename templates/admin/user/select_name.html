@@ -1,0 +1,29 @@
+<body>
+<div>
+<form action="/{{url_partition}}/admin/user_name/select_name" method="post">
+    用户名字:<input type="text" id="uid" name="name" value="{{name}}">
+    服务器:<input type="text" id="server_id" name="server_id" value="{{server_id}}">
+    <input name="submit" type="submit" value="提交" />
+</form>
+</div>
+
+<hr>
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+{% if uid_list %}
+    <table border="1">
+        <tr>
+            <td>uid</td>
+            <td>名字</td>
+        </tr>
+        {% for i, j in uid_list.iteritems() %}
+        <tr>
+            <td>{{i}}</td>
+            <td>{{j}}</td>
+        </tr>
+        {% end %}
+    </table>
+{% end %}
+</body>

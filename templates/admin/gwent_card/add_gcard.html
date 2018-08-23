@@ -1,0 +1,35 @@
+<body>
+{% from gconfig import game_config %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>赠送英雄：</h3>
+
+<form action="/{{url_partition}}/admin/gwentcard/add_gcard/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+       <th>配置id</th>
+        <th>名字</th>
+        <th>类型</th>
+        <th>职业</th>
+        <th>阵营</th>
+        <th>选择</th>
+        <th>增加</th>
+    </tr>
+
+{% for gcard_id, gcard_info in sorted(game_config.card_detail.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{gcard_id}}</td>
+        <td>{{gcard_info['name']}}</td>
+        <td>{{ gcard_info['type'] }}</td>
+        <td>{{ gcard_info['OCC'] }}</td>
+        <td>{{ gcard_info['country'] }}</td>
+        <td><input type="checkbox" name="gcard_id" value="{{gcard_id}}" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

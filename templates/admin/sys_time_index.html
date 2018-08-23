@@ -1,0 +1,27 @@
+<html>
+<body>
+{% if msg%}
+    <font color='red'>{{msg}}</font>
+{% end %}
+<form action="/{{url_partition}}/admin/config/modify_time/" method="get">
+    <table id="mindata">
+        <tr><td>当前正确时间</td>
+            <td style="color: red">{{ real_time }}</td>
+            <td>星期: {{ real_week }}</td>
+        </tr>
+        <tr><td>当前进程时间</td>
+            <td style="color: red;">{{ sys_time}}</td>
+            <td>星期: {{ sys_week }}</td>
+        </tr>
+        <tr><td>修改进程时间</td>
+            <td colspan="2"><input type="text" name="sys_time" value="" />(想恢复正确时间时，填写0)</td>
+        </tr>
+    </table>
+    <br/><br/>
+    <button type="submit" name="save" value="True" onclick="return confirm('确定保存吗？')">保存</button>
+    <input type="submit" name="sub_day" value="-1天"/>
+    <input type="submit" name="add_day" value="+1天"/>
+</form>
+
+</body>
+</html>

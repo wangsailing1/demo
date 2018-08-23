@@ -1,0 +1,85 @@
+<head>
+<link rel="stylesheet" href="/{{url_partition}}/static/js/jqwidgets/styles/jqx.base.css" type="text/css" />
+<script type="text/javascript" src="/{{url_partition}}/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxcore.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxbuttons.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxscrollbar.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxpanel.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxtree.js"></script>
+<script type="text/javascript" src="/{{url_partition}}/static/js/jqwidgets/jqxcheckbox.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // create jqxTree
+        $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px'});
+        $('#jqxTree').css('visibility', 'visible');
+    });
+    function get_checkbox(){
+        var items = $('#jqxTree').jqxTree('getCheckedItems');
+        var permissions = "";
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.id.indexOf("=") > 0) {
+                permissions += item.id + "&";
+            }
+        }
+        var params = {username: "{{username}}", permissions: permissions};
+        $.post("/{{url_partition}}/admin/gs/modify_admin/", params, function(result){
+            alert(result);
+            window.location.reload();
+        });
+    }
+</script>
+</head>
+<body >
+{% if msg %}
+    <div style="color: red">{{msg}}</div>
+{% end %}
+<table width="50%" border="1">
+    <tr>
+        <td>账号</td>
+        <td>{{username}}</td>
+    </tr>
+    <tr>
+        <td>权限</td>
+        <td>
+            <div id='jqxWidget'>
+                <div style='float: left;'>
+                    <div id='jqxTree' style='visibility: hidden; float: left; margin-left: 20px;'>
+                        <ul>
+                            {% for mkey, mname in menu_name %}
+                            {% if [sort for module_key, config in menu_config[mkey].iteritems() for c in config for sub_key, sub_name, sort in c['sub'] if sub_key not in permissions.get(module_key, [])] %}
+                            <li item-expanded='true'>{{mname}}
+                            {% else %}
+                            <li item-checked='true' item-expanded='true'>{{mname}}
+                            {% end %}
+                                <ul>
+                                    {% for module_key, config in menu_config[mkey].iteritems() %}
+                                    {% for c in config %}
+                                    <li>{{c['name']}}
+                                        <ul>
+                                            {% for sub_key, sub_name, _ in c['sub'] %}
+                                            {% if sub_key in permissions.get(module_key, []) %}
+                                            <li item-checked='true' id="{{module_key}}={{sub_key}}">{{sub_name}}</li>
+                                            {% else %}
+                                            <li item-checked='false' id="{{module_key}}={{sub_key}}">{{sub_name}}</li>
+                                            {% end %}
+                                            {% end %}
+                                        </ul>
+                                    </li>
+                                    {% end %}
+                                    {% end %}
+                                </ul>
+                            </li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>操作</td>
+        <td><input value="修改权限" name="submit"  onclick="get_checkbox()" type="submit" /></td>
+    </tr>
+</table>
+</body>

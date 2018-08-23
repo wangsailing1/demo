@@ -1,0 +1,64 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+{%if send_flag %}
+    成功送达: {{gs_data['uid']}} 奖励:{{gifts}}
+{% end %}
+<style>
+textarea {
+    width: 60%;
+    height: 100px;
+    overflow: auto;
+    word-break: break-all;
+    rows: 10;
+    cols: 10;
+}
+span {
+    letter-spacing: 1px;
+}
+#submit {
+    width: 100px;
+    height: 30px;
+    color: #FFFFFF;
+    background-color: #33A1C9;
+    font-size: 14px;
+}
+
+</style>
+<h2>客服&gt;&gt;回复信息</h2>
+<form method="post">
+    <table cellpadding="5px" cellspacing="5px">
+        <tr>
+            <td>UID: <a target='content' href="/{{url_partition}}/admin/user/?uid={{gs_data['uid']}}"> {{gs_data['uid']}} </a></td>
+            <td>昵称: {{gs_data['name']}}</td>
+            <td>VIP等级: {{gs_data['vip_level']}}</td>
+            <td> 钻石: {{gs_data['coin']}}</td>
+            <td>金币: {{gs_data['food']}}</td>
+            <td><a href="/{{url_partition}}/admin/gs/game_service?user_id={{ gs_data['uid'] }}">历史信息</a></td>
+        </tr>
+    </table>
+
+    <textarea readonly="true">{{gs_data['msg']}}</textarea>
+    <br/>
+    <br/>
+    <h3>回复内容</h3>
+    <input type="hidden" name="ques_id" value="{{ gs_data['ques_id']}}">
+    <input type="hidden" name="uid" value="{{ gs_data['uid']}}">
+    标题: <br/>
+    <input type="text"  name='reply_title' value="{{ gs_data['reply_title'] }}"/><br/><br/>
+    内容: <br/>
+    <textarea name="reply_content">{{ gs_data['reply_content'] }}</textarea><br/><br/>
+    奖励: <br/>
+    {% if gifts %}
+        <textarea name="reply_gifts">{{gifts}}</textarea>
+    {% else %}
+        <textarea name="reply_gifts">[]</textarea>
+    {% end %}
+    <br/><br/>
+    <input type="checkbox" name="solve_status" {{ gs_data['solve_status'] }}>问题已解决<br/><br/>
+    <input type="submit" id="submit" title="提交修改" value="提交" onclick="return confirm('确定发送邮件？检查清楚了先。')"/>
+    <input type="button" id="submit" title="返回客服首页" value="返回" onclick="window.location.href='/{{url_partition}}/admin/gs/game_service';"/>
+</form>
+    
+{% end %}

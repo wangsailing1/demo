@@ -1,0 +1,45 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>基因：</h3>
+{% from gconfig import game_config %}
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>唯一id</th>
+        <th>配置id</th>
+        <th>等级</th>
+        <th>品阶</th>
+        <th>星级</th>
+        <th>基础属性</th>
+        <th>附加属性</th>
+        <th>穿戴者</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% if gene %}
+{% for gene_oid, gene_dict in \
+    sorted(gene.genes.iteritems(), key=lambda x: (x[1]['lv'], x[1]['evo'], x[1]['star'], x[1]['id']), reverse=True) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/gene/gene_update/" method="post">
+        <input type="hidden" name="gene_oid" value="{{gene_oid}}" />
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <td>{{ gene_oid }}</td>
+        <td>{{ gene_dict['id'] }}</td>
+        <td><input type="text" name="lv" value="{{ gene_dict['lv'] }}" size="5" /></td>
+        <td><input type="text" name="evo" value="{{ gene_dict['evo'] }}" size="5" /></td>
+        <td><input type="text" name="quality" value="{{ gene_dict['star'] }}" size="5" /></td>
+        <td>{{ [(game_config.attr_mapping[k], v) for k, v in gene_dict['base']] }}</td>
+        <td>{{ [(game_config.attr_mapping[item[0]], item[1]) for item in gene_dict.get('extra', []) if item] }}</td>
+        <td>{{ gene_dict['owner'] or 'empty' }}</td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+{% end %}
+

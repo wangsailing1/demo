@@ -1,0 +1,212 @@
+{% extends "../user_info_base.html"%}
+{% block content1 %}
+<body>
+<div>
+<form action="/{{url_partition}}/admin/user/select/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+    <input name="submit" type="submit" value="提交" />
+</form>
+</div>
+<hr>
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+{% if user %}
+
+<h3> 单个帐号转移 </h3>
+<div id="uid_export">
+    <form action="/{{url_partition}}/admin/user/export/" method="get" accept-charset="utf-8">
+        <input type="hidden" name="export_uid" value="{{uid}}">
+        <input type="submit" value="导出数据"/></p>
+    </form>
+</div>
+
+<div id="uid_inject">
+    <form action="/{{url_partition}}/admin/user/inject/" method="post" enctype="multipart/form-data">
+        <p>目标用户uid: <input type="text" name="inject_uid" value="{{uid}}"/>
+        <input type="hidden" name="uid" value="{{uid}}"/>
+        <p>待导入文件: <input type="file" name="user_file"/></p>
+        <input type="submit" value="注入数据"/>
+    </form>
+</div>
+<form action="/{{url_partition}}/admin/user/ban_user">
+    <input type="hidden" name="user_id" value="{{user.uid}}"><br/>
+    封号:   <input type="text" name="is_ban" size="4" value="{{user.is_ban}}"/>（0：未封号；1：已封号）<br>
+    过期时间:<input type="text" name="ban_expire" size="8" value="{{user.ban_expire if user.ban_expire else 0}}"/>（0：永久封号；其它：过期时间戳）<br>
+    封号理由:<input type="text" name="ban_reason" size="50" value="{{user.ban_reason}}"/>
+    <input type="submit" value="修改" onclick="javascript:return confirm('确认封号么?')">
+</form>
+<hr>
+{% end %}
+{% end %}
+
+{% block content %}
+{% if user %}
+
+<form action="/{{url_partition}}/admin/user/update/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<table border="1" cellspacing="0" cellpadding="1" width="100%;">
+    <tr>
+        <th align="left">用户等级(level)</th>
+        <td><input style="border-style:none; width:100%" name="level" type="text" value="{{user.level}}" /></td>
+        <th align="left">用户名字(name)</th>
+        <td><input style="border-style:none; width:100%" name="name" type="text" value="{{user.name}}" /></td>
+        <th align="left">钻石(diamond)</th>
+        <td><input style="border-style:none; width:100%" name="diamond" type="text" value="{{user.diamond}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">觉醒宝箱钥匙(box_key)</th>
+        <td><input style="border-style:none; width:100%" name="box_key" type="text" value="{{mm.user.box_key}}" /></td>
+        <th align="left">银币(silver)</th>
+        <td><input style="border-style:none; width:100%" name="silver" type="text" value="{{user.silver}}" /></td>
+        <th align="left">vip等级(vip)</th>
+        <td><input style="border-style:none; width:100%" name="vip" type="text" value="{{user.vip}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">血尘挑战币(challenge)</th>
+        <td><input style="border-style:none; width:100%" name="challenge" type="text" value="{{mm.user.challenge}}" /></td>
+        <th align="left">组队boss挑战券(team_boss_coin)</th>
+        <td><input style="border-style:none; width:100%" name="team_boss_coin" type="text" value="{{mm.user.get_team_boss_coin()}}" /></td>
+        <th align="left">低级飞机票(silver_ticket)</th>
+        <td><input style="border-style:none; width:100%" name="silver_ticket" type="text" value="{{user.silver_ticket}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">高级飞机票(diamond_ticket)</th>
+        <td><input style="border-style:none; width:100%" name="diamond_ticket" type="text" value="{{user.diamond_ticket}}" /></td>
+        <th align="left">体力(action_point)</th>
+        <td><input style="border-style:none; width:100%" name="action_point" type="text" value="{{mm.user.action_point}}" /></td>
+        <th align="left">黑街货币(dark_coin)</th>
+        <td><input style="border-style:none; width:100%" name="dark_coin" type="text" value="{{mm.user.dark_coin}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">公会币(guild_coin)</th>
+        <td><input style="border-style:none; width:100%" name="guild_coin" type="text" value="{{mm.user.guild_coin}}" /></td>
+        <th align="left">统帅精力(energy)</th>
+        <td><input style="border-style:none; width:100%" name="energy" type="text" value="{{mm.commander.energy}}" /></td>
+        <th align="left">黑街挑战币(point)</th>
+        <td><input style="border-style:none; width:100%" name="dark_point" type="text" value="{{mm.dark_street.remain_point()}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">血尘重置次数(rally_reset_times)</th>
+        <td><input style="border-style:none; width:100%" name="rally_reset_times" type="text" value="{{mm.rally.remainder_reset_times()}}" /></td>
+        <th align="left">天梯币(ladder_coin)</th>
+        <td><input style="border-style:none; width:100%" name="ladder_coin" type="text" value="{{mm.user.ladder_coin}}" /></td>
+        <th align="left">觉醒宝箱碎片(box_coin)</th>
+        <td><input style="border-style:none; width:100%" name="box_coin" type="text" value="{{mm.user.box_coin}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">末日狩猎挑战券(hunt_coin)</th>
+        <td><input style="border-style:none; width:100%" name="hunt_coin" type="text" value="{{mm.user.hunt_coin}}" /></td>
+        <th align="left">荣耀值(donate_coin)</th>
+        <td><input style="border-style:none; width:100%" name="donate_coin" type="text" value="{{mm.user.donate_coin}}" /></td>
+        <th align="left">用户经验(exp)</th>
+        <td><input style="border-style:none; width:100%" name="exp" type="text" value="{{mm.user.exp}}" /></td>
+    </tr>
+    <tr>
+        <th align="left">科技点(tech_point)</th>
+        <td><input style="border-style:none; width:100%" name="tech_point" type="text" value="{{mm.tech_tree.own_point}}" /></td>
+        <th align="left">星座点(star_point)</th>
+        <td><input style="border-style:none; width:100%" name="star_point" type="text" value="{{mm.star_array.star_point}}" /></td>
+        <th align="left">鞭挞次数(whip)</th>
+        <td><input style="border-style:none; width:100%" name="whip" type="text" value="{{mm.prison.remain_whip_num()}}" /></td>
+    </tr>
+     <tr>
+        <th align="left">远征币(endless_coin)</th>
+        <td><input style="border-style:none; width:100%" name="endless_coin" type="text" value="{{mm.user.endless_coin}}" /></td>
+        <th align="left">装备币(equip_coin)</th>
+        <td><input style="border-style:none; width:100%" name="equip_coin" type="text" value="{{mm.user.equip_coin}}" /></td>
+        <th align="left">荣誉币(honor_coin)</th>
+        <td><input style="border-style:none; width:100%" name="honor_coin" type="text" value="{{mm.user.honor_coin}}" /></td>
+    </tr>
+    <tr><td colspan="10"><input name="submit" type="submit" value="修改" /></td></tr>
+</table>
+</form>
+<form action="/{{url_partition}}/admin/user/reset_guide/" method="post">
+<input type="hidden" name="uid", value="{{uid}}">
+<table>
+    <tr>
+        <th width="160px;" align="left">sort: <input name="sort" type="text" value="" /></th>
+        <th width="160px;" align="left">guide_id: <input name="key" type="text" value="" /></th>
+    </tr>
+    <tr>
+        <td><input name="submit" type="submit" value="重置新手引导" /></td>
+    </tr>
+</table>
+</form>
+<form action="/{{url_partition}}/admin/user/finish_all_guide/" method="post">
+    <input type="hidden" name="uid", value="{{uid}}">
+    <input name="submit" type="submit" value="跳过新手引导" />
+</form>
+
+<form action="/{{url_partition}}/admin/user/reset_mission_main/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<table>
+    <tr>
+        <th>task_id(如：2001): <input name="task_id" type="text" value="" /></th> <th ><input name="submit" type="submit" value="重置主线任务" /></th>
+    </tr>
+</table>
+</form>
+
+
+<form action="/{{url_partition}}/admin/user/reset_mission_side/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<table>
+    <tr>
+        <th>task_ids(如：3001,4001): <input name="task_ids" type="text" value="" /></th> <th ><input name="submit" type="submit" value="重置支线任务" /></th>
+    </tr>
+</table>
+</form>
+
+<hr>
+<table>
+    <tr>
+        <td>
+            <form action="/{{url_partition}}/admin/payment/pay_person/" method="post">
+                <input type="hidden" name="user_id" value="{{mm.user.uid}}" />
+                <input type="submit" value="充值记录" />
+            </form>
+        </td>
+        <td>
+            <form action="/{{url_partition}}/admin/user/spend_person/" method="post">
+                <input type="hidden" name="user_id" value="{{mm.user.uid}}" />
+                <input type="submit" value="消费记录" />
+            </form>
+        </td>
+        <td>
+            <form action="/{{url_partition}}/admin/user/earn_log/" method="post">
+                <input type="hidden" name="user_id" value="{{mm.user.uid}}" />
+                <input type="submit" value="获得钻石记录" />
+            </form>
+        </td>
+        <td>
+            <form action="/{{url_partition}}/admin/user/user_logging/" method="post">
+                <input type="hidden" name="user_id" value="{{mm.user.uid}}" />
+                <input type="submit" value="动作记录" />
+            </form>
+        </td>
+        <td>
+            <form action="/{{url_partition}}/admin/user/diamond_log/" method="post">
+                <input type="hidden" name="user_id" value="{{mm.user.uid}}" />
+                <input type="submit" value="钻石记录" />
+            </form>
+        </td>
+    </tr>
+</table>
+
+<div id="user_reset">
+    <hr/>
+    {% for i in sorted(mm._register_base.keys()) %}
+        {% if i in ignore_reset_module %}
+        {% continue %}
+        {% end %}
+        <form action="/{{url_partition}}/admin/user/reset_module/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}">
+        <input type="hidden" name="reset_module" value="{{i}}">
+        {{ i }}: <input type="submit" value="reset" onclick="javascript:return confirm('后果很严重，继续？')"/>
+        </form>
+    {% end %}
+</div>
+{% end %}
+{% end %}
+</body>

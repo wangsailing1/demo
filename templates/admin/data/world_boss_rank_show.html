@@ -1,0 +1,36 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+<form action="/{{url_partition}}/admin/data/world_boss_rank_show/" method="get">
+    请输入服务器名称:&nbsp;
+    <input type="text" name="selected_server" value={{server}}>&nbsp;
+    请输入日期:&nbsp;
+    <input type="text" name="selected_date" value={{date}}>&nbsp;
+    <button type="submit" style="color: red;">查询</button>
+</form>
+
+{% if rank_infos %}
+    <p>当前查询服务器：{{ server }}</p>
+    {% for rank_info in rank_infos %}
+        <div style="float:left; width:20%; margin:10px;">
+            <p style="font-size:20px; text-align:center;"><b>Boss_ID：</b>{{ rank_info[0] }}</p>
+            <table border=1px; style="margin:auto; width:100%;">
+                <tr>
+                  <th style="color:red;">排行</th>
+                  <th style="color:red;">用户ID</th>
+                  <th style="color:red;">分数</b></th>
+                </tr>
+
+            {% for i,j in enumerate(rank_info[1], 1) %}
+               <tr>
+                  <th>{{ i }}</th>
+                  <th>{{ j[0] }}</th>
+                  <th>{{ j[1] }}</th>
+                </tr>
+            {% end %}
+            </table>
+        </div>
+    {% end %}
+{% end if %}
+{% end %}

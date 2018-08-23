@@ -1,0 +1,32 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+<h2>等级滞留率统计（每日4点更新）</h2>
+<form action="/{{url_partition}}/admin/data/lv_pass_rate_index/" method="get" accept-charset="utf-8" enctype="multipart/form-data">
+    <select name="selected_server">
+    {% for server, name in sorted(all_servers.iteritems()) %}
+        <option value={{ server }} {% if server==selected_server %} selected="selected"{% end %}>{{ u'{} ( {} )'.format(name, server) }}</option>
+    {% end %}
+    </select>
+    <input type="submit" value="查询分服信息">
+</form>
+
+<table id="data" class="hovertable">
+    <tr>
+        <th>等级</th>
+        <th>人数</th>
+        <th>滞留率</th>
+        <th>通过率</th>
+    </tr>
+    {% for index, (num, rate) in enumerate(zip(lv_pass_rate[selected_server]['num'], lv_pass_rate[selected_server]['rate']), 1) %}
+        <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+            <td>{{ index }}</td>
+            <td>{{ num }}</td>
+            <td>{{ u'{:.2%}'.format(1-rate) }}</td>
+            <td>{{ u'{:.2%}'.format(rate) }}</td>
+        </tr>
+    {% end %}
+</table>
+
+{% end %}

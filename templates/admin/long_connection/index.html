@@ -1,0 +1,30 @@
+
+<body>
+
+<p> msg: {{msg}} </p>
+<p> 当前环境: {{environment}} </p>
+<hr>
+
+<form id="form" name="form" method="get" action="">
+    <table border="1" cellspacing="0" cellpadding="1">
+        <tr>
+            <th>节点</th>
+            <th>连接状态</th>
+            <th>在线人数</th>
+            <th>连接数据</th>
+        </tr>
+        {% for k, v in content.iteritems() %}
+            <tr>
+                <td>{{k}}</td>
+                <td>{{v.get('conn_status')}}</td>
+                <!--<td>{{len(v.get('conn_data', {}))}}</td>-->
+                <td>0</td>
+                <td>{{v.get('conn_data')}}</td>
+            </tr>
+        {% end %}
+    </table>
+</form>
+
+<hr />
+
+</body>

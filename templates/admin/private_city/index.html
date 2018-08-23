@@ -1,0 +1,111 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>用户关卡：</h3>
+<hr>
+{% if private_city %}
+<form action="/{{url_partition}}/admin/private_city/clearance/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<table border="1" cellspacing="0" cellpadding="1" width="1100px;">
+    <tr>
+        <td width="150px;" align="center"><input name="submit" type="submit" value="通关" /></td>
+    </tr>
+</table>
+</form>
+<form action="/{{url_partition}}/admin/private_city/update/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<input type="hidden" name="degree" value="{{1}}">
+<table border="1" cellspacing="0" cellpadding="1" width="1100px;">
+    <tr>
+        {% set use_building=private_city.use_building %}
+        {% set final_chapter=private_city.final_chapter %}
+
+        <td>简单章节</td>
+
+        {% if use_building %}
+        <td><input name="chapter" type="text" value="{{use_building.keys()[0]}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="chapter" type="text" value="{{max(final_chapter)}}" /></td>
+        {% else %}
+        <td><input name="chapter" type="text" value="1" /></td>
+        {% end %}
+
+        <td>关卡(101)</td>
+        {% if use_building %}
+        <td><input name="stage" type="text" value="{{max(use_building[use_building.keys()[0]])}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="stage" type="text" value="{{max(game_config.chapter[max(final_chapter)]['stage'])}}" /></td>
+        {% else %}
+        <td><input name="stage" type="text" value="101" /></td>
+        {% end %}
+        <td width="150px;" align="center"><input name="submit" type="submit" value="修改" /></td>
+    </tr>
+</table>
+</form>
+
+<form action="/{{url_partition}}/admin/private_city/update/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<input type="hidden" name="degree" value="{{2}}">
+<table border="1" cellspacing="0" cellpadding="1" width="1100px;">
+    <tr>
+        {% set use_building=private_city.hard_use_building %}
+        {% set final_chapter=private_city.hard_final_chapter %}
+
+        <td>普通章节</td>
+
+        {% if use_building %}
+        <td><input name="chapter" type="text" value="{{use_building.keys()[0]}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="chapter" type="text" value="{{max(final_chapter)}}" /></td>
+        {% else %}
+        <td><input name="chapter" type="text" value="1" /></td>
+        {% end %}
+
+        <td>关卡(101)</td>
+        {% if use_building %}
+        <td><input name="stage" type="text" value="{{max(use_building[use_building.keys()[0]])}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="stage" type="text" value="{{max(game_config.chapter[max(final_chapter)]['stage'])}}" /></td>
+        {% else %}
+        <td><input name="stage" type="text" value="101" /></td>
+        {% end %}
+        <td width="150px;" align="center"><input name="submit" type="submit" value="修改" /></td>
+    </tr>
+</table>
+</form>
+
+<form action="/{{url_partition}}/admin/private_city/update/" method="post">
+<input type="hidden" name="uid" value="{{uid}}">
+<input type="hidden" name="degree" value="{{3}}">
+<table border="1" cellspacing="0" cellpadding="1" width="1100px;">
+    <tr>
+        {% set use_building=private_city.crazy_use_building %}
+        {% set final_chapter=private_city.crazy_final_chapter %}
+
+        <td>困难章节</td>
+
+        {% if use_building %}
+        <td><input name="chapter" type="text" value="{{use_building.keys()[0]}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="chapter" type="text" value="{{max(final_chapter)}}" /></td>
+        {% else %}
+        <td><input name="chapter" type="text" value="1" /></td>
+        {% end %}
+
+        <td>关卡(101)</td>
+        {% if use_building %}
+        <td><input name="stage" type="text" value="{{max(use_building[use_building.keys()[0]])}}" /></td>
+        {% elif final_chapter %}
+        <td><input name="stage" type="text" value="{{max(game_config.chapter[max(final_chapter)]['stage'])}}" /></td>
+        {% else %}
+        <td><input name="stage" type="text" value="101" /></td>
+        {% end %}
+        <td width="150px;" align="center"><input name="submit" type="submit" value="修改" /></td>
+    </tr>
+</table>
+</form>
+
+{% end %}
+{% end %}

@@ -1,0 +1,15 @@
+
+<body>
+    {% if msg%}
+        <font color='red'>{{msg}}</font>
+    {% end %}
+    <br />
+      <form method="post" action="/{{url_partition}}/admin/payment/select_virtual/">
+        {% if mm %}
+            请输入要充值的用户ID: <input name="user_id" type="text" value="{{mm.user.uid}}"/>
+        {% else %}
+             请输入要充值的用户ID: <input name="user_id" type="text"/>
+        {% end %}
+        <button type="submit"> 提交</button>
+      </form>
+</body>

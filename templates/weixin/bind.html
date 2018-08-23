@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>绑定有礼</title>
+    <link href="{{ url_partition }}/static/css/weixin/normalize.css" type="text/css" rel="stylesheet" />
+    <link href="{{ url_partition }}/static/css/weixin/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ url_partition }}/static/css/weixin/style.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+<div class="wrap">
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/img_01.jpg" class="ui_block">
+        <div class="cnb">
+            <a href="#" class="ui_awm_btn"></a>
+        </div>
+    </div>
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/bgimg_02.jpg" class="ui_block">
+        <div class="cnb">
+            <div class="ui_s1c clearfix">
+                <div class="clt">
+                    <div class="ui_gd_c">
+
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="login-box">
+                    <div class="login-content ">
+                        <div class="form">
+                          <!--<form action="{{ url_partition }}/weixin/bind/" method="post">-->
+                                <div class="form-group" id="form_guroup">
+                                    <div class="col-xs-12  ">
+                                        <div class="input-group">
+                                            <span class="input_id">
+                                              <img src="{{ url_partition }}/static/images/weixin/play_id.png">
+                                            </span>
+                                            <input type="text" class="input_text" name="uid">
+                                            <input type="hidden" name="openid" value="{{ openid }}">
+                                            <input type="hidden" name="access_token" value="{{ access_token }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group form-actions">
+                                    <div class="col-xs-4 col-xs-offset-4 ">
+                                        <div  class="putin" id="putin">
+                                          <button id="bind" style="background:none; border:none">
+                                            <img src="{{ url_partition }}/static/images/weixin/bangding.png">
+                                          </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-xs-offset-4 ">
+                                    <div class="bang_success" id="bang_success" >
+                                      <img src="{{ url_partition }}/static/images/weixin/bang_success.png">
+                                    </div>
+                                </div>
+                            <!--</form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tishi">
+            <p>1、填写游戏ID进行绑定，首次进行绑定的微信号、游戏id将会收到绑定好礼元宝*500、剑客（橙）*1、银两*50000，请在奖励中心领取。</p>
+            <p>2、微信号、游戏id只有首次绑定才会获得绑定好礼。</p>
+            <p>3、如遇到疑问请联系客服</p>
+        </div>
+    </div>
+    <div class="ui_tycnb clearfix">
+      <img src="{{ url_partition }}/static/images/weixin/bottom_02.jpg" class="ui_block">
+        <div class="cnb">
+            <div class="ui_navc clearfix">
+
+            </div>
+        </div>
+    </div>
+    <div class="reveal-modal-bg"></div>
+
+    <!--成功领取-->
+    <a href="javascript:void(0);" id="Alert_lb_tip_btn" data-reveal-id="Alert_lb_tip"></a>
+    <div id="Alert_lb_tip" class="reveal-modal">
+        <div class="reveal-msgbox">
+            <div class="msgbox_b">
+                <div class="close-reveal-modal close-reveal-modal2"></div>
+                <img src="{{ url_partition }}/static/images/weixin/bangdingimg.png" class="ui_block">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="{{ url_partition }}/static/js/jquery.min.js"></script>
+<script type="text/javascript">
+  function xinshou(){
+    var guroup = document.getElementById("form_guroup");
+    var bang_success = document.getElementById("bang_success");
+    guroup.style.display="none";
+    bang_success.style.display="block";
+    putin.style.display="none";
+  }
+
+  $("#bind").click(function(){
+    var uid= $('input[name="uid"]').val();
+    var openid = $('input[name="openid"]').val();
+    var access_token = $('input[name="access_token"]').val();
+    $.ajax({
+      url: '{{ url_partition }}/weixin/bind/',
+      type: 'POST',
+      data: {
+        openid: openid,
+        uid: uid,
+        access_token: access_token,
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.status == 0){
+          xinshou();
+        }
+        else if (data.status == 2){
+          alert('游戏ID不存在');
+        }
+        else{
+          alert('绑定失败');
+        }
+      }
+    });
+  });
+
+</script>
+<script type="text/javascript" src="{{ url_partition }}/static/js/jquery.reveal.js"></script>
+</body>
+</html>

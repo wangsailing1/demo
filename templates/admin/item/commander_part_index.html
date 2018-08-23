@@ -1,0 +1,26 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<table border="1">
+    <tr>
+        <th>碎片id</th>
+        <th>碎片数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+{% for part_id, part_num in sorted(commander_part.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/item/commander_part_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="part_id" value="{{part_id}}" />
+        <td>{{ part_id }}</td>
+        <td><input type="text" name="part_num" value="{{ part_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+</table>
+{% end %}

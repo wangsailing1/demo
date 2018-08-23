@@ -1,0 +1,40 @@
+<body>
+<div>
+<form action="/{{url_partition}}/admin/gwentcard/select/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+    <input id="submit" name="submit" type="submit" value="提交" />
+</form>
+</div>
+<hr>
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>英雄：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>配置id</th>
+        <th>名字</th>
+        <th>类型</th>
+        <th>职业</th>
+        <th>阵营</th>
+        <th>删除</th>
+    </tr>
+{% if gwent_card %}
+{% for card_oid in gwent_card.gcard %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/gwentcard/gwent_card_update/" method="post">
+        <input type="hidden" name="card_oid" value="{{card_oid}}" />
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <td>{{ card_oid }}</td>
+        <td>{{ card_detail[card_oid]['name'] }}</td>
+        <td>{{ card_detail[card_oid]['type'] }}</td>
+        <td>{{ card_detail[card_oid]['OCC'] }}</td>
+        <td>{{ card_detail[card_oid]['country'] }}</td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+{% end %}
+</table>
+
+</body>

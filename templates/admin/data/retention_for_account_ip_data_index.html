@@ -1,0 +1,61 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+{% import datetime %}
+
+<hr/>
+<p>分IP地域留存统计</p>
+<form action="/{{url_partition}}/admin/data/retention_ip/" method="get">
+<input type="hidden" name="for_account" value="1">
+<input type="hidden" name="for_ip" value="1">
+<table id="data">
+<tr>
+
+    <td>
+        选择日期:
+        <select name="day" value="1">
+            {% for day in sorted(retention_data, reverse=True) %}
+                {% if day == select_day %}
+                <option value="{{ day }}" selected>{{ day }}</option>
+                {% else %}
+                <option value="{{ day }}">{{ day }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+    <td><button type="submit" style="color: red;">查询</button></td>
+</tr>
+</table>
+</form>
+
+<table id="data">
+    <tr>
+        <th>日期</th>
+        <!-- <th>分服</th> -->
+        <th>注册地域</th>
+        {% for num in days_delta %}
+        <th>第{{ num }}天</th>
+        {% end %}
+    </tr>
+    {% set sum_data = {} %}
+    {% for ip_addr, account_num in sorted(channel_data.iteritems(), reverse=False)%}
+    <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ select_day }}</td>
+        <td>{{ ip_addr }}</td>
+        {% for num in days_delta %}
+        {% set sum_data[num] = sum_data.get(num, 0) + account_num.get(num, 0) %}
+        <td>{{ account_num.get(num, '') }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+    <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>总计</td>
+        <td> </td>
+         {% for num in days_delta %}
+        <td>{{ sum_data.get(num) or ''}}</td>
+        {% end %}
+    </tr>
+</table>
+
+{% end %}

@@ -1,0 +1,27 @@
+<h2>封号记录</h2>
+<table id="data" class="hovertable">
+    <tr>
+        <th>ID</th>
+        <th>封停时间</th>
+        <th>解封时间</th>
+        <th>封停原因</th>
+        <th>操作员</th>
+        <th>解封</th>
+    </tr>
+    {% for uid, ban_info in uid_infos.iteritems() %}
+        <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+            <td><a href="/{{url_partition}}/admin/user/?uid={{ uid }}">{{ uid }}</a></td>
+            <td>{{ datetime.datetime.fromtimestamp(int(ban_info['ban_time'])) }}</td>
+            <td>{{ datetime.datetime.fromtimestamp(int(ban_info['ban_expire'])) if ban_info['ban_expire'] else u'永久封停' }}</td>
+            <td>{{ ban_info['ban_reason'] }}</td>
+            <td>{{ ban_info['ban_person'] }}</td>
+            <td>
+            <form action="/{{url_partition}}/admin/user/ban_user">
+            <input type="hidden" name="user_id" value="{{ uid }}">
+            <input type="hidden" name="is_ban" value="0">
+            <input type="hidden" name="release" value="1">
+            <input type="submit" value="解封">
+            </form></td>
+        </tr>
+    {% end %}
+</table>
