@@ -228,7 +228,7 @@ class ServerConfig(ModelBase):
                 long_ip, long_port = se.get('long_addr', (None, None))
                 # 有配置读配置，否则读settings里的的默认配置
                 default_cpp_addr = se.get('cpp_addr', {})
-                cpp_addr_config = game_config.slg_server_addr.get(k, default_cpp_addr)
+                # cpp_addr_config = game_config.slg_server_addr.get(k, default_cpp_addr)
                 info = {
                     'server': k,
                     'sort_id': v.get('sort_id', 0),
@@ -245,7 +245,7 @@ class ServerConfig(ModelBase):
                     'config_type': se.get('config_type', 1),
                     'long_ip': long_ip,
                     'long_port': long_port,
-                    'cpp_addr': cpp_addr_config,
+                    # 'cpp_addr': cpp_addr_config,
                     'is_inreview': se.get('is_inreview', False),
                 }
                 if not need_filter:
