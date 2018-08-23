@@ -67,42 +67,42 @@ config_resource = [
 payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
-    'host': '192.168.1.103',
+    'host': '192.168.1.51',
     'user': 'cjyx2_cn_dev',
     'passwd': '6ZyvMcJNxK',
-    'db': 'cjyx2_cn_dev',
+    'db': 'big_sale_dev',
     'table_prefix': 'payment',
 }
 
 SPEND_CONFIG = {
-    'host': '192.168.1.103',
+    'host': '192.168.1.51',
     'user': 'cjyx2_cn_dev',
     'passwd': '6ZyvMcJNxK',
-    'db': 'cjyx2_cn_dev',
+    'db': 'big_sale_dev',
     'table_prefix': 'spend',
 }
 
 EARN_CONFIG = {
-    'host': '192.168.1.103',
+    'host': '192.168.1.51',
     'user': 'cjyx2_cn_dev',
     'passwd': '6ZyvMcJNxK',
-    'db': 'cjyx2_cn_dev',
+    'db': 'big_sale_dev',
     'table_prefix': 'earn',
 }
 
 QUEST_CONFIG = {
-    'host': '192.168.1.103',
+    'host': '192.168.1.51',
     'user': 'cjyx2_cn_dev',
     'passwd': '6ZyvMcJNxK',
-    'db': 'cjyx2_cn_dev',
+    'db': 'big_sale_dev',
     'table_prefix': 'quest',
 }
 
 GS_HOST = {
-    'host': '192.168.1.103',
+    'host': '192.168.1.51',
     'user': 'cjyx2_cn_dev',
     'passwd': '6ZyvMcJNxK',
-    'db': 'cjyx2_cn_dev',
+    'db': 'big_sale_dev',
     'table_prefix': 'client_service',
 }
 

@@ -26,7 +26,7 @@ local_ip = get_host_ip() or '127.0.0.1'
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
 PLATFORM = 'song'    # 平台标示
-URL_PARTITION = 'genesis2'
+URL_PARTITION = 'big_sale'
 # MASTER_HOST = '192.168.7.224:8888'
 MASTER_HOST = '%s:8888' % local_ip
 # CHAT_HOST = '127.0.0.1'
@@ -81,7 +81,7 @@ PAYMENT_CONFIG = {
     'host': '127.0.0.1',
     'user': 'root',
     'passwd': '',
-    'db': 'genesis2',
+    'db': 'big_sale',
     'table_prefix': 'payment',
 }
 
@@ -89,7 +89,7 @@ SPEND_CONFIG = {
     'host': '127.0.0.1',
     'user': 'root',
     'passwd': '',
-    'db': 'genesis2',
+    'db': 'big_sale',
     'table_prefix': 'spend',
 }
 
@@ -97,7 +97,7 @@ EARN_CONFIG = {
     'host': '127.0.0.1',
     'user': 'root',
     'passwd': '',
-    'db': 'genesis2',
+    'db': 'big_sale',
     'table_prefix': 'earn',
 }
 
@@ -105,7 +105,7 @@ QUEST_CONFIG = {
     'host': '127.0.0.1',
     'user': 'root',
     'passwd': '',
-    'db': 'genesis2',
+    'db': 'big_sale',
     'table_prefix': 'quest',
 }
 
@@ -113,7 +113,7 @@ GS_HOST = {
     'host': '127.0.0.1',
     'user': 'root',
     'passwd': '',
-    'db': 'genesis2',
+    'db': 'big_sale',
     'table_prefix': 'client_service',
 }
 

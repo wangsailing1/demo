@@ -248,6 +248,6 @@ if __name__ == '__main__':
     init_env(env)
     create_payment()
     create_spend()
-    create_earn()
+    # create_earn()
     create_quest()
     create_client_service()
