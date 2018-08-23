@@ -6,6 +6,18 @@ __author__ = 'sm'
 from gconfig import check
 
 
+common = {
+    'uk': ('id', 'int'),  #
+    'value': ('value', 'int_float_list_or_int_float'),  # 值
+
+}
+
+player_level = {
+    'uk': ('lv_addition', 'int'),  # 等级
+    'exp': ('exp', 'int'),  # 等级
+
+}
+
 # 动作可获得的经验
 action_exp = {
     'uk': ('id', 'int'),    # 动作id
@@ -13,47 +25,57 @@ action_exp = {
     'action_coin': ('action_coin', 'int'),    # 金币
 }
 
+# 标签
+tag = {
+    'uk': ('id', 'int'),    # 动作id
+    'type': ('type', 'int'),    # 标签类型
+    'name': ('name', 'int'),    # 标签文本
+}
+
 # VIP
 vip = {
-    'uk': ('vip_lv', 'int'),  # VIP等级
-    'need_exp': ('need_exp', 'int'),  # 升至下级所需钻石
-    'des': ('des', 'unicode'),  # 特权描述
-    'vip_buy_reward': ('vip_buy_reward', 'list_3'),  # vip特权礼包
-    'price_off': ('price_off', 'int'),  # 特权礼包购买原价
-    'price_real': ('price_real', 'int'),  # 特权礼包购买现价
-    'icon': ('icon', 'str'),  # 本级特权图片
-    'market_num': ('market_num', 'int'),  # 摊位数量
-    'hunt_box_times': ('hunt_box_times', 'int'),    # 猛兽宝箱开启次数
-    'whip_times': ('whip_times', 'int'),    # 皮鞭购买次数上限
-    'tempt_times': ('tempt_times', 'int'),  # 诱惑购买次数上限
-    'buy_point': ('buy_point', 'int'),  # 购买体力次数
-    'arena_buy_times': ('arena_buy_times', 'int'),  # 竞技场购买次数
-    'arena_refresh_times': ('arena_refresh_times', 'int'),  # 竞技场刷新敌人次数
-    'guild_technology_cd': ('guild_technology_cd', 'int'),  # 公会科技捐献冷却
-    'guild_fuben_num': ('guild_fuben_num', 'int'),  # 公会副本次数
-    'clone_times': ('clone_times', 'int'),  # 克隆玩法次数
-    'biography_num': ('biography_num', 'int'),  # 传记副本每日可选数
-    'dark_point': ('dark_point', 'int'),  # 黑街擂台挑战券上限
-    'vip_daily_reward': ('vip_daily_reward', 'list_3'),     # 每日奖励
-    'show_type': ('show_type', 'int'),  # 展示类型
-    'rally_km': ('rally_km', 'int_list'),   # 一键通关层数
-    'guild_Texas_change_times': ('guild_Texas_change_times', 'int'),     # 德州扑克
-    'guild_Texas_times': ('guild_Texas_times', 'int'),   # 德州扑克
-    'duel_auto_enroll': ('duel_auto_enroll', 'int'),  # 大对决自动报名
-    'gold_exchange_times': ('gold_exchange_times', 'int'),  # 可购买金币次数
-    'endlesscoin_exchange_times': ('endlesscoin_exchange_times', 'int'),  # 可购买无尽币次数
-    'whip_num': ('whip_num', 'int'),                # 特权1，监狱皮鞭
-    'friend_num': ('friend_num', 'int'),            # 好友数量
-    'reset_dungeon': ('reset_dungeon', 'int'),      # 地城刷新次数
-    'ten_times': ('ten_times', 'int'),                  # 扫荡10次功能
-    'dan_color': ('dan_color', 'int'),                  # 弹幕可用颜色数量
-    'hunt_times': ('hunt_times', 'int'),  # 猛兽通缉令每日挑战次数
-    'team_skill': ('team_skill', 'int'),  # 游骑兵购买挑战次数上限
-    'rest_times': ('rest_times', 'int'),  # 关卡每日挑战次数
-    'dragon_times': ('dragon_times', 'int'),  # 巨龙可购买次数
-    'buy_slgpoint': ('buy_slgpoint', 'int'),  #购买slg行动力次数
-    'dark_num': ('dark_num', 'int'),    # 黑街购买次数限制
-    'ulchallenge_times': ('ulchallenge_times', 'int'),    # 极限挑战每日次数
+    'uk': ('vip', 'int'),  # VIP等级
+    'exp': ('exp', 'int'),  # 升至下级所需钻石
+    'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),  # 免费招募次数积累上限
+
+
+    # 'des': ('des', 'unicode'),  # 特权描述
+    # 'vip_buy_reward': ('vip_buy_reward', 'list_3'),  # vip特权礼包
+    # 'price_off': ('price_off', 'int'),  # 特权礼包购买原价
+    # 'price_real': ('price_real', 'int'),  # 特权礼包购买现价
+    # 'icon': ('icon', 'str'),  # 本级特权图片
+    # 'market_num': ('market_num', 'int'),  # 摊位数量
+    # 'hunt_box_times': ('hunt_box_times', 'int'),    # 猛兽宝箱开启次数
+    # 'whip_times': ('whip_times', 'int'),    # 皮鞭购买次数上限
+    # 'tempt_times': ('tempt_times', 'int'),  # 诱惑购买次数上限
+    # 'buy_point': ('buy_point', 'int'),  # 购买体力次数
+    # 'arena_buy_times': ('arena_buy_times', 'int'),  # 竞技场购买次数
+    # 'arena_refresh_times': ('arena_refresh_times', 'int'),  # 竞技场刷新敌人次数
+    # 'guild_technology_cd': ('guild_technology_cd', 'int'),  # 公会科技捐献冷却
+    # 'guild_fuben_num': ('guild_fuben_num', 'int'),  # 公会副本次数
+    # 'clone_times': ('clone_times', 'int'),  # 克隆玩法次数
+    # 'biography_num': ('biography_num', 'int'),  # 传记副本每日可选数
+    # 'dark_point': ('dark_point', 'int'),  # 黑街擂台挑战券上限
+    # 'vip_daily_reward': ('vip_daily_reward', 'list_3'),     # 每日奖励
+    # 'show_type': ('show_type', 'int'),  # 展示类型
+    # 'rally_km': ('rally_km', 'int_list'),   # 一键通关层数
+    # 'guild_Texas_change_times': ('guild_Texas_change_times', 'int'),     # 德州扑克
+    # 'guild_Texas_times': ('guild_Texas_times', 'int'),   # 德州扑克
+    # 'duel_auto_enroll': ('duel_auto_enroll', 'int'),  # 大对决自动报名
+    # 'gold_exchange_times': ('gold_exchange_times', 'int'),  # 可购买金币次数
+    # 'endlesscoin_exchange_times': ('endlesscoin_exchange_times', 'int'),  # 可购买无尽币次数
+    # 'whip_num': ('whip_num', 'int'),                # 特权1，监狱皮鞭
+    # 'friend_num': ('friend_num', 'int'),            # 好友数量
+    # 'reset_dungeon': ('reset_dungeon', 'int'),      # 地城刷新次数
+    # 'ten_times': ('ten_times', 'int'),                  # 扫荡10次功能
+    # 'dan_color': ('dan_color', 'int'),                  # 弹幕可用颜色数量
+    # 'hunt_times': ('hunt_times', 'int'),  # 猛兽通缉令每日挑战次数
+    # 'team_skill': ('team_skill', 'int'),  # 游骑兵购买挑战次数上限
+    # 'rest_times': ('rest_times', 'int'),  # 关卡每日挑战次数
+    # 'dragon_times': ('dragon_times', 'int'),  # 巨龙可购买次数
+    # 'buy_slgpoint': ('buy_slgpoint', 'int'),  #购买slg行动力次数
+    # 'dark_num': ('dark_num', 'int'),    # 黑街购买次数限制
+    # 'ulchallenge_times': ('ulchallenge_times', 'int'),    # 极限挑战每日次数
 }
 
 

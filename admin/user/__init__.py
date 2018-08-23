@@ -10,7 +10,6 @@ from admin.decorators import require_permission
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from models.logging import Logging
-from models.earn import Earn
 from logics.user import UserLogic
 from models.spend import Spend
 import settings
@@ -66,33 +65,14 @@ def update(req, **kwargs):
     name = req.get_argument('name')
     diamond = int(req.get_argument('diamond'))
     coin = int(req.get_argument('coin', 0))
+    like = int(req.get_argument('like', 0))
     silver = int(req.get_argument('silver'))
-    silver_ticket = int(req.get_argument('silver_ticket'))
-    diamond_ticket = int(req.get_argument('diamond_ticket'))
     vip = int(req.get_argument('vip'))
-    challenge = int(req.get_argument('challenge'))
-    energy = int(req.get_argument('energy'))
-    dark_coin = int(req.get_argument('dark_coin'))
     guild_coin = int(req.get_argument('guild_coin'))
     action_point = int(req.get_argument('action_point'))
-    team_boss_coin = int(req.get_argument('team_boss_coin'))
-    dark_point = int(req.get_argument('dark_point'))
-    rally_reset_times = int(req.get_argument('rally_reset_times'))
-    hunt_coin = int(req.get_argument('hunt_coin'))
-    ladder_coin = int(req.get_argument('ladder_coin'))
-    box_coin = int(req.get_argument('box_coin'))
-    box_key = int(req.get_argument('box_key'))
-    donate_coin = int(req.get_argument('donate_coin'))
-
-    tech_point = int(req.get_argument('tech_point'))
-    star_point = int(req.get_argument('star_point'))
-    whip = int(req.get_argument('whip'))
-    endless_coin = int(req.get_argument('endless_coin'))
-    equip_coin = int(req.get_argument('equip_coin'))
-    honor_coin = int(req.get_argument('honor_coin'))
 
     cur_level = mm.user.level
-    level = min(level, max(game_config.hero_exp))
+    level = min(level, max(game_config.player_level))
     add_exp = 0
     if cur_level != level:
         if level < cur_level:
@@ -122,6 +102,13 @@ def update(req, **kwargs):
     elif diff_coin < 0:
         mm.user.add_coin(-diff_coin)
 
+    # 点赞
+    diff_like = mm.user.like - like
+    if diff_like > 0:
+        mm.user.deduct_like(diff_like)
+    elif diff_like < 0:
+        mm.user.add_like(-diff_like)
+
     # 银币
     diff_silver = mm.user.silver - silver
     if diff_silver > 0:
@@ -129,50 +116,12 @@ def update(req, **kwargs):
     elif diff_silver < 0:
         mm.user.add_silver(-diff_silver)
 
-    # 低级飞机票
-    diff_silver_ticket = mm.user.silver_ticket - silver_ticket
-    if diff_silver_ticket > 0:
-        mm.user.deduct_silver_ticket(diff_silver_ticket)
-    elif diff_silver_ticket < 0:
-        mm.user.add_silver_ticket(-diff_silver_ticket)
-
-    # 高级飞机票
-    diff_diamond_ticket = mm.user.diamond_ticket - diamond_ticket
-    if diff_diamond_ticket > 0:
-        mm.user.deduct_diamond_ticket(diff_diamond_ticket)
-    elif diff_diamond_ticket < 0:
-        mm.user.add_diamond_ticket(-diff_diamond_ticket)
-
-    # 黑街货币
-    diff_dark_coin = mm.user.dark_coin - dark_coin
-    if diff_dark_coin > 0:
-        mm.user.deduct_dark_coin(diff_dark_coin)
-    elif diff_dark_coin < 0:
-        mm.user.add_dark_coin(-diff_dark_coin)
-
     # 公会币
     diff_guild_coin = mm.user.guild_coin - guild_coin
     if diff_guild_coin > 0:
         mm.user.deduct_guild_coin(diff_guild_coin)
     elif diff_guild_coin < 0:
         mm.user.add_guild_coin(-diff_guild_coin)
-
-    # 挑战币(血尘拉力赛)
-    diff_challenge = mm.user.challenge - challenge
-    if diff_challenge > 0:
-        mm.user.deduct_challenge(diff_challenge)
-    elif diff_challenge < 0:
-        mm.user.add_challenge(-diff_challenge)
-
-    # 血尘拉力赛重置次数
-    mm.rally.reset_times = max(mm.rally.MAX_RESET_TIMES - rally_reset_times, 0)
-
-    # 黑街挑战币
-    diff_dark_point = mm.dark_street.remain_point() - dark_point
-    if diff_dark_point > 0:
-        mm.dark_street.sub_point(diff_dark_point)
-    elif diff_dark_point < 0:
-        mm.dark_street.add_point(-diff_dark_point)
 
     # # 战斗道具积分
     # mm.battle_item.energy = energy
@@ -189,106 +138,26 @@ def update(req, **kwargs):
     elif diff_action_point < 0:
         mm.user.add_action_point(-diff_action_point)
 
-    # 统帅精力
-    diff_energy = mm.commander.energy - energy
-    if diff_energy > 0:
-        mm.commander.decr_energy(diff_energy)
-    elif diff_energy < 0:
-        mm.commander.add_energy(-diff_energy)
+    # # 统帅精力
+    # diff_energy = mm.commander.energy - energy
+    # if diff_energy > 0:
+    #     mm.commander.decr_energy(diff_energy)
+    # elif diff_energy < 0:
+    #     mm.commander.add_energy(-diff_energy)
 
-    # 组队boss挑战券
-    diff_team_boss_coin = mm.user.get_team_boss_coin() - team_boss_coin
-    if diff_team_boss_coin > 0:
-        mm.user.decr_team_boss_coin(diff_team_boss_coin)
-    elif diff_team_boss_coin < 0:
-        mm.user.add_team_boss_coin(-diff_team_boss_coin)
-
-    # 末日狩猎挑战券
-    diff_hunt_coin = mm.user.hunt_coin - hunt_coin
-    if diff_hunt_coin > 0:
-        mm.user.decr_hunt_coin(diff_hunt_coin)
-    elif diff_hunt_coin < 0:
-        mm.user.add_hunt_coin(-diff_hunt_coin)
-
-    # 天梯币
-    diff_ladder_coin = mm.user.ladder_coin - ladder_coin
-    if diff_ladder_coin > 0:
-        mm.user.deduct_ladder_coin(diff_ladder_coin)
-    elif diff_ladder_coin < 0:
-        mm.user.add_ladder_coin(-diff_ladder_coin)
-
-    # 觉醒宝箱碎片
-    diff_box_coin = mm.user.box_coin - box_coin
-    if diff_box_coin > 0:
-        mm.user.deduct_box_coin(diff_box_coin)
-    elif diff_box_coin < 0:
-        mm.user.add_box_coin(-diff_box_coin)
-
-    # 觉醒宝箱钥匙
-    diff_box_key = mm.user.box_key - box_key
-    if diff_box_key > 0:
-        mm.user.deduct_box_key(diff_box_key)
-    elif diff_box_key < 0:
-        mm.user.add_box_key(-diff_box_key)
-
-    # 荣耀值
-    diff_donate_coin = mm.user.donate_coin - donate_coin
-    if diff_donate_coin > 0:
-        mm.user.deduct_donate_coin(diff_donate_coin)
-    elif diff_donate_coin < 0:
-        mm.user.add_donate_coin(-diff_donate_coin)
+    # # 觉醒宝箱钥匙
+    # diff_box_key = mm.user.box_key - box_key
+    # if diff_box_key > 0:
+    #     mm.user.deduct_box_key(diff_box_key)
+    # elif diff_box_key < 0:
+    #     mm.user.add_box_key(-diff_box_key)
 
     vip = min(max(game_config.vip), vip)
     if mm.user.vip != vip:
         mm.user.vip = vip
         mm.user.vip_exp = 0
 
-    # 科技点
-    mm.tech_tree.incr_tech_point(tech_point)
-
-    # 星座点
-    diff_star_point = star_point - mm.star_array.star_point
-    if diff_star_point > 0:
-        mm.star_array.add_star_point(diff_star_point)
-    elif diff_star_point < 0:
-        mm.star_array.deduct_star_point(-diff_star_point)
-
-    # 鞭挞
-    diff_whip = whip - mm.prison.remain_whip_num()
-    if diff_whip > 0:
-        mm.prison.add_whip(diff_whip, force=True)
-    elif diff_whip < 0:
-        mm.prison.decr_whip(-diff_whip)
-
-    # 无尽币
-    diff_endless_coin = int(mm.user.endless_coin) - endless_coin
-    if diff_endless_coin > 0:
-        mm.user.deduct_endless_coin(diff_endless_coin)
-    elif diff_endless_coin < 0:
-        mm.user.add_endless_coin(-diff_endless_coin)
-
-    # 装备币
-    diff_equip_coin = int(mm.user.equip_coin) - equip_coin
-    if diff_equip_coin > 0:
-        mm.user.deduct_equip_coin(diff_equip_coin)
-    elif diff_equip_coin < 0:
-        mm.user.add_equip_coin(-diff_equip_coin)
-
-    # 荣誉币
-    diff_honor_coin = int(mm.user.honor_coin) - honor_coin
-    if diff_honor_coin > 0:
-        mm.user.deduct_honor_coin(diff_honor_coin)
-    elif diff_honor_coin < 0:
-        mm.user.add_honor_coin(-diff_honor_coin)
-
     mm.user.save()
-    mm.dark_street.save()
-    mm.guild_shop.save()
-    mm.rally.save()
-    mm.battle_item.save()
-    mm.commander.save()
-    mm.star_array.save()
-    mm.prison.save()
 
     msg = 'success'
 

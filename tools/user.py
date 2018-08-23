@@ -30,7 +30,7 @@ def user_info(mm):
         'level': mm.user.level,
         'role': mm.user.role,
         'tile_power': mm.user.tile_power,
-        'combat': mm.hero.get_max_combat(),
+        'combat': 0,    # mm.hero.get_max_combat(),
         'guild_id': mm.user.guild_id,
         'guild_name': mm.get_obj_by_id('guild', mm.user.guild_id).name if mm.user.guild_id else '',
         'server_name': get_server_config(mm.user._server_name).get('name', '')

@@ -37,7 +37,7 @@ def main(hm):
     checkin_users.update_checkin_status(mm.user.uid)
 
     # 每天登陆激活普通签到
-    mm.gift_center.enter_game()
+    # mm.gift_center.enter_game()
 
     # 刷新解锁建筑物
     refresh_unlock_build(mm)
@@ -46,14 +46,6 @@ def main(hm):
     task_event_dispatch = mm.get_event('task_event_dispatch')
     task_event_dispatch.call_method('daily_login')
 
-    # 自动发放古灵阁的奖励
-    mm.invest.invest_auto_give_reward()
-
-    # 自动发放新服古灵阁的奖励
-    mm.server_invest.invest_auto_give_reward()
-
-    # 传记技能效果，周礼包
-    # mm.biography.send_skill_tree_reward()
 
     # # vip每日礼包
     # mm.user.send_vip_daily_reward()
@@ -62,10 +54,7 @@ def main(hm):
     mm.user.send_vip_exclusive_notice()
 
     # 全服邮件
-    mm.user.send_system_mail()
-
-    # 猛兽三选一宝箱
-    mm.doomsday_hunt.send_box_mail(do_save=True)
+    # mm.user.send_system_mail()
 
     result = ul.main()
 
@@ -130,85 +119,20 @@ def game_info(hm):
     """
     mm = hm.mm
 
-    heros = mm.hero.heros
-    hero_stones = mm.hero.stones
-
     info = dict()
 
     user_info = dict(is_new=mm.user.is_new, name=mm.user.name)
     info.update(**user_info)
 
-    hero_info = dict(heros=heros, stones=hero_stones,
-                     teams=mm.hero.teams, use_team=mm.hero.use_team)
-    info.update(**hero_info)
+    info.update(dict(cards=mm.card.cards, pieces=mm.card.pieces))
+    info.update(dict(equips=mm.equip.equips, equip_pieces=mm.equip.equip_pieces))
 
-    item_info = dict(item=mm.item.items, gitem=mm.grade_item.items,
-                     citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
-                     aitem=mm.awaken_item.items, )
+    # item_info = dict(item=mm.item.items, gitem=mm.grade_item.items,
+    #                  citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
+    #                  aitem=mm.awaken_item.items, )
+    item_info = dict(item=mm.item.items)
+
     info.update(**item_info)
-
-    equip_info = dict(equips=mm.equip.equips)
-    info.update(**equip_info)
-
-    gene_info = dict(genes=mm.gene.genes)
-    info.update(**gene_info)
-
-    gene_piece_info = dict(gene_piece=mm.gene.gene_piece)
-    info.update(**gene_piece_info)
-
-    team_skill_info = dict(team_skill=mm.team_skill.skill)
-    info.update(**team_skill_info)
-
-    milestone_info = dict(milestone=mm.hero_milestone.milestone)
-    info.update(**milestone_info)
-
-    gacha_info = dict(silver_times=mm.gacha.silver_times, diamond_times=mm.gacha.diamond_times)
-    info.update(**gacha_info)
-
-    # 用于前端初始化新手引导
-    private_city_info = dict(unlock_building=mm.private_city.use_building, unlock_chapter=mm.private_city.final_chapter)
-    info.update(**private_city_info)
-    # # 多点登录限制
-    # mk_str = str(time.time()) + mm.user.account
-    # mm.user.mk = hashlib.md5(str(mk_str)).hexdigest()
-    # mm.user.save()
-    # info.update({'mk': mm.user.mk})
-    # 向360发送玩家角色数据
-    # account = mm.user.account
-    # if account.startswith('360'):
-    #     from lib.sdk_platform.sdk_360 import send_role_data
-    #     from models.server import ServerConfig
-    #     sc = ServerConfig.get()
-    #     try:
-    #         role_data = {
-    #             'qid': account.split('_')[0],
-    #             'zoneid': 0,
-    #             'zonename': sc.config_value[mm.user._server_name]['name'],
-    #             'roleid': mm.user.uid,
-    #             'rolename': mm.user.name,
-    #             'professionid': 0,
-    #             'profession': u'无',
-    #             'gender': u'无',
-    #             'balance': {'balanceid': 0, 'balancename': u'默认', 'balancenum': 0},
-    #             'vip': 0,
-    #             'power': 0,
-    #             'rolelevel': mm.user.level,
-    #             'partyid': 0,
-    #             'partyname': u'无',
-    #             'type': 'createRole',
-    #             'partyroleid': 0,
-    #             'partyrolename': u'无',
-    #             'friendlist': u'无',
-    #             'friend': u'无',
-    #         }
-    #         send_role_data(role_data)
-    #     except:
-    #         from lib.utils.debug import print_log
-    #         print_log('new_user..send_role_data to 360..error: ')
-    #         pass
-
-    # 上传uc玩家数据
-    send_role_data_uc(mm.user)
 
     return 0, info
 

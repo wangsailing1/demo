@@ -36,11 +36,6 @@ class UserLogic(object):
     def main(self):
         result = {}
 
-        boss_time_info = self.mm.world_boss_user_info.get_battle_remain_time_for_alert()
-        worldboss_expire = boss_time_info['open_remain']
-        boss_show_expire = boss_time_info['show_remain']
-        result['worldboss_expire'] = worldboss_expire
-
         # result['daily'] = {
         #     'biography': self.mm.biography.get_rest_times(),
         #     'daily_advance': self.mm.daily_advance.get_all_remainder_times(),
@@ -68,7 +63,7 @@ class UserLogic(object):
 
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
-        result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
+        # result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
 
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
@@ -76,8 +71,6 @@ class UserLogic(object):
         # ###### 小红点 start ########
 
         result['alerts'] = self.get_red_dot()
-        result['alerts']['worldboss_expire'] = worldboss_expire
-        result['alerts']['boss_show_time'] = boss_show_expire
 
         # ###### 小红点 end ########
 
@@ -88,9 +81,7 @@ class UserLogic(object):
 
         result['play_help'] = self.get_play_help()
         result['blacklist'] = self.user.blacklist
-        guild = self.mm.get_obj_by_id('guild', self.user.guild_id)
-        result['guild_name'] = guild.name
-        result['max_combat_heros'] = self.mm.hero.max_combat_heros
+        result['guild_name'] = self.user.name
         result['server_open_time'] = serverM.get_server_config(self.mm.user._server_name)['open_time']
         result['question_done'] = self.user.question_done
 
@@ -98,55 +89,18 @@ class UserLogic(object):
         high_ladder_top_one_info = self.get_high_ladder_top_one()
         result.update(high_ladder_top_one_info)
 
-        # 穿戴载具
-        result['wear_machine'] = self.mm.role_info.machine  # 穿戴的载具id
-
         return result
 
     def get_daily_and_activity(self):
         result = {}
         result['daily'] = {
-            'biography': self.mm.biography.get_rest_times(),
-            'daily_advance': self.mm.daily_advance.get_all_remainder_times(),
-            'rally': self.mm.rally.remainder_reset_times(),
-            'dark_street': self.mm.dark_street.remain_point(),
-            'doomsday_hunt': self.mm.doomsday_hunt.remain_battle_times(),
-            'clone': self.mm.clone.remain_battle_times(),
-            'teams_chapter': self.mm.teams_chapter.get_remain_free_times(),
-            'awaken_chapter': self.mm.awaken_chapter.remain_free_battle_times(),
-            'high_ladder': self.mm.high_ladder.remain_battle_times(),
-            'wormhole': self.mm.worm_hole.get_rest_battle_times(),
-            'endless': self.mm.endless.get_main_dot(),     # 无尽远征可以挑战boss
-            'prison': self.mm.prison.get_red_dot(),     # 监狱红点
-            'challenge_remain_time': self.mm.ultimate_challenge.get_remain_time(),  # 极限挑战剩余时间
         }
 
-        limit_hero, limit_hero_pop = self.mm.limit_hero.is_show_front()
         activity_status = {
-            'challenge': self.mm.ultimate_challenge.is_show_front(),    # 极限挑战图标
             'first_charge_open': self.mm.user_payment.get_first_charge(),  # 首充活动标志
             'first_charge_pop': self.mm.user_payment.get_first_charge_pop(),  # 首充弹板
             'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
             'level_limit_gift': self.mm.user.level_gift,  # 限时等级礼包
-            'sevenday_pop_flag': self.mm.seven_scripture.pop_flag(),  # 七日盛典弹窗标志
-            'sevenday_flag': not self.mm.seven_scripture.active_is_end(),  # 七日盛典活动标志
-            'stage_task_flag': self.mm.stage_task.is_open(),  # 前者之路图标
-            'seven_login_flag': self.mm.seven_login.is_open(),  # 七日登录图标
-            'seven_login_num': self.mm.seven_login.get_next_reward_day(),   # 获取下次可以领取的天数
-            'seven_login_pop': self.mm.seven_login.get_seven_login_pop(),  # 七日登录弹板
-            'growth_fund_flag': self.mm.growth_fund.is_open(),  # 成长基金图标
-            'growth_fund_pop': self.mm.growth_fund.get_growth_fund_pop(),   # 成长基金弹板
-            'bandit': self.mm.bandit.is_open(),  # 招财猫是否开启
-            'limit_hero': limit_hero,     # 全服限时神将开关
-            'limit_hero_pop': limit_hero_pop,  # 全服限时神将弹板
-            'limit_discount_pop': self.mm.limit_discount.is_show_front(),   # 限时特惠
-            'server_limit_discount_pop': self.mm.server_limit_discount.is_show_front(),  # 新服限时特惠
-            'active_recharge_pop': self.mm.active_recharge.get_active_recharge_pop(),  # 累积充值弹板
-            'server_recharge_pop': self.mm.server_recharge.get_server_recharge_pop(),  # 新服累积充值弹板
-            'soul_box_pop': self.mm.soul_box.is_show_front(),   # 魂匣
-            'server_soul_box_pop': self.mm.server_soul_box.is_show_front(), # 新服魂匣
-            'daily_package_pop': self.mm.daily_package.is_show_front(), # 每日礼包
-            'server_daily_package_pop': self.mm.server_daily_package.is_show_front(),   # 新服每日礼包
         }
         result['activity_status'] = activity_status
 
@@ -325,73 +279,11 @@ class UserLogic(object):
         # 特殊的几个红点,todo
         # 英雄和装备的红点
         if not module_name or module_name in ['hero', 'gene']:
-            hero, gene = self.mm.hero.get_hero_red_dot()
-            data['hero'] = hero
-            data['gene'] = gene
+            pass
+            # hero, gene = self.mm.hero.get_hero_red_dot()
+            # data['hero'] = hero
+            # data['gene'] = gene
 
-
-        # hero, gene = self.mm.hero.get_hero_red_dot()
-        # if self.mm.user.config_type == 1:
-        #     soul_box_remain_time = self.mm.server_soul_box.get_remain_time()
-        # else:
-        #     soul_box_remain_time = self.mm.soul_box.get_remain_time()
-        # red_dot = {
-        #     'task_main': self.mm.task.get_task_main_red_dot(),                  # 主线任务
-        #     'task_daily': self.mm.daily_task.get_daily_task_red_dot(),          # 每日任务
-        #     'task_achievement': self.mm.task.get_get_achievement_red_dot(),     # 阶段成就
-        #     # 'task_coll': self.mm.task.get_coll_achievement_red_dot(),           # 收集成就
-        #     'gacha': self.mm.gacha.get_gacha_red_dot(),                         # 免费抽卡及积分可兑换
-        #     'hero': hero,                                                       # 英雄可觉醒,进阶,升星,装备可升级觉醒状态
-        #     'gene': gene,                                                       # 基因可穿戴、升级、升星、进阶
-        #     'hero_summon': self.mm.hero.get_hero_summon_red_dot(),              # 是否有可召唤的灵魂石
-        #     'adventure': self.mm.private_city.get_chapter_red_dot(),            # 冒险是否有星级奖励可领取
-        #     'explore': self.mm.private_city.get_exploaration_red_dot(),         # 挂机奖励
-        #     'welfare': self.mm.gift_center.get_gift_center_red_dot(),           # 福利中心
-        #     'sevenday': self.mm.seven_scripture.get_sevenday_red_dot(),         # 七日盛典
-        #     'stage_task': self.mm.stage_task.get_red_dot(),                     # 强者之路
-        #     'mail': self.mm.mail.get_mail_red_dot(),                            # 邮件小红点
-        #     'friend': self.mm.friend.get_friend_red_dot(),                      # 好友小红点
-        #     'mercenary': True if self.mm.user.check_build(MERCENARY) \
-        #                          and self.mm.mercenary.get_mercenary_red_dot() else False,             # 佣兵营地小红点
-        #     'active_center': self.mm.active_hot_dot.hot_dot(),                  # 活动中心小红点
-        #     'star_reward': self.mm.star_reward.alert(),                           # 星芒发阵小红点
-        #     'server_star_reward': self.mm.server_star_reward.alert(),  # 星芒发阵小红点
-        #     'prison': True if self.mm.user.check_build(PRISON) \
-        #                       and self.mm.prison.get_red_dot() else False,  # 监狱小红点
-        #     'box_gacha': self.mm.gacha.box_gacha_red_dot(),                     # 补给，免费抽卡及积分可兑换
-        #     # 'equip': self.mm.hero.get_equip_red_dot(),                          # 装备小红点
-        #     'daily_advance': True if self.mm.user.check_build(DAILY_ADVANCE) and self.mm.daily_advance.is_alert() else False,                  # 徽章副本小红点
-        #     'biography': True if self.mm.user.check_build(BIOGRAPHY) and self.mm.biography.alert() else False,  # 传记
-        #     'guild': self.mm.guild_hot_dot.is_alert_main(),                     # 公会小红点
-        #     'home': True if self.mm.user.check_build(HOME_TOWN) and self.mm.home.home_dot() else False,      # 家园小红点
-        #     'arena': {                                                          # 竞技中心
-        #         'high_ladder': True if self.mm.user.check_build(AREA_SORT) and any(self.mm.high_ladder.get_alert().values()) else False,    # 竞技场
-        #         'dark_street': True if self.mm.user.check_build(DARK_STREET) and self.mm.dark_street.is_alert() else False,                           # 黑街
-        #         'rally': True if self.mm.user.check_build(DAILY_RALLY) and
-        #                          (self.mm.rally.remainder_reset_times() or
-        #                          self.mm.rally.mile_award_dot()) else False,        # 血尘
-        #         'decisive_battle': True if self.mm.decisive_battle.is_alert() else False,
-        #     },
-        #     'bounty_hunter': {
-        #         'doomsday_hunt': True if self.mm.user.check_build(DOOMSDAY_HUNT) and self.mm.doomsday_hunt.remain_battle_times() else False,
-        #         'clone': True if self.mm.user.check_build(CLONE) and self.mm.clone.remain_battle_times() else False,
-        #     },
-        #     'first_charge': self.mm.user_payment.first_charge_alert(),          # 首冲小红点
-        #     'limit_hero': self.mm.limit_hero.is_alert(),                        # 限时英雄小红点
-        #     'server_limit_hero': self.mm.server_limit_hero.is_alert(),          # 新服限时英雄小红点
-        #     'team_skill': self.mm.team_skill.get_red_dot(),                     # 战队技能红点
-        #     'soul_box': True if soul_box_remain_time else False,  # 魂匣气泡
-        #     'welfare_level': self.mm.gift_center.get_level_gift_dot(),          # 福利中心主页提示
-        #     'daily_active': self.mm.daily_active.alert(),                      # 日常活动小红点
-        #     'seven_login': self.mm.seven_login.get_red_dot(),                   # 七日登录小红点
-        #     'server_celebrate': self.mm.rank_reward_show.alert(),  # 日常活动小红点
-        # }
-        #
-        # data = {}
-        # if module_name:
-        #     data[module_name] = red_dot.get(module_name, False)
-        # else:
-        #     data = red_dot
 
         return data
 
@@ -750,9 +642,9 @@ class UserLogic(object):
 
         self.user.name = name
         self.user.role = role
-        if role not in game_config.main_hero:
-            return 4, {}    # 角色ID错误
-        self.mm.role_info.init_role(role)
+        # if role not in game_config.main_hero:
+        #     return 4, {}    # 角色ID错误
+        # self.mm.role_info.init_role(role)
         self.user.reg_name = True
 
         self.user.save()

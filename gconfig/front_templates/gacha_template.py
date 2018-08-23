@@ -6,6 +6,35 @@ __author__ = 'kaiqigu'
 from gconfig import check
 
 
+# 金币抽卡
+coin_gacha = {
+    'uk': ('id', 'int'),                    # id
+    'reward': ('reward', 'list_3'),         # 物品
+    'unlock_lvl': ('unlock_lvl', 'int'),    # 解锁等级
+    'weight': ('weight', 'int'),            # 物品权重
+    'cost': ('cost', 'int'),                # 招募点赞数
+    'weight_special': ('weight_special', 'int'),            # 第几次必得英雄
+}
+
+
+# 金币抽卡
+coin_gacha_lv = {
+    'uk': ('lv', 'int'),                    # 星探等级
+    'pvp_area': ('pvp_area', 'int'),         # 升级需要街区档次
+    'count': ('count', 'int'),    # 升级需要街区招募次数
+    'award': ('award', 'int'),            # 升级获得的钻石
+}
+
+
+# 金币抽卡
+coin_gacha_cd = {
+    'uk': ('time', 'int'),                    # cd 出现次数
+    'cd': ('cd', 'int'),         # cd时长（分钟）
+}
+
+
+
+
 # 抽卡基础表配置
 gacha = {
     'uk': ('gacha_id', 'int'),                  # 抽取ID
@@ -98,17 +127,6 @@ box_gacha = {
 #     'diamond_gacha_rate': ('diamond_gacha_rate', 'float'),      # 钻石抽卡系数
 #     'box_gacha_rate': ('box_gacha_rate', 'float'),              # 觉醒宝箱系数
 # }
-
-
-# 金币抽卡
-coin_gacha = {
-    'uk': ('id', 'int'),                    # id
-    'reward': ('reward', 'list_3'),         # 物品
-    'unlock_lvl': ('unlock_lvl', 'int'),    # 解锁等级
-    'weight': ('weight', 'int'),            # 物品权重
-    # 'weight_10th': ('weight_10th', 'int'),            # 10次必得英雄
-    # 'weight_first': ('weight_first', 'int'),          # 首次
-}
 
 
 # 钻石抽卡积分奖励

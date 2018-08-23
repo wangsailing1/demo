@@ -33,54 +33,35 @@ def equip_update(req, **kwargs):
     """
 
     :param req:
-    :param kwargs:
     :return:
     """
     uid = req.get_argument('uid', '')
-    equip_oid = req.get_argument('equip_oid')
-    modify = req.get_argument('modify', '')
-    delete = req.get_argument('delete', '')
 
     if not uid:
         return select(req, **{'msg': 'uid is not empty'})
 
     mm = ModelManager(uid)
-    if mm.equip.inited:
-        return select(req, **{'msg': 'fail1'})
+    if mm.user.inited:
+        return select(req, **{'msg': 'fail'})
 
-    if mm.equip.has_equip(equip_oid):
-        if modify:
-            lv = int(req.get_argument('lv'))
-            quality = int(req.get_argument('quality'))
-            evo = int(req.get_argument('evo'))
-            equip_dict = mm.equip.equips.get(equip_oid)
-            if not equip_dict:
-                msg = 'fail'
-            else:
-                max_quality = max(game_config.equip_color)
-                quality = min(quality, max_quality)
-                max_lv = max(game_config.equip_lvlup)
-                lv = min(lv, max_lv)
-                max_evo = game_config.equip_color.get(quality, {}).get('lvlup_limit', 1)
-                evo = min(evo, max_evo)
+    modify = req.get_argument('modify', '')
+    delete = req.get_argument('delete', '')
 
-                equip_dict['lv'] = lv
-                equip_dict['evo'] = evo
-                equip_dict['quality'] = quality
-                mm.equip.update_base_attr(equip_dict)
+    if modify:
+        equip_id = int(req.get_argument('equip_id'))
+        equip_num = int(req.get_argument('equip_num'))
 
-                mm.equip.save()
-                msg = 'success'
-        elif delete:
-            mm.equip.del_equip(equip_oid, force=True)
-            mm.equip.save()
-            msg = 'success'
-        else:
-            msg = 'fail'
+        mm.equip.equips[equip_id] = equip_num
+    elif delete:
+        equip_id = int(req.get_argument('equip_id'))
+
+        mm.equip.equips.pop(equip_id, None)
     else:
-        msg = 'fail'
+        return select(req, **{'msg': 'fail'})
 
-    return select(req, **{'msg': msg})
+    mm.equip.save()
+
+    return select(req, **{'msg': 'success'})
 
 
 @require_permission
@@ -109,15 +90,86 @@ def add_equip(req, **kwargs):
         params = req.get_reg_params(r'^equip_([0-9]+)$', value_filter=0)
 
         for param_name, param_value in params:
-            if param_name not in game_config.equip_basis:
+            if param_name not in game_config.equip:
                 result['msg'] = 'fail'
                 return render(req, 'admin/equip/add_equip.html', **result)
             if param_value > MAX_NUM:
                 param_value = MAX_NUM
-            for i in xrange(param_value):
-                mm.equip.add_equip(param_name, force=True)
+            mm.equip.add_equip(param_name, param_value)
 
         mm.equip.save()
         result['msg'] = 'success'
 
     return render(req, 'admin/equip/add_equip.html', **result)
+
+
+@require_permission
+def add_piece(req, **kwargs):
+    """
+
+    :param req:
+    :param kwargs:
+    :return:
+    """
+    uid = req.get_argument('uid', '')
+
+    result = {'msg': '', 'uid': uid, 'max_num': MAX_NUM}
+    quality_cost
+    if req.request.method == 'POST':
+        if not uid:
+            result['msg'] = 'uid is not empty'
+            return render(req, 'admin/equip/add_piece.html', **result)
+
+        mm = ModelManager(uid)
+
+        if mm.user.inited:
+            result['msg'] = 'fail'
+            return render(req, 'admin/equip/add_piece.html', **result)
+
+        params = req.get_reg_params(r'^piece_([0-9]+)$', value_filter=0)
+
+        for param_name, param_value in params:
+            if param_value > MAX_NUM:
+                param_value = MAX_NUM
+            mm.equip.add_piece(param_name, param_value)
+
+        mm.equip.save()
+        result['msg'] = 'success'
+
+    return render(req, 'admin/equip/add_piece.html', **result)
+
+
+@require_permission
+def piece_update(req, **kwargs):
+    """
+
+    :param req:
+    :return:
+    """
+    uid = req.get_argument('uid', '')
+    modify = req.get_argument('modify', '')
+    delete = req.get_argument('delete', '')
+
+    if not uid:
+        return select(req, **{'msg': 'uid is not empty'})
+
+    mm = ModelManager(uid)
+    if mm.equip.inited:
+        return select(req, **{'msg': 'fail'})
+
+    if modify:
+        piece_id = int(req.get_argument('piece_id'))
+        piece_num = int(req.get_argument('piece_num'))
+        mm.equip.equip_pieces[piece_id] = piece_num
+        mm.equip.save()
+        msg = 'success'
+    elif delete:
+        piece_id = int(req.get_argument('piece_id'))
+        mm.equip.equip_pieces.pop(piece_id, None)
+        mm.equip.save()
+        msg = 'success'
+    else:
+        msg = 'fail'
+
+    return select(req, **{'msg': msg})
+

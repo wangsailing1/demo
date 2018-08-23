@@ -232,7 +232,10 @@ class GameConfigMixIn(object):
                                10: 0.05, 11: 0.055, 12: 0.06, 13: 0.065, 14: 0.07, 15: 0.075, 16: 0.08, 17: 0.085,
                                18: 0.09, 19: 0.095, 20: 0.1, 21: 0.11, 22: 0.12, 23: 0.13, 24: 0.14, 25: 0.15}
 
-        self.MUITL_LAN = {'0': 'TW', '1': 'CN'}
+        self.MUITL_LAN = {'0': 'CN', '1': 'TW'}
+
+        # server_open 后端记录开服信息用的，用于开新服后run_timer脚本 reload game_config，运行新服各个刷新脚本
+        self.server_open = {}
 
         self.guide_mapping = {}
         self.use_item_mapping = {}
@@ -309,8 +312,6 @@ class GameConfigMixIn(object):
         self.limit_hero_mapping = {}
         self.server_limit_hero_mapping = {}
         self.king_war_shop_id_mapping = {}
-        self.tech_tree_mapping = {}
-        self.prison_artifact_milestone_mapping = {}
         self.sign_reward_mapping = {}
         self.doomsday_hunt_mapping = {}
         self.server_link_mapping = {}   # 限时神将跨服
@@ -396,12 +397,26 @@ class GameConfigMixIn(object):
         self.server_gift_show_mapping.clear()
         self.server_buy_reward_mapping.clear()
         self.king_war_shop_id_mapping.clear()
-        self.tech_tree_mapping.clear()
-        self.prison_artifact_milestone_mapping.clear()
         self.sign_reward_mapping.clear()
         self.doomsday_hunt_mapping.clear()
         self.server_link_mapping.clear()
         self.server_link_uc_mapping.clear()
+
+    def update_funcs_version(self, config_name):
+        """
+        更新配置版本号
+        :param config_name:
+        :return:
+        """
+        cm = ConfigMd5.get()
+        cv = ConfigVersion.get()
+
+        config = getattr(self, config_name, {})
+        cv_version = cm.generate_custom_md5(config)
+        cv.update_version(config_name, cv_version, save=True)
+
+        ver_md5 = cm.generate_md5(cv.versions)
+        cm.update_md5(cv.versions, gen_md5=ver_md5, save=True)
 
     def get_server_link_mapping(self, tp='world_id'):
         """
@@ -475,19 +490,6 @@ class GameConfigMixIn(object):
                     doomsday_hunt_mapping[hard][sort] = i
 
         return self.doomsday_hunt_mapping.get(_hard, {}).get(_sort, 0)
-
-    def get_prison_artifact_milestone_mapping(self):
-        """
-        监狱里程碑映射
-        :return:
-        """
-        if not self.prison_artifact_milestone_mapping:
-            for i, j in self.prison_artifact_milestone.iteritems():
-                lv = j['artifact_lv']
-                if lv not in self.prison_artifact_milestone_mapping:
-                    self.prison_artifact_milestone_mapping[lv] = i
-
-        return self.prison_artifact_milestone_mapping
 
     def get_title_task_sort_mapping(self):
         """
@@ -2406,56 +2408,6 @@ class GameConfigMixIn(object):
                     self.all_equip_item_exp_mapping[2][k] = v['use_effect']
         return self.all_equip_item_exp_mapping
 
-    def tech_tree_array(self):
-        """
-        科技树生成G, P , D二维矩阵
-        :return:
-        """
-        if not self.tech_tree_mapping:
-            tech_tree_mapping = {"G": [], "P": [], "D": []}    # 两种特殊装备需要不同的材料升级
-            dot_num = len(self.tech_tree.keys())
-            b = 999         # 替代正无穷
-            t = 0
-            if dot_num:
-                # 初始矩阵
-                for i in xrange(dot_num):
-                    p_list = [0] * dot_num
-                    g_list = [b] * dot_num
-                    tech_tree_mapping["P"].append(list(p_list))
-                    tech_tree_mapping["G"].append(g_list)
-                tech_tree = self.tech_tree
-                for i in xrange(dot_num):
-                    for j in xrange(dot_num):
-                        if i == j:
-                            tech_tree_mapping["G"][i][j] = t
-                        elif j in tech_tree[i]['link']:
-                            tech_tree_mapping["G"][i][j] = 1
-                        else:
-                            tech_tree_mapping["G"][i][j] = b
-                # 计算后的的矩阵
-                copy_tech_tree_mapping = tech_tree_mapping
-                length = len(copy_tech_tree_mapping["G"])
-                # TODO 是否需要引用
-                copy_tech_tree_mapping["D"] = copy_tech_tree_mapping['G']
-
-                for u in xrange(0, length):
-                    for s in xrange(0, length):
-                        # 会修改config
-                        copy_tech_tree_mapping["P"][u][s] = s
-                for k in xrange(0, length):
-                    D_k = copy_tech_tree_mapping["D"][k]
-                    for v in xrange(0, length):
-                        D_v = copy_tech_tree_mapping["D"][v]    # list
-                        P_v = copy_tech_tree_mapping["P"][v]
-                        for w in xrange(0, length):
-                            if D_v[w] > D_v[k] + D_k[w]:
-                                D_v[w] = D_v[k] + D_k[w]
-                                P_v[w] = P_v[k]
-
-                copy_tech_tree_mapping.pop('G')
-                self.tech_tree_mapping = copy_tech_tree_mapping
-        return self.tech_tree_mapping
-
 
 class GameConfig(GameConfigMixIn):
 
@@ -2655,7 +2607,7 @@ class FrontGameConfig(GameConfigMixIn):
                     c = FrontConfig.get(r_name)
                     if v[0]:  # 加载的策划配置的xlsx
                         # print 'reload: %s' % name
-                        setattr(self, r_name, c.value)
+                        setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
             if name in FAKE_CONFIG:
                 for i in FAKE_CONFIG[name][1]:
@@ -2664,7 +2616,7 @@ class FrontGameConfig(GameConfigMixIn):
                     c = FrontConfig.get(r_name)
                     if v[0]:  # 加载的策划配置的xlsx
                         # print 'reload: %s' % name
-                        setattr(self, r_name, c.value)
+                        setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
 
             cv_version = cv.versions.get(name)
@@ -2680,14 +2632,14 @@ class FrontGameConfig(GameConfigMixIn):
 
             if v[0]:  # 加载的策划配置的xlsx
                 # print 'reload: %s' % name
-                setattr(self, name, c.value)
+                setattr(self, name, make_readonly(c.value))
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
 
             elif cv_version:  # 不是策划配置的xlsx, 服务器自己使用的配置存储在Config中
                 # print 'reload: %s' % name
-                setattr(self, name, c.value)
+                setattr(self, name, make_readonly(c.value))
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''

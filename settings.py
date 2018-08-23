@@ -270,16 +270,6 @@ def set_env(env_name, server=None, cw_num=1, *args, **kwargs):
     globals()['CN_NAME_PATTERN'] = re.compile(u"([\u4e00-\u9fa5]+)").match
     globals()['GID_PATTERN'] = re.compile('%s\d+-\d+' % prefix).match
 
-    # 注册的代码需要写在下面, 不需调整
-    # 注册model
-    import models
-
-    # 注册tools
-    import tools
-
-    # 注册template, 加载配置
-    from gconfig import back_templates
-
     import_check()
     print 'set_env_spend_time: ', time.time() - start
 

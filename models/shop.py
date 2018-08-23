@@ -44,10 +44,7 @@ class Shop(ModelBase):
         if not self.refresh_date or self.refresh_date != today:
             self.refresh_date = today
             self.refresh_times = 0
-            self.save()
-
-    def data_update_func_1(self):
-        self.refresh_goods(is_save=True)
+            # self.save()
 
     def refresh_goods(self, is_save=False):
         if self.goods:
@@ -431,15 +428,15 @@ class HonorShop(Shop):
 
 
 ModelManager.register_model('shop', Shop)
-ModelManager.register_model('period_shop', PeriodShop)
-# ModelManager.register_model('dark_shop', DarkShop)
-ModelManager.register_model('guild_shop', GuildShop)
-ModelManager.register_model('high_ladder_shop', HighLadderShop)
-ModelManager.register_model('donate_shop', DonateShop)
-ModelManager.register_model('rally_shop', RallyShop)
-ModelManager.register_model('box_shop', BoxShop)
-ModelManager.register_model('king_war_shop', KingWarShop)
-ModelManager.register_model('wormhole_shop', WormHoleShop)
-ModelManager.register_model('equip_shop', EquipShop)
-ModelManager.register_model('profiteer_shop', ProfiteerShop)
-ModelManager.register_model('honor_shop', HonorShop)
+# ModelManager.register_model('period_shop', PeriodShop)
+# # ModelManager.register_model('dark_shop', DarkShop)
+# ModelManager.register_model('guild_shop', GuildShop)
+# ModelManager.register_model('high_ladder_shop', HighLadderShop)
+# ModelManager.register_model('donate_shop', DonateShop)
+# ModelManager.register_model('rally_shop', RallyShop)
+# ModelManager.register_model('box_shop', BoxShop)
+# ModelManager.register_model('king_war_shop', KingWarShop)
+# ModelManager.register_model('wormhole_shop', WormHoleShop)
+# ModelManager.register_model('equip_shop', EquipShop)
+# ModelManager.register_model('profiteer_shop', ProfiteerShop)
+# ModelManager.register_model('honor_shop', HonorShop)

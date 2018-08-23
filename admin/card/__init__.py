@@ -17,25 +17,25 @@ def select(req, **kwargs):
     :return:
     """
     uid = req.get_argument('uid', '')
-    result = {'hero': None, 'uid': uid, 'msg': ''}
+    result = {'card': None, 'uid': uid, 'msg': ''}
     result.update(kwargs)
     if uid:
         mm = ModelManager(uid)
-        result['hero'] = mm.hero
+        result['card'] = mm.card
         result['mm'] = mm
 
-    return render(req, 'admin/hero/index.html', **result)
+    return render(req, 'admin/card/index.html', **result)
 
 
 @require_permission
-def hero_update(req, **kwargs):
+def card_update(req, **kwargs):
     """
 
     :param req:
     :return:
     """
     uid = req.get_argument('uid', '')
-    hero_oid = req.get_argument('hero_oid')
+    card_oid = req.get_argument('card_oid')
     modify = req.get_argument('modify', '')
     delete = req.get_argument('delete', '')
 
@@ -43,35 +43,35 @@ def hero_update(req, **kwargs):
         return select(req, **{'msg': 'uid is not empty'})
 
     mm = ModelManager(uid)
-    if mm.hero.inited:
+    if mm.card.inited:
         return select(req, **{'msg': 'fail'})
 
-    if mm.hero.has_hero(hero_oid):
+    if mm.card.has_card(card_oid):
         if modify:
             lv = int(req.get_argument('lv'))
             star = int(req.get_argument('star'))
             evo = int(req.get_argument('evo'))
-            hero_dict = mm.hero.heros.get(hero_oid)
-            if not hero_dict:
+            card_dict = mm.card.cards.get(card_oid)
+            if not card_dict:
                 msg = 'fail'
             else:
-                max_level = game_config.hero_lvl_limit.get(mm.user.level, {}).get('hero_lvl', 0)
-                hero_config = game_config.hero_basis[hero_dict['id']]
-                star_limit = max(game_config.hero_star or [1])
-                max_evo = len(game_config.grade_lvlup_badge.get(hero_config['job'], {}).get(hero_config['quality'], {}))
+                max_level = game_config.card_lvl_limit.get(mm.user.level, {}).get('card_lvl', 0)
+                card_config = game_config.card_basis[card_dict['id']]
+                star_limit = max(game_config.card_star or [1])
+                max_evo = len(game_config.grade_lvlup_badge.get(card_config['job'], {}).get(card_config['quality'], {}))
 
-                hero_dict['lv'] = min(lv, max_level)
-                hero_dict['star'] = min(star, star_limit)
-                hero_dict['evo'] = min(evo, max_evo)
-                mm.hero.unlock_skill(hero_oid, hero_dict=hero_dict)
-                mm.hero.update_base_attr(hero_oid, hero_dict=hero_dict, hero_config=hero_config)
-                # mm.hero.calc_avg_max_evo()
+                card_dict['lv'] = min(lv, max_level)
+                card_dict['star'] = min(star, star_limit)
+                card_dict['evo'] = min(evo, max_evo)
+                mm.card.unlock_skill(card_oid, card_dict=card_dict)
+                mm.card.update_base_attr(card_oid, card_dict=card_dict, card_config=card_config)
+                # mm.card.calc_avg_max_evo()
 
-                mm.hero.save()
+                mm.card.save()
                 msg = 'success'
         elif delete:
-            mm.hero.del_hero(hero_oid)
-            mm.hero.save()
+            mm.card.del_card(card_oid)
+            mm.card.save()
             msg = 'success'
         else:
             msg = 'fail'
@@ -82,7 +82,7 @@ def hero_update(req, **kwargs):
 
 
 @require_permission
-def stone_update(req, **kwargs):
+def piece_update(req, **kwargs):
     """
 
     :param req:
@@ -96,19 +96,19 @@ def stone_update(req, **kwargs):
         return select(req, **{'msg': 'uid is not empty'})
 
     mm = ModelManager(uid)
-    if mm.hero.inited:
+    if mm.card.inited:
         return select(req, **{'msg': 'fail'})
 
     if modify:
-        stone_id = int(req.get_argument('stone_id'))
-        stone_num = int(req.get_argument('stone_num'))
-        mm.hero.stones[stone_id] = stone_num
-        mm.hero.save()
+        piece_id = int(req.get_argument('piece_id'))
+        piece_num = int(req.get_argument('piece_num'))
+        mm.card.pieces[piece_id] = piece_num
+        mm.card.save()
         msg = 'success'
     elif delete:
-        stone_id = int(req.get_argument('stone_id'))
-        mm.hero.stones.pop(stone_id, None)
-        mm.hero.save()
+        piece_id = int(req.get_argument('piece_id'))
+        mm.card.pieces.pop(piece_id, None)
+        mm.card.save()
         msg = 'success'
     else:
         msg = 'fail'
@@ -117,7 +117,7 @@ def stone_update(req, **kwargs):
 
 
 @require_permission
-def add_hero(req, **kwargs):
+def add_card(req, **kwargs):
     """
 
     :param req:
@@ -131,33 +131,33 @@ def add_hero(req, **kwargs):
     if req.request.method == 'POST':
         if not uid:
             result['msg'] = 'uid is not empty'
-            return render(req, 'admin/hero/add_hero.html', **result)
+            return render(req, 'admin/card/add_card.html', **result)
 
-        hero_ids = req.get_arguments('hero_id')
+        card_ids = req.get_arguments('card_id')
         mm = ModelManager(uid)
 
         if mm.user.inited:
             result['msg'] = 'fail'
-            return render(req, 'admin/hero/add_hero.html', **result)
+            return render(req, 'admin/card/add_card.html', **result)
 
-        for hero_id in hero_ids:
-            hero_id = int(hero_id)
-            if hero_id not in game_config.hero_basis:
+        for card_id in card_ids:
+            card_id = int(card_id)
+            if card_id not in game_config.card_basis:
                 result['msg'] = 'fail'
-                return render(req, 'admin/hero/add_hero.html', **result)
+                return render(req, 'admin/card/add_card.html', **result)
 
-            if mm.hero.has_card_with_group_id(hero_id):
+            if mm.card.has_card_with_group_id(card_id):
                 continue
 
-            mm.hero.add_hero(hero_id)
-        mm.hero.save()
+            mm.card.add_card(card_id)
+        mm.card.save()
         result['msg'] = 'success'
 
-    return render(req, 'admin/hero/add_hero.html', **result)
+    return render(req, 'admin/card/add_card.html', **result)
 
 
 @require_permission
-def add_stone(req, **kwargs):
+def add_piece(req, **kwargs):
     """
 
     :param req:
@@ -171,25 +171,25 @@ def add_stone(req, **kwargs):
     if req.request.method == 'POST':
         if not uid:
             result['msg'] = 'uid is not empty'
-            return render(req, 'admin/hero/add_stone.html', **result)
+            return render(req, 'admin/card/add_piece.html', **result)
 
         mm = ModelManager(uid)
 
         if mm.user.inited:
             result['msg'] = 'fail'
-            return render(req, 'admin/hero/add_stone.html', **result)
+            return render(req, 'admin/card/add_piece.html', **result)
 
-        params = req.get_reg_params(r'^stone_([0-9]+)$', value_filter=0)
+        params = req.get_reg_params(r'^piece_([0-9]+)$', value_filter=0)
 
         for param_name, param_value in params:
             if param_value > MAX_NUM:
                 param_value = MAX_NUM
-            mm.hero.add_stone(param_name, param_value)
+            mm.card.add_piece(param_name, param_value)
 
-        mm.hero.save()
+        mm.card.save()
         result['msg'] = 'success'
 
-    return render(req, 'admin/hero/add_stone.html', **result)
+    return render(req, 'admin/card/add_piece.html', **result)
 
 
 @require_permission
@@ -201,24 +201,24 @@ def select_attr(req, **kwargs):
     """
     uid = req.get_argument('uid', '')
     hid = req.get_argument('hid', '')
-    result = {'hero_data': {}, 'uid': uid, 'hid': hid, 'msg': ''}
+    result = {'card_data': {}, 'uid': uid, 'hid': hid, 'msg': ''}
     result.update(kwargs)
     if uid and not hid:
         mm = ModelManager(uid)
         result['mm'] = mm
-        return render(req, 'admin/hero/hero_attr.html', **result)
+        return render(req, 'admin/card/card_attr.html', **result)
     if uid and hid:
         mm = ModelManager(uid)
         result['mm'] = mm
-        for i, j in mm.hero.heros.iteritems():
-            hero_id = i.split('-')[0]
-            if hid != hero_id:
+        for i, j in mm.card.cards.iteritems():
+            card_id = i.split('-')[0]
+            if hid != card_id:
                 continue
-            result['hero_data'] = j
+            result['card_data'] = j
             break
         else:
             result['msg'] = u'没有改英雄'
 
         result['attr_mapping'] = game_config.ATTR_MAPPING
 
-    return render(req, 'admin/hero/hero_attr.html', **result)
+    return render(req, 'admin/card/card_attr.html', **result)

@@ -93,8 +93,6 @@ class User(ModelBase):
     :var action_point_updatetime: 0, 上次体力更新时间
     :var buy_point_times: 0, 购买体力次数
     :var buy_point_date: 0, 购买体力日期
-    :var silver_ticket: 0,   普通飞机票
-    :var diamond_ticket: 0,  高级飞机票
     :var guild_invite: {},    公会邀请信息
     :var apply_guilds: [],    申请的公会记录, 公会id
     :var hunt_coin: 0,          # 末日狩猎挑战券
@@ -106,20 +104,15 @@ class User(ModelBase):
         coin_id: 0                   # 据点id:使用的次数
     },
     :var opera_awards: [],   # 剧情奖励领取记录
-    :var team_boss_coin: 0,     # 组队boss挑战券
     :var level_mail_done: [],   # 已领取的等级奖励邮件id
     :var coin_log: [],          # 钻石获取记录
-    :vat ladder_coin: 0,   # 天梯竞技场金币
-    :var dark_coin: 0,          # 黑街货币
     :var ios_payment: {},       # ios 6,30元充值此时做限制
     :var vip_gift: [],          # 已购买的vip特权礼包id
     :var level_gift: {          # 等级限时礼包
         'expire': 0,            # 过期时间
         'status': 0,            # 0未领取，1可领取，2已领取
     },
-    :var box_coin: 0,          # 觉醒宝箱碎片
     :var add_guild_exp: 0       # 每天为公会增加的经验
-    :var donate_coin: 0,    # 荣耀值
     :var 'donate': {     # 捐献的三个档次的花费
         1: {             # 科技id
             1: [],        # 档次id：花费
@@ -127,8 +120,6 @@ class User(ModelBase):
     },
     :var donate_cooling_time: 0,   # 冷却时间
     :var is_donate_cooling: False, # 是否正在冷却中，不能捐献
-    :var 'donate_coin': 0,       # 荣耀值
-    :var 'challenge': 0,         # 血尘拉力赛挑战券
     :var guild_coin: 0.         # 公会币
     :var vip_daily_reward: False,   # vip每日礼包是否发放
     :var vip_exclusive_notice,   # vip专属通知邮件是否发放
@@ -146,7 +137,6 @@ class User(ModelBase):
     MAX_GUILD_COIN_TIMES = 2    # 公会金币副本挑战次数累积上限
     MAX_GUILD_EXP_TIMES = 2     # 公会经验副本挑战次数累积上限
     MAX_HUNT_COIN = 24          # 末日狩猎挑战券每日最多24
-    MAX_TEAM_BOSS_COIN = 24     # 组队boss挑战券每日最多24
     LEVEL_GIFT_EXPIRE = 3600 * 12  # 等级奖励有效期
     MAX_GUILD_EXP = 600         # 每天给公会增加的经验最多600
     MAX_DONATE_COOLING_TIME = 3600 * 8  # 公会捐献最大冷却时间
@@ -191,12 +181,8 @@ class User(ModelBase):
             'diamond_charge': 0,
             'coin': 0,
             'silver': 0,
-            'silver_ticket': 0,
-            'diamond_ticket': 0,
             'total_silver': 0,
-            'king_war_score': 0,        # 斗技商城币
-            'endless_coin': '0',        # 无尽币
-            'endless_score': 0,         # 无尽积分
+            'like': 0,              # 点赞数
             'role': 0,
             'vip': 0,
             'vip_exp': 0,
@@ -228,22 +214,15 @@ class User(ModelBase):
             'refresh_week': '',
             'hunt_coin': 0,
             'opera_awards': [],
-            'team_boss_coin': 0,
             'level_mail_done': [],
             'coin_log': [],
-            'ladder_coin': 0,
-            'dark_coin': 0,
             'ios_payment': {},
             'vip_gift': [],
             'level_gift': {},
-            'box_coin': 0,
-            'box_key': 0,
             'add_guild_exp': 0,
             'donate': {},
             'donate_cooling_time': 0,  # 冷却时间
             'is_donate_cooling': False,  # 是否正在冷却中，不能捐献
-            'donate_coin': 0,       # 荣耀值
-            'challenge': 0,         # 血尘拉力赛挑战券
             'guild_coin': 0,
             'language_sort': '1' if settings.LANGUAGE == 'ch' else '0',
             'vip_daily_reward': False,  # vip每日礼包是否发放
@@ -262,10 +241,6 @@ class User(ModelBase):
             'bchat_expire': 0,      # 过期时间，0表示永久禁言，正数表示过期时间
             'bchat_time': 0,        # 禁言时间
             'donate_times': 0,  # 公会科技捐献次数
-            'wormhole_score': 0,  # 斗技商城币
-            'equip_coin': 0,    # 装备币
-            'honor_coin': 0,    # 荣誉币
-            'slg_occpy_times': 0,  # slg每日占领奖励次数
             'tile_power': 0,    # 势力值
             'last_add_gs_msg': 0,   # gs客服消息时间
             'rebate_flag': False,   # 是否已返利
@@ -309,35 +284,6 @@ class User(ModelBase):
         o.father_server_name = settings.get_father_server(o._server_name)
         o.config_type = game_config.get_config_type(o.father_server_name)
         return o
-
-    def data_update_func_1(self):
-        """
-        修改数据类型，用msgpack序列化数据，不支持set
-        :return:
-        """
-        if isinstance(self.opera_awards, set):
-            self.opera_awards = list(self.opera_awards)
-        if isinstance(self.login_days, set):
-            self.login_days = list(self.login_days)
-
-    def data_update_func_2(self):
-        """
-        虫洞币、王者币转成巅峰币
-        :return:
-        """
-        is_save = False
-        if self.king_war_score:
-            self.add_ladder_coin(self.king_war_score)
-            self.king_war_score = 0
-            is_save = True
-
-        if self.wormhole_score:
-            self.add_ladder_coin(self.wormhole_score)
-            self.wormhole_score = 0
-            is_save = True
-
-        if is_save:
-            self.save()
 
     def get_user_name_key(self):
         """
@@ -416,22 +362,20 @@ class User(ModelBase):
             self.level_gift.pop(lv)
             is_save = True
 
-        if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
-            self.refresh_week = week
-            self.vip_exclusive_notice = False
-            is_save = True
+        # if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
+        #     self.refresh_week = week
+        #     self.vip_exclusive_notice = False
+        #     is_save = True
 
         if self.refresh_date != today:
             self.refresh_date = today
             self.add_guild_exp = 0
             self.hunt_coin = 0
-            self.team_boss_coin = 0
             self.ios_payment = {}
             self.vip_daily_reward = False
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
-            self.slg_occpy_times = 0
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -751,84 +695,6 @@ class User(ModelBase):
         """
         return max(self.MAX_HUNT_COIN - self.hunt_coin, 0)
 
-    def add_dark_coin(self, coin):
-        """
-        增加黑街货币
-        :param coin:
-        :return:
-        """
-        self.dark_coin += int(coin)
-
-    def is_dark_coin_enough(self, coin):
-        """
-        黑街货币是否充足
-        :param coin:
-        :return:
-        """
-        return self.dark_coin >= int(coin)
-
-    def deduct_dark_coin(self, coin):
-        """
-        扣除黑街货币
-        :param coin:
-        :return:
-        """
-        coin = int(coin)
-        if self.is_dark_coin_enough(coin):
-            self.dark_coin -= coin
-
-    def add_box_coin(self, coin):
-        """
-        增加觉醒宝箱碎片
-        :param coin:
-        :return:
-        """
-        self.box_coin += int(coin)
-
-    def is_box_coin_enough(self, coin):
-        """
-        觉醒宝箱碎片是否充足
-        :param coin:
-        :return:
-        """
-        return self.box_coin >= int(coin)
-
-    def deduct_box_coin(self, coin):
-        """
-        扣除觉醒宝箱碎片
-        :param coin:
-        :return:
-        """
-        coin = int(coin)
-        if self.is_box_coin_enough(coin):
-            self.box_coin -= coin
-
-    def add_box_key(self, coin):
-        """
-        增加觉醒宝箱钥匙
-        :param coin:
-        :return:
-        """
-        self.box_key += int(coin)
-
-    def is_box_key_enough(self, coin):
-        """
-        觉醒宝箱钥匙是否充足
-        :param coin:
-        :return:
-        """
-        return self.box_key >= int(coin)
-
-    def deduct_box_key(self, coin):
-        """
-        扣除觉醒宝箱钥匙
-        :param coin:
-        :return:
-        """
-        coin = int(coin)
-        if self.is_box_key_enough(coin):
-            self.box_key -= coin
-
     def add_guild_coin(self, coin):
         """
         增加公会币
@@ -851,29 +717,6 @@ class User(ModelBase):
         """
         if self.is_guild_coin_enough(coin):
             self.guild_coin -= coin
-
-    def add_team_boss_coin(self, coin):
-        """
-        获得组队boss挑战券
-        :param coin:
-        :return:
-        """
-        self.team_boss_coin = max(self.team_boss_coin - coin, 0)
-
-    def decr_team_boss_coin(self, coin):
-        """
-        扣除组队boss挑战券
-        :param coin:
-        :return:
-        """
-        self.team_boss_coin = min(self.team_boss_coin + coin, self.MAX_TEAM_BOSS_COIN)
-
-    def get_team_boss_coin(self):
-        """
-        剩余组队boss挑战券
-        :return:
-        """
-        return max(self.MAX_TEAM_BOSS_COIN - self.team_boss_coin, 0)
 
     def add_action_point(self, point, force=False, save=False):
         """
@@ -1186,81 +1029,31 @@ class User(ModelBase):
         """
         self.coin += int(coin)
 
-    def is_ladder_coin_enough(self, coin):
-        """ 是否天梯竞技场币足够
+    def is_like_enough(self, like):
+        """ 是否点赞足够
 
-        :param coin:
+        :param like:
         :return:
         """
-        return self.ladder_coin >= int(coin)
+        return self.like >= int(like)
 
-    def deduct_ladder_coin(self, coin):
-        """ 扣除天梯币金币
+    def deduct_like(self, like):
+        """ 扣除点赞
 
-        :param coin:
+        :param like:
         :return:
         """
-        coin = int(coin)
-        if self.is_ladder_coin_enough(coin):
-            self.ladder_coin -= coin
+        like = int(like)
+        if self.is_like_enough(like):
+            self.like -= like
 
-    def add_ladder_coin(self, coin):
-        """ 增加天梯币
+    def add_like(self, like):
+        """ 增加点赞
 
-        :param coin:
+        :param like:
         :return:
         """
-        self.ladder_coin += int(coin)
-
-    def is_donate_coin_enough(self, coin):
-        """ 是否荣耀足够
-
-        :param coin:
-        :return:
-        """
-        return self.donate_coin >= int(coin)
-
-    def add_donate_coin(self, coin):
-        """
-        增加荣耀值
-        :param coin:
-        :return:
-        """
-        self.donate_coin += int(coin)
-
-    def deduct_donate_coin(self, coin):
-        """ 扣除荣耀
-
-        :param coin:
-        :return:
-        """
-        coin = int(coin)
-        if self.is_donate_coin_enough(coin):
-            self.donate_coin -= coin
-
-    def is_endless_coin_enough(self, coin):
-        """无尽币是否足够"""
-        return int(self.endless_coin) >= int(coin)
-
-    def deduct_endless_coin(self, coin):
-        """扣除无尽币"""
-        self.endless_coin = str(int(self.endless_coin) - int(coin))
-
-    def add_endless_coin(self, coin):
-        """增加无尽币"""
-        self.endless_coin = str(int(self.endless_coin) + int(coin))
-
-    def is_endless_score_enough(self, coin):
-        """无尽积分是否足够"""
-        return int(self.endless_score) >= int(coin)
-
-    def deduct_endless_score(self, coin):
-        """扣除无尽积分"""
-        self.endless_score = str(int(self.endless_score) - int(coin))
-
-    def add_endless_score(self, coin):
-        """增加无尽积分"""
-        self.endless_score = str(int(self.endless_score) + int(coin))
+        self.like += int(like)
 
     def is_silver_enough(self, silver):
         """ 是否银币足够
@@ -1296,102 +1089,6 @@ class User(ModelBase):
         self.total_silver += int(silver)
         task_event_dispatch = self.mm.get_event('task_event_dispatch')
         task_event_dispatch.call_method('get_silver', add_value=int(silver))
-
-    def is_king_war_score_enough(self, num):
-        """ 是否斗技商城币足够
-
-        :param num:
-        :return:
-        """
-        return self.king_war_score >= int(num)
-
-    def deduct_king_war_score(self, num):
-        """ 扣除斗技商城币
-
-        :param num:
-        :return:
-        """
-        num = int(num)
-        if self.is_king_war_score_enough(num):
-            self.king_war_score -= num
-
-    def is_wormhole_score_enough(self, num):
-        """ 是否虫洞商城币足够
-
-        :param num:
-        :return:
-        """
-        return self.wormhole_score >= int(num)
-
-    def deduct_wormhole_score(self, num):
-        """ 扣除虫洞商城币
-
-        :param num:
-        :return:
-        """
-        num = int(num)
-        if self.is_wormhole_score_enough(num):
-            self.wormhole_score -= num
-
-    def add_wormhole_score(self, num):
-        """ 增加虫洞商城币
-
-        :param num:
-        :return:
-        """
-        self.wormhole_score += int(num)
-
-    def is_equip_coin_enough(self, num):
-        """ 是否装备币足够
-
-        :param num:
-        :return:
-        """
-        return self.equip_coin >= int(num)
-
-    def deduct_equip_coin(self, num):
-        """ 扣除装备币
-
-        :param num:
-        :return:
-        """
-        num = int(num)
-        if self.is_equip_coin_enough(num):
-            self.equip_coin -= num
-
-    def add_equip_coin(self, num):
-        """ 增加装备币
-
-        :param num:
-        :return:
-        """
-        self.equip_coin += int(num)
-
-    def is_honor_coin_enough(self, num):
-        """ 是否荣誉币足够
-
-        :param num:
-        :return:
-        """
-        return self.honor_coin >= int(num)
-
-    def deduct_honor_coin(self, num):
-        """ 扣除荣誉币
-
-        :param num:
-        :return:
-        """
-        num = int(num)
-        if self.is_honor_coin_enough(num):
-            self.honor_coin -= num
-
-    def add_honor_coin(self, num):
-        """ 增加荣誉币
-
-        :param num:
-        :return:
-        """
-        self.honor_coin += int(num)
 
     def set_tile_power(self, power):
         self.tile_power = power
@@ -1429,84 +1126,6 @@ class User(ModelBase):
         :return:
         """
         self.king_war_score += int(num)
-
-    def add_challenge(self, challenge):
-        """ 增加挑战卡
-
-        :param challenge:
-        :return:
-        """
-        self.challenge += int(challenge)
-
-    def deduct_challenge(self, challenge):
-        """ 减少挑战卡
-
-        :param challenge:
-        :return:
-        """
-        challenge = int(challenge)
-        if self.is_challenge_enough(challenge):
-            self.challenge -= challenge
-
-    def is_challenge_enough(self, challenge):
-        """ 是否挑战卡足够
-
-        :param challenge:
-        :return:
-        """
-        return self.challenge >= int(challenge)
-
-    def is_silver_ticket_enough(self, ticket):
-        """ 是否普通飞机票足够
-
-        :param ticket:
-        :return:
-        """
-        return self.silver_ticket >= int(ticket)
-
-    def deduct_silver_ticket(self, ticket):
-        """ 扣除普通飞机票
-
-        :param ticket:
-        :return:
-        """
-        ticket = int(ticket)
-        if self.is_silver_ticket_enough(ticket):
-            self.silver_ticket -= ticket
-
-    def add_silver_ticket(self, ticket):
-        """ 增加普通飞机票
-
-        :param ticket:
-        :return:
-        """
-        self.silver_ticket += int(ticket)
-
-    def is_diamond_ticket_enough(self, ticket):
-        """ 是否高级飞机票足够
-
-        :param ticket:
-        :return:
-        """
-        return self.diamond_ticket >= int(ticket)
-
-    def deduct_diamond_ticket(self, ticket):
-        """ 扣除高级飞机票
-
-        :param ticket:
-        :return:
-        """
-        ticket = int(ticket)
-        if self.is_diamond_ticket_enough(ticket):
-            self.diamond_ticket -= ticket
-
-    def add_diamond_ticket(self, ticket):
-        """ 增加高级飞机票
-
-        :param ticket:
-        :return:
-        """
-        self.diamond_ticket += int(ticket)
 
     def update_session_and_expired(self, sid, expired):
         """ 更新session和过期时间
@@ -2075,6 +1694,8 @@ class User(ModelBase):
         公测返利
         :return:
         """
+        return
+        
         server_id = settings.get_server_num(self._server_name)
         if server_id not in [1, 2, 3]:
             return

@@ -241,7 +241,7 @@ def get_rpc_client():
     获取连接rpc的客户端
     :return:
     """
-    # todo 临时用python分发，之后改成c++多线程
+    # 临时用python分发，之后改成c++多线程
     if settings.ENV_NAME in settings.RANDOM_CLIENT_PLATFORM:
         return get_random_client()
 

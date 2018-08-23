@@ -83,7 +83,7 @@ def select(req, **kwargs):
     last_update_time = c.last_update_time
 
     if not config_data and config_key:
-        config_data = getattr(game_config, config_key)
+        config_data = getattr(front_game_config, config_key)
 
     refresh_text = req.get_argument('config_refresh_text', '')
     flag = int(req.get_argument('config_refresh_flag', 0))
@@ -109,7 +109,7 @@ def select(req, **kwargs):
     msg = kwargs.get('msg', '')
 
     return render(req, 'admin/config/index.html', **{
-        'mapping_config': back_mapping_config,
+        'mapping_config': front_mapping_config,
         'config_key': config_key,
         'config_data': config_data,
         'config_refresh_flag': refresh_flag,
@@ -322,7 +322,7 @@ def server_change(req):
     msg = []
     server_key = req.get_argument('server_key')
     sc = None
-    if server_key == 'master':
+    if server_key in ['master', 'public']:
         msg.append(u'master不能被修改')
     else:
         server_name = req.get_argument('server_name', u'')
@@ -353,6 +353,10 @@ def server_change(req):
 
             msg.append(u'%s-%s changed' % (server_key, server_name))
             sc.save()
+
+            game_config.server_open[server_key] = time.strftime('%F %T')
+            game_config.update_funcs_version('server_open')
+
     return server_list(req, server_config_obj=sc, msg=msg)
 
 
@@ -452,7 +456,7 @@ def get_all_config(req):
     req.set_header('Content-Type', 'application/txt')
     req.set_header('Content-Disposition', 'attachment;filename=local_config_back.py')
     from test.get_all_configs import get_all_config
-    file_name = get_all_config()
+    file_name = get_all_config(back_config=False)
     file_obj = open(file_name, 'r')
     req.write(file_obj.read())
 

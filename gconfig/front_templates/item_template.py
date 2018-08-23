@@ -45,10 +45,12 @@ grade_lvlup_item = {
 # 7：数值"
 use_item = {
     'uk': ('id', 'int'),  # 道具id
+    'type': ('type', 'int'),  # 类型
     'name': ('name', 'unicode'),  # 名字
     'story': ('story', 'unicode'),  # 说明
     'icon': ('icon', 'str'),   # icon
     'quality': ('quality', 'int'),   # 品质
+    'star': ('star', 'int'),   # 星级
     'is_use': ('is_use', 'int'),   # 使用类型
     'use_effect': ('use_effect', 'use_item'),   # 使用效果
     'guide': ('guide', 'int_list_or_int'),   # 掉落

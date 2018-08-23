@@ -1,8 +1,30 @@
 #! --*-- coding: utf-8 --*--
-__author__ = 'kaiqigu'
+__author__ = 'yanyunfei'
 
 # 自己关卡模块
 from gconfig import check
+
+
+# avg剧情配置
+avg_dialogue = {
+    'uk': ('id', 'int'),
+    'chapter': ('chapter', 'int'),
+    'player_sex': ('player_sex', 'int'),
+    # 'position': ('position', 'int'),
+    'is_option': ('is_option', 'int'),
+    'option_team': ('option_team', 'int_list'),
+    'next': ('next', 'int'),
+    'is_end': ('is_end', 'int'),
+    'hero_id': ('hero_id', 'int'),
+    'type': ('type', 'int'),
+    # 'name': ('name', 'unicode'),
+    'is_turn': ('is_turn', 'int'),
+    'hero_figue': ('hero_figue', 'str'),
+    'background': ('background', 'str'),
+    'hero_expression': ('hero_expression', 'str'),
+    'word': ('word', 'unicode'),
+    'voice': ('voice', 'str'),
+}
 
 
 # 战斗内广告栏
@@ -161,28 +183,6 @@ pda = {
     'title': ('title', 'unicode'),  # 标题
     'des': ('des', 'unicode'),      # 内容
     'pic': ('pic', 'str'),          # 图片
-}
-
-
-# avg剧情配置
-avg_dialogue = {
-    'uk': ('id', 'int'),
-    'opera': ('opera', 'str'),
-    'chapter': ('chapter', 'int'),
-    'position': ('position', 'int'),
-    'is_option': ('is_option', 'int'),
-    'option_team': ('option_team', 'int_list'),
-    'next': ('next', 'int'),
-    'is_end': ('is_end', 'int'),
-    'hero_id': ('hero_id', 'int'),
-    'type': ('type', 'int'),
-    'name': ('name', 'unicode'),
-    'is_turn': ('is_turn', 'int'),
-    'hero_expression': ('hero_expression', 'str'),
-    'word': ('word', 'unicode'),
-    'voice': ('voice', 'str'),
-    'hero_figue': ('hero_figue', 'str'),
-    'background': ('background', 'str'),
 }
 
 

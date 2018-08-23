@@ -56,7 +56,7 @@ class HandlerManager(object):
 
         return abs(int(float(value))) if is_int else value
 
-    PARAMS_TYPE = (int, int)
+    PARAMS_TYPE = (lambda x: abs(int(x)), lambda x: abs(int(x)))
 
     def get_mapping_arguments(self, name, params_type=PARAMS_TYPE, split='_', result_type=list):
         """ 获取多个参数, 仅支持arg=1_1&arg=1_2 或 arg=x_1&arg=y_1

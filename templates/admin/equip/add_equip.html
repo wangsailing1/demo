@@ -1,5 +1,6 @@
 <body>
 {% from gconfig import game_config %}
+{% from gconfig import get_str_words %}
 {% if msg %}
 <div style="color: red">{{msg}}</div>
 {% end %}
@@ -16,10 +17,10 @@
         <th>增加</th>
     </tr>
 
-{% for equip_id, equip_info in sorted(game_config.equip_basis.iteritems(), key=lambda x: x[0]) %}
+{% for equip_id, equip_info in sorted(game_config.equip.iteritems(), key=lambda x: x[0]) %}
     <tr align="center">
         <td>{{equip_id}}</td>
-        <td>{{equip_info['name']}}</td>
+        <td>{{get_str_words('1', equip_info['name'])}}</td>
         <td><input type="text" name="equip_{{equip_id}}" value="0" /></td>
         <td><input value="submit" name="submit"  type="submit" /></td>
     </tr>

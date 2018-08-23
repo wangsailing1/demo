@@ -5,36 +5,22 @@
 {% end %}
 <h3>装备：</h3>
 {% from gconfig import game_config %}
+<h3>装备：</h3>
 <table border="1" cellspacing="0" cellpadding="1">
     <tr>
-        <th>唯一id</th>
-        <th>配置id</th>
-        <th>隐藏等级</th>
-        <th>强化等级</th>
-        <th>品质</th>
-        <th>经验</th>
-        <th>基础属性</th>
-        <th>附加属性</th>
-        <th>穿戴者</th>
+        <th>装备id</th>
+        <th>装备数量</th>
         <th>修改</th>
         <th>删除</th>
     </tr>
 {% if equip %}
-{% for equip_oid, equip_dict in \
-    sorted(equip.equips.iteritems(), key=lambda x: (x[1]['lv'], x[1]['exp'], x[1]['id']), reverse=True) %}
+{% for equip_id, equip_num in sorted(equip.equips.iteritems(), key=lambda x: x[0]) %}
     <tr align="center">
         <form action="/{{url_partition}}/admin/equip/equip_update/" method="post">
-        <input type="hidden" name="equip_oid" value="{{equip_oid}}" />
         <input type="hidden" name="uid" value="{{uid}}" />
-        <td>{{ equip_oid }}</td>
-        <td>{{ equip_dict['id'] }}</td>
-        <td><input type="text" name="lv" value="{{ equip_dict['lv'] }}" size="5" /></td>
-        <td><input type="text" name="evo" value="{{ equip_dict['evo'] }}" size="5" /></td>
-        <td><input type="text" name="quality" value="{{ equip_dict['quality'] }}" size="5" /></td>
-        <td>{{ equip_dict['exp'] }}</td>
-        <td>{{ [(game_config.attr_mapping[k], v) for k, v in equip_dict['base']] }}</td>
-        <td>{{ [(game_config.attr_mapping[k], v) for k, v in equip_dict.get('extra', {})] }}</td>
-        <td>{{ equip_dict['owner'] or 'empty' }}</td>
+        <input type="hidden" name="equip_id" value="{{equip_id}}" />
+        <td>{{ equip_id }}</td>
+        <td><input type="text" name="equip_num" value="{{ equip_num }}" size="5" /></td>
         <td><input value="modify" name="modify"  type="submit" /></td>
         <td><input value="delete" name="delete"  type="submit" /></td>
         </form>
@@ -42,4 +28,32 @@
 {% end %}
 {% end %}
 </table>
+
+
+<hr>
+
+<h3>道具碎片：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>碎片id</th>
+        <th>碎片数量</th>
+        <th>修改</th>
+        <th>删除</th>
+    </tr>
+
+{% for piece_id, piece_num in sorted(equip.equip_pieces.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/equip/piece_update/" method="post">
+        <input type="hidden" name="uid" value="{{uid}}" />
+        <input type="hidden" name="piece_id" value="{{piece_id}}" />
+        <td>{{ piece_id }}</td>
+        <td><input type="text" name="piece_num" value="{{ piece_num }}" size="5" /></td>
+        <td><input value="modify" name="modify"  type="submit" /></td>
+        <td><input value="delete" name="delete"  type="submit" /></td>
+        </form>
+    </tr>
+{% end %}
+</table>
+
+
 {% end %}

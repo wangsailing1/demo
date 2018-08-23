@@ -135,7 +135,8 @@ for k, i in enumerate(apps):
     father_server = i[5] if len(i) > 5 and i[5] else i[0]
     chat_ip, chat_port = CHAT_IDS[int(father_server[-1]) % chat_ips_len]
     SERVERS[i[0]] = {
-        'server': 'http://%s//%s/%s/' % (MASTER_HOST, URL_PARTITION, i[0]),
+        # 'server': 'http://%s/%s/' % (MASTER_HOST, i[0]),
+        'server': 'http://%s/%s/' % (MASTER_HOST, URL_PARTITION),
         'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'k2IEKp2PbiQSOfu2MNOf'},
         # 'long_addr': long_net_config.get(i[1], long_net_config.values()[0]),
         'cpp_addr': {'ip': "203.86.67.226", "port": "8000"},

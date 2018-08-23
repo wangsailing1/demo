@@ -43,7 +43,10 @@ return_msg_config = {
     'error_silver': u"金币不足",
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
-    'error_dark_coin': u'黑街货币不足',
+
+    'error_card_cold': u'艺人被雪藏中',
+    'error_card_piece': u'艺人碎片不足',
+
     'error_stone': u"灵魂石不足",
     'error_item': u'道具不足',
     'error_citem': u'采集物不足',
@@ -58,6 +61,7 @@ return_msg_config = {
     'error_gcard': u'昆特牌不足',
     'error_energy': u'能量不足',
     'error_point': u'体力不足',
+    'error_like': u'点赞不足',
     'error_aitem': u'觉醒材料不足',
     'error_unlock': u'还未解锁',
     'error_team_skill': u'战队技能碎片不足',

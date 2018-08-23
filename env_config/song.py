@@ -66,11 +66,11 @@ celery_config = {'host': '127.0.0.1', 'port': 6301, 'socket_timeout': 5, 'db': 1
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
     # 传给前端的各个区服连接对应的net节点,与netsettings里的匹配
-    ('gtt1', 'net1', '127.0.0.1', 6301, 2),
+    ('gtt1', 'net1', '127.0.0.1', 6301, 3),
     ('gtt2', 'net1', '127.0.0.1', 6301, 3),
-    ('gtt3', 'net1', '127.0.0.1', 6301, 4),
-    ('gtt4', 'net1', '127.0.0.1', 6301, 5),
-    ('gtt5', 'net1', '127.0.0.1', 6301, 6),
+    ('gtt3', 'net1', '127.0.0.1', 6301, 3),
+    ('gtt4', 'net1', '127.0.0.1', 6301, 3),
+    ('gtt5', 'net1', '127.0.0.1', 6301, 3),
 ]
 
 

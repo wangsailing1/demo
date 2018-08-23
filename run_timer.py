@@ -68,33 +68,9 @@ from models.server import ServerUidList
 # from scrips.statistics.dmp_snapshot import do_snapshot
 from lib.utils.online_user import backup_all_server_online_count
 
-from logics.guild_fight import group_team, settlement_reward, filter_guild
-# from logics.rally import award_rally_rank_reward
-from logics.high_ladder import refresh_arena_day_reward
-from logics.limit_active import limit_hero_mail_time, send_limit_hero_rank_award
-from logics.server_limit_active import server_limit_hero_mail_time, server_send_limit_hero_rank_award
-
-# from logics.decisive_battle import del_decisive_battle_rank
-# from logics.decisive_battle import mapping_battle_uid
-from logics.guild import send_texas_reward
 
 # from logics.decisive_battle import mapping_battle_uid, send_duel_rank_award
 # from logics.decisive_battle import one_server_battle, vip_auto_enroll
-from logics.active import send_daily_rank_reward
-
-from logics.king_war import king_war_rank_mail_time
-from logics.king_war import send_rank_award
-from logics.super_active import super_active_refresh
-from logics.guild import del_guild_boss_rank, send_guild_boss_reward
-
-from logics.wormhole import send_normal_reward, send_lucky_reward, refresh_lucky_pos
-from logics.server_celebrate import server_celebrate_rank_time, server_celebrate_rank_data
-from logics.world_boss import send_world_boss_reward
-from logics.ultimate_challenge import (
-    challenge_rank_time,
-    send_challenge_daily_rank_award,
-    send_challenge_rank_award,
-)
 
 JOBS_RUNTIME_KEY = 'jobs_runtime_key'
 # 任务配置，添加分服或任务后，需要重启进程使之生效
@@ -114,61 +90,16 @@ TIMER_JOBS = (
     # 公会战周五晚上结算发奖
     # ('cron', dict(day_of_week='4', hour='22'), settlement_reward, 0),
 
-    # # 血尘拉力赛每晚8点发奖
-    # ('cron', dict(hour='19', minute=50), award_rally_rank_reward, 0),
-
-    # 虫洞矿坑结算
-    ('cron', dict(day_of_week='6', hour='22', minute=1), send_normal_reward, 0),
-    # 虫洞矿坑发送幸运奖励
-    ('cron', dict(day_of_week='1,2,3,4,5,6', hour='22', minute=0), send_lucky_reward, 0),
-    # 虫洞矿坑幸运位置刷新
-    ('cron', dict(day_of_week='1,2,3,4,5,6', hour='21', minute=30), refresh_lucky_pos, 0),
-    # 竞技场每晚9点发奖
-    ('cron', dict(hour='21', minute=1), refresh_arena_day_reward, 0),
-    # 争霸赛排名删除
-    # ('cron', dict(hour='0', minute=5), del_decisive_battle_rank, 0),
-    # 争霸赛匹配玩家
-    # ('cron', dict(hour='19', minute=58), mapping_battle_uid, 0),
-    # 争霸赛战斗
-    # ('cron', dict(hour='20', minute='1,5,9,13,17,21,25,29,33,37'), one_server_battle, 0),
-    # 争霸赛vip玩家自动报名
-    # ('cron', dict(hour='10', minute=1), vip_auto_enroll, 0),
-    # 争霸赛21点发奖
-    # ('cron', dict(hour='21', minute=0), send_duel_rank_award, 0),
-
-    # 德州扑克凌晨发奖
-    ('cron', dict(hour='0', minute=0), send_texas_reward, 0),
-    # 每日等级排行榜时间
-    ('cron', dict(hour='22', minute=0), send_daily_rank_reward, 0),
-
-    # 宇宙最强
-    ('cron', dict(hour='12,21,23', minute=0), super_active_refresh, 0),
-    # 公会boss删除排行榜
-    # ('cron', dict(hour='11,18', minute=58), del_guild_boss_rank, 0),
-    # 公会boss发奖
-    ('cron', dict(hour='12,19', minute=16), send_guild_boss_reward, 0),
-
-    # 世界boss发奖
-    ('cron', dict(minute=1), send_world_boss_reward, 0),
-
-    # 极限挑战每日排名发奖
-    ('cron', dict(hour='0', minute=1), send_challenge_daily_rank_award, 1),
 
 )
 DATE_LIST_JOBS = (
     # 返回时间列表的函数（类似要执行的函数，分全局和非全局）   要执行的函数， 是否是全局的(0,1)
     # #### 工会战   #######
     # (test2, test, 0),
-    # 限时英雄排名发奖
-    (limit_hero_mail_time                       , send_limit_hero_rank_award            , 1),
-    # 新服限时英雄排名发奖
-    (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
-    # 王者争霸个人排名、公会排名发奖
-    (king_war_rank_mail_time                , send_rank_award     , 0),
-    (server_celebrate_rank_time,             server_celebrate_rank_data,             0),
-
-    # 极限挑战最终排名发奖
-    (challenge_rank_time, send_challenge_rank_award, 1),
+    # # 限时英雄排名发奖
+    # (limit_hero_mail_time                       , send_limit_hero_rank_award            , 1),
+    # # 新服限时英雄排名发奖
+    # (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
 )
 
 

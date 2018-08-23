@@ -68,7 +68,7 @@ celery_config = {'host': '10.0.0.5', 'port': 6305, 'socket_timeout': 5, 'db': 2,
 
 # 每个app配置
 apps = [
-    # todo 10.0.0.19：6302,此redis端口用于slg功能用
+    # 10.0.0.19：6302,此redis端口用于slg功能用
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
     ('gt1', 'net1', '10.0.0.19', 6302, 0),
     ('gt2', 'net1', '10.0.0.19', 6303, 0),

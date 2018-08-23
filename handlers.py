@@ -190,6 +190,37 @@ class LoginHandler(BaseRequestHandler):
         self.handler()
 
 
+class AdminHandler(BaseRequestHandler):
+
+    def get(self, module_name, func_name=None):
+        """ get请求
+
+        :param module_name:
+        :param func_name:
+        :return:
+        """
+        if func_name:
+            module = importlib.import_module('admin.%s' % module_name)
+            method = getattr(module, func_name)
+            self.module_name = module_name
+            self.method_name = func_name
+        else:
+            module = importlib.import_module('admin.menu')
+            method = getattr(module, module_name)
+            self.module_name = 'menu'
+            self.method_name = module_name
+        return method(self)
+
+    def post(self, module_name, func_name=None):
+        """ post请求
+
+        :param module_name:
+        :param func_name:
+        :return:
+        """
+        return self.get(module_name, func_name=func_name)
+
+
 class APIRequestHandler(BaseRequestHandler):
     """ 统一的API Handler
 
@@ -364,17 +395,15 @@ class APIRequestHandler(BaseRequestHandler):
                 # 主线任务，支线任务自动领奖
                 mission_award = {}
                 if method_param in self.AUTO_RECEIVE_MISSION_AWARD_FUNC:
-                    mission_award = self.hm.mm.mission_main.auto_receive_award()
-                    if mission_award:
-                        data['_mission_main'] = mission_award
+                    pass
+                    # mission_award = self.hm.mm.mission_main.auto_receive_award()
+                    # if mission_award:
+                    #     data['_mission_main'] = mission_award
 
                 if mission_award or method_param in self.MISSION_TASK_UPDATE_FUNC:
-                    data['mission_task'] = self.hm.mm.mission_main.get_main_tasks()
-                    data['side_task'] = self.hm.mm.mission_side.get_side_tasks(filter=True)
-
-                    # mission_award = self.hm.mm.mission_side.auto_receive_award()
-                    # if mission_award:
-                    #     data['_mission_side'] = mission_award
+                    pass
+                    # data['mission_task'] = self.hm.mm.mission_main.get_main_tasks()
+                    # data['side_task'] = self.hm.mm.mission_side.get_side_tasks(filter=True)
 
                 # 执行成功保存数据
                 self.hm.mm.do_save()

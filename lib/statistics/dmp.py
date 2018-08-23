@@ -96,10 +96,7 @@ def get_stat(mm):
         'vip': mm.user.vip,
         'vip_exp': mm.user.vip_exp,
         'level': mm.user.level,
-        'combat': mm.hero.get_max_combat(),
         'diamond': mm.user.diamond,
-        'silver_ticket': mm.user.silver_ticket,
-        'diamond_ticket': mm.user.diamond_ticket,
     }
 
 

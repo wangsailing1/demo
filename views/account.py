@@ -190,16 +190,16 @@ def new_user(hm):
 
     # 首次建号赠送的道具等
     reward = {}
-    for index, config in game_config.initial_data.iteritems():
-        sort = config.get('sort')
-        gift = config.get('reward')
-        if sort == 1:
-            add_mult_gift(mm, gift, cur_data=reward)
-        elif sort == 2:
-            mm.battle_item.groups[1] = {'name': i18n_msg.get(5, mm.user.language_sort), 'group': gift, 'status': 1}
-            mm.battle_item.save()
-        elif sort == 3:
-            pass
+    # for index, config in game_config.initial_data.iteritems():
+    #     sort = config.get('sort')
+    #     gift = config.get('reward')
+    #     if sort == 1:
+    #         add_mult_gift(mm, gift, cur_data=reward)
+    #     elif sort == 2:
+    #         mm.battle_item.groups[1] = {'name': i18n_msg.get(5, mm.user.language_sort), 'group': gift, 'status': 1}
+    #         mm.battle_item.save()
+    #     elif sort == 3:
+    #         pass
 
     # 测试服，创建指定账号
     test_init(mm)
@@ -296,27 +296,11 @@ def test_init(mm):
         mm.mail.add_mail(mail_dict)
 
     # 英雄
-    hero_config = game_config.initial_account.get('hero')
+    hero_config = game_config.initial_account.get('card')
     if hero_config:
         for i in hero_config:
-            mm.hero.add_hero(i[0], lv=i[1], evo=i[2], star=i[3])
+            mm.card.add_card(i[0], lv=i[1], evo=i[2], star=i[3])
         mm.hero.save()
-
-    # 基因
-    gene_config = game_config.initial_account.get('gene')
-    if gene_config:
-        for i in gene_config:
-            for j in xrange(i[1]):
-                mm.gene.add_gene(i[0], evo=i[2], star=i[3])
-        mm.gene.save()
-
-    # 通关章节
-    adv_config = game_config.initial_account.get('adv')
-    if adv_config:
-        mm.private_city.final_chapter = range(1, adv_config + 1)
-        mm.private_city.unlock_chapter = range(1, adv_config + 1)
-        mm.private_city.final_star = range(1, adv_config + 1)
-        mm.private_city.save()
 
 
 def mark_user_login(hm):
@@ -347,7 +331,7 @@ def get_user_server_list(hm, account=None):
     # 英雄互娱给的 渠道id, 0为母包，母包不上线
     tpid = hm.get_argument('tpid', 0, is_int=True)
 
-    # TODO: api session验证
+    # api session验证
     now = int(time.time())
     sid = sid_generate(account, now)
 

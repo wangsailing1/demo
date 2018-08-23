@@ -356,27 +356,27 @@ def high_ladder_battle_data(hm, args, data, **kwargs):
     ]
 
 
-def gacha_get_gacha(hm, args, data, **kwargs):
-    user = hm.mm.user
-    base_info = get_base_info(user)
-
-    sort = hm.get_argument('sort', is_int=True)
-    count = hm.get_argument('count', is_int=True)
-
-    reward = data['reward']
-    _bdc_event_info = data.pop('_bdc_event_info')
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        base_info['rlv'],
-        base_info['vip'],
-
-        sort,
-        reward,
-        _bdc_event_info['cost_type'],
-        _bdc_event_info['cost_num']
-    ]
+# def gacha_get_gacha(hm, args, data, **kwargs):
+#     user = hm.mm.user
+#     base_info = get_base_info(user)
+#
+#     sort = hm.get_argument('sort', is_int=True)
+#     count = hm.get_argument('count', is_int=True)
+#
+#     reward = data['reward']
+#     _bdc_event_info = data.pop('_bdc_event_info')
+#     return [
+#         base_info['sid'],
+#         base_info['aid'],
+#         base_info['rid'],
+#         base_info['rlv'],
+#         base_info['vip'],
+#
+#         sort,
+#         reward,
+#         _bdc_event_info['cost_type'],
+#         _bdc_event_info['cost_num']
+#     ]
 
 
 ####################### 通过api接口抓取的动作  end ###############################

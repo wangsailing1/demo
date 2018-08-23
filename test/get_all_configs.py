@@ -8,21 +8,21 @@ mxfarm_config:
     }
 '''
 
+
 def get_all_config(back_config=True):
     import os, sys
     import cPickle as pickle
 
-
     cur_dir = os.path.dirname(os.path.abspath(__file__)) + os.sep + os.pardir + os.sep
-    #sys.path.insert(0, os.path.join(cur_dir, ".."))
+    # sys.path.insert(0, os.path.join(cur_dir, ".."))
     sys.path.append(os.path.join(cur_dir))
-    
+
     try:
         import settings
         from models.config import Config, FrontConfig
     except:
         import settings
-        settings.set_env('yyf')
+        settings.set_env('song')
         from models.config import Config, FrontConfig
 
     config_dict = {}
@@ -46,6 +46,7 @@ def get_all_config(back_config=True):
     pickle.dump(config_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
     f.close()
     return file_name
+
 
 if __name__ == '__main__':
     get_all_config()

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # default root dir
-_ROOT_PATH='/data/sites/genesis2_dev/'
-
 CUR_PATH=$(cd "$(dirname "$0")"; pwd)
 
 #if [ $# -ne 1 ]; then
@@ -12,4 +10,4 @@ CUR_PATH=$(cd "$(dirname "$0")"; pwd)
 
 env=$1
 
-ipython -i $CUR_PATH/shell.py $env $_ROOT_PATH
+ipython -i $CUR_PATH/shell.py $env $CUR_PATH

@@ -51,9 +51,9 @@ class Application(web.Application):
             (r"/?[a-zA-Z0-9_]*/slg/?", 'handlers.SLGRequestHandler'),
             (r"/?[a-zA-Z0-9_]*/login/?", 'handlers.LoginHandler'),
             (r"/?[a-zA-Z0-9_]*/config/?", 'handlers.ConfigHandler'),
-            (r"/admin/([\w-]+)/?", 'admin.handler.AdminHandler'),
-            (r"/admin/([\w-]+)/([\w-]+)/?", 'admin.handler.AdminHandler'),
-            (r"/%s/admin/([\w-]+)/([\w-]+)/?" % settings.URL_PARTITION, 'admin.handler.AdminHandler'),  # 供本地开发
+            (r"/admin/([\w-]+)/?", 'handlers.AdminHandler'),
+            (r"/admin/([\w-]+)/([\w-]+)/?", 'handlers.AdminHandler'),
+            (r"/%s/admin/([\w-]+)/([\w-]+)/?" % settings.URL_PARTITION, 'handlers.AdminHandler'),  # 供本地开发
             (r'/genesis2/weixin/([\w-]+)/', 'handlers.WeixinHandler'),  # 微信签到
 
             (r'/hero/([\w-]+)/', 'handlers.HeroHandler'),  # 英雄互娱sdk回调

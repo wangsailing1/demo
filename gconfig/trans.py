@@ -106,14 +106,14 @@ def trans_header(sheet_title, sheet_iter, md5_obj, config_template):
             if sheet_name in sheet_headers_mapping:
                 headers[field] = (sheet_name, sheet_headers_mapping[sheet_name], sheet_sort, sheet_check_func)
             else:
-                raise TableColError('excel %s col %s error, all cols %s' % (sheet_title, sheet_name, sheet_headers_mapping.keys()))
+                raise TableColError('excel "%s" col "%s" not exists, all cols %s' % (sheet_title, sheet_name, sheet_headers_mapping.keys()))
         elif isinstance(sheet_name[0], basestring):
             data = []
             for name in sheet_name:
                 if name in sheet_headers_mapping:
                     data.append(sheet_headers_mapping[name])
                 else:
-                    raise TableColError('excel %s col %s error' % (sheet_title, name))
+                    raise TableColError('excel "%s" col "%s" not exists' % (sheet_title, name))
             headers[field] = (data, sheet_sort, sheet_check_func)
         else:
             data = []
@@ -121,7 +121,7 @@ def trans_header(sheet_title, sheet_iter, md5_obj, config_template):
                 if name in sheet_headers_mapping:
                     data.append((key_name, sheet_headers_mapping[name]))
                 else:
-                    raise TableColError('excel %s col %s error' % (sheet_title, name))
+                    raise TableColError('excel "%s" col "%s" not exists' % (sheet_title, name))
             headers[field] = (data, sheet_sort, sheet_check_func)
 
     return headers
@@ -240,7 +240,7 @@ def trans(sheet_title, mapping, sheet_iter, md5_obj, special_func_name):
             uk = data.pop('uk')
             if uk in config:
                 raise TableColError('3excel:%s row_index:%s field:%s sheet_sort:%s value:%s msg:%s' %
-                                    (sheet_title, row_index, 'uk', '', row_data[index], u'id重复'))
+                                    (sheet_title, row_index, 'uk', '', row_data[index], u'id: %s 重复' % uk))
             config[uk] = data
 
     return config

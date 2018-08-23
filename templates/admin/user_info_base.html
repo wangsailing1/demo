@@ -24,17 +24,17 @@
         <table>
             <tr>
                  <td>
-                    <form action="/{{url_partition}}/admin/hero/select/" method="post">
+                    <form action="/{{url_partition}}/admin/card/select/" method="post">
                         <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="英雄数据" />
+                        <input type="submit" value="卡牌数据" />
                     </form>
                 </td>
-                <td>
-                    <form action="/{{url_partition}}/admin/hero/select_attr/" method="post">
-                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="英雄属性" />
-                    </form>
-                </td>
+                <!--<td>-->
+                    <!--<form action="/{{url_partition}}/admin/hero/select_attr/" method="post">-->
+                        <!--<input type="hidden" name="uid" value="{{mm.user.uid}}" />-->
+                        <!--<input type="submit" value="英雄属性" />-->
+                    <!--</form>-->
+                <!--</td>-->
                 <td>
                     <form action="/{{url_partition}}/admin/item/select/" method="post">
                         <input type="hidden" name="uid" value="{{mm.user.uid}}" />
@@ -42,27 +42,9 @@
                     </form>
                 </td>
                 <td>
-                    <form action="/{{url_partition}}/admin/item/select_commander/" method="post">
-                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="统帅数据" />
-                    </form>
-                </td>
-                <td>
-                    <form action="/{{url_partition}}/admin/item/select_commander_part/" method="post">
-                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="统帅碎片" />
-                    </form>
-                </td>
-                <td>
                     <form action="/{{url_partition}}/admin/equip/select/" method="post">
                         <input type="hidden" name="uid" value="{{mm.user.uid}}" />
                         <input type="submit" value="装备数据" />
-                    </form>
-                </td>
-                <td>
-                    <form action="/{{url_partition}}/admin/gene/select/" method="post">
-                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="基因数据" />
                     </form>
                 </td>
                 <td>
@@ -78,9 +60,15 @@
                     </form>
                 </td>
                 <td>
-                    <form action="/{{url_partition}}/admin/user/select_high_ladder/" method="post">
+                    <form action="/{{url_partition}}/admin/item/select_commander/" method="post">
                         <input type="hidden" name="uid" value="{{mm.user.uid}}" />
-                        <input type="submit" value="竞技场" />
+                        <input type="submit" value="统帅数据" />
+                    </form>
+                </td>
+                <td>
+                    <form action="/{{url_partition}}/admin/item/select_commander_part/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="统帅碎片" />
                     </form>
                 </td>
             </tr>

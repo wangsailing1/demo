@@ -33,17 +33,11 @@ def user_status(mm):
 
     user = mm.user
 
-    if user.guild_id:
-        guild_name = user.guild_name
-        if not guild_name:
-            guild = mm.get_obj_by_id('guild', user.guild_id)
-            guild_name = guild.name
-    else:
-        guild_name = ''
+    guild_name = user.guild_name
 
     data = {
         'uid': user.uid,
-        'title': mm.lead_title.cur, # 当前使用的称号
+        # 'title': mm.lead_title.cur, # 当前使用的称号
         'reg_time': user.reg_time,  # 注册时间
         'reg_name': user.reg_name,  # 是否注册过名字
         'change_name': user.change_name,
@@ -54,9 +48,8 @@ def user_status(mm):
         'exp_pot': user.exp_pot,
         'diamond': user.diamond,
         'coin': user.coin,
+        'like': user.like,
         'silver': user.silver,
-        'silver_ticket': user.silver_ticket,
-        'diamond_ticket': user.diamond_ticket,
         'vip': user.vip,
         'vip_exp': user.vip_exp,
         'guild_id': user.guild_id,
@@ -66,35 +59,21 @@ def user_status(mm):
         'action_point': user.action_point,
         'action_point_updatetime': user.action_point_updatetime,
 
-        'battle_times': mm.private_city.battle_times,  # 副本挑战次数
-        'max_battle_times': mm.private_city.MAX_BATTLE_TIMES,  # 简单以上挑战次数
-        'max_reset_dungeon_times': mm.private_city.get_max_reset_dungeon_times(),
-        'hard_reset_times': mm.private_city.hard_reset_times,
-        'reset_hard_cost': mm.private_city.get_reset_hard_cost(),
+        # 'battle_times': mm.private_city.battle_times,  # 副本挑战次数
+        # 'max_battle_times': mm.private_city.MAX_BATTLE_TIMES,  # 简单以上挑战次数
+        # 'max_reset_dungeon_times': mm.private_city.get_max_reset_dungeon_times(),
+        # 'hard_reset_times': mm.private_city.hard_reset_times,
+        # 'reset_hard_cost': mm.private_city.get_reset_hard_cost(),
+        # 'avg_done': mm.private_city.get_avg_done(),  # 记录播放过的avg id
 
         'next_point_time': user.next_point_time(),
         'max_point_time': user.max_point_time(),
         'buy_point_times': user.buy_point_times,
-        'max_combat': mm.hero.get_max_combat(),
+        # 'max_combat': mm.hero.get_max_combat(),
         'hunt_coin': user.get_hunt_coin(),    # 末日狩猎挑战券
-        'team_boss_coin': user.get_team_boss_coin(),    # 组队boss挑战券
-        'challenge': mm.user.challenge,  # 血尘挑战币
-        'ladder_coin': mm.user.ladder_coin,     # 天梯币
-        'dark_coin': mm.user.dark_coin,         # 黑街币
-        'box_coin': mm.user.box_coin,   # 觉醒宝箱碎片
-        'donate_coin': mm.user.donate_coin,     # 荣耀值
-        'avg_done': mm.private_city.get_avg_done(), # 记录播放过的avg id
         'guild_coin': mm.user.guild_coin,       # 公会币
-        'box_key': mm.user.box_key,             # 觉醒宝箱钥匙
         'config_type': mm.user.config_type,
         'chat_times': mm.user.chat_times,       # 聊天次数
-        'king_war_score': mm.user.king_war_score,   # 斗技商城币
-        'wormhole_score': mm.user.wormhole_score,  # 虫洞币
-        'star_array_point': mm.star_array.star_point,   # 星座点
-        'endless_coin': mm.user.endless_coin,       # 远征币
-        'endless_score': mm.user.endless_score,  # 远征积分
-        'equip_coin': mm.user.equip_coin,       # 装备币
-        'honor_coin': mm.user.honor_coin,       # 荣誉币
     }
     return data
 

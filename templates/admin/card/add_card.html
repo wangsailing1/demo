@@ -1,0 +1,32 @@
+<body>
+{% from gconfig import front_game_config %}
+{% from gconfig import get_str_words %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>赠送英雄：</h3>
+
+<form action="/{{url_partition}}/admin/card/add_card/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>配置id</th>
+        <th>英雄名字</th>
+        <!--<th>职业</th>-->
+        <th>选择</th>
+        <th>增加</th>
+    </tr>
+
+{% for card_id, card_info in sorted(front_game_config.card_basis.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{card_id}}</td>
+        <td>{{get_str_words('1', card_info['name'])}}</td>
+        <!--<td></td>-->
+        <td><input type="checkbox" name="card_id" value="{{card_id}}" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

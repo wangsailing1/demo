@@ -15,7 +15,7 @@ menu_name = [
 
 
 select_sort = ['user', 'gwentcard', 'payment', 'long_connection', 'rank', 'user_name', 'other']
-operate_sort = ['hero', 'item', 'commander_part', 'equip', 'gene', 'approval_payment',
+operate_sort = ['card', 'hero', 'equip', 'item', 'commander_part', 'gene', 'approval_payment',
                 'gwentcard', 'mail', 'code', 'payment', 'gs', 'user', 'other']
 develop_sort = ['config', 'user']
 see_data_sort = ['server_overview', 'payment', 'data']
@@ -145,23 +145,26 @@ menu_config = {
         }],
     },
     'operate': {
-        'hero': [{
-            'name': u"送英雄",
-            'sub': [('add_hero', u'赠送英雄', 0)],
+        'card': [{
+            'name': u"送卡牌",
+            'sub': [('add_card', u'赠送卡牌', 0)],
         }, {
-            'name': u"送灵魂石",
-            'sub': [('add_stone', u'赠送灵魂石', 0)],
+            'name': u"送卡牌碎片",
+            'sub': [('add_piece', u'赠送卡牌碎片', 0)],
         }],
         'item': [{
             'name': u"送道具",
             'sub': [('add_item', u'赠送道具', 0)],
-        }, {
-            'name': u"送进阶道具",
-            'sub': [('add_gitem', u'赠送进阶道具', 0)],
-        }, {
-            'name': u"送队长技能",
-            'sub': [('add_leader_skill', u'送队长技能', 0)],
-        }, {
+        },
+        #     {
+        #     'name': u"送进阶道具",
+        #     'sub': [('add_gitem', u'赠送进阶道具', 0)],
+        # },
+        #     {
+        #     'name': u"送队长技能",
+        #     'sub': [('add_leader_skill', u'送队长技能', 0)],
+        # },
+            {
             'name': u"送公会礼物道具",
             'sub': [('add_ggitem', u'赠送公会礼物道具', 0)],
         }, {
@@ -174,7 +177,13 @@ menu_config = {
         'equip': [{
             'name': u"送装备",
             'sub': [('add_equip', u'赠送装备', 0)],
-        }],
+        },
+            {
+                'name': u"送装备碎片",
+                'sub': [('add_piece', u'赠送装备碎片', 0)],
+            }
+
+        ],
         'gene': [{
             'name': u"送基因",
             'sub': [('add_gene', u'赠送基因', 0)],
@@ -237,10 +246,12 @@ menu_config = {
                 ('upload', u'配置上传', 1),
                 ('refresh', u'配置更新', 1)
             ],
-        },{
-            'name': u"前端配置",
-            'sub': [('front_select', u'前端配置首页', 1)],
-        },{
+        },
+        #     {
+        #     'name': u"前端配置",
+        #     'sub': [('front_select', u'前端配置首页', 1)],
+        # },
+            {
             'name': u"配置下载",
             'sub': [('get_deploy', u'配置下载首页', 1), ('deploy_download', u'配置下载', 1)],
         },{
