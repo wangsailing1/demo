@@ -28,7 +28,7 @@ from lib.utils import zip_date
 from lib.utils.change_time import debug_sync_change_time
 from lib.core.environ import ModelManager
 
-from gconfig import game_config, front_game_config
+from gconfig import front_game_config as game_config
 from test.test_helper import get_hm
 import time
 import datetime
