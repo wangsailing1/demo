@@ -114,7 +114,6 @@ def add_piece(req, **kwargs):
     uid = req.get_argument('uid', '')
 
     result = {'msg': '', 'uid': uid, 'max_num': MAX_NUM}
-    quality_cost
     if req.request.method == 'POST':
         if not uid:
             result['msg'] = 'uid is not empty'

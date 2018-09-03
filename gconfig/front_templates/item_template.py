@@ -52,6 +52,7 @@ use_item = {
     'quality': ('quality', 'int'),   # 品质
     'star': ('star', 'int'),   # 星级
     'is_use': ('is_use', 'int'),   # 使用类型
+    'usable': ('usable', 'int'),   # 使用类型
     'use_effect': ('use_effect', 'use_item'),   # 使用效果
     'guide': ('guide', 'int_list_or_int'),   # 掉落
     'is_piece': ('is_piece', 'int'),    # 是否为碎片

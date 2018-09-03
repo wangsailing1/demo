@@ -316,7 +316,6 @@ class CardLogic(object):
         card_config = game_config.card_basis[card_id]
         piece_id = card_config['piece_id']
         cost = card_config['star_cost']
-        print 'fuck---', card.get_piece(piece_id), cost
         print piece_id, card.pieces
         if card.get_piece(piece_id) < cost:
             return 'error_card_piece', {}
@@ -325,6 +324,28 @@ class CardLogic(object):
         card.del_piece(piece_id, cost)
         card.save()
         return 0, {'got_card': card_id}
+
+    def equip_piece_exchange(self, equip_piece_id, num=1):
+        """装备碎片合成
+        :param equip_piece_id:
+        :return:
+        """
+        equip = self.mm.equip
+
+        piece_config = game_config.equip_piece.get(equip_piece_id)
+        if not piece_config:
+            return 1, {}
+
+        equip_id = piece_config['equip_id']
+        cost = piece_config['use_num']
+        print equip_id, equip.equip_pieces
+        if equip.get_piece(equip_piece_id) < cost * num:
+            return 'error_equip_piece', {}
+
+        equip.add_equip(equip_id, num)
+        equip.del_piece(equip_piece_id, cost * num)
+        equip.save()
+        return 0, {}
 
 
 
