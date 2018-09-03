@@ -347,6 +347,28 @@ class CardLogic(object):
         equip.save()
         return 0, {}
 
+    def equip_piece_auto_exchange(self):
+        """装备碎片一键合成
+        :param equip_piece_id:
+        :return:
+        """
+        equip = self.mm.equip
+
+        for piece_id, num in equip.equip_pieces.items():
+            piece_config = game_config.equip_piece[piece_id]
+
+            equip_id = piece_config['equip_id']
+            cost = piece_config['use_num']
+            cur_num = equip.get_piece(piece_id)
+            exchange_num = cur_num / cost
+            if not exchange_num:
+                continue
+
+            equip.add_equip(equip_id, exchange_num)
+            equip.del_piece(piece_id, cost * exchange_num)
+        equip.save()
+        return 0, {}
+
 
 
 

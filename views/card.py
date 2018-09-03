@@ -119,7 +119,17 @@ def equip_piece_exchange(hm):
     """
     cl = CardLogic(hm.mm)
     equip_piece_id = hm.get_argument('piece_id', is_int=True)
-    num = hm.get_argument('num', is_int=True)
+    num = hm.get_argument('num', default=1, is_int=True)
     rc, data = cl.equip_piece_exchange(equip_piece_id, num)
+    return rc, data
+
+
+def equip_piece_auto_exchange(hm):
+    """装备碎片一键合成
+    :param hm:
+    :return:
+    """
+    cl = CardLogic(hm.mm)
+    rc, data = cl.equip_piece_auto_exchange()
     return rc, data
 
