@@ -14,6 +14,7 @@ card_basis = {
     'profession_type': ('profession_type', 'int'),  # 艺人分类 0=青春 1=成熟
     'head_portrait': ('head_portrait', 'str'),  # 艺人头像
     'half_portrait': ('half_portrait', 'str'),  # 艺人半身像
+    'small_portrait': ('small_portrait', 'str'),  # 艺人半身像
     'hero_talk': ('hero_talk', 'int'),  # 艺人人口号
     'hero_title': ('hero_title', 'int'),  # 艺人称号
     'hero_design': ('hero_design', 'int'),  # 艺人描述
