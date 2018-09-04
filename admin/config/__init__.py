@@ -78,7 +78,7 @@ def select(req, **kwargs):
     config_key = req.get_argument('config_key', '')
     limit_version = str(req.get_argument('hot_version_limit', ''))
 
-    c = Config.get(config_key)
+    c = FrontConfig.get(config_key)
     config_data = c.value
     last_update_time = c.last_update_time
 

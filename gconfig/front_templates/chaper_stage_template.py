@@ -1,0 +1,73 @@
+# -*- coding: utf-8 –*-
+
+
+chapter_stage = {
+    'uk':               ('stage_id',        'int'),  # id
+    'script_id':        ('script_id',       'int'),  # 关卡剧本id
+    'show_reward':      ('show_reward',     'int_list'),  # 显示用奖励
+    'player_exp':       ('player_exp',      'int'),  # 公司经验
+    'fight_exp':        ('fight_exp',       'int'),  # 类型经验
+    'fight_reward':     ('fight_reward',    'int_list'),  # 战斗奖励金币
+    'first_reward':     ('first_reward',    'int_list'),  # 首次奖励
+    'random_reward1':   ('random_reward1',  'int_list'),  # 艺人合同奖励
+    'random_num1':      ('random_num1',     'int'),  # 合同奖励数量1
+    'random_reward2':   ('random_reward2',  'int_list'),  # 随机奖励库2
+    'random_num2':      ('random_num2',     'int'),  # 随机奖励数量2
+    'random_reward3':   ('random_reward3',  'int_list'),  # 随机奖励库3
+    'random_num3':      ('random_num3',     'int'),  # 随机奖励数量3
+    'chapter_enemy':    ('chapter_enemy',   'int_list'),  # 关卡预约艺人【剧本角色role_id,怪物npc_id】
+    'challenge_limit':  ('challenge_limit', 'int'),  # 每日限制次数
+    'lv_unlocked':      ('lv_unlocked',     'int'),  # 等级限制
+    'start_cost':       ('start_cost',      'int'),  # 进入前扣除体力
+    'end_cost':         ('end_cost',        'int'),  # 结算时扣除体力
+
+}
+
+chapter = {
+    'uk':               ('chapter_id',      'int'), #id
+    'chapter_name':     ('chapter_name',    'int'),  #章节名
+    'next_chapter':     ('next_chapter',    'int'),  # 解锁章节
+    'background':       ('background',      'int_list'),  # 关卡地图背景
+    'music':            ('music',           'int'),  # 地图背景音乐
+    'stage_id1':        ('stage_id1',       'int'),  # 关卡1
+    'stage_id2':        ('stage_id2',       'int'),  # 关卡2
+    'stage_id3':        ('stage_id3',       'int'),  # 关卡3
+    'stage_id4':        ('stage_id4',       'int'),  # 关卡4
+    'stage_id5':        ('stage_id5',       'int'),  # 关卡5
+    'stage_id6':        ('stage_id6',       'int'),  # 关卡6
+    'stage_id7':        ('stage_id7',       'int'),  # 关卡7
+    'stage_id8':        ('stage_id8',       'int'),  # 关卡8
+    'stage_id9':        ('stage_id9',       'int'),  # 关卡9
+    'stage_id10':       ('stage_id10',      'int'),  # 关卡10
+    'dialogue_id1':     ('dialogue_id1',    'int'),  # 剧情1
+    'dialogue_id2':     ('dialogue_id2',    'int'),  # 剧情2
+    'dialogue_id3':     ('dialogue_id3',    'int'),  # 剧情3
+    'dialogue_id4':     ('dialogue_id4',    'int'),  # 剧情4
+    'dialogue_id5':     ('dialogue_id5',    'int'),  # 剧情5
+    'dialogue_id6':     ('dialogue_id6',    'int'),  # 剧情6
+    'dialogue_id7':     ('dialogue_id7',    'int'),  # 剧情7
+    'dialogue_id8':     ('dialogue_id8',    'int'),  # 剧情8
+    'dialogue_id9':     ('dialogue_id9',    'int'),  # 剧情9
+    'dialogue_id10':    ('dialogue_id10',   'int'),  # 剧情10
+    'fight_reward1':    ('fight_reward1',   'int_list'),  # 星级奖励1
+    'star_num1':        ('star_num1',       'int'),  # 奖励1需求星数
+    'fight_reward2':    ('fight_reward2',   'int_list'),  # 星级奖励2
+    'star_num2':        ('star_num2',       'int'),  # 奖励2需求星数
+    'fight_reward3':    ('fight_reward3',   'int_list'),  # 星级奖励3
+    'star_num3':        ('star_num3',       'int'),  # 奖励3需求星数
+
+}
+
+chapter_enemy = {
+    'uk':               ('id',              'int'), #id
+    'card_id':          ('card_id',         'int'),  #对应卡牌id
+    'charpro1':         ('charpro1',        'int'),  # 演技
+    'charpro2':         ('charpro2',        'int'),  # 歌艺
+    'charpro3':         ('charpro3',        'int'),  # 娱乐
+    'charpro4':         ('charpro4',        'int'),  # 艺术
+    'charpro5':         ('charpro5',        'int'),  # 气质
+    'charpro6':         ('charpro6',        'int'),  # 动感
+
+}
+
+

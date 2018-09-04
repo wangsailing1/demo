@@ -132,6 +132,12 @@ equip_mapping = {
     'equip_piece': ('equip_piece', True),
 }
 
+chaper_stage_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'chapter_stage': ('chapter_stage', True),
+    'chapter': ('chapter', True),
+    'chapter_enemy': ('chapter_enemy', True),
+}
 
 
 
