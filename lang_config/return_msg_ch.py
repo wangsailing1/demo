@@ -173,6 +173,13 @@ user_msg = {
     },
 }
 
+chapter_stage_msg = {
+    'chapter_stage.chapter_stage':{
+        1: u'关卡参数错误',
+
+    }
+}
+
 
 i18n = {
     'user_name': u'敢斗团',

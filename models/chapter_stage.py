@@ -23,6 +23,7 @@ class Chapter_stage(ModelBase):
         self._attrs = {
             'chapter':{},
             'last_time':0,#最近操作时间
+            'next_chapter':[],  #解锁章节
         }
         super(Chapter_stage,self).__init__(self.uid)
 
@@ -34,3 +35,5 @@ class Chapter_stage(ModelBase):
                 for stage_id,s_v in value.iteritems():
                     s_v['fight_times'] = 0
             self.save()
+
+ModelManager.register_model('chapter_stage', Chapter_stage)

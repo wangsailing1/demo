@@ -316,6 +316,7 @@ class GameConfigMixIn(object):
         self.doomsday_hunt_mapping = {}
         self.server_link_mapping = {}   # 限时神将跨服
         self.server_link_uc_mapping = {}    # 极限挑战跨服
+        self.chapter_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -401,6 +402,7 @@ class GameConfigMixIn(object):
         self.doomsday_hunt_mapping.clear()
         self.server_link_mapping.clear()
         self.server_link_uc_mapping.clear()
+        self.chapter_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2407,6 +2409,15 @@ class GameConfigMixIn(object):
                 if v['is_use'] == 10:
                     self.all_equip_item_exp_mapping[2][k] = v['use_effect']
         return self.all_equip_item_exp_mapping
+
+    def get_chapter_mapping(self):
+        if not self.chapter_mapping:
+            for i,j in self.chapter.iteritems():
+                if j['num'] not in self.chapter_mapping:
+                    self.chapter_mapping[j['num']] = {}
+                j['chapter_id'] = i
+                self.chapter_mapping[j['num']][j['hard_type']] = j
+        return self.chapter_mapping
 
 
 class GameConfig(GameConfigMixIn):
