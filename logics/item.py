@@ -46,15 +46,15 @@ class ItemLogic(object):
         elif is_use == 2:  # 金币
             reward = add_gift(self.mm, 1, [[0, use_effect]] * item_num, cur_data=reward)
         elif is_use == 3:  # 道具
-            reward = add_gift(self.mm, 3, use_effect * item_num, cur_data=reward)
-        elif is_use == 4:  # 进阶材料
-            reward = add_gift(self.mm, 7, use_effect * item_num, cur_data=reward)
-        elif is_use == 5:  # 采集物
             reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
+        # elif is_use == 4:  # 进阶材料
+        #     reward = add_gift(self.mm, 7, use_effect * item_num, cur_data=reward)
+        # elif is_use == 5:  # 采集物
+        #     reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
         elif is_use == 6:  # 装备
             reward = add_gift(self.mm, 6, use_effect * item_num, cur_data=reward)
-        elif is_use == 15:  # 体力
-            reward = add_gift(self.mm, 20, use_effect * item_num, cur_data=reward)
+        elif is_use == 15:  # 增加艺人
+            reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
         else:
             return 5, {}
 
