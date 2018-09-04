@@ -166,13 +166,13 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('item', {}), item_id, item_num)
         mm.item.save()
     elif gift_sort == 6:  # 装备（资产）
-        # TODO
         for pkg in gift_config:
             equip_id = pkg[0]
             num = pkg[1]
             if not num:
                 continue
-            pass
+            mm.equip.add_equip(equip_id, num)
+            add_dict(data.setdefault('equip', {}), equip_id, num)
     elif gift_sort == 7:  # 点赞数
         for pkg in gift_config:
             add_num = pkg[1]
@@ -304,11 +304,13 @@ def del_goods(mm, goods_sort, goods_config):
             item_config = game_config.use_item.get(item_id, {})
             if not item_config:
                 return 'error_config', 0
-            silver_count += item_config.get('quality', 0) * item_num * 100
         mm.item.save()
     elif goods_sort == 6:  # 装备 资产
-        # todo
-        pass
+        for pkg in goods_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not mm.equip.del_equip(item_id, item_num):
+                return 'error_equip', 0
     elif goods_sort == 7:  # 点赞
         for pkg in goods_config:
             del_num = pkg[1]
