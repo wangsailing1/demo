@@ -27,6 +27,8 @@ chapter = {
     'uk':               ('chapter_id',      'int'), #id
     'chapter_name':     ('chapter_name',    'int'),  #章节名
     'next_chapter':     ('next_chapter',    'int'),  # 解锁章节
+    'num':              ('num',             'int'),  # 章节序号
+    'hard_type':        ('hard_type',       'int'),  # 难度类型0=普通 1=精英
     'background':       ('background',      'int_list'),  # 关卡地图背景
     'music':            ('music',           'int'),  # 地图背景音乐
     'stage_id1':        ('stage_id1',       'int'),  # 关卡1
