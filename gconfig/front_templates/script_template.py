@@ -8,6 +8,19 @@ Created on 2018-08-31
 
 script = {
     'uk': ('id', 'int'),  # 剧本id
+    'name': ('name', 'int'),  # 名字
+    'type': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
+    'style': ('style', 'int'),  # 关卡的剧本类型
+    'rate': ('rate', 'int'),  # 随机权重
+    'star': ('star', 'int'),  # 星级1-6
+    'next_id': ('next_id', 'int'),  # 续作id
+    'story': ('story', 'int'),  # 说明
+    'icon': ('icon', 'str'),  # 图标
+    'background': ('background', 'int'),  # 拍摄场景
+    'music': ('music', 'int'),  # 拍摄音乐
+    'tag_script': ('tag_script', 'int_list'),  # 剧本标签
+    'style_effect1': ('style_effect1', 'int_list'),  # 最佳类型
+    'style_effect2': ('style_effect2', 'int_list'),  # 次佳类型
     'style_effect3': ('style_effect3', 'int_list'),  # 不适类型
     'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),  # 市场需求1-男(百分之)
     # 市场需求1-男(百分之)
@@ -41,6 +54,7 @@ script_style = {
 
 script_type_style = {
     'uk': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
+    'name': ('name', 'int'),  # 种类名称
     'style': ('style', 'int_list'),  # 剧本类型id
     'length': ('length', 'int_list'),  # 随机时间/集数
     'length_name': ('length_name', 'int'),  # 长度单位
