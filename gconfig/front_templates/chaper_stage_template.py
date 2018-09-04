@@ -69,5 +69,3 @@ chapter_enemy = {
     'charpro6':         ('charpro6',        'int'),  # 动感
 
 }
-
-
