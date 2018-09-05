@@ -14,6 +14,7 @@ script = {
     'rate': ('rate', 'int'),  # 随机权重
     'star': ('star', 'int'),  # 星级1-6
     'next_id': ('next_id', 'int'),  # 续作id
+    'group': ('group', 'int'),  # 组id
     'story': ('story', 'int'),  # 说明
     'icon': ('icon', 'str'),  # 图标
     'background': ('background', 'int'),  # 拍摄场景

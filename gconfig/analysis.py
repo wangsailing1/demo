@@ -653,6 +653,12 @@ def dirtyword(config, data):
     return config
 
 
+def common_config(config, data):
+    uk = data.get('uk')
+    config[uk] = data['value']
+    return config
+
+
 def int_float_str(value):
     data = None
     if isinstance(value, int):
@@ -848,5 +854,6 @@ mapping = {
     'language_zh': language_zh,
     'int_list_to_dict': int_list_to_dict,
     'buy_silver': specail_pop_uk('id'),
+    'common_config': common_config,
 }
 
