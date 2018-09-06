@@ -9,6 +9,7 @@ Created on 2018-08-27
 card_basis = {
     'uk': ('id', 'int'),  # id
     'name': ('name', 'int'),  # 名字
+    'paycheck_base': ('paycheck_base', 'int'),  # 片酬基数
     'sex_type': ('sex_type', 'int'),  # 性别
     'profession_class': ('profession_class', 'int'),  # 艺人类型0=偶像 1=实力
     'profession_type': ('profession_type', 'int'),  # 艺人分类 0=青春 1=成熟
