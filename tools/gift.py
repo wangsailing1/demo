@@ -138,11 +138,11 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
         mm.user.save()
     elif gift_sort == 2:  # 钻石
         for pkg in gift_config:
-            add_diamond = pkg[1]
-            if not add_diamond:
+            add_num = pkg[1]
+            if not add_num:
                 continue
-            mm.user.add_diamond(add_diamond)
-            add_dict(data, 'diamond', add_diamond)
+            mm.user.add_diamond(add_num)
+            add_dict(data, 'diamond', add_num)
         mm.user.save()
     elif gift_sort == 3:   # 体力
         for pkg in gift_config:
@@ -153,9 +153,13 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data, 'point', add_point)
         mm.user.save()
     elif gift_sort == 4:    # 美元
-        # todo
-        pass
-
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.user.add_dollar(add_num)
+            add_dict(data, 'dollar', add_num)
+        mm.user.save()
     elif gift_sort == 5:  # 道具
         for pkg in gift_config:
             item_id = pkg[0]
@@ -281,10 +285,10 @@ def del_goods(mm, goods_sort, goods_config):
         mm.user.save()
     elif goods_sort == 2:  # 钻石
         for pkg in goods_config:
-            del_diamond = pkg[1]
-            if not mm.user.is_diamond_enough(del_diamond):
+            del_num = pkg[1]
+            if not mm.user.is_diamond_enough(del_num):
                 return 'error_diamond', 0
-            mm.user.deduct_diamond(del_diamond)
+            mm.user.deduct_diamond(del_num)
         mm.user.save()
     elif goods_sort == 3:  # 体力
         for pkg in goods_config:
@@ -293,8 +297,12 @@ def del_goods(mm, goods_sort, goods_config):
                 return 'error_point', 0
         mm.user.save()
     elif goods_sort == 4:  # 美元
-        # todo
-        pass
+        for pkg in goods_config:
+            del_num = pkg[1]
+            if not mm.user.is_dollar_enough(del_num):
+                return 'error_dollar', 0
+            mm.user.deduct_dollar(del_num)
+        mm.user.save()
     elif goods_sort == 5:  # 道具
         for pkg in goods_config:
             item_id = pkg[0]

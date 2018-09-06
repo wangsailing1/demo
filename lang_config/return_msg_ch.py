@@ -43,6 +43,7 @@ return_msg_config = {
     'error_silver': u"金币不足",
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
+    'error_dollar': u"美元不足",
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',

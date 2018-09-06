@@ -49,6 +49,7 @@ def user_status(mm):
         'diamond': user.diamond,
         'coin': user.coin,
         'like': user.like,
+        'dollar': user.dollar,
         'silver': user.silver,
         'vip': user.vip,
         'vip_exp': user.vip_exp,

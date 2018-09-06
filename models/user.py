@@ -181,6 +181,7 @@ class User(ModelBase):
             'diamond_charge': 0,
             'coin': 0,
             'silver': 0,
+            'dollar': 0,            # 美元
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,
@@ -1028,6 +1029,32 @@ class User(ModelBase):
         :return:
         """
         self.coin += int(coin)
+
+    def is_dollar_enough(self, num):
+        """ 是否美元足够
+
+        :param num:
+        :return:
+        """
+        return self.dollar >= int(num)
+
+    def deduct_dollar(self, num):
+        """ 扣除美元
+
+        :param num:
+        :return:
+        """
+        num = int(num)
+        if self.is_dollar_enough(num):
+            self.dollar -= num
+
+    def add_dollar(self, num):
+        """ 增加美元
+
+        :param num:
+        :return:
+        """
+        self.dollar += int(num)
 
     def is_like_enough(self, like):
         """ 是否点赞足够
