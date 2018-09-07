@@ -63,6 +63,7 @@ class Script(ModelBase):
             'id': script_id,
             'oid': self._make_oid(script_id),
             'style': '',            # 剧本类型
+            'ts': int(time.time())
         }
         return data
 

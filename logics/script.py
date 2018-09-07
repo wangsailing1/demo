@@ -20,7 +20,19 @@ class ScriptLogic(object):
 
     def index(self):
         script = self.mm.script
+        if not script.script_pool:
+            step = 0
+        else:
+            step = 1
+            if script.cur_script:
+                step = 2
+                if script.cur_script['card']:
+                    step = 3
+                if script.cur_script['style']:
+                    step = 4
+
         return 0, {
+            'step': step,
             'script_pool': script.script_pool,
             'cur_script': script.cur_script,
             'scripts': script.scripts,
@@ -39,13 +51,13 @@ class ScriptLogic(object):
         script = self.mm.script
 
         if script_id not in script.script_pool:
-            return 1, {}        # 不可选剧本
+            return 1, {}  # 不可选剧本
 
         if script.cur_script:
-            return 2, {}        # 拍摄中
+            return 2, {}  # 拍摄中
 
         if script.script_pool[script_id]:
-            return 3, {}        # 已拍摄
+            return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
         script.cur_script = film
@@ -66,9 +78,9 @@ class ScriptLogic(object):
 
         cur_script = script.cur_script
         if not cur_script:
-            return 1, {}        # 没有拍摄中的剧本
+            return 1, {}  # 没有拍摄中的剧本
         if cur_script['card']:
-            return 2, {}        # 已选完角色
+            return 2, {}  # 已选完角色
 
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
@@ -100,10 +112,10 @@ class ScriptLogic(object):
 
         cur_script = script.cur_script
         if not cur_script:
-            return 1, {}        # 没有拍摄中的剧本
+            return 1, {}  # 没有拍摄中的剧本
 
         if not cur_script['card']:
-            return 2, {}        # 没有演员
+            return 2, {}  # 没有演员
 
         cur_script['style'] = style
         cur_script['step'] = 3
