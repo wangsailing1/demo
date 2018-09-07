@@ -87,12 +87,18 @@ class Chapter_stage(object):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
 
                 self.mm.user.add_player_exp(add_player_exp)
-                reward = add_mult_gift(self.mm,data['gift'])
+                rewards = {}
+                all_gift = []
+                for k,v in data['gift'].iteritems():
+                    all_gift.extend(v)
+                    rewards[k] = add_mult_gift(self.mm,v)
+                reward =  add_mult_gift(self.mm,all_gift)
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
                 data['new_level'] = self.mm.user.level
                 data['reward'] = reward
+                data['rewards'] = rewards
         return rc,data
 
 
@@ -143,16 +149,16 @@ class Chapter_stage(object):
     def get_reward(self,stage_id,times=1,is_first=False):
         config = game_config.chapter_stage
         stage_config = config[stage_id]
-        gift = []
+        gift = {}
 
         for times_ in xrange(times):
             for i in range(1,4):
                 random_num = 'random_num%s'%i
                 random_reward = 'random_reward%s'%i
                 for _ in xrange(stage_config[random_num]):
-                    gift.append(weight_choice(stage_config[random_reward])[:-1])
+                    gift[times_] = [(weight_choice(stage_config[random_reward])[:-1])]
 
         if is_first:
-            gift.extend(stage_config['first_reward'])
+            gift['first_reward'] = (stage_config['first_reward'])
 
         return gift
