@@ -1254,8 +1254,8 @@ class User(ModelBase):
         add_exp = int(add_exp)
         cur_level = self.level
         cur_exp = self.exp
-        max_level = max(game_config.hero_exp)
-        next_need_exp = game_config.hero_exp.get(cur_level, {}).get('player_exp')
+        max_level = max(game_config.player_level)
+        next_need_exp = game_config.player_level.get(cur_level, {}).get('exp')
 
         if next_need_exp is None:
             return False
@@ -1267,39 +1267,37 @@ class User(ModelBase):
         level = cur_level
 
         while exp >= next_need_exp:
-            give_power = game_config.hero_exp.get(level, {}).get('give_power', 0)
-            give_whip = game_config.hero_exp.get(level, {}).get('give_whip', 0)
+            give_power = game_config.player_level.get(level, {}).get('give_power', 0)
             self.add_action_point(give_power, force=True)
-            self.mm.prison.add_whip(give_whip, save=True)
             level += 1
             if max_level <= level:
                 level = max_level
-                exp = min(exp, game_config.hero_exp.get(level, {}).get('player_exp'))
+                exp = min(exp, game_config.player_level.get(level, {}).get('exp'))
                 break
             exp -= next_need_exp
-            next_need_exp = game_config.hero_exp.get(level, {}).get('player_exp')
+            next_need_exp = game_config.player_level.get(level, {}).get('exp')
 
         self.exp = exp
         self.level = level
 
         if self.level > cur_level:
             # 发送等级奖励邮件
-            self.send_level_mail(cur_level, self.level)
+            # self.send_level_mail(cur_level, self.level)
             # 触发升级任务, 解锁建筑
             task_event_dispatch = self.mm.get_event('task_event_dispatch')
             task_event_dispatch.call_method('level_upgrade', self.level, add_value=self.level - cur_level)
             # 等级变化更新黑街擂台的战力排名
-            dark_street_rank = self.mm.get_obj_tools('dark_street_rank')
+            # dark_street_rank = self.mm.get_obj_tools('dark_street_rank')
             # score = self.mm.dark_street.make_score(self.level, self.mm.dark_street.get_def_combat())
-            score = self.mm.dark_street.get_def_combat()
-            dark_street_rank.add_rank(self.uid, score)
+            # score = self.mm.dark_street.get_def_combat()
+            # dark_street_rank.add_rank(self.uid, score)
             # 更新等级排行榜
             level_rank = self.mm.get_obj_tools('level_rank')
             level_rank.add_rank(self.uid, self.level)
             # 激活限时等级礼包
             for _lv in xrange(cur_level + 1, self.level + 1):
                 # 升级送道具
-                hero_exp_config = game_config.hero_exp.get(_lv, {})
+                hero_exp_config = game_config.player_level.get(_lv, {})
                 add_mult_gift(self.mm, hero_exp_config.get('gifts', []))
 
                 if _lv not in game_config.level_gift:
@@ -1333,7 +1331,7 @@ class User(ModelBase):
                                 self.guide[cur_guide_sort] = 0
                     cur_guide_sort += 1
             # 增加科技点重置点
-            self.mm.tech_tree.incr_all_point(level)
+            # self.mm.tech_tree.incr_all_point(level)
             # 上传uc玩家数据
             send_role_data_uc(self)
 
