@@ -151,7 +151,7 @@ class Chapter_stage(object):
         stage_config = config[stage_id]
         gift = {}
 
-        for times_ in xrange(times):
+        for times_ in xrange(1,times + 1):
             for i in range(1,4):
                 random_num = 'random_num%s'%i
                 random_reward = 'random_reward%s'%i
