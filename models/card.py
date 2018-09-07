@@ -97,6 +97,7 @@ class Card(ModelBase):
             'train_ext_pro': [0] * len(cls.PRO_IDX_MAPPING),   # 训练属性加成
 
             'love_gift_pro': {},          # 味觉   {pro_id: {'exp': 0, 'lv': )}}
+            'style_pro':{},      #擅长类型{pro_id: {'exp': 0, 'lv': )}}
 
 
         }
@@ -159,6 +160,9 @@ class Card(ModelBase):
                 v['love_gift_pro'] = {}
             if 'equips' not in v:
                 v['equips'] = []
+
+            if 'style_pro' not in v:
+                v['style_pro'] = {}
 
             v.setdefault('is_cold', False)
 
@@ -356,6 +360,23 @@ class Card(ModelBase):
             if next_exp >= config['gift_exp']:
                 next_lv += 1
                 next_exp -= config['gift_exp']
+                continue
+            break
+        info['lv'] = next_lv
+        info['exp'] = next_exp
+
+    def add_style_exp(self, card_oid, style_type, add_exp, card_dict=None):
+        card_dict = card_dict or self.cards[card_oid]
+        info = card_dict['style_pro'].setdefault(style_type, {'exp': 0, 'lv': 1})
+        next_exp = info['exp'] + add_exp
+        next_lv = info['lv']
+        while 1:
+            if next_lv + 1 not in game_config.card_script_exp:
+                break
+            config = game_config.card_script_exp[next_lv]
+            if next_exp >= config['exp']:
+                next_lv += 1
+                next_exp -= config['exp']
                 continue
             break
         info['lv'] = next_lv

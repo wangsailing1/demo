@@ -15,6 +15,7 @@ common = {
 player_level = {
     'uk': ('lv_addition', 'int'),  # 等级
     'exp': ('exp', 'int'),  # 等级
+    'card_limit': ('card_limit', 'int') #艺人上线
 
 }
 
