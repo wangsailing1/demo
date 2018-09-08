@@ -32,8 +32,9 @@ class Chapter_stage(ModelBase):
         if now != self.last_time:
             self.last_time = now
             for chapter_id,value in self.chapter.iteritems():
-                for stage_id,s_v in value.iteritems():
-                    s_v['fight_times'] = 0
+                for type_hard,type_v in value.iteritems():
+                    for stage_id,s_v in type_v.iteritems():
+                        s_v['fight_times'] = 0
             self.save()
 
 ModelManager.register_model('chapter_stage', Chapter_stage)
