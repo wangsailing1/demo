@@ -28,10 +28,6 @@ class Chapter_stage(object):
         stage_id = config[chapter][type_hard]['stage_id'][stage-1]
         if not config:
             return 14, {}  #配置错误
-        if stage_id  and stage_id not in config_s:
-            return 15, {}  #关卡错误
-        if self.mm.user.level < config_s[stage_id]['lv_unlocked']:
-            return 24, {}  #等级不够
         if not stage_id:
             if chapter not in self.chapter_stage.chapter:
                 self.chapter_stage.chapter[chapter] = {}
@@ -45,6 +41,11 @@ class Chapter_stage(object):
             self.chapter_stage.chapter[chapter][type_hard][stage] = {}
             self.chapter_stage.save()
             return 0, {}
+        if  stage_id not in config_s:
+            return 15, {}  #关卡错误
+        if self.mm.user.level < config_s[stage_id]['lv_unlocked']:
+            return 24, {}  #等级不够
+
         if auto:
             if chapter not in self.chapter_stage.chapter or type_hard not in self.chapter_stage.chapter[chapter] \
                     or stage not in self.chapter_stage.chapter[chapter][type_hard]:
