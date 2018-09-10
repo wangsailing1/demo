@@ -12,10 +12,10 @@ script = {
     'type': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重
-    'cost': ('cost', 'int'),  # 随机权重
-    'paycheck_ratio': ('paycheck_ratio', 'int'),  # 随机权重
-    'hard_rate': ('hard_rate', 'int'),  # 随机权重
-    'output': ('output', 'int'),  # 随机权重
+    'cost': ('cost', 'int'),  # 剧本消耗(美元)
+    'paycheck_ratio': ('paycheck_ratio', 'int'),  # 片酬系数(百分之）
+    'hard_rate': ('hard_rate', 'int'),  # 难度系数
+    'output': ('output', 'int'),  # 票房基数(万美元)
     'star': ('star', 'int'),  # 星级1-6
     'next_id': ('next_id', 'int'),  # 续作id
     'story': ('story', 'int'),  # 说明
