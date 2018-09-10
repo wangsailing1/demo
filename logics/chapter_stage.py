@@ -40,8 +40,8 @@ class Chapter_stage(object):
             if stage in self.chapter_stage.chapter[chapter][type_hard]:
                 return 0, {}
             next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-            if next_chapter and next_chapter not in self.chapter_stage.next_chapter:
-                self.chapter_stage.next_chapter.append(next_chapter)
+            if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                self.chapter_stage.next_chapter.extend(next_chapter)
             self.chapter_stage.chapter[chapter][type_hard][stage] = {}
             self.chapter_stage.save()
             return 0, {}
@@ -99,8 +99,8 @@ class Chapter_stage(object):
                     rewards[k] = add_mult_gift(self.mm,v)
                 if not auto:
                     next_chapter = self.unlock_chapter(chapter,type_hard,stage)
-                    if next_chapter and next_chapter not in self.chapter_stage.next_chapter:
-                        self.chapter_stage.next_chapter.append(next_chapter)
+                    if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                        self.chapter_stage.next_chapter.extend(next_chapter)
                 reward =  add_mult_gift(self.mm,all_gift)
                 self.mm.user.save()
                 self.chapter_stage.save()
@@ -179,5 +179,5 @@ class Chapter_stage(object):
         all_stage = len(config[chapter][type_hard]['stage_id'])
         if stage >= all_stage:
             return config[chapter][type_hard]['next_chapter']
-        return 0
+        return []
 
