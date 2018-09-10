@@ -29,8 +29,9 @@ class Shop(ModelBase):
     STOP_REFRESH_TIME = 60          # 禁止刷新时间 商店自动刷新时间前1分钟禁止刷新
     MAX_REFRESH_TIMES = 20          # 每天最多刷新20次
 
-    def __init__(self, uid):
+    def __init__(self, uid,shop_id=1):
         self.uid = uid
+        self.shop_id = shop_id
         self._attrs = {
             'refresh_time': 0,
             'refresh_times': 0,
@@ -80,7 +81,7 @@ class Shop(ModelBase):
         :param level:
         :return:
         """
-        goods_weight = game_config.get_shop_id_with_level(level)
+        goods_weight = game_config.get_shop_id_with_level(self.shop_id,level)
         return goods_weight
 
     def get_price(self, price, shop_config):
@@ -114,8 +115,9 @@ class PeriodShop(Shop):
     OPEN_RATE = 5                   # 开启概率 5 %
     # OPEN_RATE = 100                   # 开启概率 5 %
 
-    def __init__(self, uid):
+    def __init__(self, uid,shop_id=4):
         self.uid = uid
+        self.shop_id = shop_id
         self._attrs = {
             'show_times': 0,
             'start_time': 0,
@@ -149,7 +151,7 @@ class PeriodShop(Shop):
         :param level:
         :return:
         """
-        goods_weight = game_config.get_period_shop_id_with_level(level)
+        goods_weight = game_config.get_shop_id_with_level(self.shop_id,level)
         return goods_weight
 
     def get_refresh_time(self):
@@ -428,7 +430,7 @@ class HonorShop(Shop):
 
 
 ModelManager.register_model('shop', Shop)
-# ModelManager.register_model('period_shop', PeriodShop)
+ModelManager.register_model('period_shop', PeriodShop)
 # # ModelManager.register_model('dark_shop', DarkShop)
 # ModelManager.register_model('guild_shop', GuildShop)
 # ModelManager.register_model('high_ladder_shop', HighLadderShop)
