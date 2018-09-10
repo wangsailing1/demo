@@ -2,6 +2,12 @@
 
 from logics.chapter_stage import Chapter_stage
 
+#首页
+def chapter_stage_index(hm):
+    mm = hm.mm
+    return 0, {'chapter':mm.chapter_stage.chapter,
+               'next_chapter':mm.chapter_stage.next_chapter}
+
 #打副本
 def chapter_stage_fight(hm):
     mm = hm.mm
