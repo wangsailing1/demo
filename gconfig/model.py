@@ -2419,6 +2419,15 @@ class GameConfigMixIn(object):
                 self.chapter_mapping[j['num']][j['hard_type']] = j
         return self.chapter_mapping
 
+    def get_shop_config(self,shop_id):
+        config = self.shop_goods
+        shop_config = {}
+        for good_id,value in config.iteritems():
+            if value['shop_id'] == shop_id:
+                shop_config[good_id] = value
+        return shop_config
+
+
 
 class GameConfig(GameConfigMixIn):
 

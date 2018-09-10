@@ -22,6 +22,16 @@ shop_goods = {
     'is_hot':       ('is_hot',          'int'),                                         # 热卖标签
 }
 
+shop_id = {
+    'uk':   ('id',      'int'),  # 商店id
+    'name': ('name',    'int'),  # 商店名
+    'type': ('type',    'int'),  # 是否刷新
+}
+
+mystical_store_cd = {
+    'uk':       ('id',          'int'),  # 编号
+    'cd_time':  ('cd_time',     'str'),  # 系统刷新时间
+}
 
 # 限时商店
 # period_shop = {
