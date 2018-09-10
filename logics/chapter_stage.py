@@ -28,6 +28,10 @@ class Chapter_stage(object):
         stage_id = config[chapter][type_hard]['stage_id'][stage-1]
         if not config:
             return 14, {}  #配置错误
+        if stage_id not in config_s:
+            return 15, {}  #关卡错误
+        if self.mm.user.level < config_s[stage_id]['lv_unlocked']:
+            return 24, {}  #等级不够
         if not stage_id:
             if chapter not in self.chapter_stage.chapter:
                 self.chapter_stage.chapter[chapter] = {}
@@ -35,11 +39,12 @@ class Chapter_stage(object):
                 self.chapter_stage.chapter[chapter][type_hard] = {}
             if stage in self.chapter_stage.chapter[chapter][type_hard]:
                 return 0, {}
+            next_chapter = self.unlock_chapter(chapter, type_hard, stage)
+            if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                self.chapter_stage.next_chapter.extend(next_chapter)
             self.chapter_stage.chapter[chapter][type_hard][stage] = {}
             self.chapter_stage.save()
             return 0, {}
-        if stage_id not in config_s:
-            return 15, {}  #关卡错误
         if auto:
             if chapter not in self.chapter_stage.chapter or type_hard not in self.chapter_stage.chapter[chapter] \
                     or stage not in self.chapter_stage.chapter[chapter][type_hard]:
@@ -92,6 +97,10 @@ class Chapter_stage(object):
                 for k,v in data['gift'].iteritems():
                     all_gift.extend(v)
                     rewards[k] = add_mult_gift(self.mm,v)
+                if not auto:
+                    next_chapter = self.unlock_chapter(chapter,type_hard,stage)
+                    if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                        self.chapter_stage.next_chapter.extend(next_chapter)
                 reward =  add_mult_gift(self.mm,all_gift)
                 self.mm.user.save()
                 self.chapter_stage.save()
@@ -99,6 +108,7 @@ class Chapter_stage(object):
                 data['new_level'] = self.mm.user.level
                 data['reward'] = reward
                 data['rewards'] = rewards
+                data['next_stage'] = self.chapter_stage.next_chapter
         return rc,data
 
 
@@ -162,3 +172,12 @@ class Chapter_stage(object):
             gift['first_reward'] = (stage_config['first_reward'])
 
         return gift
+
+    #解锁章节
+    def unlock_chapter(self,chapter,type_hard,stage,save=False):
+        config = game_config.get_chapter_mapping()
+        all_stage = len(config[chapter][type_hard]['stage_id'])
+        if stage >= all_stage:
+            return config[chapter][type_hard]['next_chapter']
+        return []
+

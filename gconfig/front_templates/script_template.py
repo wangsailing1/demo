@@ -13,6 +13,9 @@ script = {
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重
     'paycheck_ratio': ('paycheck_ratio', 'int'),  # 片酬系数(百分之）
+    'cost': ('cost', 'int'),  # 剧本消耗
+    'hard_rate': ('hard_rate', 'int'),  # 难度系数
+    'output': ('output', 'int'),  # 票房基数
     'star': ('star', 'int'),  # 星级1-6
     'next_id': ('next_id', 'int'),  # 续作id
     'group': ('group', 'int'),  # 组id

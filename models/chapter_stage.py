@@ -23,12 +23,14 @@ class Chapter_stage(ModelBase):
         self._attrs = {
             'chapter':{},
             'last_time':0,#最近操作时间
-            'next_chapter':[],  #解锁章节
+            'next_chapter':[1],  #解锁章节
         }
         super(Chapter_stage,self).__init__(self.uid)
 
     def pre_use(self):
         now = time.strftime(self.FORMAT)
+        if not self.next_chapter:
+            self.next_chapter = [1]
         if now != self.last_time:
             self.last_time = now
             for chapter_id,value in self.chapter.iteritems():
