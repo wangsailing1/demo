@@ -28,7 +28,7 @@ class Chapter_stage(object):
         stage_id = config[chapter][type_hard]['stage_id'][stage-1]
         if not config:
             return 14, {}  #配置错误
-        if stage_id not in config_s:
+        if stage_id  and stage_id not in config_s:
             return 15, {}  #关卡错误
         if self.mm.user.level < config_s[stage_id]['lv_unlocked']:
             return 24, {}  #等级不够
