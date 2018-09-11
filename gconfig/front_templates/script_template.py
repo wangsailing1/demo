@@ -25,8 +25,8 @@ script = {
     'music': ('music', 'int'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
     'style_effect': ('style_effect', 'int_list'),  # 最佳类型
-    'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),  # 市场需求1-男(百分之)
-    # 市场需求1-男(百分之)
+    # 市场需求1-男(百分之)  2：女 3：儿童
+    'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),
     'min_attr': (('min_attr1', 'min_attr2', 'min_attr3', 'min_attr4',
                   'min_attr5', 'min_attr6'), ('int', 'mult_force_num_list')),
 
@@ -34,6 +34,18 @@ script = {
     # 基准演技
     'standard_attr': (('standard_attr1', 'standard_attr2', 'standard_attr3', 'standard_attr4',
                         'standard_attr5', 'standard_attr6'), ('int', 'mult_force_num_list')),
+    'ticket_line': ('ticket_line', 'int'),     # 结算票房标准
+    # 同档演技
+    'good_attr': (('good_attr1', 'good_attr2', 'good_attr3', 'good_attr4',
+                       'good_attr5', 'good_attr6'), ('int', 'mult_force_num_list')),
+    'random_reward1': ('random_reward1', 'int_list'),       # 随机奖励库1
+    'random_num1': ('random_num1', 'int'),       # 随机奖励数量1
+    'random_reward2': ('random_reward2', 'int_list'),       # 随机奖励库2
+    'random_num2': ('random_num2', 'int'),       # 随机奖励数量2
+    'player_exp': ('player_exp', 'int'),       # 公司经验
+    'fight_exp': ('fight_exp', 'int'),       # 类型经验
+    'stage_score': ('stage_score', 'int_list'),       # 推图分数
+
     'role_id': ('role_id', 'int_list'),     # 角色id
 
 }
@@ -52,7 +64,8 @@ script_style_suit = {
 script_style = {
     'uk': ('id', 'int'),  # 剧本类型id
     'name': ('name', 'int'),  #
-    'market': ('market', 'int'),  # 市场偏好0男1女2童
+    'market': ('market', 'int'),  # 市场偏好2男1女3童
+    'market_num': ('market_num', 'int'),  # 市场偏好2男1女3童
 
 }
 
@@ -78,6 +91,7 @@ script_role = {
     'profession_class': ('profession_class', 'int'),  # 要求类型-1=没要求 0=偶像 1=实力
     'profession_type': ('profession_type', 'int'),  # 要求分类 0=青春 1=成熟
     'role_attr': ('role_attr', 'int_list'),  # 属性类型1=演2歌3娱4艺5气6动
+    'role_help': ('role_help', 'int'),  # 推荐艺人
 
 }
 
@@ -103,9 +117,8 @@ script_continued_level = {
 script_market = {
     'uk': ('id', 'int'),  #
     'rate': ('rate', 'int'),  # 权重
-    'market1': ('market1', 'int'),  # 市场需求1-男(百分之)
-    'market2': ('market2', 'int'),  # 市场需求2-女(百分之)
-    'market3': ('market3', 'int'),  # 市场需求3-儿童(百分之)
+    'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),  # 市场需求1-男(百分之)
+
 }
 
 # 曲线参数范围区间
