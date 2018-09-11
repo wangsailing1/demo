@@ -32,6 +32,7 @@ class ScriptLogic(object):
                     step = 4
 
         return 0, {
+            'own_script': script.own_script,
             'step': step,
             'script_pool': script.script_pool,
             'cur_script': script.cur_script,

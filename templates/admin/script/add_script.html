@@ -1,0 +1,60 @@
+<body>
+{% from gconfig import game_config %}
+{% from gconfig import get_str_words %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+
+{% if script %}
+<h3>当前拥有剧本</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>剧本id</th>
+        <th>剧本名字</th>
+        <!--<th>修改</th>-->
+        <!--<th>删除</th>-->
+    </tr>
+    {% for script_id in sorted(script.own_script) %}
+    {% set script_config = game_config.script[script_id] %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/script/script_update/" method="post">
+            <input type="hidden" name="uid" value="{{uid}}"/>
+            <input type="hidden" name="script_id" value="{{script_id}}"/>
+            <td>{{ script_id }}</td>
+            <td>{{get_str_words('1', script_config['name'])}}</td>
+            <!--<td><input value="modify" name="modify" type="submit"/></td>-->
+            <!--<td><input value="delete" name="delete" type="submit"/></td>-->
+        </form>
+    </tr>
+    {% end %}
+</table>
+{% end %}
+
+<h2></h2>
+
+<h3>赠送剧本：</h3>
+
+<div style="color: red">最大赠送{{max_num}}</div>
+
+<form action="/{{url_partition}}/admin/script/add_script/" method="post">
+    输入用户id: <input type="text" id="uid" name="uid", value="{{uid}}">
+<table border="1">
+    <tr>
+        <th>配置id</th>
+        <th>名字</th>
+        <th>拥有剧本</th>
+        <th>增加</th>
+    </tr>
+
+{% for script_id, script_info in sorted(game_config.script.iteritems(), key=lambda x: x[0]) %}
+    <tr align="center">
+        <td>{{script_id}}</td>
+        <td>{{get_str_words('1', script_info['name'])}}</td>
+        <td><input type="text" name="script_{{script_id}}" value="0" /></td>
+        <td><input value="submit" name="submit"  type="submit" /></td>
+    </tr>
+{% end %}
+
+</table>
+</form>
+</body>

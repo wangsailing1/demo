@@ -123,6 +123,10 @@ script_mapping = {
     'script_style': ('script_style', True),
     'script_type_style': ('script_type_style', True),
     'script_role': ('script_role', True),
+    'script_end_level': ('script_end_level', True),
+    'script_continued_level': ('script_continued_level', True),
+    'script_market': ('script_market', True),
+    'script_curve': ('script_curve', True),
 }
 
 

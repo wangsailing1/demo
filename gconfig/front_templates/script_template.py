@@ -24,9 +24,7 @@ script = {
     'background': ('background', 'int'),  # 拍摄场景
     'music': ('music', 'int'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
-    'style_effect1': ('style_effect1', 'int_list'),  # 最佳类型
-    'style_effect2': ('style_effect2', 'int_list'),  # 次佳类型
-    'style_effect3': ('style_effect3', 'int_list'),  # 不适类型
+    'style_effect': ('style_effect', 'int_list'),  # 最佳类型
     'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),  # 市场需求1-男(百分之)
     # 市场需求1-男(百分之)
     'min_attr': (('min_attr1', 'min_attr2', 'min_attr3', 'min_attr4',
@@ -43,8 +41,10 @@ script = {
 
 script_style_suit = {
     'uk': ('id', 'int'),  # 适合档次
-    'rate': ('rate', 'int'),  # 票房影响（万分之）
-    'desc': ('desc', 'int'),  # desc
+    'rate': ('rate', 'int'),  # 评分增量（十分之）
+    'attention': ('attention', 'int'),  # 市场关注度影响
+    'desc1': ('desc1', 'int'),  # desc
+    'desc2': ('desc2', 'int'),  # desc
 
 }
 
@@ -79,5 +79,40 @@ script_role = {
     'profession_type': ('profession_type', 'int'),  # 要求分类 0=青春 1=成熟
     'role_attr': ('role_attr', 'int_list'),  # 属性类型1=演2歌3娱4艺5气6动
 
+}
+
+# 结束档次
+script_end_level = {
+    'uk': ('level', 'int'),  #
+    'name': ('name', 'int'),  # name
+    'line': ('line', 'int'),  # 占结算线比重（万分之)
+    'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
+    'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
+
+}
+
+# 持续收益等级
+script_continued_level = {
+    'uk': ('level', 'int'),  #
+    'upgrade_cost': ('upgrade_cost', 'int_list'),  # 升级需要宣传册数量
+    'parm': ('parm', 'int'),  # 总收益倍数(2小时的总收益系数）
+}
+
+
+# 市场需求
+script_market = {
+    'uk': ('id', 'int'),  #
+    'rate': ('rate', 'int'),  # 权重
+    'market1': ('market1', 'int'),  # 市场需求1-男(百分之)
+    'market2': ('market2', 'int'),  # 市场需求2-女(百分之)
+    'market3': ('market3', 'int'),  # 市场需求3-儿童(百分之)
+}
+
+# 曲线参数范围区间
+script_curve = {
+    'uk': ('id', 'int'),  #
+    'name': ('name', 'int'),  # 曲线名
+    'weeks': ('weeks', 'int'),  # 上映周数
+    'curve_rate': ('curve_rate', 'int_list'),  # 曲线变化
 }
 

@@ -239,6 +239,19 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_vip_exp(add_exp)
             add_dict(data, 'vip_exp', add_exp)
         mm.user.save()
+
+    elif gift_sort == 15:   # 获得可拍摄剧本
+        save = False
+        for pkg in gift_config:
+            script_id = pkg[1]
+            if not script_id:
+                continue
+            stats = mm.script.add_own_script(script_id)
+            save = save or stats
+            if stats:
+                data.setdefault('own_script', []).append(script_id)
+        if save:
+            mm.script.save()
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]

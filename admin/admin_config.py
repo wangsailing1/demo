@@ -15,7 +15,7 @@ menu_name = [
 
 
 select_sort = ['user', 'gwentcard', 'payment', 'long_connection', 'rank', 'user_name', 'other']
-operate_sort = ['card', 'hero', 'equip', 'item', 'commander_part', 'gene', 'approval_payment',
+operate_sort = ['card', 'hero', 'equip', 'script', 'item', 'commander_part', 'gene', 'approval_payment',
                 'gwentcard', 'mail', 'code', 'payment', 'gs', 'user', 'other']
 develop_sort = ['config', 'user']
 see_data_sort = ['server_overview', 'payment', 'data']
@@ -183,6 +183,9 @@ menu_config = {
                 'sub': [('add_piece', u'赠送装备碎片', 0)],
             }
 
+        ],
+        'script': [
+            {'name': u'送剧本', 'sub': [('add_script', u'赠送剧本 ', 0)]},
         ],
         'gene': [{
             'name': u"送基因",

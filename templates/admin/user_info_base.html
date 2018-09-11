@@ -48,6 +48,12 @@
                     </form>
                 </td>
                 <td>
+                    <form action="/{{url_partition}}/admin/script/select/" method="post">
+                        <input type="hidden" name="uid" value="{{mm.user.uid}}" />
+                        <input type="submit" value="剧本数据" />
+                    </form>
+                </td>
+                <td>
                     <form action="/{{url_partition}}/admin/private_city/select/" method="post">
                         <input type="hidden" name="uid" value="{{mm.user.uid}}" />
                         <input type="submit" value="关卡数据" />

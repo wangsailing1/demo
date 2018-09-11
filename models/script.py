@@ -22,6 +22,7 @@ class Script(ModelBase):
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
+            'own_script': [],      # 已获得的可拍摄的片子
             'cur_script': {},  # 当前在在拍的片子
             'scripts': {},  # 所有已拍完的片子
 
@@ -38,6 +39,12 @@ class Script(ModelBase):
                     self.scripts[cur_script['oid']] = cur_script
                     self.cur_script = {}
 
+    def add_own_script(self, script_id):
+        if script_id in self.own_script:
+            return False
+        self.own_script.append(script_id)
+        return True
+
     @classmethod
     def _make_oid(cls, script_id):
         """ 生成only id
@@ -49,8 +56,10 @@ class Script(ModelBase):
 
     def pre_filming(self):
         self.script_pool.clear()
-        can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems()]
+        can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.own_script]
         for i in xrange(self.POOL_SIZE):
+            if not can_use_ids:
+                break
             id_weight = weight_choice(can_use_ids)
             can_use_ids.remove(id_weight)
             self.script_pool[id_weight[0]] = 0

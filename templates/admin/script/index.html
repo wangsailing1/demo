@@ -1,0 +1,35 @@
+{% extends "../user_info_base.html"%}
+{% block content %}
+{% if msg %}
+<div style="color: red">{{msg}}</div>
+{% end %}
+<h3>剧本：</h3>
+{% from gconfig import game_config %}
+{% from gconfig import get_str_words %}
+
+<h3>已拥有剧本：</h3>
+<table border="1" cellspacing="0" cellpadding="1">
+    <tr>
+        <th>剧本id</th>
+        <th>剧本名字</th>
+        <!--<th>修改</th>-->
+        <th>删除</th>
+    </tr>
+    {% if script %}
+    {% for script_id in sorted(script.own_script) %}
+    {% set script_config = game_config.script[script_id] %}
+    <tr align="center">
+        <form action="/{{url_partition}}/admin/script/script_update/" method="post">
+            <input type="hidden" name="uid" value="{{uid}}"/>
+            <input type="hidden" name="script_id" value="{{script_id}}"/>
+            <td>{{ script_id }}</td>
+            <td>{{get_str_words('1', script_config['name'])}}</td>
+            <!--<td><input value="modify" name="modify" type="submit"/></td>-->
+            <td><input value="delete" name="delete" type="submit"/></td>
+        </form>
+    </tr>
+    {% end %}
+    {% end %}
+</table>
+
+{% end %}
