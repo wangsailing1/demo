@@ -317,6 +317,7 @@ class GameConfigMixIn(object):
         self.server_link_mapping = {}   # 限时神将跨服
         self.server_link_uc_mapping = {}    # 极限挑战跨服
         self.chapter_mapping = {}
+        self.shop_goods_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -326,6 +327,7 @@ class GameConfigMixIn(object):
         self.guide_mapping.clear()
         self.use_item_mapping.clear()
         self.shop_id_mapping.clear()
+        self.shop_goods_mapping.clear()
         self.denate_shop_id_mapping.clear()
         self.rally_shop_id_mapping.clear()
         self.period_shop_id_mapping.clear()
@@ -627,15 +629,15 @@ class GameConfigMixIn(object):
 
         return item_ids
 
-    def get_shop_id_with_level(self, level):
+    def get_shop_id_with_level(self,shop_id, level):
         """
         通过玩家等级获得可购买范围的物品
         :param level:
         :return: []
         """
-        if not self.shop_id_mapping:
+        if not self.shop_goods_mapping.get(shop_id,{}):
             data = {}
-            for k, v in self.shop_sell.iteritems():
+            for k, v in self.get_shop_config(shop_id).iteritems():
                 use_lv = v['show_lv']
                 pos_id = v['pos_id']
                 if use_lv not in data:
@@ -663,14 +665,13 @@ class GameConfigMixIn(object):
                     result['data'][use_lv][pos_id].extend(copy.deepcopy(pre_data[pos_id]))
                 result['index'].append(use_lv)
 
-            self.shop_id_mapping = result
-
-        pos = bisect.bisect(self.shop_id_mapping['index'], level)
+            self.shop_goods_mapping[shop_id] = result
+        pos = bisect.bisect(self.shop_goods_mapping[shop_id]['index'], level)
         if not pos:
             return {}
         else:
-            lv = self.shop_id_mapping['index'][pos - 1]
-            return self.shop_id_mapping['data'][lv]
+            lv = self.shop_goods_mapping[shop_id]['index'][pos - 1]
+            return self.shop_goods_mapping[shop_id]['data'][lv]
 
     def get_rally_shop_id_with_level(self, level):
         """
@@ -2418,6 +2419,15 @@ class GameConfigMixIn(object):
                 j['chapter_id'] = i
                 self.chapter_mapping[j['num']][j['hard_type']] = j
         return self.chapter_mapping
+
+    def get_shop_config(self,shop_id):
+        config = self.shop_goods
+        shop_config = {}
+        for good_id,value in config.iteritems():
+            if value['shop_id'] == shop_id:
+                shop_config[good_id] = value
+        return shop_config
+
 
 
 class GameConfig(GameConfigMixIn):

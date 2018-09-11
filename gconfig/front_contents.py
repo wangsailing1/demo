@@ -139,6 +139,13 @@ chaper_stage_mapping = {
     'chapter_enemy': ('chapter_enemy', True),
 }
 
+shop_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'shop_goods': ('shop_goods', True),
+    'shop_id': ('shop_id', True),
+    'mystical_store_cd': ('mystical_store_cd', True),
+}
+
 
 
 
