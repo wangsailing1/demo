@@ -957,28 +957,28 @@ class User(ModelBase):
             # 消费记录
             spend_event = self.mm.get_event('spend_event')
             spend_event.record(diamond)
-
-            if self.mm.action not in settings.SPEND_IGNORE_METHOD:
-                server_type = int(self.mm.user.config_type)
-                if server_type == 1:
-                    # 新服累计消费钻石
-                    self.mm.server_active_consume.add_consume_diamond(diamond)
-                    # 新服每日消费钻石
-                    self.mm.server_daily_consume.add_consume_diamond(diamond)
-
-                    # 天降红包
-                    self.mm.server_red_bag.consume_trigger(diamond)
-                else:
-                    # 累计消费钻石
-                    self.mm.active_consume.add_consume_diamond(diamond)
-                    # 每日消费钻石
-                    self.mm.active_daily_consume.add_consume_diamond(diamond)
-                    # 宇宙最强加积分
-                    self.mm.super_active.add_score(diamond)
-                    # 天降红包
-                    self.mm.red_bag.consume_trigger(diamond)
-            task_event_dispatch = self.mm.get_event('task_event_dispatch')
-            task_event_dispatch.call_method('task_consume_diamond', count=diamond)
+            #消耗钻石活动
+            # if self.mm.action not in settings.SPEND_IGNORE_METHOD:
+            #     server_type = int(self.mm.user.config_type)
+            #     if server_type == 1:
+            #         # 新服累计消费钻石
+            #         self.mm.server_active_consume.add_consume_diamond(diamond)
+            #         # 新服每日消费钻石
+            #         self.mm.server_daily_consume.add_consume_diamond(diamond)
+            #
+            #         # 天降红包
+            #         self.mm.server_red_bag.consume_trigger(diamond)
+            #     else:
+            #         # 累计消费钻石
+            #         self.mm.active_consume.add_consume_diamond(diamond)
+            #         # 每日消费钻石
+            #         self.mm.active_daily_consume.add_consume_diamond(diamond)
+            #         # 宇宙最强加积分
+            #         self.mm.super_active.add_score(diamond)
+            #         # 天降红包
+            #         self.mm.red_bag.consume_trigger(diamond)
+            # task_event_dispatch = self.mm.get_event('task_event_dispatch')
+            # task_event_dispatch.call_method('task_consume_diamond', count=diamond)
 
     def add_diamond(self, diamond):
         """ 增加钻石
