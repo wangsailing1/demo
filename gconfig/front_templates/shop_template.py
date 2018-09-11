@@ -19,7 +19,7 @@ shop_goods = {
     'sell_max':     ('sell_max',        'int'),                                         # 限购数量
     'weight':       ('weight',          'int'),                                         # 出现权重
     'discount':     ('discount',        'list_2'),                                      # 折扣
-    'is_hot':       ('is_hot',          'int'),                                         # 热卖标签
+    'is_hot':       ('is_hot',          'str'),                                         # 热卖标签
 }
 
 shop_id = {
