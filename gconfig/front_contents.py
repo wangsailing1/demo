@@ -150,6 +150,13 @@ shop_mapping = {
     'mystical_store_cd': ('mystical_store_cd', True),
 }
 
+book_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_book': ('card_book', True),
+    'script_book': ('script_book', True),
+    'script_group_object': ('script_group_object', True),
+}
+
 
 
 
