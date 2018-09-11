@@ -73,7 +73,7 @@ class Shop(ModelBase):
         :param goods_id:
         :return:
         """
-        return game_config.shop_sell.get(goods_id)
+        return game_config.shop_goods.get(goods_id)
 
     def get_shop_id_with_level(self, level):
         """

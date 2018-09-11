@@ -635,7 +635,7 @@ class GameConfigMixIn(object):
         :param level:
         :return: []
         """
-        if not self.shop_goods_mapping:
+        if not self.shop_goods_mapping.get(shop_id,{}):
             data = {}
             for k, v in self.get_shop_config(shop_id).iteritems():
                 use_lv = v['show_lv']
@@ -665,13 +665,13 @@ class GameConfigMixIn(object):
                     result['data'][use_lv][pos_id].extend(copy.deepcopy(pre_data[pos_id]))
                 result['index'].append(use_lv)
 
-            self.shop_goods_mapping = result
-        pos = bisect.bisect(self.shop_goods_mapping['index'], level)
+            self.shop_goods_mapping[shop_id] = result
+        pos = bisect.bisect(self.shop_goods_mapping[shop_id]['index'], level)
         if not pos:
             return {}
         else:
-            lv = self.shop_goods_mapping['index'][pos - 1]
-            return self.shop_goods_mapping['data'][lv]
+            lv = self.shop_goods_mapping[shop_id]['index'][pos - 1]
+            return self.shop_goods_mapping[shop_id]['data'][lv]
 
     def get_rally_shop_id_with_level(self, level):
         """
