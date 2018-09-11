@@ -35,7 +35,9 @@ class Chapter_stage(object):
             if type_hard not in self.chapter_stage.chapter[chapter]:
                 self.chapter_stage.chapter[chapter][type_hard] = {}
             if stage in self.chapter_stage.chapter[chapter][type_hard]:
-                return 0, {}
+                data['next_stage'] = self.chapter_stage.next_chapter
+                data['chapter'] = self.chapter_stage.chapter
+                return 0, data
             next_chapter = self.unlock_chapter(chapter, type_hard, stage)
             if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
                 self.chapter_stage.next_chapter.extend(next_chapter)
