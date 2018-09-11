@@ -24,9 +24,7 @@ script = {
     'background': ('background', 'int'),  # 拍摄场景
     'music': ('music', 'int'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
-    'style_effect1': ('style_effect1', 'int_list'),  # 最佳类型
-    'style_effect2': ('style_effect2', 'int_list'),  # 次佳类型
-    'style_effect3': ('style_effect3', 'int_list'),  # 不适类型
+    'style_effect': ('style_effect', 'int_list'),  # 最佳类型
     'market': (('market1', 'market2', 'market3'), ('int', 'mult_force_num_list')),  # 市场需求1-男(百分之)
     # 市场需求1-男(百分之)
     'min_attr': (('min_attr1', 'min_attr2', 'min_attr3', 'min_attr4',

@@ -318,6 +318,7 @@ class GameConfigMixIn(object):
         self.server_link_uc_mapping = {}    # 极限挑战跨服
         self.chapter_mapping = {}
         self.shop_goods_mapping = {}
+        self.book_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -405,6 +406,7 @@ class GameConfigMixIn(object):
         self.server_link_mapping.clear()
         self.server_link_uc_mapping.clear()
         self.chapter_mapping.clear()
+        self.book_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2427,6 +2429,15 @@ class GameConfigMixIn(object):
             if value['shop_id'] == shop_id:
                 shop_config[good_id] = value
         return shop_config
+
+    def get_book_mapping(self,type='card_book'):
+        if not self.book_mapping.get(type):
+            self.book_mapping[type] = {}
+            for i,j in getattr(self,type,{}).iteritems():
+                for card in j.get(type.split('_')[0]):
+                    self.book_mapping[type][card] = i
+        return self.book_mapping[type]
+
 
 
 
