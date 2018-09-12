@@ -14,7 +14,7 @@ class CardBook(ModelBase):
         self.uid = uid
         self._attrs = {
             'book': {},
-            'cards':[]
+            'cards': []
         }
         super(CardBook, self).__init__(self.uid)
 
@@ -43,27 +43,23 @@ class CardBook(ModelBase):
 class ScriptBook(ModelBase):
     TARGET = {1: 'shoot_num', 2: 'next_id', 3: 'big_sale', 4: 'output'}
     TARGETMAPPING = {'shoot_num': 1, 'next_id': 2, 'big_sale': 3, 'output': 4}
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
             'book': {},
             'group': {},
-            'scripts':[]
+            'scripts': []
         }
         super(ScriptBook, self).__init__(self.uid)
 
-    def add_book(self, script_id, big_sale, output):
+    def add_book(self, script_id):
         config_mapping = game_config.get_book_mapping(type='script_book')
         if script_id not in config_mapping:
             return
         book_id = config_mapping[script_id]
         config = game_config.script_book
         if book_id not in config:
-            return
-        script_config = game_config.script[script_id]
-        group_id = script_config['group']
-        group_config = game_config.script_group_object
-        if group_id not in group_config:
             return
         if book_id not in self.book:
             self.book[book_id] = {
@@ -77,6 +73,14 @@ class ScriptBook(ModelBase):
         if sorted(self.book[book_id]['script']) == sorted(config[book_id]['script']):
             self.book[book_id]['flag'] = 0
 
+        self.save()
+
+    def add_script_group(self, script_id, big_sale, output):
+        script_config = game_config.script[script_id]
+        group_id = script_config['group']
+        group_config = game_config.script_group_object
+        if group_id not in group_config:
+            return
         if group_id not in self.group:
             self.group[group_id] = {
                 'shoot_num': 0,  # 拍摄次数
