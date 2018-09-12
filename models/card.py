@@ -233,6 +233,7 @@ class Card(ModelBase):
                                                  star=init_star,
                                                  mm=self.mm
                                                  )
+        self.mm.card_book.add_book(card_id)
         self.cards[card_oid] = card_dict
         return card_oid
 
