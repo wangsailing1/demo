@@ -29,6 +29,11 @@ class Chapter_stage(object):
         if not config:
             return 14, {}  # 配置错误
         if not stage_id:
+            stage_id = config[chapter][type_hard]['dialogue_id'][stage - 1]
+            config = game_config.avg_dialogue
+            if stage_id not in config:
+                return 25, {}
+            config_reward = config[stage_id]['add_value']
             data = {}
             if chapter not in self.chapter_stage.chapter:
                 self.chapter_stage.chapter[chapter] = {}
@@ -48,6 +53,8 @@ class Chapter_stage(object):
                     self.chapter_stage.next_chapter.extend(next_chapter)
             data['next_chapter'] = self.chapter_stage.next_chapter
             data['chapter'] = self.chapter_stage.chapter
+            reward = add_mult_gift(self.mm, config_reward)
+            data['reward'] = reward
             self.chapter_stage.save()
             return 0, data
         if stage_id not in config_s:

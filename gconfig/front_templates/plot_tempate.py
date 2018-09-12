@@ -23,6 +23,7 @@ avg_dialogue = {
     'background': ('background', 'str'),
     'hero_expression': ('hero_expression', 'str'),
     'word': ('word', 'unicode'),
+    'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
 }
 
