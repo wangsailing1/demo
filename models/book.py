@@ -19,24 +19,25 @@ class CardBook(ModelBase):
         super(CardBook, self).__init__(self.uid)
 
     def add_book(self, card_id):
+        if card_id in self.cards:
+            return
+        self.cards.append(card_id)
         config_mapping = game_config.get_book_mapping()
         if card_id not in config_mapping:
             return
         book_id = config_mapping[card_id]
         config = game_config.card_book
-        if book_id not in config:
-            return
-        if book_id not in self.book:
-            self.book[book_id] = {
-                'card': [],
-                'flag': -1,
-            }
-        if card_id in self.cards:
-            return
-        self.cards.append(card_id)
-        self.book[book_id]['card'].append(card_id)
-        if sorted(self.book[book_id]['card']) == sorted(config[book_id]['card']):
-            self.book[book_id]['flag'] = 0
+        if book_id in config:
+            if book_id not in self.book:
+                self.book[book_id] = {
+                    'card': [],
+                    'flag': -1,
+                }
+            if card_id in self.book[book_id]['card']:
+                return
+            self.book[book_id]['card'].append(card_id)
+            if sorted(self.book[book_id]['card']) == sorted(config[book_id]['card']):
+                self.book[book_id]['flag'] = 0
         self.save()
 
 
@@ -54,24 +55,23 @@ class ScriptBook(ModelBase):
         super(ScriptBook, self).__init__(self.uid)
 
     def add_book(self, script_id):
-        config_mapping = game_config.get_book_mapping(type='script_book')
-        if script_id not in config_mapping:
-            return
-        book_id = config_mapping[script_id]
-        config = game_config.script_book
-        if book_id not in config:
-            return
-        if book_id not in self.book:
-            self.book[book_id] = {
-                'script': [],
-                'flag': -1,
-            }
         if script_id in self.scripts:
             return
         self.scripts.append(script_id)
-        self.book[book_id]['script'].append(script_id)
-        if sorted(self.book[book_id]['script']) == sorted(config[book_id]['script']):
-            self.book[book_id]['flag'] = 0
+        config_mapping = game_config.get_book_mapping(type='script_book')
+        if script_id in config_mapping:
+            book_id = config_mapping[script_id]
+            config = game_config.script_book
+            if book_id not in self.book:
+                self.book[book_id] = {
+                    'script': [],
+                    'flag': -1,
+                }
+            if script_id in self.book[book_id]['script']:
+                return
+            self.book[book_id]['script'].append(script_id)
+            if sorted(self.book[book_id]['script']) == sorted(config[book_id]['script']):
+                self.book[book_id]['flag'] = 0
 
         self.save()
 
