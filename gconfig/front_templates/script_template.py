@@ -14,6 +14,7 @@ script = {
     'rate': ('rate', 'int'),  # 随机权重
     'cost': ('cost', 'int'),  # 剧本消耗(美元)
     'paycheck_ratio': ('paycheck_ratio', 'int'),  # 片酬系数(百分之）
+    'sequel_count': ('sequel_count', 'int'),  # 续作编号
     'hard_rate': ('hard_rate', 'int'),  # 难度系数
     'output': ('output', 'int'),  # 票房基数(万美元)
     'star': ('star', 'int'),  # 星级1-6
