@@ -46,6 +46,8 @@ class Shop(ModelBase):
             self.refresh_date = today
             self.refresh_times = 0
             # self.save()
+        if not self.goods:
+            self.refresh_goods(is_save=True)
 
     def refresh_goods(self, is_save=False):
         if self.goods:
