@@ -29,8 +29,6 @@ def get_card_reward(hm):
     gift = config[group_id]['award']
     mm.card_book.book[group_id]['flag'] = 1
     reward = add_mult_gift(mm, gift)
-    if not reward:
-        return 5, {}
     mm.card_book.save()
     data = {}
     data['cards'] = mm.card_book.cards
@@ -55,8 +53,6 @@ def get_script_reward(hm):
     gift = config[group_id]['award']
     mm.script_book.book[group_id]['flag'] = 1
     reward = add_mult_gift(mm, gift)
-    if not reward:
-        return 5, {}
     mm.script_book.save()
     data = {}
     data['scripts'] = mm.script_book.scripts
@@ -69,7 +65,7 @@ def get_script_reward(hm):
 def get_group_reward(hm):
     mm = hm.mm
     group_id = int(hm.get_argument('group_id', 0))
-    if group_id not in mm.script_group.group:
+    if group_id not in mm.script_book.group:
         return 1, {}  # 组合未完成
     if mm.script_book.group[group_id]['flag'] == -1:
         return 2, {}  # 组合未完成
@@ -81,9 +77,7 @@ def get_group_reward(hm):
     gift = config[group_id]['award']
     mm.script_book.group[group_id]['flag'] = 1
     reward = add_mult_gift(mm, gift)
-    if not reward:
-        return 5, {}
-    mm.script_group.save()
+    mm.script_book.save()
     data = {}
     data['scripts'] = mm.script_book.scripts
     data['data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
