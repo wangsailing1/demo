@@ -379,8 +379,6 @@ class PeriodShop(Shop):
         return 1 if self.get_refresh_time() > 0 else 0
 
 
-
-
 ModelManager.register_model('shop', Shop)
 # ModelManager.register_model('period_shop', PeriodShop)
 ModelManager.register_model('mystical_shop', MysticalShop)

@@ -16,6 +16,7 @@ from tools.unlock_build import check_build
 def check_close(func):
     def wrapper(hm):
         return 'error_close_shop', {}
+
     return wrapper
 
 
@@ -44,7 +45,7 @@ def index(hm):
     mm = hm.mm
 
     if not mm.user.check_build(SHOP_SORT):
-        return -1, {}   # 未解锁
+        return -1, {}  # 未解锁
 
     sl = ShopLogics(mm)
     rc, data = sl.index()
@@ -120,7 +121,8 @@ def sell(hm):
 
     return 0, data
 
-#礼品商店首页
+
+# 礼品商店首页
 def gift_index(hm):
     mm = hm.mm
 
@@ -158,7 +160,7 @@ def gift_buy(hm):
     return 0, data
 
 
-#资源商店首页
+# 资源商店首页
 def resource_index(hm):
     mm = hm.mm
 
@@ -171,6 +173,7 @@ def resource_index(hm):
         return rc, {}
 
     return 0, data
+
 
 def resource_buy(hm):
     """ 限时商店购买
@@ -195,7 +198,7 @@ def resource_buy(hm):
     return 0, data
 
 
-#神秘商店首页
+# 神秘商店首页
 def mystical_index(hm):
     mm = hm.mm
 
@@ -208,6 +211,7 @@ def mystical_index(hm):
         return rc, {}
 
     return 0, data
+
 
 def mystical_buy(hm):
     """ 限时商店购买
@@ -230,6 +234,7 @@ def mystical_buy(hm):
         return rc, {}
 
     return 0, data
+
 
 def period_index(hm):
     """ 限时商店首页
