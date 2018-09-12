@@ -19,6 +19,8 @@ from lib.core.environ import ModelManager
 class Script(ModelBase):
     POOL_SIZE = 3
 
+    _need_diff = ('own_script', )
+    
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {

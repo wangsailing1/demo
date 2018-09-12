@@ -126,6 +126,7 @@ def game_info(hm):
 
     info.update(dict(cards=mm.card.cards, pieces=mm.card.pieces))
     info.update(dict(equips=mm.equip.equips, equip_pieces=mm.equip.equip_pieces))
+    info.update(dict(own_script=mm.script.own_script))
 
     # item_info = dict(item=mm.item.items, gitem=mm.grade_item.items,
     #                  citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
