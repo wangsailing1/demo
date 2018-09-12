@@ -40,21 +40,20 @@ class AllShopLogics(object):
         """
         data = {
             # 'period_shop_open': True if self.period_shop.get_refresh_time() else False,     # 限时商店是否开启
-            'guild_shop_open': True if self.mm.user.guild_id else False,                    # 公会商店是否开启
-            'dark_shop_open': self.mm.user.check_build(DARK_STREET),                        # 黑街商店是否开启
-            'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),                       # 游骑兵黑市是否开启
-            'arena_shop_open': self.mm.user.check_build(AREA_SORT),                         # 竞技场商店是否开启
-            'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),                      # 荣耀商店是否开启
-            'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),                # 虫洞商店是否开启
-            'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),                        # 装备商店是否开启
-            'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),                        # 荣耀商店是否开启
+            'guild_shop_open': True if self.mm.user.guild_id else False,  # 公会商店是否开启
+            'dark_shop_open': self.mm.user.check_build(DARK_STREET),  # 黑街商店是否开启
+            'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),  # 游骑兵黑市是否开启
+            'arena_shop_open': self.mm.user.check_build(AREA_SORT),  # 竞技场商店是否开启
+            'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),  # 荣耀商店是否开启
+            'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),  # 虫洞商店是否开启
+            'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),  # 装备商店是否开启
+            'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),  # 荣耀商店是否开启
         }
 
         return 0, data
 
 
 class ShopLogics(object):
-
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.shop
@@ -68,7 +67,7 @@ class ShopLogics(object):
         for k, v in goods.iteritems():
             sell_config = self.shop.get_shop_config(v['shop_id'])
             if not sell_config:
-                return 2, {}    # 没有配置
+                return 2, {}  # 没有配置
 
             item = sell_config.get('item', [])
             v['item'] = item
@@ -90,10 +89,10 @@ class ShopLogics(object):
 
     def refresh_goods(self):
         if self.is_stop_refresh():
-            return 1, {}    # 我们正在准备进货，请耐心等待
+            return 1, {}  # 我们正在准备进货，请耐心等待
 
         if self.shop.refresh_times >= self.shop.MAX_REFRESH_TIMES:
-            return 2, {}    # 刷新次数不足
+            return 2, {}  # 刷新次数不足
 
         need_diamond = get_shop_refresh_need_diamond(self.mm)
         if not self.mm.user.is_diamond_enough(need_diamond):
@@ -194,10 +193,10 @@ class ShopLogics(object):
         data['reward'] = reward
 
         # 记录累积商城购买次数
-        #self.mm.task_data.add_task_data('shop', self.sort)
+        # self.mm.task_data.add_task_data('shop', self.sort)
         # 触发商城购买任务
-        #task_event_dispatch = self.mm.get_event('task_event_dispatch')
-        #task_event_dispatch.call_method('shop_buy', self.sort)
+        # task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        # task_event_dispatch.call_method('shop_buy', self.sort)
 
         self.mm.user.save()
         self.shop.save()
@@ -233,26 +232,26 @@ class ShopLogics(object):
 
         return 0, result
 
-class GiftShopLogics(ShopLogics):
 
+class GiftShopLogics(ShopLogics):
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.gift_shop
 
-    def buy(self,good_id):
+    def buy(self, good_id):
         rc, data = super(GiftShopLogics, self).buy(good_id)
         if rc != 0:
             return rc, {}
 
         return rc, data
 
-class ResourceShopLogics(ShopLogics):
 
+class ResourceShopLogics(ShopLogics):
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.resource_shop
 
-    def buy(self,good_id):
+    def buy(self, good_id):
         rc, data = super(ResourceShopLogics, self).buy(good_id)
         if rc != 0:
             return rc, {}
@@ -261,12 +260,11 @@ class ResourceShopLogics(ShopLogics):
 
 
 class MysticalShopLogics(ShopLogics):
-
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.mystical_shop
 
-    def buy(self,good_id):
+    def buy(self, good_id):
         rc, data = super(MysticalShopLogics, self).buy(good_id)
         if rc != 0:
             return rc, {}
@@ -276,8 +274,8 @@ class MysticalShopLogics(ShopLogics):
     def refresh(self):
         self.shop.refresh_goods(is_save=True)
 
-class PeriodShopLogics(ShopLogics):
 
+class PeriodShopLogics(ShopLogics):
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.period_shop
@@ -318,4 +316,3 @@ class PeriodShopLogics(ShopLogics):
             return rc, {}
 
         return rc, data
-
