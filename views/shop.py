@@ -138,7 +138,7 @@ def gift_index(hm):
 
 
 def gift_buy(hm):
-    """ 限时商店购买
+    """ 礼品商店购买
 
     :param hm:
     :return:
@@ -176,7 +176,7 @@ def resource_index(hm):
 
 
 def resource_buy(hm):
-    """ 限时商店购买
+    """ 资源商店购买
 
     :param hm:
     :return:
@@ -214,7 +214,7 @@ def mystical_index(hm):
 
 
 def mystical_buy(hm):
-    """ 限时商店购买
+    """ 神秘商店购买
 
     :param hm:
     :return:
