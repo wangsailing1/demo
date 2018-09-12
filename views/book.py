@@ -29,9 +29,12 @@ def get_card_reward(hm):
     if not reward:
         return 5, {}
     mm.card_book.save()
+    data = {}
+    data['cards'] = mm.card_book.cards
+    data['data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
 
     return {'reward': reward,
-            'data': mm.card_book.book}
+            'data': data}
 
 
 def script_book_index(hm):
@@ -61,9 +64,12 @@ def get_script_reward(hm):
     if not reward:
         return 5, {}
     mm.script_book.save()
-
+    data = {}
+    data['scripts'] = mm.script_book.scripts
+    data['data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
+    data['group'] = mm.script_book.group
     return 0, {'reward': reward,
-               'data': mm.script_book.book}
+               'data': data}
 
 
 def get_group_reward(hm):
@@ -84,6 +90,10 @@ def get_group_reward(hm):
     if not reward:
         return 5, {}
     mm.script_group.save()
+    data = {}
+    data['scripts'] = mm.script_book.scripts
+    data['data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
+    data['group'] = mm.script_book.group
 
     return 0, {'reward': reward,
-               'data': mm.script_group.group}
+               'data': data}
