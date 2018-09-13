@@ -130,3 +130,9 @@ script_curve = {
     'curve_rate': ('curve_rate', 'int_list'),  # 曲线变化
 }
 
+# 许可证恢复
+script_license = ({
+    'uk': ('num', 'int'),  # 今日恢复数量
+    'cd': ('cd', 'int'),  # 冷却时间（分钟）
+}, 'script_licence_config')
+

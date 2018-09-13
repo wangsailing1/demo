@@ -127,6 +127,7 @@ script_mapping = {
     'script_continued_level': ('script_continued_level', True),
     'script_market': ('script_market', True),
     'script_curve': ('script_curve', True),
+    'script_license': ('script_license', False),
 }
 
 
