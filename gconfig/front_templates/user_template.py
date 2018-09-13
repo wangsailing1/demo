@@ -6,11 +6,11 @@ __author__ = 'sm'
 from gconfig import check
 
 
-common = {
-    'uk': ('id', 'int'),  #
-    'value': ('value', 'int_float_list_or_int_float'),  # 值
+common = ({
+    'uk': ('id', 'int'),
+    'value': ('value', 'int_float_list_or_int_float')
+}, 'common_config')
 
-}
 
 player_level = {
     'uk': ('lv_addition', 'int'),  # 等级

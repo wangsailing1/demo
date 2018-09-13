@@ -233,6 +233,7 @@ class Card(ModelBase):
                                                  star=init_star,
                                                  mm=self.mm
                                                  )
+        self.mm.card_book.add_book(card_id)
         self.cards[card_oid] = card_dict
         return card_oid
 
@@ -310,7 +311,7 @@ class Card(ModelBase):
                 continue
             attr_id = game_config.card_love_gift_taste[gift_id]
             if base_char_pro[self.PRO_IDX_MAPPING[attr_id]] > 0:
-                gift_attr = game_config.common.get(2, {}).get('value', 10)
+                gift_attr = game_config.common.get(2, 10)
                 char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
                 pass
 

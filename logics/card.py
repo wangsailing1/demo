@@ -15,6 +15,7 @@ import itertools
 from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils import salt_generator
+from lib.utils import add_dict
 from tools.gift import del_mult_goods
 
 
@@ -323,7 +324,7 @@ class CardLogic(object):
         card_id = card.add_card(card_id)
         card.del_piece(piece_id, cost)
         card.save()
-        return 0, {'got_card': card_id}
+        return 0, {'reward': {'cards': [card_id]}}
 
     def equip_piece_exchange(self, equip_piece_id, num=1):
         """装备碎片合成
@@ -345,7 +346,9 @@ class CardLogic(object):
         equip.add_equip(equip_id, num)
         equip.del_piece(equip_piece_id, cost * num)
         equip.save()
-        return 0, {}
+        reward = {}
+        add_dict(reward.setdefault('equip', {}), equip_id, num)
+        return 0, {'reward': reward}
 
     def equip_piece_auto_exchange(self):
         """装备碎片一键合成
@@ -354,6 +357,7 @@ class CardLogic(object):
         """
         equip = self.mm.equip
 
+        reward = {}
         for piece_id, num in equip.equip_pieces.items():
             piece_config = game_config.equip_piece[piece_id]
 
@@ -366,8 +370,9 @@ class CardLogic(object):
 
             equip.add_equip(equip_id, exchange_num)
             equip.del_piece(piece_id, cost * exchange_num)
+            add_dict(reward.setdefault('equip', {}), equip_id, exchange_num)
         equip.save()
-        return 0, {}
+        return 0, {'reward': reward}
 
 
 

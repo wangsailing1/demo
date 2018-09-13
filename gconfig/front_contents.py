@@ -124,6 +124,9 @@ script_mapping = {
     'script_type_style': ('script_type_style', True),
     'script_role': ('script_role', True),
     'script_end_level': ('script_end_level', True),
+    'script_continued_level': ('script_continued_level', True),
+    'script_market': ('script_market', True),
+    'script_curve': ('script_curve', True),
 }
 
 
@@ -138,6 +141,20 @@ chapter_stage_mapping = {
     'chapter_stage': ('chapter_stage', True),
     'chapter': ('chapter', True),
     'chapter_enemy': ('chapter_enemy', True),
+}
+
+shop_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'shop_goods': ('shop_goods', True),
+    'shop_id': ('shop_id', True),
+    'mystical_store_cd': ('mystical_store_cd', True),
+}
+
+book_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_book': ('card_book', True),
+    'script_book': ('script_book', True),
+    'script_group_object': ('script_group_object', True),
 }
 
 

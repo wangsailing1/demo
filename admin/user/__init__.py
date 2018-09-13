@@ -66,7 +66,8 @@ def update(req, **kwargs):
     diamond = int(req.get_argument('diamond'))
     coin = int(req.get_argument('coin', 0))
     like = int(req.get_argument('like', 0))
-    silver = int(req.get_argument('silver'))
+    # silver = int(req.get_argument('silver'))
+    dollar = int(req.get_argument('dollar'))
     vip = int(req.get_argument('vip'))
     guild_coin = int(req.get_argument('guild_coin'))
     action_point = int(req.get_argument('action_point'))
@@ -109,12 +110,19 @@ def update(req, **kwargs):
     elif diff_like < 0:
         mm.user.add_like(-diff_like)
 
-    # 银币
-    diff_silver = mm.user.silver - silver
-    if diff_silver > 0:
-        mm.user.deduct_silver(diff_silver)
-    elif diff_silver < 0:
-        mm.user.add_silver(-diff_silver)
+    # 美元
+    diff_dollar = mm.user.dollar - dollar
+    if diff_dollar > 0:
+        mm.user.deduct_dollar(diff_dollar)
+    elif diff_dollar < 0:
+        mm.user.add_dollar(-diff_dollar)
+
+    # # 银币
+    # diff_silver = mm.user.silver - silver
+    # if diff_silver > 0:
+    #     mm.user.deduct_silver(diff_silver)
+    # elif diff_silver < 0:
+    #     mm.user.add_silver(-diff_silver)
 
     # 公会币
     diff_guild_coin = mm.user.guild_coin - guild_coin

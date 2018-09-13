@@ -138,11 +138,11 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
         mm.user.save()
     elif gift_sort == 2:  # 钻石
         for pkg in gift_config:
-            add_diamond = pkg[1]
-            if not add_diamond:
+            add_num = pkg[1]
+            if not add_num:
                 continue
-            mm.user.add_diamond(add_diamond)
-            add_dict(data, 'diamond', add_diamond)
+            mm.user.add_diamond(add_num)
+            add_dict(data, 'diamond', add_num)
         mm.user.save()
     elif gift_sort == 3:   # 体力
         for pkg in gift_config:
@@ -153,9 +153,13 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data, 'point', add_point)
         mm.user.save()
     elif gift_sort == 4:    # 美元
-        # todo
-        pass
-
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.user.add_dollar(add_num)
+            add_dict(data, 'dollar', add_num)
+        mm.user.save()
     elif gift_sort == 5:  # 道具
         for pkg in gift_config:
             item_id = pkg[0]
@@ -166,13 +170,13 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('item', {}), item_id, item_num)
         mm.item.save()
     elif gift_sort == 6:  # 装备（资产）
-        # TODO
         for pkg in gift_config:
             equip_id = pkg[0]
             num = pkg[1]
             if not num:
                 continue
-            pass
+            mm.equip.add_equip(equip_id, num)
+            add_dict(data.setdefault('equip', {}), equip_id, num)
     elif gift_sort == 7:  # 点赞数
         for pkg in gift_config:
             add_num = pkg[1]
@@ -235,6 +239,19 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_vip_exp(add_exp)
             add_dict(data, 'vip_exp', add_exp)
         mm.user.save()
+
+    elif gift_sort == 15:   # 获得可拍摄剧本
+        save = False
+        for pkg in gift_config:
+            script_id = pkg[1]
+            if not script_id:
+                continue
+            stats = mm.script.add_own_script(script_id)
+            save = save or stats
+            if stats:
+                data.setdefault('own_script', []).append(script_id)
+        if save:
+            mm.script.save()
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]
@@ -281,10 +298,10 @@ def del_goods(mm, goods_sort, goods_config):
         mm.user.save()
     elif goods_sort == 2:  # 钻石
         for pkg in goods_config:
-            del_diamond = pkg[1]
-            if not mm.user.is_diamond_enough(del_diamond):
+            del_num = pkg[1]
+            if not mm.user.is_diamond_enough(del_num):
                 return 'error_diamond', 0
-            mm.user.deduct_diamond(del_diamond)
+            mm.user.deduct_diamond(del_num)
         mm.user.save()
     elif goods_sort == 3:  # 体力
         for pkg in goods_config:
@@ -293,8 +310,12 @@ def del_goods(mm, goods_sort, goods_config):
                 return 'error_point', 0
         mm.user.save()
     elif goods_sort == 4:  # 美元
-        # todo
-        pass
+        for pkg in goods_config:
+            del_num = pkg[1]
+            if not mm.user.is_dollar_enough(del_num):
+                return 'error_dollar', 0
+            mm.user.deduct_dollar(del_num)
+        mm.user.save()
     elif goods_sort == 5:  # 道具
         for pkg in goods_config:
             item_id = pkg[0]
@@ -304,11 +325,13 @@ def del_goods(mm, goods_sort, goods_config):
             item_config = game_config.use_item.get(item_id, {})
             if not item_config:
                 return 'error_config', 0
-            silver_count += item_config.get('quality', 0) * item_num * 100
         mm.item.save()
     elif goods_sort == 6:  # 装备 资产
-        # todo
-        pass
+        for pkg in goods_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not mm.equip.del_equip(item_id, item_num):
+                return 'error_equip', 0
     elif goods_sort == 7:  # 点赞
         for pkg in goods_config:
             del_num = pkg[1]

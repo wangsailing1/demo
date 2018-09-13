@@ -7,18 +7,31 @@ from gconfig import check
 
 
 # 商品出售配置
-# shop_sell = {
-#     'uk': ('shop_id', 'int'),                                                   # 商品编号
-#     'show_lv': ('show_lv', 'int'),                                              # 出现等级
-#     'pos_id': ('pos_id', 'int'),                                                # 出售位置
-#     'item': (('item_sort', 'item_id', 'item_num'), ('int', 'list_3_to_list')),  # 给予物品
-#     'sell_sort': ('sell_sort', 'int'),                                          # 售价类型
-#     'sell_num': ('sell_num', 'int'),                                            # 售价
-#     'sell_max': ('sell_max', 'int'),                                            # 限购数量
-#     'weight': ('weight', 'int'),                                                # 出现权重
-#     'discount': ('discount', 'list_2'),                                         # 折扣
-# }
+shop_goods = {
+    'uk':           ('id',              'int'),                                         # 商品编号
+    'shop_id':      ('shop_id',         'int'),                                         # 出售位置
+    'show_lv':      ('show_lv',         'int'),                                         # 出现等级
+    'exchange_lv':  ('exchange_lv',     'int'),                                         # 出现等级
+    'pos_id':       ('pos_id',          'int'),                                         # 出售位置
+    'item':         (('item_sort', 'item_id', 'item_num'), ('int', 'list_3_to_list')),  # 给予物品
+    'sell_sort':    ('sell_sort',       'int'),                                         # 售价类型
+    'sell_num':     ('sell_num',        'int'),                                         # 售价
+    'sell_max':     ('sell_max',        'int'),                                         # 限购数量
+    'weight':       ('weight',          'int'),                                         # 出现权重
+    'discount':     ('discount',        'list_2'),                                      # 折扣
+    'is_hot':       ('is_hot',          'str'),                                         # 热卖标签
+}
 
+shop_id = {
+    'uk':   ('id',      'int'),  # 商店id
+    'name': ('name',    'int'),  # 商店名
+    'type': ('type',    'int'),  # 是否刷新
+}
+
+mystical_store_cd = {
+    'uk':       ('id',          'int'),  # 编号
+    'cd_time':  ('cd_time',     'str'),  # 系统刷新时间
+}
 
 # 限时商店
 # period_shop = {

@@ -43,6 +43,7 @@ return_msg_config = {
     'error_silver': u"金币不足",
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
+    'error_dollar': u"美元不足",
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',
@@ -207,6 +208,29 @@ chapter_stage_msg = {
     }
 }
 
+book_msg = {
+    'book.get_card_reward':{
+        1: u'组合未完成',
+        2: u'组合未完成',
+        3: u'奖励已领',
+        4: u'没有相应组合',
+        5: u'奖励错误',
+    },
+    'book.get_script_reward':{
+        1: u'组合未完成',
+        2: u'组合未完成',
+        3: u'奖励已领',
+        4: u'没有相应组合',
+        5: u'奖励错误',
+    },
+    'book.get_group_reward': {
+        1: u'组合未完成',
+        2: u'组合未完成',
+        3: u'奖励已领',
+        4: u'没有相应组合',
+        5: u'奖励错误',
+    }
+}
 
 i18n = {
     'user_name': u'敢斗团',
