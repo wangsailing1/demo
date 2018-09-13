@@ -214,6 +214,7 @@ user_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'server_type': ('server_type', True),
     'tag': ('tag', True),
+    'tag_score': ('tag_score', True),
     'player_level': ('player_level', True),
     'vip': ('vip', True),
 

@@ -48,11 +48,11 @@ chapter = {
 chapter_enemy = {
     'uk':               ('id',              'int'), #id
     'card_id':          ('card_id',         'int'),  #对应卡牌id
-    'charpro1':         ('charpro1',        'int'),  # 演技
-    'charpro2':         ('charpro2',        'int'),  # 歌艺
-    'charpro3':         ('charpro3',        'int'),  # 娱乐
-    'charpro4':         ('charpro4',        'int'),  # 艺术
-    'charpro5':         ('charpro5',        'int'),  # 气质
-    'charpro6':         ('charpro6',        'int'),  # 动感
+    'charpro': (('charpro1', 'charpro2', 'charpro3','charpro4','charpro5',
+                'charpro6'), ('int', 'mult_force_num_list')),  #演技，歌艺，气质，动感，娱乐，艺术
+    'dps_rate':         ('dps_rate',         'int_list'),  #伤害输出系数区间值（万分之）
+    'special_rate1':    ('special_rate1',    'int'),  #艺术触发概率（万分之）
+    'special_rate2':    ('special_rate2',    'int'),  #娱乐触发概率（万分之）
+    'crit_rate_base':   ('crit_rate_base',   'int'),  #基础暴击率(万分之)
 
 }

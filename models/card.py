@@ -315,9 +315,26 @@ class Card(ModelBase):
                 char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
                 pass
 
+        #擅长剧本，角色  先读配置 以后有擅长培养了 再改
+        card_info['tag_script'] = card_config['tag_script']
+        card_info['tag_role'] = card_config['tag_role']
+
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
         card_info['char_pro'] = char_pro
         return card_info
+
+    def card_tag(self, card_info):
+        card_tag = {'tag_role': {},
+                    'tag_script': {}}
+        if not isinstance(card_info,dict):
+            card_info = self.mm.card.get_card(card_info)
+        tag_script = card_info.get('tag_script', [])
+        tag_role = card_info.get('tag_role', [])
+        for tag, value in tag_script:
+            card_tag['tag_script'][tag] = value
+        for tag, value in tag_role:
+            card_tag['tag_role'][tag] = value
+        return card_tag
 
     def add_card_exp(self, card_oid, add_exp, card_dict=None):
         """ 增加英雄经验
