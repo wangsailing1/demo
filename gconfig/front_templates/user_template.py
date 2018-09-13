@@ -37,6 +37,7 @@ tag = {
 tag_score = {
     'uk': ('quality', 'int'),    # 品质
     'score': ('score', 'int'),    # 得分
+    'icon': ('icon', 'int'),    # 得分
 }
 
 # VIP
