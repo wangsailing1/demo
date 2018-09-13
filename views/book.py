@@ -32,10 +32,13 @@ def get_card_reward(hm):
     mm.card_book.save()
     data = {}
     data['cards'] = mm.card_book.cards
-    data['data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
+    data['card_data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
+    data['scripts'] = mm.script_book.scripts
+    data['script_data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
+    data['group'] = mm.script_book.group
+    data['reward'] = reward
 
-    return 0, {'reward': reward,
-               'data': data}
+    return 0, data
 
 
 def get_script_reward(hm):
@@ -55,11 +58,14 @@ def get_script_reward(hm):
     reward = add_mult_gift(mm, gift)
     mm.script_book.save()
     data = {}
+    data['cards'] = mm.card_book.cards
+    data['card_data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
     data['scripts'] = mm.script_book.scripts
-    data['data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
+    data['script_data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
     data['group'] = mm.script_book.group
-    return 0, {'reward': reward,
-               'data': data}
+    data['reward'] = reward
+
+    return 0, data
 
 
 def get_group_reward(hm):
@@ -79,9 +85,11 @@ def get_group_reward(hm):
     reward = add_mult_gift(mm, gift)
     mm.script_book.save()
     data = {}
+    data['cards'] = mm.card_book.cards
+    data['card_data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
     data['scripts'] = mm.script_book.scripts
-    data['data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
+    data['script_data'] = {i: {'flag': j['flag']} for i, j in mm.script_book.book.iteritems()}
     data['group'] = mm.script_book.group
+    data['reward'] = reward
 
-    return 0, {'reward': reward,
-               'data': data}
+    return 0, data
