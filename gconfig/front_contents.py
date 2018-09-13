@@ -123,6 +123,7 @@ script_mapping = {
     'script_style': ('script_style', True),
     'script_type_style': ('script_type_style', True),
     'script_role': ('script_role', True),
+    'script_end_level': ('script_end_level', True),
 }
 
 
@@ -195,6 +196,7 @@ user_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'server_type': ('server_type', True),
     'tag': ('tag', True),
+    'tag_score': ('tag_score', True),
     'player_level': ('player_level', True),
     'vip': ('vip', True),
 

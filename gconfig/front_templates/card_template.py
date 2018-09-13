@@ -44,6 +44,9 @@ card_basis = {
 
     # 擅长角色标签
     'tag_role': ('tag_role', 'int_list'),
+    'crit_rate_base': ('crit_rate_base', 'int'),  #基础暴击率
+    'special_rate1': ('special_rate1', 'int'),  #艺术触发概率（万分之）
+    'special_rate2': ('special_rate2', 'int'),  #娱乐触发概率（万分之）
 
 }
 
@@ -82,6 +85,7 @@ card_love_level = {
     # 羁绊晋级需要碎片数量1星卡
     'star_cost': ('star_cost', 'list_2'),
     'train_count': ('train_count', 'int'),        # 培养次数上限
+    'dps_rate': ('dps_rate', 'int_list'),        # 伤害输出系数区间值（万分之)
 
 }
 

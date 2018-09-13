@@ -33,6 +33,12 @@ tag = {
     'name': ('name', 'int'),    # 标签文本
 }
 
+# 标签
+tag_score = {
+    'uk': ('quality', 'int'),    # 品质
+    'score': ('score', 'int'),    # 得分
+}
+
 # VIP
 vip = {
     'uk': ('vip', 'int'),  # VIP等级
