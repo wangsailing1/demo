@@ -34,8 +34,8 @@ def get_card_reward(hm):
     data['cards'] = mm.card_book.cards
     data['data'] = {i: {'flag': j['flag']} for i, j in mm.card_book.book.iteritems()}
 
-    return {'reward': reward,
-            'data': data}
+    return 0, {'reward': reward,
+               'data': data}
 
 
 def get_script_reward(hm):
