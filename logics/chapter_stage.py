@@ -204,7 +204,6 @@ class Chapter_stage(object):
                     #概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
                     card_info = self.mm.card.get_card(card_id)
                     config = game_config.card_basis[card_info['id']]
-                    print config
                     more_attr = [[5, config[self.MAPPING[5]]], [6, config[self.MAPPING[6]]]]
                     more_attr = weight_choice(more_attr)
                     hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
@@ -212,24 +211,33 @@ class Chapter_stage(object):
                     all_score += hurt
                     fight_data[round_num][card_id] = hurts
 
-                print fight_data,22222222222
-            print all_score,5555555555
             #总熟练度，以后添加
             all_pro = 10
-            m = game_config.common[10]
-            all_score = int(all_score * (1 + all_pro/ m))
-
-
-
-            data['win'] = random.choice((False, True))
+            m = game_config.common[10]['value']
+            all_score = int(all_score * (1 + all_pro / m)) * 10
+            score_config = script_config['stage_score']
+            star = self.get_star(all_score,score_config)
+            data['win'] = star >= 2
+            data['gift'] = []
+            data['fight_data'] = fight_data
+            data['all_score'] = all_score
+            data['star'] = star
+            print all_score,star
             if not data['win']:
                 return 0, data
-            star = random.choice(range(1, 11))
-            data['star'] = star
+
         gift = self.get_reward(stage_id, times=times, is_first=is_first)
-        data['win'] = True
         data['gift'] = gift
         return 0, data
+
+    def get_star(self,all_score,score_config):
+        for level, score in enumerate(score_config, 1):
+            if level == 1 and all_score < score:
+                return level
+            elif level == len(score_config) and all_score >= score:
+                return level + 1
+            elif score <= all_score < score_config[level]:
+                return level + 1
 
     def get_hurt(self,attr_id,card_id,score,is_enemy=False):
         if is_enemy:
