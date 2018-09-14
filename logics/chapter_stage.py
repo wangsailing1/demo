@@ -222,7 +222,6 @@ class Chapter_stage(object):
             data['fight_data'] = fight_data
             data['all_score'] = all_score
             data['star'] = star
-            print all_score,star
             if not data['win']:
                 return 0, data
 
