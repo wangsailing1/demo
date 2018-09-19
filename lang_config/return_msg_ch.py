@@ -174,6 +174,18 @@ user_msg = {
     },
 }
 
+card_msg = {
+    'card.card_add_love_exp': {
+        2: u'道具类型不符',
+        3: u'超出送礼上限',
+    },
+    'card.card_love_level_up': {
+        2: u'经验不足，无法升级',
+        3: u'已到最大等级',
+    },
+
+}
+
 chapter_stage_msg = {
     'chapter_stage.chapter_stage_fight':{
         1: u'关卡参数错误',
