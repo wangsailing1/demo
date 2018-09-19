@@ -15,6 +15,7 @@ from gconfig import game_config
 
 class Chapter_stage(ModelBase):
     FORMAT = '%Y-%m-%d'
+    MAPPING = {1:'like'}
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -22,6 +23,7 @@ class Chapter_stage(ModelBase):
             'chapter': {},
             'last_time': 0,  # 最近操作时间
             'next_chapter': [1],  # 解锁章节
+            'got_reward_dialogue':[]   #已领奖剧情关
         }
         super(Chapter_stage, self).__init__(self.uid)
 
