@@ -30,8 +30,6 @@ def get_dialogue_reward(hm):
     now_stage = int(hm.get_argument('now_stage', ''))
     choice_stage = int(hm.get_argument('choice_stage', ''))
     card_id = int(hm.get_argument('card_id', ''))
-    if now_stage in mm.chapter_stage.got_reward_dialogue:
-        return 0, {}
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.get_dialogue_reward(now_stage, choice_stage, card_id)
     return rc, data
