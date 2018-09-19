@@ -11,7 +11,7 @@ DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
 PLATFORM = 'dev'    # 平台标示
 URL_PARTITION = 'big_sale'
-MASTER_HOST = '203.86.67.226'
+MASTER_HOST = '192.168.1.9'
 IN_MASTER_HOST = '192.168.1.9'
 # CHAT_HOST = '192.168.1.9'
 CHAT_IDS = [('192.168.1.9', 9990)]
@@ -139,7 +139,7 @@ for k, i in enumerate(apps):
         'server': 'http://%s/%s/' % (MASTER_HOST, URL_PARTITION),
         'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'k2IEKp2PbiQSOfu2MNOf'},
         # 'long_addr': long_net_config.get(i[1], long_net_config.values()[0]),
-        'cpp_addr': {'ip': "203.86.67.226", "port": "8000"},
+        'cpp_addr': {'ip': "192.168.1.9", "port": "8000"},
         'net_name': i[1],
         'chat_ip': chat_ip,
         'chat_port': chat_port,
@@ -147,4 +147,4 @@ for k, i in enumerate(apps):
         'config_type': 1,
     }
 
-VIVO_PAY_CALLBACK_URL = 'http://203.86.67.226/genesis2/pay-callback-vivo/?tp=vivo'
+VIVO_PAY_CALLBACK_URL = 'http://192.168.1.9/genesis2/pay-callback-vivo/?tp=vivo'
