@@ -37,6 +37,7 @@ class Shop(ModelBase):
             'refresh_times': 0,
             'goods': {},
             'refresh_date': '',
+            'next_time':0
         }
         super(Shop, self).__init__(self.uid)
 
@@ -190,6 +191,7 @@ class GiftShop(Shop):
             'refresh_time':0,
             'refresh_times': 0,
             'goods': {},
+            'next_time': 0
         }
         super(Shop, self).__init__(self.uid)
 
@@ -248,6 +250,7 @@ class ResourceShop(Shop):
             'refresh_time': 0,
             'refresh_times': 0,
             'goods': {},
+            'next_time': 0
         }
         super(Shop, self).__init__(self.uid)
 
