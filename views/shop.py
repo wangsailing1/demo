@@ -11,6 +11,7 @@ from logics.shop import (
 )
 from tools.unlock_build import SHOP_SORT, PERIOD_SHOP, DARK_STREET, GUILD_SHOP_SORT, PROFITEER_SHOP, HONOR_SHOP
 from tools.unlock_build import check_build
+import time
 
 
 def check_close(func):
@@ -230,6 +231,31 @@ def mystical_buy(hm):
 
     psl = MysticalShopLogics(mm)
     rc, data = psl.buy(good_id)
+    if rc != 0:
+        return rc, {}
+
+    return 0, data
+
+
+def mystical_refresh(hm):
+    """ 神秘商店购买
+
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+
+    # if not mm.user.check_build(PERIOD_SHOP):
+    #     return -2, {}
+
+    now = time.strftime(mm.mystical_shop.FORMAT)
+    mm.mystical_shop.refresh_time = now
+    mm.mystical_shop.refresh_goods()
+    refresh_time, next_time = mm.mystical_shop.get_refresh_time()
+    mm.mystical_shop.next_time = int(time.mktime(time.strptime(next_time,mm.mystical_shop.FORMAT)))
+    mm.mystical_shop.save()
+    psl = MysticalShopLogics(mm)
+    rc, data = psl.index()
     if rc != 0:
         return rc, {}
 
