@@ -217,6 +217,11 @@ chapter_stage_msg = {
         22: u'未达到扫荡星级',
         23: u'有未拥有的艺人',
         24: u'等级不够',
+    },
+    'chapter_stage.get_dialogue_reward':{
+        11: u'剧情关配置错误',
+        12: u'剧情选择错误',
+        13: u'卡牌id错误',
     }
 }
 

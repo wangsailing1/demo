@@ -87,7 +87,7 @@ class Chapter_stage(object):
             align = {int(align[i * 2]): align[i * 2 + 1] for i in range(len(align) / 2)}
         rc, data = self.fight(stage_id, align, auto=auto, times=times, is_first=is_first)
         if not rc:
-            if data.get('win',True):
+            if data.get('win', True):
                 add_player_exp = stage_config['player_exp'] * times
                 add_fight_exp = stage_config['fight_exp'] * times
                 script_type = game_config.script[script_id]['style']
@@ -329,20 +329,21 @@ class Chapter_stage(object):
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
-
-        gift = config[choice_stage]['reward']
-        add_val = config[choice_stage]['add_value']
-        self.chapter_stage.got_reward_dialogue.append(now_stage)
         add_value = {}
-        for k, v in add_val:
-            if group_id not in self.mm.card.attr:
-                self.mm.card.attr[group_id] = {}
-            attr = self.chapter_stage.MAPPING[k]
-            self.mm.card.attr[group_id][attr] = self.mm.card.attr[group_id].get(attr, 0) + v
-            add_value[attr] = add_value.get(attr, 0) + v
-        reward = add_mult_gift(self.mm, gift)
-        self.mm.card.save()
-        self.chapter_stage.save()
+        reward = {}
+        if now_stage not in self.chapter_stage.got_reward_dialogue:
+            gift = config[choice_stage]['reward']
+            add_val = config[choice_stage]['add_value']
+            self.chapter_stage.got_reward_dialogue.append(now_stage)
+            for k, v in add_val:
+                if group_id not in self.mm.card.attr:
+                    self.mm.card.attr[group_id] = {}
+                attr = self.chapter_stage.MAPPING[k]
+                self.mm.card.attr[group_id][attr] = self.mm.card.attr[group_id].get(attr, 0) + v
+                add_value[attr] = add_value.get(attr, 0) + v
+            reward = add_mult_gift(self.mm, gift)
+            self.mm.card.save()
+            self.chapter_stage.save()
         if group_id not in self.mm.card.group_ids:
             love_lv = 0
         else:
@@ -351,7 +352,7 @@ class Chapter_stage(object):
         return 0, {
             'add_value': add_value,
             'reward': reward,
-            'love_lv':love_lv
+            'love_lv': love_lv
         }
 
     # 解锁章节
