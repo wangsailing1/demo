@@ -56,7 +56,8 @@ class Card(ModelBase):
             },
             'pieces': {
 
-            }
+            },
+            'attr':{}
 
         }
         self._group_ids = {}
