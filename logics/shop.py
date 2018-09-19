@@ -77,12 +77,13 @@ class ShopLogics(object):
             v['exchange_lv'] = sell_config.get('exchange_lv', 0)
 
         cur_times = self.shop.refresh_times
-        _, refresh_time = self.get_remain_refresh_time()
+        _, remain = self.get_remain_refresh_time()
 
         data = {
             'goods': goods,
             'refresh_times': cur_times,
-            'refresh_time': refresh_time,
+            'remain': remain,
+            'refresh_time':self.shop.refresh_time
         }
 
         return 0, data
@@ -134,11 +135,10 @@ class ShopLogics(object):
 
         now = int(time.time())
         div = 0
-        if self.shop.refresh_time == 0 or self.shop.refresh_time > now:
+        if self.shop.next_time == 0 or self.shop.next_time <= now:
             remain = 0
         else:
-            div, mod = divmod(now - self.shop.refresh_time, self.shop.AUTO_REFRESH_TIME)
-            remain = self.shop.AUTO_REFRESH_TIME - mod
+            remain = self.shop.next_time - now
         return div, remain
 
     def is_stop_refresh(self):

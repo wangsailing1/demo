@@ -109,14 +109,17 @@ class MysticalShop(Shop):
             'start_time': 0,
             'refresh_time':0,
             'refresh_times': 0,
+            'next_time':0,
             'goods': {},
         }
         super(Shop, self).__init__(self.uid)
 
     def pre_use(self):
-        if self.refresh_time != self.get_refresh_time():
+        refresh_time,next_time = self.get_refresh_time()
+        if self.refresh_time != refresh_time:
             self.refresh_goods()
-            self.refresh_time = self.get_refresh_time()
+            self.refresh_time = refresh_time
+            self.next_time = int(time.mktime(time.strptime(next_time,self.FORMAT)))
             self.save()
 
     def refresh_goods(self, is_save=False):
@@ -162,16 +165,18 @@ class MysticalShop(Shop):
         config = game_config.mystical_store_cd
         now = time.strftime(self.FORMAT)
         yes = time.strftime(self.FORMAT,time.localtime(time.time() - 3600 * 24))
+        tom = time.strftime(self.FORMAT, time.localtime(time.time() + 3600 * 24))
+        tom_date,tom_tm = tom.split(' ')
         yes_date,yes_tm = yes.split(' ')
         date,tm = now.split(' ')
         refresh_time = sorted([i['cd_time'] for i in config.values()])
         for k,t in enumerate(refresh_time):
             if k == 0 and tm < t:
-                return yes_date + ' ' + refresh_time[-1]
+                return yes_date + ' ' + refresh_time[-1],date + ' ' + refresh_time[k]
             elif k == len(refresh_time) - 1 and tm >= t:
-                return date + ' ' + refresh_time[k]
+                return date + ' ' + refresh_time[k],date + ' ' + refresh_time[k]
             elif t <= tm < refresh_time[k+1]:
-                return date + ' ' + refresh_time[k]
+                return date + ' ' + refresh_time[k],tom_date + ' ' + refresh_time[0]
 
 
 #礼包
