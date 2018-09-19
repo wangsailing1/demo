@@ -117,7 +117,8 @@ class MysticalShop(Shop):
 
     def pre_use(self):
         refresh_time,next_time = self.get_refresh_time()
-        if self.refresh_time != refresh_time:
+        now = time.strftime(self.FORMAT)
+        if self.refresh_time < refresh_time and now > refresh_time:
             self.refresh_goods()
             self.refresh_time = refresh_time
             self.next_time = int(time.mktime(time.strptime(next_time,self.FORMAT)))
@@ -175,9 +176,9 @@ class MysticalShop(Shop):
             if k == 0 and tm < t:
                 return yes_date + ' ' + refresh_time[-1],date + ' ' + refresh_time[k]
             elif k == len(refresh_time) - 1 and tm >= t:
-                return date + ' ' + refresh_time[k],date + ' ' + refresh_time[k]
-            elif t <= tm < refresh_time[k+1]:
                 return date + ' ' + refresh_time[k],tom_date + ' ' + refresh_time[0]
+            elif t <= tm < refresh_time[k+1]:
+                return date + ' ' + refresh_time[k],date + ' ' + refresh_time[k+1]
 
 
 #礼包
