@@ -343,10 +343,15 @@ class Chapter_stage(object):
         reward = add_mult_gift(self.mm, gift)
         self.mm.card.save()
         self.chapter_stage.save()
+        if group_id not in self.mm.card.group_ids:
+            love_lv = 0
+        else:
+            love_lv = self.mm.card.get_card(self.mm.card.group_ids[group_id])['love_lv']
 
         return 0, {
             'add_value': add_value,
-            'reward': reward
+            'reward': reward,
+            'love_lv':love_lv
         }
 
     # 解锁章节
