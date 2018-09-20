@@ -149,6 +149,7 @@ shop_mapping = {
     'shop_goods': ('shop_goods', True),
     'shop_id': ('shop_id', True),
     'mystical_store_cd': ('mystical_store_cd', True),
+    'price_ladder': ('price_ladder', True),
 }
 
 book_mapping = {

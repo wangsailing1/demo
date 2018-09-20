@@ -12,6 +12,7 @@ from logics.shop import (
 from tools.unlock_build import SHOP_SORT, PERIOD_SHOP, DARK_STREET, GUILD_SHOP_SORT, PROFITEER_SHOP, HONOR_SHOP
 from tools.unlock_build import check_build
 import time
+from gconfig import game_config
 
 
 def check_close(func):
@@ -238,7 +239,7 @@ def mystical_buy(hm):
 
 
 def mystical_refresh(hm):
-    """ 神秘商店购买
+    """ 神秘商店刷新
 
     :param hm:
     :return:
@@ -251,11 +252,20 @@ def mystical_refresh(hm):
     now = time.strftime(mm.mystical_shop.FORMAT)
     mm.mystical_shop.refresh_time = now
     mm.mystical_shop.refresh_goods()
+    config = game_config.price_ladder
+    if mm.mystical_shop.refresh_times >= len(config):
+        return 1, {}  #刷新次数也达最大次数
+    mm.mystical_shop.refresh_times += 1
+    need_coin = config[mm.mystical_shop.refresh_times]['mystical_store_cost']
+    if need_coin > mm.user.diamond:
+        return 2, {}  #钻石不足
+    mm.user.diamond -= need_coin
     refresh_time, next_time = mm.mystical_shop.get_refresh_time()
     mm.mystical_shop.next_time = int(time.mktime(time.strptime(next_time,mm.mystical_shop.FORMAT)))
     mm.mystical_shop.save()
     psl = MysticalShopLogics(mm)
     rc, data = psl.index()
+    mm.user.save()
     if rc != 0:
         return rc, {}
 
