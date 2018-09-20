@@ -329,6 +329,7 @@ class Chapter_stage(object):
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
+        old_value = copy.deepcopy(self.mm.card.attr[group_id])
         add_value = {}
         reward = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
@@ -352,7 +353,8 @@ class Chapter_stage(object):
         return 0, {
             'add_value': add_value,
             'reward': reward,
-            'love_lv': love_lv
+            'love_lv': love_lv,
+            'old_value':old_value
         }
 
     # 解锁章节
