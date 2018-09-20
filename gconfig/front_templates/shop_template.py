@@ -33,6 +33,12 @@ mystical_store_cd = {
     'cd_time':  ('cd_time',     'str'),  # 系统刷新时间
 }
 
+# 神秘商店刷新消耗
+price_ladder = {
+    'uk':                   ('id',                  'int'),      # 商品编号
+    'mystical_store_cost':  ('mystical_store_cost', 'int'),     # 出现等级
+}
+
 # 限时商店
 # period_shop = {
 #     'uk': ('id', 'int'),                                                        # 商品编号
@@ -100,3 +106,4 @@ mystical_store_cd = {
 #     'sell_num': ('sell_num', 'int'),                 # 价格
 #     'weight': ('weight', 'int'),                     # 权重
 # }
+

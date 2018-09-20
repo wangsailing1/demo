@@ -111,6 +111,7 @@ class MysticalShop(Shop):
             'refresh_time':0,
             'refresh_times': 0,
             'next_time':0,
+            'refresh_date':'',
             'goods': {},
         }
         super(Shop, self).__init__(self.uid)
@@ -124,7 +125,15 @@ class MysticalShop(Shop):
             self.next_time = int(time.mktime(time.strptime(next_time,self.FORMAT)))
             self.save()
 
-    def refresh_goods(self, is_save=False):
+
+    def mysticalrefresh_times(self):
+        today = time.strftime('%F')
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.refresh_times = 0
+
+
+    def refresh_goods(self, is_save=False,is_manual = False):
 
         if self.goods:
             self.goods = {}
