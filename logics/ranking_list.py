@@ -10,10 +10,11 @@ def send_output_reward(server):
     from lib.core.environ import ModelManager
     if not settings.is_father_server(server):
         return
-
     config = game_config.out_put_reward
     output_rank = OutPutRank('', server)
     output_rank_list = output_rank.get_all_user(withscores=True)
+    if not output_rank_list:
+        return
     for rank, value in enumerate(output_rank_list, 1):
         if rank not in config:
             continue

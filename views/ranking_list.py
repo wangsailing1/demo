@@ -17,22 +17,24 @@ def rank_index(hm):
     output_rank_list = []
     alloutput_Rank_list = []
 
-    for uid, score in appeal_rank:
-        # uid,card_id = uid_card_id.split('|')
+    for uid_card_id, score in appeal_rank:
+        uid, card_id = uid_card_id.split('|')
         umm = ModelManager(uid)
-        # group_id = umm.card.get_group_id(card_id)
+        group_id = umm.card.get_group_id(card_id)
         name = umm.user.name
-        appeal_rank_list.append((uid, name, score))
+        appeal_rank_list.append((uid, name, group_id, score))
 
-    for uid, score in output_rank:
+    for uid_script_id, score in output_rank:
+        uid, script_id = uid_card_id.split('|')
         umm = ModelManager(uid)
         name = umm.user.name
-        output_rank_list.append((uid, name, score))
+        output_rank_list.append((uid, name, script_id, score))
 
-    for uid, score in alloutput_Rank:
+    for uid_group_id, score in alloutput_Rank:
+        uid, group_id = uid_card_id.split('|')
         umm = ModelManager(uid)
         name = umm.user.name
-        alloutput_Rank_list.append((uid, name, score))
+        alloutput_Rank_list.append((uid, name, group_id, score))
 
     return 0, {
         'appeal_rank': appeal_rank_list,
