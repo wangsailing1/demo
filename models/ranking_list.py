@@ -9,6 +9,7 @@ from lib.core.environ import ModelManager
 from lib.db import ModelTools
 from lib.utils import generate_rank_score, round_float_or_str
 import settings
+from lib.db import get_redis_client
 
 
 class AllRank(ModelTools):
@@ -134,6 +135,49 @@ class AllRank(ModelTools):
     def backup_key(self):
         key_by_date = '%s_%s' % (self._key, 'backup')
         return key_by_date
+
+
+class AppealRank(AllRank):
+    """
+    艺人号召力排行
+    uid 格式 uid + '|' + card_id 
+    """
+
+    # def __init__(self, uid='', server='', *args, **kwargs):
+    #     super(AllRank, self).__init__()
+    #     self.fredis = get_redis_client(settings.public)
+    #     self._key = self.make_key(self.__class__.__name__, server_name='master')
+    #     date = time.strftime('%F')
+    #     self._key_date = '%s_%s' % (self._key, date)
+
+
+class OutPutRank(AllRank):
+    """
+    票房排行
+    uid 格式 uid + '|' + script_id
+    """
+
+
+    # def __init__(self,uid='', server='', *args, **kwargs):
+    #     super(AllRank, self).__init__()
+    #     self.fredis = get_redis_client(settings.public)
+    #     self._key = self.make_key(self.__class__.__name__, server_name='master')
+    #     weekday = time.strftime("%F")
+    #     self._key_date = '%s_%s' % (self._key, weekday)
+
+
+class AllOutPutRank(AllRank):
+    """
+    总票房排行
+    uid 格式 uid + '|' + group_id
+    """
+
+    # def __init__(self,uid='', server='', *args, **kwargs):
+    #     super(AllRank, self).__init__()
+    #     self.fredis = get_redis_client(settings.public)
+    #     self._key = self.make_key(self.__class__.__name__, server_name='master')
+    #     weekday = time.strftime("%F")
+    #     self._key_date = '%s_%s' % (self._key, weekday)
 
 
 class GuildTaskRank(AllRank):
@@ -398,7 +442,8 @@ class WorldBossRank(AllRank):
         :param withscores:
         :return:
         """
-        return self.fredis.zrevrange(self._all_guild_key, start, end, withscores=withscores, score_cast_func=score_cast_func)
+        return self.fredis.zrevrange(self._all_guild_key, start, end, withscores=withscores,
+                                     score_cast_func=score_cast_func)
 
     def get_guild_rank(self, guild_id):
         """
@@ -446,12 +491,15 @@ class WorldBossRank(AllRank):
         self.fredis.delete(self._all_guild_key)
 
 
-ModelManager.register_model_base_tools('level_rank', LevelRank)
-ModelManager.register_model_base_tools('super_active_rank', SuperActiveRank)
-ModelManager.register_model_base_tools('guild_task_rank', GuildTaskRank)
-ModelManager.register_model_base_tools('combat_rank', CombatRank)
-ModelManager.register_model_base_tools('high_ladder_rank', HighladderRank)
-ModelManager.register_model_base_tools('flower_rank', FlowerRank)
-ModelManager.register_model_base_tools('biography_rank', BiographyRank)
-ModelManager.register_model_base_tools('guild_level_rank', GuildLevelRank)
-ModelManager.register_model_base_tools('world_boss_rank', WorldBossRank)
+# ModelManager.register_model_base_tools('level_rank', LevelRank)
+# ModelManager.register_model_base_tools('super_active_rank', SuperActiveRank)
+# ModelManager.register_model_base_tools('guild_task_rank', GuildTaskRank)
+# ModelManager.register_model_base_tools('combat_rank', CombatRank)
+# ModelManager.register_model_base_tools('high_ladder_rank', HighladderRank)
+# ModelManager.register_model_base_tools('flower_rank', FlowerRank)
+# ModelManager.register_model_base_tools('biography_rank', BiographyRank)
+# ModelManager.register_model_base_tools('guild_level_rank', GuildLevelRank)
+# ModelManager.register_model_base_tools('world_boss_rank', WorldBossRank)
+ModelManager.register_model_base_tools('appeal_rank', AppealRank)
+ModelManager.register_model_base_tools('output_rank', OutPutRank)
+ModelManager.register_model_base_tools('alloutput_Rank', AllOutPutRank)
