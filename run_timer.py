@@ -38,6 +38,7 @@ TIMER_JOBS = (
 )
 """
 import gevent.monkey
+
 gevent.monkey.patch_all()
 
 import time
@@ -55,6 +56,7 @@ define("env", default='local', help="settings file name", type=str)
 options.parse_command_line()
 # 设定进程使用的配置文件
 import settings
+
 settings.set_env(options.env, 'all')
 
 from gconfig import game_config, front_game_config
@@ -63,11 +65,11 @@ from lib.utils import filedefaultdict
 from lib.utils.mail import send_sys_mail
 from lib.db import ModelTools
 from models.server import ServerUidList
+from logics.ranking_list import send_output_reward
 
 # from lib.statistics.data_analysis import do_data_process_hourly, level_pass_rate
 # from scrips.statistics.dmp_snapshot import do_snapshot
 from lib.utils.online_user import backup_all_server_online_count
-
 
 # from logics.decisive_battle import mapping_battle_uid, send_duel_rank_award
 # from logics.decisive_battle import one_server_battle, vip_auto_enroll
@@ -89,7 +91,7 @@ TIMER_JOBS = (
     # ('cron', dict(day_of_week='2,3', hour='22'), group_team, 0),
     # 公会战周五晚上结算发奖
     # ('cron', dict(day_of_week='4', hour='22'), settlement_reward, 0),
-
+    ('send_output_reward', dict(hour=6), send_output_reward, 0),
 
 )
 DATE_LIST_JOBS = (
@@ -107,6 +109,7 @@ class SelfGeventScheduler(GeventScheduler):
     """任务执行类
     重写_main_loop方法, 方便自动更新
     """
+
     def _main_loop(self):
         self.config_time = 0
         while self.running:
@@ -221,9 +224,10 @@ class SelfGeventScheduler(GeventScheduler):
             # 修正修改进程时间时apscheduler datetime 类不生效的问题
             base.datetime = change_time.datetime.datetime
             base1.datetime = change_time.datetime.datetime
-            print_log('debug_change_time: %s -- %s -- %s' % (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(real_time)),
-                                                             time.strftime('%Y-%m-%d %H:%M:%S'),
-                                                             delta_seconds))
+            print_log(
+                'debug_change_time: %s -- %s -- %s' % (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(real_time)),
+                                                       time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                       delta_seconds))
             return True
         return False
 
