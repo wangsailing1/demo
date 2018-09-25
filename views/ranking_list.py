@@ -2,12 +2,17 @@
 from lib.core.environ import ModelManager
 from gconfig import game_config
 
+rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 
-rank_mapping = {1:'appeal_rank',2:'output_rank',3:'alloutput_rank'}
 
 def rank_index(hm):
     mm = hm.mm
-    rank_id = int(hm.get_argument('rank_id',1))
+    rank_id = int(hm.get_argument('rank_id', 1))
+    start = int(hm.get_argument('start', 1))
+    end = int(hm.get_argument('end', 1))
+    if start > end:
+        start = 1
+        end = 100
     ar = mm.get_obj_tools(rank_mapping[rank_id])
 
     rank_list = ar.get_all_user(withscores=True)
@@ -17,7 +22,7 @@ def rank_index(hm):
     alloutput_rank_list = []
 
     if rank_id == 1:
-        output_rank_own_list = []
+        rank_own_list = []
         for uid_group_id, score in rank_list:
             uid, group_id = uid_group_id.split('|')
             umm = ModelManager(uid)
@@ -27,22 +32,20 @@ def rank_index(hm):
             card_name = game_config.card_basis[cid]['name']
             name = umm.user.name
             if mm.uid in uid_group_id:
-                output_rank_own_list.append({'uid': uid,
-                                             'name': name,
-                                             'script_id': group_id,
-                                             'score': score,
-                                             'uid_group_id': uid_group_id})
+                rank_own_list.append({'uid': uid,
+                                      'name': name,
+                                      'script_id': group_id,
+                                      'score': score,
+                                      'uid_group_id': uid_group_id,
+                                      'rank_own': ar.get_rank(uid_group_id)})
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
                                      'group_id': group_id,
                                      'score': score,
                                      'card_name': card_name})
-        for uid_dict in output_rank_own_list:
-            uid = uid_dict['uid_group_id']
-            uid_dict['rank_own'] = ar.get_rank(uid)
         return 0, {
-            'rank_list': appeal_rank_list,
-            'rank_own':[]
+            'rank_list': appeal_rank_list[start - 1:end],
+            'rank_own': rank_own_list
         }
 
     elif rank_id == 2:
@@ -57,17 +60,14 @@ def rank_index(hm):
                                              'name': name,
                                              'script_id': script_id,
                                              'score': score,
-                                             'uid_script_id': uid_script_id})
+                                             'uid_script_id': uid_script_id,
+                                             'rank_own': ar.get_rank(uid_script_id)})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
                                      'score': score, })
-        for uid_dict in output_rank_own_list:
-            uid = uid_dict['uid_script_id']
-            uid_dict['rank_own'] = ar.get_rank(uid)
-
         return 0, {
-            'rank_list': output_rank_list,
+            'rank_list': output_rank_list[start - 1:end],
             'rank_own': output_rank_own_list,
         }
 
@@ -83,18 +83,15 @@ def rank_index(hm):
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
-                                                'uid_group_id': uid_group_id})
+                                                'uid_group_id': uid_group_id,
+                                                'rank_own': ar.get_rank(uid_group_id)})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,
                                         'score': score, })
 
-
-        for uid_dict in alloutput_rank_own_list:
-            uid = uid_dict['uid_group_id']
-            uid_dict['rank_own'] = ar.get_rank(uid)
         return 0, {
-            'rank_list': alloutput_rank_list,
+            'rank_list': alloutput_rank_list[start - 1:end],
             'rank_own': alloutput_rank_own_list
         }
 
