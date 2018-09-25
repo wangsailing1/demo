@@ -140,7 +140,7 @@ class AllRank(ModelTools):
 class AppealRank(AllRank):
     """
     艺人号召力排行
-    uid 格式 uid + '|' + card_id 
+    uid 格式 uid + '|' + group_id 
     """
 
     # def __init__(self, uid='', server='', *args, **kwargs):
@@ -502,4 +502,4 @@ class WorldBossRank(AllRank):
 # ModelManager.register_model_base_tools('world_boss_rank', WorldBossRank)
 ModelManager.register_model_base_tools('appeal_rank', AppealRank)
 ModelManager.register_model_base_tools('output_rank', OutPutRank)
-ModelManager.register_model_base_tools('alloutput_Rank', AllOutPutRank)
+ModelManager.register_model_base_tools('alloutput_rank', AllOutPutRank)
