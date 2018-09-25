@@ -9,7 +9,7 @@ def rank_index(hm):
     mm = hm.mm
     rank_id = int(hm.get_argument('rank_id', 1))
     start = int(hm.get_argument('start', 1))
-    end = int(hm.get_argument('end', 1))
+    end = int(hm.get_argument('end', 100))
     if start > end:
         start = 1
         end = 100
