@@ -85,12 +85,16 @@ def rank_index(hm):
 def get_script_info(hm):
     mm = hm.mm
     script_id = hm.get_argument('script_id', 0)
+    if not script_id:
+        return 1, {}
     return 0, {'script_info': mm.script.own_script}
 
 
 def get_user_info(hm):
     mm = hm.mm
     uid = hm.get_argument('uid', '')
+    if not uid:
+        return 1, {}
     umm = ModelManager(uid)
 
     return 0, {
