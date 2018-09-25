@@ -63,16 +63,16 @@ def user_friend_info(mm, uid):
         'name': target_user.name,
         'level': target_user.level,
         'vip': target_user.vip,
-        'guild_name': guild.name,
-        'guild_id': guild.guild_id,
+        # 'guild_name': guild.name,
+        # 'guild_id': guild.guild_id,
         'user_status': user_status,  # 用户状态, 0: 离线, 1: 在线
         'active_time': target_user.active_time,     # 活跃时间戳
         'role': target_user.role,
         # 'parise_count': friend.parise_count,  # 点赞数
         # 'has_redpacket': friend.red_packet['has_reward'],   # 有没有红包
-        'high_ladder_rank': target_mm.get_obj_tools('high_ladder_rank').get_rank(uid),  # 竞技场排名
-        'dark_street': target_mm.dark_street.milestone_id,  # 黑街段位
-        'combat': target_mm.hero.get_max_combat(),
+        # 'high_ladder_rank': target_mm.get_obj_tools('high_ladder_rank').get_rank(uid),  # 竞技场排名
+        # 'dark_street': target_mm.dark_street.milestone_id,  # 黑街段位
+        # 'combat': target_mm.hero.get_max_combat(),
     }
     result = {
         'user': user_dict
