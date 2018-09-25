@@ -17,20 +17,29 @@ def rank_index(hm):
     alloutput_rank_list = []
 
     if rank_id == 1:
+        output_rank_own_list = []
         for uid_group_id, score in rank_list:
             uid, group_id = uid_group_id.split('|')
             umm = ModelManager(uid)
-            print uid, group_id
             group_id = int(group_id)
             card_id = umm.card.group_ids[group_id]
             cid = int(card_id.split('-')[0])
             card_name = game_config.card_basis[cid]['name']
             name = umm.user.name
+            if mm.uid in uid_group_id:
+                output_rank_own_list.append({'uid': uid,
+                                             'name': name,
+                                             'script_id': group_id,
+                                             'score': score,
+                                             'uid_group_id': uid_group_id})
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
                                      'group_id': group_id,
                                      'score': score,
                                      'card_name': card_name})
+        for uid_dict in output_rank_own_list:
+            uid = uid_dict['uid_group_id']
+            uid_dict['rank_own'] = ar.get_rank(uid)
         return 0, {
             'rank_list': appeal_rank_list,
             'rank_own':[]
