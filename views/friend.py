@@ -455,3 +455,12 @@ def receive_friendly_reward(hm):
         return rc, {}
 
     return 0, data
+
+
+@check_unlock
+def actor_chat(hm):
+    mm = hm.mm
+    choice_id = hm.get_argument('choice_id',0)
+    if not choice_id:
+        return 1, {}   #未选择对话
+    return 0, {}
