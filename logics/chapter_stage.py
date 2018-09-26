@@ -330,18 +330,12 @@ class Chapter_stage(object):
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr[group_id])
-        add_value = {}
         reward = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
             gift = config[choice_stage]['reward']
             add_val = config[choice_stage]['add_value']
             self.chapter_stage.got_reward_dialogue.append(now_stage)
-            for k, v in add_val:
-                if group_id not in self.mm.card.attr:
-                    self.mm.card.attr[group_id] = {}
-                attr = self.chapter_stage.MAPPING[k]
-                self.mm.card.attr[group_id][attr] = self.mm.card.attr[group_id].get(attr, 0) + v
-                add_value[attr] = add_value.get(attr, 0) + v
+            add_value = self.mm.card.add_value(group_id,add_val)
             reward = add_mult_gift(self.mm, gift)
             self.mm.card.save()
             self.chapter_stage.save()
