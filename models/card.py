@@ -11,7 +11,6 @@ import copy
 import bisect
 import itertools
 
-
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import add_dict
@@ -36,12 +35,14 @@ class Card(ModelBase):
     pieces: {        # 卡牌碎片
        1: 100
     }
+    attr:{group_id:{attr1:1,attr2:2}}
     """
 
     CHAR_PRO_MAPPING = ['演技', '歌艺', '娱乐', '艺术', '气质', '动感']
     LOVE_GIFT_MAPPING = ['酸', '甜', '苦', '辣', '冰', '饮']
+    ADD_VALUE_MAPPING = {1: 'like'}  #策划添加新属性的时候添加
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
-    PRO_IDX_MAPPING = {i: i-1 for i in xrange(1, 7)}
+    PRO_IDX_MAPPING = {i: i - 1 for i in xrange(1, 7)}
 
     _need_diff = ('cards', 'pieces')
 
@@ -57,7 +58,7 @@ class Card(ModelBase):
             'pieces': {
 
             },
-            'attr':{}
+            'attr': {}
 
         }
         self._group_ids = {}
@@ -78,28 +79,27 @@ class Card(ModelBase):
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
-            'id': card_id,              # 配置id
-            'oid': card_oid,            # 唯一id
-            'is_cold': False,           # 是否雪藏
+            'id': card_id,  # 配置id
+            'oid': card_oid,  # 唯一id
+            'is_cold': False,  # 是否雪藏
 
-            'exp': 0,                   # 经验
-            'lv': lv,                   # 等级
+            'exp': 0,  # 经验
+            'lv': lv,  # 等级
 
-            'love_exp': 0,              # 羁绊经验
-            'love_lv': love_lv,         # 羁绊等级
-            'gift_count': 0,            # 礼物数量
-            'equips': [],               # 装备id
+            'love_exp': 0,  # 羁绊经验
+            'love_lv': love_lv,  # 羁绊等级
+            'gift_count': 0,  # 礼物数量
+            'equips': [],  # 装备id
 
             'evo': evo,
             'star': star,
             '_source': mm.action if mm else '',  # 记录来源
 
-            'train_times': 0,           # 培训次数
-            'train_ext_pro': [0] * len(cls.PRO_IDX_MAPPING),   # 训练属性加成
+            'train_times': 0,  # 培训次数
+            'train_ext_pro': [0] * len(cls.PRO_IDX_MAPPING),  # 训练属性加成
 
-            'love_gift_pro': {},          # 味觉   {pro_id: {'exp': 0, 'lv': )}}
-            'style_pro':{},      #擅长类型{pro_id: {'exp': 0, 'lv': )}}
-
+            'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': )}}
+            'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': )}}
 
         }
         return card_oid, card_dict
@@ -316,7 +316,7 @@ class Card(ModelBase):
                 char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
                 pass
 
-        #擅长剧本，角色  先读配置 以后有擅长培养了 再改
+        # 擅长剧本，角色  先读配置 以后有擅长培养了 再改
         card_info['tag_script'] = card_config['tag_script']
         card_info['tag_role'] = card_config['tag_role']
 
@@ -327,7 +327,7 @@ class Card(ModelBase):
     def card_tag(self, card_info):
         card_tag = {'tag_role': {},
                     'tag_script': {}}
-        if not isinstance(card_info,dict):
+        if not isinstance(card_info, dict):
             card_info = self.mm.card.get_card(card_info)
         tag_script = card_info.get('tag_script', [])
         tag_role = card_info.get('tag_role', [])
@@ -429,6 +429,29 @@ class Card(ModelBase):
         if cur_level != next_level:
             pass
         return True
+
+    def add_value(self, card_id, add_value_config, is_save=False):
+        """
+        :param card_id: 传唯一id或者传group_id
+        :param add_value_config: [[1,100],[2,200]]
+        :param is_save: 
+        :return: 
+        """
+        if isinstance(card_id, str) and '-' in card_id:
+            card_config = game_config.card_basis
+            group_id = card_config[int(card_id.split('-')[0])]['group']
+        else:
+            group_id = card_id
+        add_value = {}
+        for k, v in add_value_config:
+            if group_id not in self.attr:
+                self.attr[group_id] = {}
+            attr = self.ADD_VALUE_MAPPING[k]
+            self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
+            add_value[attr] = add_value.get(attr, 0) + v
+        if is_save:
+            self.save()
+        return add_value
 
 
 ModelManager.register_model('card', Card)
