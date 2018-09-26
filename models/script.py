@@ -24,6 +24,7 @@ class Script(ModelBase):
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
+            'style_log': [],       # 连续拍片类型，保留最近10个
             'own_script': [],      # 已获得的可拍摄的片子
             'cur_script': {},  # 当前在在拍的片子
             'scripts': {},  # 所有已拍完的片子
@@ -33,13 +34,17 @@ class Script(ModelBase):
         super(Script, self).__init__(self.uid)
 
     def pre_use(self):
+        # 连续拍片类型，保留最近10个
+        self.style_log = self.style_log[-10:]
+
         # todo 拍摄完的片子结算
-        if 0:
+        if self.cur_script.get('result'):
             cur_script = self.cur_script
-            if cur_script:
-                if cur_script['step'] == 4:
-                    self.scripts[cur_script['oid']] = cur_script
-                    self.cur_script = {}
+            # if cur_script['step'] == 4:
+            #     self.scripts[cur_script['oid']] = cur_script
+            #     self.cur_script = {}
+
+
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:
@@ -74,7 +79,20 @@ class Script(ModelBase):
             'id': script_id,
             'oid': self._make_oid(script_id),
             'style': '',            # 剧本类型
-            'ts': int(time.time())
+            'ts': int(time.time()),
+            'single_style': False,           # 是否连续同样类型
+
+            'result_step': 0,       # 结算阶段，前端修改，前端使用
+            'result': {},           # 拍片结算结果 {'reward': {}, }
+            'medium_judge': 0,             # 评价 专业评价 {'medium': 3, 'audience': 4}
+            'audience_judge': 0,             # 评价 观众评价 {'medium': 3, 'audience': 4}
+            'attention_info': {},
+            'continue_reward': [],      # 持续上映奖励
+            'summary': {'income': 100, 'cost': 50},              # 票房总结
+
+
+            'attention': 0,     # 关注度
+            'audience': 0,      # 观众
         }
         return data
 
