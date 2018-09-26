@@ -63,8 +63,8 @@ class FriendLogic(object):
         self.friend.save()
 
         # 更新鲜花值排行榜
-        flower_rank = self.mm.get_obj_tools('flower_rank')
-        flower_rank.incr_rank(self.mm.uid, 1)
+        # flower_rank = self.mm.get_obj_tools('flower_rank')
+        # flower_rank.incr_rank(self.mm.uid, 1)
 
         return 0, {
             'send_gift': self.friend.send_gift,
