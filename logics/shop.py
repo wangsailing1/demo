@@ -54,6 +54,8 @@ class AllShopLogics(object):
 
 
 class ShopLogics(object):
+
+    FORMAT = '%Y/%m/%d %H:%M:%S'
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.shop
@@ -172,10 +174,21 @@ class ShopLogics(object):
         if not shop_config:
             return 3, {}
 
+        start_time = shop_config['register_time']
+        end_time = shop_config['soldout_time']
+        now = time.strftime(self.FORMAT)
+        if end_time:
+            end_time = time.strftime(self.FORMAT,time.strptime(end_time,self.FORMAT))
+            if now > end_time:
+                return 5, {}  #商品已下架
+        if start_time:
+            start_time = time.strftime(self.FORMAT, time.strptime(start_time, self.FORMAT))
+            if now < start_time:
+                return 6, {}  #商品未上架
+
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
         if goods['times'] + num > shop_config['sell_max'] and shop_config['sell_max'] != -1:
-            print goods
             return 4, {}
 
         sell_sort = shop_config['sell_sort']
