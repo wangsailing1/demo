@@ -255,11 +255,12 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.script.save()
 
     elif gift_sort == 18:  # 增加艺人名片
-        item_id = gift_config[0]
-        item_num = gift_config[1]
-        mm.friend.actors[item_id] = {'show': 1, 'chat_log': [], }
-
-        add_dict(data.setdefault('actors', {}), item_id, item_num)
+        for pkg in gift_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not mm.friend.check_actor(item_id):
+                mm.friend.actors[item_id] = {'show': 1, 'chat_log': [], }
+                add_dict(data.setdefault('actors', {}), item_id, item_num)
         mm.friend.save()
 
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据

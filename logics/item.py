@@ -55,11 +55,10 @@ class ItemLogic(object):
         elif is_use == 15:  # 增加艺人
             reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
         elif is_use == 18:  # 增加艺人名片
-            item_num = min(item_num, 1)
             rc = self.mm.friend.check_actor(use_effect)
             if rc != 0:
                 return rc, {}
-            reward = add_gift(self.mm, 18, [use_effect, item_num], cur_data=reward)
+            reward = add_gift(self.mm, 18, [[use_effect, item_num]], cur_data=reward)
         else:
             return 5, {}
 
