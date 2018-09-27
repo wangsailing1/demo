@@ -179,7 +179,7 @@ class ShopLogics(object):
             return 4, {}
 
         sell_sort = shop_config['sell_sort']
-        sell_num = goods['sell_num']
+        sell_num = goods['sell_num'] * num
         # self.shop.print_log(11111, [[sell_sort, 0, sell_num]])
         cost = [[sell_sort, 0, sell_num]]
         rc, _ = del_mult_goods(self.mm, cost)
