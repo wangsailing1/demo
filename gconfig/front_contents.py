@@ -68,6 +68,13 @@ card_mapping = {
 }
 
 
+name_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_name': ('card_name', True),
+    'script_name': ('script_name', True),
+}
+
+
 gacha_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'coin_gacha': ('coin_gacha', True),
