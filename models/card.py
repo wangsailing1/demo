@@ -79,6 +79,7 @@ class Card(ModelBase):
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
+            'name': '',     # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
             'is_cold': False,  # 是否雪藏
@@ -145,6 +146,8 @@ class Card(ModelBase):
             self.init_card()
 
         for k, v in self.cards.iteritems():
+            v.setdefault('name', '')
+
             if 'train_times' not in v:
                 v['train_times'] = 0
             if 'train_ext_pro' not in v:

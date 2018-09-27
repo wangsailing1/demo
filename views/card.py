@@ -133,3 +133,11 @@ def equip_piece_auto_exchange(hm):
     rc, data = cl.equip_piece_auto_exchange()
     return rc, data
 
+
+def set_name(hm):
+    """卡牌取名字"""
+    cl = CardLogic(hm.mm)
+    card_oid = hm.get_argument('card_oid')
+    name = hm.get_argument('name')
+    rc, data = cl.set_name(card_oid, name)
+    return rc, data
