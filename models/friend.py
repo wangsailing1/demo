@@ -32,6 +32,7 @@ class Friend(ModelBase):
     },
     :var send_gift: []  # 发送过时间胶囊的好友
     :var received_gift: []  # 好友赠送的时间胶囊
+    actors:{group_id:{'show':1,'chat_log':[],}}  #艺人名片记录
 
     """
     _need_diff = ()
@@ -42,7 +43,7 @@ class Friend(ModelBase):
     ACTION_POINT_SORT = 'action_point'
     GUILD_INVITE_SORT = 'guild_invite'
     MESSAGES_LEN = 100
-    REFRESH_REDPACKET = 3600    # 更新红包时间1小时
+    REFRESH_REDPACKET = 3600  # 更新红包时间1小时
 
     def __init__(self, uid):
         self.uid = uid
@@ -67,6 +68,7 @@ class Friend(ModelBase):
 
             'send_gift': [],
             'received_gift': [],
+            'actors': {},
 
         }
         super(Friend, self).__init__(self.uid)
@@ -416,6 +418,11 @@ class Friend(ModelBase):
                 return True
 
         return False
+
+    def check_actor(self,group):
+        if group in self.actors:
+            return 201
+        return 0
 
 
 ModelManager.register_model('friend', Friend)

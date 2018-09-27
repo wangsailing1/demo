@@ -288,12 +288,22 @@ class CardLogic(object):
         card_dict = card.cards.get(card_oid)
         if not card_dict:
             return 1, {}
-
+        group_id = self.mm.card.get_group_id_by_oid(card_oid)
         cost_like = 0
         # 取消雪藏 消耗点赞数
         if not cold:
+            if self.mm.friend.check_actor(group_id):
+                self.mm.friend.actors[group_id]['show'] = 1
+            else:
+                self.mm.friend.actors[group_id] = {'show':1,'chat_log':[]}
             star = game_config.card_basis[card_dict['id']]['star_level']
             cost_like = game_config.card_repick[star]['cost']
+
+        else:
+            if self.mm.friend.check_actor(group_id):
+                self.mm.friend.actors[group_id]['show'] = 0
+            else:
+                self.mm.friend.actors[group_id] = {'show':0,'chat_log':[]}
 
         if cost_like:
             if not self.mm.user.is_like_enough(cost_like):
