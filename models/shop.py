@@ -66,7 +66,7 @@ class Shop(ModelBase):
                 continue
             sell_num = sell_config.get('sell_num', 0)
             discount, price = self.get_price(sell_num, sell_config)
-            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount,'old_sell_num':sell_num}
         if is_save:
             self.save()
 
@@ -150,7 +150,7 @@ class MysticalShop(Shop):
                 continue
             sell_num = sell_config.get('sell_num', 0)
             discount, price = self.get_price(sell_num, sell_config)
-            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount,'old_sell_num':sell_num}
         if is_save:
             self.save()
 
@@ -227,7 +227,7 @@ class GiftShop(Shop):
                 continue
             sell_num = sell_config.get('sell_num', 0)
             discount, price = self.get_price(sell_num, sell_config)
-            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount,'old_sell_num':sell_num}
         if is_save:
             self.save()
 
@@ -287,7 +287,7 @@ class ResourceShop(Shop):
                 continue
             sell_num = sell_config.get('sell_num', 0)
             discount, price = self.get_price(sell_num, sell_config)
-            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount,'old_sell_num':sell_num}
         if is_save:
             self.save()
 
