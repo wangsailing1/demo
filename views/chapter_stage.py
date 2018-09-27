@@ -16,7 +16,6 @@ def chapter_stage_fight(hm):
     stage = hm.get_argument('stage', '')
     type_hard = int(hm.get_argument('type_hard', 0))
     align = hm.get_argument('align', '')
-    print align
     if not stage:
         return 1, {}  # 关卡参数错误
     chapter_stage = Chapter_stage(mm)
