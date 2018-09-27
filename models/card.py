@@ -386,13 +386,13 @@ class Card(ModelBase):
 
     def add_style_exp(self, card_oid, style_type, add_exp, card_dict=None):
         card_dict = card_dict or self.cards[card_oid]
-        info = card_dict['style_pro'].setdefault(style_type, {'exp': 0, 'lv': 1})
+        info = card_dict['style_pro'].setdefault(style_type, {'exp': 0, 'lv': 0})
         next_exp = info['exp'] + add_exp
         next_lv = info['lv']
         while 1:
             if next_lv + 1 not in game_config.card_script_exp:
                 break
-            config = game_config.card_script_exp[next_lv]
+            config = game_config.card_script_exp[next_lv + 1]
             if next_exp >= config['exp']:
                 next_lv += 1
                 next_exp -= config['exp']
