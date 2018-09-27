@@ -83,7 +83,7 @@ class ShopLogics(object):
             'goods': goods,
             'refresh_times': cur_times,
             'remain': remain,
-            'refresh_time':self.shop.refresh_time
+            'refresh_time': self.shop.refresh_time
         }
 
         return 0, data
@@ -154,7 +154,7 @@ class ShopLogics(object):
         else:
             return False
 
-    def buy(self, good_id):
+    def buy(self, good_id, num):
         """
         购买商品
         :param good_id:
@@ -174,7 +174,7 @@ class ShopLogics(object):
 
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
-        if goods['times'] >= shop_config['sell_max'] and shop_config['sell_max'] != -1:
+        if goods['times'] + num > shop_config['sell_max'] and shop_config['sell_max'] != -1:
             print goods
             return 4, {}
 
@@ -186,8 +186,8 @@ class ShopLogics(object):
         if rc != 0:
             return rc, {}
 
-        goods['times'] += 1
-        gift_config = shop_config['item']
+        goods['times'] += num
+        gift_config = shop_config['item'] * num
         reward = add_mult_gift(self.mm, gift_config)
         rc, data = self.index()
         data['reward'] = reward
@@ -238,8 +238,8 @@ class GiftShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.gift_shop
 
-    def buy(self, good_id):
-        rc, data = super(GiftShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(GiftShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
@@ -251,8 +251,8 @@ class ResourceShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.resource_shop
 
-    def buy(self, good_id):
-        rc, data = super(ResourceShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(ResourceShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
@@ -264,8 +264,8 @@ class MysticalShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.mystical_shop
 
-    def buy(self, good_id):
-        rc, data = super(MysticalShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(MysticalShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
