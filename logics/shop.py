@@ -75,8 +75,10 @@ class ShopLogics(object):
             v['item'] = item
             v['sell_sort'] = sell_config.get('sell_sort', 0)
             v['max_buy_times'] = sell_config['sell_max']
-            v['is_hot'] = sell_config.get('is_hot', 0)
+            v['tag_id'] = sell_config.get('tag_id', 0)
             v['exchange_lv'] = sell_config.get('exchange_lv', 0)
+            v['register_time'] = sell_config.get('register_time', '')
+            v['soldout_time'] = sell_config.get('soldout_time', '')
 
         cur_times = self.shop.refresh_times
         _, remain = self.get_remain_refresh_time()
