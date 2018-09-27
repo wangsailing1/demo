@@ -65,7 +65,7 @@ def buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
-    num = hm.get_argument('num', 1)
+    num = int(hm.get_argument('num', 1))
 
     if not id:
         return 'error_100', {}
@@ -148,7 +148,7 @@ def gift_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
-    num = hm.get_argument('num', 1)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
@@ -187,7 +187,7 @@ def resource_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
-    num = hm.get_argument('num', 1)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
@@ -226,7 +226,7 @@ def mystical_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
-    num = hm.get_argument('num', 1)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
