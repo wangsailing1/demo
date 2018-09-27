@@ -46,6 +46,7 @@ card_basis = {
 
     # 擅长角色标签
     'tag_role': ('tag_role', 'int_list'),
+    'phone_card': ('phone_card', 'int'),
 
 }
 
