@@ -79,6 +79,7 @@ class ShopLogics(object):
             v['exchange_lv'] = sell_config.get('exchange_lv', 0)
             v['register_time'] = sell_config.get('register_time', '')
             v['soldout_time'] = sell_config.get('soldout_time', '')
+            v['old_sell_num'] = sell_config.get('sell_num')
 
         cur_times = self.shop.refresh_times
         _, remain = self.get_remain_refresh_time()
