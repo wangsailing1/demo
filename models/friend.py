@@ -32,7 +32,7 @@ class Friend(ModelBase):
     },
     :var send_gift: []  # 发送过时间胶囊的好友
     :var received_gift: []  # 好友赠送的时间胶囊
-    actors:{group_id:{'show':1,'chat_log':[],}}  #艺人名片记录
+    actors:{group_id:{'show':1,'chat_log':{chapter:[]},}}  #艺人名片记录
 
     """
     _need_diff = ()
@@ -69,6 +69,9 @@ class Friend(ModelBase):
             'send_gift': [],
             'received_gift': [],
             'actors': {},
+            'phone_daily_times':0,
+            'last_daily_date':'',
+
 
         }
         super(Friend, self).__init__(self.uid)
@@ -419,10 +422,20 @@ class Friend(ModelBase):
 
         return False
 
-    def check_actor(self,group):
+    def check_actor(self, group):
         if group in self.actors:
             return 201
         return 0
+
+    def trigger_new_chat(self, group_id, chapter):
+        if group_id not in self.actors:
+            self.actors[group_id] = {'show': 1, 'chat_log': {}}
+        self.actors[group_id]['chat_log'][chapter] = {'is_over': 0, 'log': []}
+
+    def get_chat_choice(self,group_id):
+        chat_config = game_config.phone_daily_dialogue
+        chat_list = chat_config.get(group_id)
+        like = self.mm.card
 
 
 ModelManager.register_model('friend', Friend)

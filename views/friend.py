@@ -464,3 +464,10 @@ def actor_chat(hm):
     if not choice_id:
         return 1, {}   #未选择对话
     return 0, {}
+
+
+@check_unlock
+def actor_chat_index(hm):
+    mm = hm.mm
+    fl = FriendLogic(mm)
+    return 0, {}
