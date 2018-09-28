@@ -141,8 +141,10 @@ class Chapter_stage(object):
         data = {}
         if not auto:
             tag_score = {}
+            all_pro = 0
             script_config = game_config.script[script_id]
             chapter_enemy = {i[0]: str(i[1]) for i in stage_config['chapter_enemy']}
+            style = script_config['style']
 
             for role_id, enemy_id in chapter_enemy.iteritems():
                 if align.get(role_id, '') != enemy_id:
@@ -160,6 +162,8 @@ class Chapter_stage(object):
                 # 计算擅长角色，擅长剧本得分
                 score = self.tag_score(script_id, role_id, card_id)
                 tag_score[card_id] = score
+                all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style,{}).get('lv',0)
+
 
             fight_data = {}
             rounds = game_config.common.get(23, {}).get('value', 2)
@@ -210,10 +214,8 @@ class Chapter_stage(object):
                     all_score += hurt
                     fight_data[round_num][card_id] = hurts
 
-            # 总熟练度，以后添加
-            all_pro = 10
             m = game_config.common[10]['value']
-            all_score = int(all_score * (1 + all_pro / m)) * 10
+            all_score = int(all_score * (1 + all_pro * 1.0 / m))
             score_config = script_config['stage_score']
             star = self.get_star(all_score, score_config)
             data['win'] = star >= 2
