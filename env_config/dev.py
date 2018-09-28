@@ -14,7 +14,7 @@ URL_PARTITION = 'big_sale'
 MASTER_HOST = '192.168.1.9'
 IN_MASTER_HOST = '192.168.1.9'
 # CHAT_HOST = '192.168.1.9'
-CHAT_IDS = [('192.168.1.9', 9990)]
+CHAT_IDS = [('192.168.1.9', 9090)]
 
 LANGUAGE = 'ch'
 CDN = 'cdncn.cjyx2.hi365.com'

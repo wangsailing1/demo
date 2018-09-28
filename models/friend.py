@@ -9,6 +9,7 @@ import random
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
+from lib.utils import weight_choice
 
 
 class Friend(ModelBase):
@@ -69,9 +70,8 @@ class Friend(ModelBase):
             'send_gift': [],
             'received_gift': [],
             'actors': {},
-            'phone_daily_times':0,
-            'last_daily_date':'',
-
+            'phone_daily_times': 0,
+            'last_daily_date': '',
 
         }
         super(Friend, self).__init__(self.uid)
@@ -432,10 +432,17 @@ class Friend(ModelBase):
             self.actors[group_id] = {'show': 1, 'chat_log': {}}
         self.actors[group_id]['chat_log'][chapter] = {'is_over': 0, 'log': []}
 
-    def get_chat_choice(self,group_id):
+    def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
-        chat_list = chat_config.get(group_id)
-        like = self.mm.card
+        chat_list = chat_config.get(group_id)['daily_dialogue']
+        like = self.mm.card.attr.get(group_id,{}).get('like', 0)
+        chat_choice = []
+        for chat in chat_list:
+            if chat[2] <= like < chat[3]:
+                chat_choice.append([chat[0],chat[1]])
+        if not chat_choice:
+            return chat_choice
+        return weight_choice(chat_choice)
 
 
 ModelManager.register_model('friend', Friend)
