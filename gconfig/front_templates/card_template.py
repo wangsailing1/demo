@@ -49,6 +49,7 @@ card_basis = {
     'crit_rate_base': ('crit_rate_base', 'int'),  #基础暴击率
     'special_rate1': ('special_rate1', 'int'),  #艺术触发概率（万分之）
     'special_rate2': ('special_rate2', 'int'),  #娱乐触发概率（万分之）
+    'phone_card': ('phone_card', 'int'),
 
 }
 

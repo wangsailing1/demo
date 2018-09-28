@@ -141,8 +141,10 @@ class Chapter_stage(object):
         data = {}
         if not auto:
             tag_score = {}
+            all_pro = 0
             script_config = game_config.script[script_id]
             chapter_enemy = {i[0]: str(i[1]) for i in stage_config['chapter_enemy']}
+            style = script_config['style']
 
             for role_id, enemy_id in chapter_enemy.iteritems():
                 if align.get(role_id, '') != enemy_id:
@@ -160,6 +162,8 @@ class Chapter_stage(object):
                 # 计算擅长角色，擅长剧本得分
                 score = self.tag_score(script_id, role_id, card_id)
                 tag_score[card_id] = score
+                all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style,{}).get('lv',0)
+
 
             fight_data = {}
             rounds = game_config.common.get(23, {}).get('value', 2)
@@ -210,10 +214,8 @@ class Chapter_stage(object):
                     all_score += hurt
                     fight_data[round_num][card_id] = hurts
 
-            # 总熟练度，以后添加
-            all_pro = 10
             m = game_config.common[10]['value']
-            all_score = int(all_score * (1 + all_pro / m)) * 10
+            all_score = int(all_score * (1 + all_pro * 1.0 / m))
             score_config = script_config['stage_score']
             star = self.get_star(all_score, score_config)
             data['win'] = star >= 2
@@ -330,18 +332,12 @@ class Chapter_stage(object):
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr[group_id])
-        add_value = {}
         reward = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
             gift = config[choice_stage]['reward']
             add_val = config[choice_stage]['add_value']
             self.chapter_stage.got_reward_dialogue.append(now_stage)
-            for k, v in add_val:
-                if group_id not in self.mm.card.attr:
-                    self.mm.card.attr[group_id] = {}
-                attr = self.chapter_stage.MAPPING[k]
-                self.mm.card.attr[group_id][attr] = self.mm.card.attr[group_id].get(attr, 0) + v
-                add_value[attr] = add_value.get(attr, 0) + v
+            add_value = self.mm.card.add_value(group_id,add_val)
             reward = add_mult_gift(self.mm, gift)
             self.mm.card.save()
             self.chapter_stage.save()

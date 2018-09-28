@@ -65,6 +65,7 @@ def buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
+    num = int(hm.get_argument('num', 1))
 
     if not id:
         return 'error_100', {}
@@ -73,7 +74,7 @@ def buy(hm):
         return -1, {}
 
     sl = ShopLogics(mm)
-    rc, data = sl.buy(good_id)
+    rc, data = sl.buy(good_id, num)
     if rc != 0:
         return rc, {}
     # # 触发商城购买任务
@@ -147,6 +148,7 @@ def gift_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
@@ -155,7 +157,7 @@ def gift_buy(hm):
     #     return -2, {}
 
     psl = GiftShopLogics(mm)
-    rc, data = psl.buy(good_id)
+    rc, data = psl.buy(good_id, num)
     if rc != 0:
         return rc, {}
 
@@ -185,6 +187,7 @@ def resource_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
@@ -193,7 +196,7 @@ def resource_buy(hm):
     #     return -2, {}
 
     psl = ResourceShopLogics(mm)
-    rc, data = psl.buy(good_id)
+    rc, data = psl.buy(good_id, num)
     if rc != 0:
         return rc, {}
 
@@ -223,6 +226,7 @@ def mystical_buy(hm):
     """
     mm = hm.mm
     good_id = hm.get_argument('goods_id', is_int=True)
+    num = int(hm.get_argument('num', 1))
 
     if not good_id:
         return -1, {}
@@ -231,7 +235,7 @@ def mystical_buy(hm):
     #     return -2, {}
 
     psl = MysticalShopLogics(mm)
-    rc, data = psl.buy(good_id)
+    rc, data = psl.buy(good_id, num)
     if rc != 0:
         return rc, {}
 
@@ -254,14 +258,14 @@ def mystical_refresh(hm):
     mm.mystical_shop.refresh_goods()
     config = game_config.price_ladder
     if mm.mystical_shop.refresh_times >= len(config):
-        return 1, {}  #刷新次数也达最大次数
+        return 1, {}  # 刷新次数也达最大次数
     mm.mystical_shop.refresh_times += 1
     need_coin = config[mm.mystical_shop.refresh_times]['mystical_store_cost']
     if need_coin > mm.user.diamond:
-        return 2, {}  #钻石不足
+        return 3, {}  # 钻石不足
     mm.user.diamond -= need_coin
     refresh_time, next_time = mm.mystical_shop.get_refresh_time()
-    mm.mystical_shop.next_time = int(time.mktime(time.strptime(next_time,mm.mystical_shop.FORMAT)))
+    mm.mystical_shop.next_time = int(time.mktime(time.strptime(next_time, mm.mystical_shop.FORMAT)))
     mm.mystical_shop.save()
     psl = MysticalShopLogics(mm)
     rc, data = psl.index()

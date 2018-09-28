@@ -384,6 +384,14 @@ class CardLogic(object):
         equip.save()
         return 0, {'reward': reward}
 
+    def set_name(self, card_oid, name):
+        card = self.mm.card
+        card_dict = card.cards.get(card_oid)
+        if not card_dict:
+            return 1, {}
+        card_dict['name'] = name
+        card.save()
+        return 0, {}
 
 
 

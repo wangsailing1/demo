@@ -8,8 +8,8 @@ rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 def rank_index(hm):
     mm = hm.mm
     rank_id = int(hm.get_argument('rank_id', 1))
-    start = int(hm.get_argument('start', 1))
-    end = int(hm.get_argument('end', 100))
+    start = int(hm.get_argument('start_num', 1))
+    end = int(hm.get_argument('end_num', 100))
     if start > end:
         start = 1
         end = 100
@@ -34,10 +34,10 @@ def rank_index(hm):
             if mm.uid in uid_group_id:
                 rank_own_list.append({'uid': uid,
                                       'name': name,
-                                      'script_id': group_id,
+                                      'group_id': group_id,
                                       'score': score,
-                                      'uid_group_id': uid_group_id,
-                                      'rank_own': ar.get_rank(uid_group_id)})
+                                      'rank_own': ar.get_rank(uid_group_id),
+                                      'card_name': card_name})
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
                                      'group_id': group_id,
@@ -60,12 +60,13 @@ def rank_index(hm):
                                              'name': name,
                                              'script_id': script_id,
                                              'score': score,
-                                             'uid_script_id': uid_script_id,
-                                             'rank_own': ar.get_rank(uid_script_id)})
+                                             'rank_own': ar.get_rank(uid_script_id),
+                                             'script_name':''})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
-                                     'score': score, })
+                                     'score': score,
+                                     'script_name': ''})
         return 0, {
             'rank_list': output_rank_list[start - 1:end],
             'rank_own': output_rank_own_list,
@@ -83,12 +84,13 @@ def rank_index(hm):
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
-                                                'uid_group_id': uid_group_id,
-                                                'rank_own': ar.get_rank(uid_group_id)})
+                                                'rank_own': ar.get_rank(uid_group_id),
+                                                'group_name':''})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,
-                                        'score': score, })
+                                        'score': score,
+                                        'group_name': ''})
 
         return 0, {
             'rank_list': alloutput_rank_list[start - 1:end],

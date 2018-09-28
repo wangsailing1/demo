@@ -54,6 +54,8 @@ class AllShopLogics(object):
 
 
 class ShopLogics(object):
+
+    FORMAT = '%Y/%m/%d %H:%M:%S'
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.shop
@@ -73,8 +75,11 @@ class ShopLogics(object):
             v['item'] = item
             v['sell_sort'] = sell_config.get('sell_sort', 0)
             v['max_buy_times'] = sell_config['sell_max']
-            v['is_hot'] = sell_config.get('is_hot', 0)
+            v['tag_id'] = sell_config.get('tag_id', 0)
             v['exchange_lv'] = sell_config.get('exchange_lv', 0)
+            v['register_time'] = sell_config.get('register_time', '')
+            v['soldout_time'] = sell_config.get('soldout_time', '')
+            v['old_sell_num'] = sell_config.get('sell_num')
 
         cur_times = self.shop.refresh_times
         _, remain = self.get_remain_refresh_time()
@@ -83,7 +88,7 @@ class ShopLogics(object):
             'goods': goods,
             'refresh_times': cur_times,
             'remain': remain,
-            'refresh_time':self.shop.refresh_time
+            'refresh_time': self.shop.refresh_time
         }
 
         return 0, data
@@ -154,7 +159,7 @@ class ShopLogics(object):
         else:
             return False
 
-    def buy(self, good_id):
+    def buy(self, good_id, num):
         """
         购买商品
         :param good_id:
@@ -172,22 +177,33 @@ class ShopLogics(object):
         if not shop_config:
             return 3, {}
 
+        start_time = shop_config['register_time']
+        end_time = shop_config['soldout_time']
+        now = time.strftime(self.FORMAT)
+        if end_time:
+            end_time = time.strftime(self.FORMAT,time.strptime(end_time,self.FORMAT))
+            if now > end_time:
+                return 5, {}  #商品已下架
+        if start_time:
+            start_time = time.strftime(self.FORMAT, time.strptime(start_time, self.FORMAT))
+            if now < start_time:
+                return 6, {}  #商品未上架
+
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
-        if goods['times'] >= shop_config['sell_max'] and shop_config['sell_max'] != -1:
-            print goods
+        if goods['times'] + num > shop_config['sell_max'] and shop_config['sell_max'] != -1:
             return 4, {}
 
         sell_sort = shop_config['sell_sort']
-        sell_num = goods['sell_num']
+        sell_num = goods['sell_num'] * num
         # self.shop.print_log(11111, [[sell_sort, 0, sell_num]])
         cost = [[sell_sort, 0, sell_num]]
         rc, _ = del_mult_goods(self.mm, cost)
         if rc != 0:
             return rc, {}
 
-        goods['times'] += 1
-        gift_config = shop_config['item']
+        goods['times'] += num
+        gift_config = shop_config['item'] * num
         reward = add_mult_gift(self.mm, gift_config)
         rc, data = self.index()
         data['reward'] = reward
@@ -238,8 +254,8 @@ class GiftShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.gift_shop
 
-    def buy(self, good_id):
-        rc, data = super(GiftShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(GiftShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
@@ -251,8 +267,8 @@ class ResourceShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.resource_shop
 
-    def buy(self, good_id):
-        rc, data = super(ResourceShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(ResourceShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
@@ -264,8 +280,8 @@ class MysticalShopLogics(ShopLogics):
         self.mm = mm
         self.shop = self.mm.mystical_shop
 
-    def buy(self, good_id):
-        rc, data = super(MysticalShopLogics, self).buy(good_id)
+    def buy(self, good_id, num):
+        rc, data = super(MysticalShopLogics, self).buy(good_id, num)
         if rc != 0:
             return rc, {}
 
