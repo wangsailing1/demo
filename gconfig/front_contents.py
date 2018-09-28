@@ -101,6 +101,7 @@ plot_mapping = {
     # 'P_dialogue_words': ('P_dialogue_words', True),
 
     'avg_dialogue': ('avg_dialogue', True),
+    'phone_daily_dialogue': ('phone_daily_dialogue', True),
 
     # 'ad': ('ad', True),
     # 'ad_text': ('ad_text', True),

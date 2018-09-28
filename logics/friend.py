@@ -270,7 +270,7 @@ class FriendLogic(object):
         messages = f_friend.get_messages_by_sort(self.friend.ADD_FRIEND_SORT)
         for msg in messages:
             if msg['send_uid'] == self.mm.uid:
-                return 6, {}
+                return 6, {}  # 已申请过
 
         self.apply_friend_content(f_friend)
 

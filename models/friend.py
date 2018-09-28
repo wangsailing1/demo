@@ -9,6 +9,7 @@ import random
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
+from lib.utils import weight_choice
 
 
 class Friend(ModelBase):
@@ -32,6 +33,7 @@ class Friend(ModelBase):
     },
     :var send_gift: []  # 发送过时间胶囊的好友
     :var received_gift: []  # 好友赠送的时间胶囊
+    actors:{group_id:{'show':1,'chat_log':{chapter:[]},}}  #艺人名片记录
 
     """
     _need_diff = ()
@@ -42,7 +44,7 @@ class Friend(ModelBase):
     ACTION_POINT_SORT = 'action_point'
     GUILD_INVITE_SORT = 'guild_invite'
     MESSAGES_LEN = 100
-    REFRESH_REDPACKET = 3600    # 更新红包时间1小时
+    REFRESH_REDPACKET = 3600  # 更新红包时间1小时
 
     def __init__(self, uid):
         self.uid = uid
@@ -67,6 +69,9 @@ class Friend(ModelBase):
 
             'send_gift': [],
             'received_gift': [],
+            'actors': {},
+            'phone_daily_times': 0,
+            'last_daily_date': '',
 
         }
         super(Friend, self).__init__(self.uid)
@@ -416,6 +421,28 @@ class Friend(ModelBase):
                 return True
 
         return False
+
+    def check_actor(self, group):
+        if group in self.actors:
+            return 201
+        return 0
+
+    def trigger_new_chat(self, group_id, chapter):
+        if group_id not in self.actors:
+            self.actors[group_id] = {'show': 1, 'chat_log': {}}
+        self.actors[group_id]['chat_log'][chapter] = {'is_over': 0, 'log': []}
+
+    def get_chat_choice(self, group_id):
+        chat_config = game_config.phone_daily_dialogue
+        chat_list = chat_config.get(group_id)['daily_dialogue']
+        like = self.mm.card.attr.get(group_id,{}).get('like', 0)
+        chat_choice = []
+        for chat in chat_list:
+            if chat[2] <= like < chat[3]:
+                chat_choice.append([chat[0],chat[1]])
+        if not chat_choice:
+            return chat_choice
+        return weight_choice(chat_choice)
 
 
 ModelManager.register_model('friend', Friend)

@@ -118,6 +118,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 15
                 16
                 17
+                18  艺人名片
                 996 艺人经验
                 997 好感
                 998 味道(1=酸,2=甜,3=苦,4=辣,5=冰,6=饮)
@@ -144,7 +145,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_diamond(add_num)
             add_dict(data, 'diamond', add_num)
         mm.user.save()
-    elif gift_sort == 3:   # 体力
+    elif gift_sort == 3:  # 体力
         for pkg in gift_config:
             add_point = pkg[1]
             if not add_point:
@@ -152,7 +153,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_action_point(add_point, force=True)
             add_dict(data, 'point', add_point)
         mm.user.save()
-    elif gift_sort == 4:    # 美元
+    elif gift_sort == 4:  # 美元
         for pkg in gift_config:
             add_num = pkg[1]
             if not add_num:
@@ -200,7 +201,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 elif not isinstance(status, bool):
                     data.setdefault('cards', []).append(status)
         mm.card.save()
-    elif gift_sort == 9:    # 卡牌碎片
+    elif gift_sort == 9:  # 卡牌碎片
         for pkg in gift_config:
             item_id = pkg[0]
             item_num = pkg[1]
@@ -212,7 +213,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
     elif gift_sort == 10:
         # todo
         pass
-    elif gift_sort == 11:   # 玩家经验
+    elif gift_sort == 11:  # 玩家经验
         for pkg in gift_config:
             num = pkg[1]
             if not num:
@@ -228,7 +229,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_guild_coin(add_coin)
             add_dict(data, 'guild_coin', add_coin)
         mm.user.save()
-    elif gift_sort == 13:   # 公会贡献
+    elif gift_sort == 13:  # 公会贡献
         pass
 
     elif gift_sort == 14:  # vip经验
@@ -240,7 +241,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data, 'vip_exp', add_exp)
         mm.user.save()
 
-    elif gift_sort == 15:   # 获得可拍摄剧本
+    elif gift_sort == 15:  # 获得可拍摄剧本
         save = False
         for pkg in gift_config:
             script_id = pkg[1]
@@ -252,6 +253,16 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 data.setdefault('own_script', []).append(script_id)
         if save:
             mm.script.save()
+
+    elif gift_sort == 18:  # 增加艺人名片
+        for pkg in gift_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not mm.friend.check_actor(item_id):
+                mm.friend.actors[item_id] = {'show': 1, 'chat_log': [], }
+                add_dict(data.setdefault('actors', {}), item_id, item_num)
+        mm.friend.save()
+
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]
@@ -363,7 +374,7 @@ def del_goods(mm, goods_sort, goods_config):
     elif goods_sort == 13:  # 公会贡献
         pass
 
-    elif goods_sort == 14:   # vip经验
+    elif goods_sort == 14:  # vip经验
         pass
 
     return 0, silver_count
@@ -504,19 +515,19 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.user.is_coin_enough(add_coin):
                 return False
-    elif gift_sort == 14:   # 生产配方
+    elif gift_sort == 14:  # 生产配方
         return False
 
-    elif gift_sort == 15:   # 防守道具
+    elif gift_sort == 15:  # 防守道具
         return False
 
-    elif gift_sort == 16:   # 昆特牌
+    elif gift_sort == 16:  # 昆特牌
         return False
 
-    elif gift_sort == 17:   # 战斗经验
+    elif gift_sort == 17:  # 战斗经验
         return False
 
-    elif gift_sort == 18:   # 挑战卡, 血尘拉力赛
+    elif gift_sort == 18:  # 挑战卡, 血尘拉力赛
         for pkg in gift_config:
             add_challenge = pkg[1]
             if not add_challenge:
@@ -530,7 +541,7 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.battle_item.is_energy_enough(add_energy):
                 return False
-    elif gift_sort == 20:   # 体力
+    elif gift_sort == 20:  # 体力
         for pkg in gift_config:
             add_point = pkg[1]
             if not add_point:
@@ -568,7 +579,7 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.user.is_diamond_ticket_enough(add_ticket):
                 return False
-    elif gift_sort == 26:   # 特殊类道具
+    elif gift_sort == 26:  # 特殊类道具
         return False
 
     elif gift_sort == 27:  # 巅峰币
@@ -579,7 +590,7 @@ def has_goods(mm, gift_sort, gift_config):
             if not mm.user.is_ladder_coin_enough(ladder_coin):
                 return False
 
-    elif gift_sort == 28:   # vip经验
+    elif gift_sort == 28:  # vip经验
         return False
 
     elif gift_sort == 29:  # 觉醒宝箱碎片
@@ -605,14 +616,14 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.user.is_box_key_enough(add_coin):
                 return False
-    if gift_sort == 32:     # 战队技能经验
+    if gift_sort == 32:  # 战队技能经验
         for pkg in gift_config:
             add_team_skill_exp = pkg[1]
             if not add_team_skill_exp:
                 continue
             if not mm.user.is_team_skill_enough(add_team_skill_exp):
                 return False
-    elif gift_sort == 34:     # 虫洞矿坑币
+    elif gift_sort == 34:  # 虫洞矿坑币
         for pkg in gift_config:
             wormhole_score = pkg[1]
             if not wormhole_score:
@@ -647,7 +658,7 @@ def has_goods(mm, gift_sort, gift_config):
             if not mm.user.is_endless_score_enough(add_diamond):
                 return False
 
-    elif gift_sort == 40:     # 装备币
+    elif gift_sort == 40:  # 装备币
         for pkg in gift_config:
             equip_coin = pkg[1]
             if not equip_coin:
@@ -655,7 +666,7 @@ def has_goods(mm, gift_sort, gift_config):
             if not mm.user.is_equip_coin_enough(equip_coin):
                 return False
 
-    elif gift_sort == 41:     # 荣誉币
+    elif gift_sort == 41:  # 荣誉币
         for pkg in gift_config:
             honor_coin = pkg[1]
             if not honor_coin:

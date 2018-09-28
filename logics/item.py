@@ -9,7 +9,6 @@ from tools.gift import add_mult_gift_by_weights, add_gift, del_mult_goods, add_m
 
 
 class ItemLogic(object):
-
     def __init__(self, mm):
         self.mm = mm
         self.item = self.mm.item
@@ -55,6 +54,11 @@ class ItemLogic(object):
             reward = add_gift(self.mm, 6, use_effect * item_num, cur_data=reward)
         elif is_use == 15:  # 增加艺人
             reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
+        elif is_use == 18:  # 增加艺人名片
+            rc = self.mm.friend.check_actor(use_effect)
+            if rc != 0:
+                return rc, {}
+            reward = add_gift(self.mm, 18, [[use_effect, item_num]], cur_data=reward)
         else:
             return 5, {}
 
@@ -85,22 +89,22 @@ class ItemLogic(object):
         if user_level < box_item_config['use_lv']:
             return 101, {}
 
-        if sort == 1:   # 普通宝箱
+        if sort == 1:  # 普通宝箱
             for level, gift, num in story:
                 if level and not (level[0] <= user_level <= level[1]):
                     continue
-                for i in xrange(num*box_item_num):
+                for i in xrange(num * box_item_num):
                     add_mult_gift_by_weights(self.mm, gift, cur_data=reward)
-        elif sort == 2:     # 钥匙宝箱
-            rc, _ = del_mult_goods(self.mm, effect*box_item_num)
+        elif sort == 2:  # 钥匙宝箱
+            rc, _ = del_mult_goods(self.mm, effect * box_item_num)
             if rc != 0:
                 return rc, {}
             for level, gift, num in story:
                 if level and not (level[0] <= user_level <= level[1]):
                     continue
-                for i in xrange(num*box_item_num):
+                for i in xrange(num * box_item_num):
                     add_mult_gift_by_weights(self.mm, gift, cur_data=reward)
-        elif sort == 3:     # x选x宝箱
+        elif sort == 3:  # x选x宝箱
             for i in xrange(box_item_num):
                 if len(reward_index) > effect:
                     return 102, {}  # 选择的奖励数量不对
@@ -119,7 +123,7 @@ class ItemLogic(object):
                 if not gift:
                     return 101, {}
                 add_mult_gift(self.mm, gift, cur_data=reward)
-        elif sort == 4:     # 伪概率宝箱
+        elif sort == 4:  # 伪概率宝箱
             for i in xrange(box_item_num):
                 box_times = self.item.get_box_times(box_item_id)
                 k = box_times % sum(effect)
@@ -179,7 +183,7 @@ class ItemLogic(object):
         """
         awaken_config = game_config.awaken_material.get(awaken_id, {})
         if not awaken_config:
-            return 1, {}    # 没有该觉醒材料的配置
+            return 1, {}  # 没有该觉醒材料的配置
 
         cost = awaken_config['cost'] * num
         rc, _ = del_mult_goods(self.mm, cost)
@@ -203,13 +207,13 @@ class ItemLogic(object):
             return 'error_config', {}
 
         if not item_config['is_piece'] or item_config['is_use'] != 11:
-            return 1, {}    # 不能合成
+            return 1, {}  # 不能合成
 
         use_num = item_config['use_num'] * num
         use_effect = item_config['use_effect']
 
         if self.item.get_item(item_id) < use_num:
-            return 'error_item', {}    # 道具不足
+            return 'error_item', {}  # 道具不足
 
         self.item.del_item(item_id, use_num)
         reward = add_gift(self.mm, 3, use_effect * num)

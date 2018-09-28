@@ -197,3 +197,9 @@ avg_note = {
     'name5': ('name5', 'unicode'),
     'name6': ('name6', 'unicode'),
 }
+
+# 手机互动
+phone_daily_dialogue = {
+    'uk': ('group_id', 'int'),
+    'daily_dialogue': ('daily_dialogue', 'int_list'),
+}
