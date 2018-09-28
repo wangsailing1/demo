@@ -117,6 +117,6 @@ if __name__ == '__main__':
         'target2': 1,  # 卡牌配置id
     }
     def get_socket_addr(*args):
-        return ('192.168.1.9', 9990)
+        return ('192.168.1.9', 9090)
 
     send_to_all(msg_dict, server)
