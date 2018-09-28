@@ -17,6 +17,7 @@ script = {
     'sequel_count': ('sequel_count', 'int'),  # 续作编号
     'hard_rate': ('hard_rate', 'int'),  # 难度系数
     'output': ('output', 'int'),  # 票房基数(万美元)
+    'standard_popularity': ('standard_popularity', 'int'),  # 人气要求
     'star': ('star', 'int'),  # 星级1-6
     'next_id': ('next_id', 'int'),  # 续作id
     'group': ('group', 'int'),  # 组id

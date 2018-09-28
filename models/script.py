@@ -8,6 +8,8 @@ Created on 2018-09-04
 
 import time
 import copy
+import random
+import itertools
 from gconfig import game_config
 
 from lib.db import ModelBase
@@ -30,6 +32,7 @@ class Script(ModelBase):
             'scripts': {},  # 所有已拍完的片子
 
             'script_pool': {},
+            'cur_market': [],       # 当前市场关注度
         }
         super(Script, self).__init__(self.uid)
 
@@ -43,8 +46,6 @@ class Script(ModelBase):
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
-
-
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:
@@ -71,6 +72,21 @@ class Script(ModelBase):
             can_use_ids.remove(id_weight)
             self.script_pool[id_weight[0]] = 0
 
+        # 初始化市场关注度
+        all_market = [(v['market'], v['rate']) for k, v in game_config.script_market.iteritems()]
+        if all_market:
+            choiced_market = weight_choice(all_market)
+            cur_market = list(choiced_market[0])
+            del_unit = game_config.common[17]
+            # 随机三次减少关注度
+            market_length = len(cur_market)
+            for i in range(3):
+                idx = random.randint(0, market_length - 1)
+                if cur_market[idx] > del_unit:
+                    cur_market[idx] = cur_market[idx] - del_unit
+
+            self.cur_market = cur_market
+
     def make_film(self, script_id, name):
         data = {
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
@@ -78,9 +94,11 @@ class Script(ModelBase):
             'card': {},  # 艺人角色 {rol_id: card_oid}
             'id': script_id,
             'oid': self._make_oid(script_id),
-            'style': '',            # 剧本类型
+            'style': 0,            # 剧本类型
             'ts': int(time.time()),
             'single_style': False,           # 是否连续同样类型
+            'suit': 0,                       # 片子类型适合档次
+            'pro': [0] * 6,                       # 各个属性值
 
             'result_step': 0,       # 结算阶段，前端修改，前端使用
             'result': {},           # 拍片结算结果 {'reward': {}, }

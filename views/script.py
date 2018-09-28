@@ -70,7 +70,7 @@ def set_style(hm):
     :return:
     """
     mm = hm.mm
-    style = hm.get_argument('style')  # 剧本id
+    style = hm.get_argument('style', is_int=True)  # 剧本id
 
     sl = ScriptLogic(mm)
     rc, data = sl.set_style(style)
