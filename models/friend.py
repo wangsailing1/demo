@@ -33,7 +33,8 @@ class Friend(ModelBase):
     },
     :var send_gift: []  # 发送过时间胶囊的好友
     :var received_gift: []  # 好友赠送的时间胶囊
-    actors:{group_id:{'show':1,'chat_log':{chapter:[]},}}  #艺人名片记录
+    actors:{group_id:{'show':1,'chat_log':{chapter:[]}}}  #艺人名片记录
+    chat_over:{group_id:[]}}
 
     """
     _need_diff = ()
@@ -70,8 +71,8 @@ class Friend(ModelBase):
             'send_gift': [],
             'received_gift': [],
             'actors': {},
+            'chat_over':{},
             'phone_daily_times': 0,
-            'last_daily_date': '',
 
         }
         super(Friend, self).__init__(self.uid)
@@ -89,6 +90,7 @@ class Friend(ModelBase):
             self.send_gift = []
             self.received_gift = []
             self.last_refresh_date = now
+            self.phone_daily_times = 0
 
     def set_send_gift(self, friend_id):
         """
@@ -441,8 +443,8 @@ class Friend(ModelBase):
             if chat[2] <= like < chat[3]:
                 chat_choice.append([chat[0],chat[1]])
         if not chat_choice:
-            return chat_choice
-        return weight_choice(chat_choice)
+            return 0
+        return weight_choice(chat_choice)[0]
 
 
 ModelManager.register_model('friend', Friend)

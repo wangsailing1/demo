@@ -17,9 +17,8 @@ from models.user import User as UserM
 
 
 class FriendLogic(object):
-
-    UNIT_EXP = 60               # 好友实地学习 60秒获得1点经验
-    PARISE_SILVER = 10          # 点赞给银币
+    UNIT_EXP = 60  # 好友实地学习 60秒获得1点经验
+    PARISE_SILVER = 10  # 点赞给银币
 
     def __init__(self, mm):
         self.mm = mm
@@ -47,10 +46,10 @@ class FriendLogic(object):
         :return:
         """
         if not self.friend.has_friend(friend_id):
-            return 1, {}    # 没有该好友
+            return 1, {}  # 没有该好友
 
         if friend_id in self.friend.send_gift:
-            return 2, {}    # 已赠送过
+            return 2, {}  # 已赠送过
 
         friend_mm = self.mm.get_mm(friend_id)
         friend_mm.friend.set_received_gift(self.mm.uid)
@@ -90,10 +89,10 @@ class FriendLogic(object):
         :return:
         """
         if not self.friend.has_friend(friend_id):
-            return 1, {}    # 没有该好友
+            return 1, {}  # 没有该好友
 
         if friend_id not in self.friend.received_gift:
-            return 2, {}    # 没有该好友赠送的胶囊
+            return 2, {}  # 没有该好友赠送的胶囊
 
         item_id = self.mm.home.FLOWER_ITEM_ID  # 时间胶囊
         if reward is None:
@@ -229,7 +228,8 @@ class FriendLogic(object):
             send_guild_id = 0
 
         mail_dict = self.mm.mail.generate_mail(content,
-                                               title=i18n_msg.get('friend', self.mm.user.language_sort) % self.mm.user.name,
+                                               title=i18n_msg.get('friend',
+                                                                  self.mm.user.language_sort) % self.mm.user.name,
                                                gift=gift,
                                                sort=sort,
                                                send_uid=self.mm.user.uid,
@@ -303,7 +303,7 @@ class FriendLogic(object):
                     if msg['send_uid'] == self.mm.uid:
                         f_mm.friend.del_message([int(msg['id'])])
                 self.friend.save()
-            self.friend.print_log('xx'*10)
+            self.friend.print_log('xx' * 10)
             return 4, {
                 'messages': self.friend.messages,
                 'is_alert': self.friend.get_friend_red_dot(),
@@ -410,10 +410,10 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能拜访自己
+            return 1, {}  # 不能拜访自己
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         f_mm = self.mm.get_mm(uid)
         is_parise = self.is_parise(uid)
@@ -442,13 +442,13 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能给自己点赞
+            return 1, {}  # 不能给自己点赞
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         if not self.is_parise(uid):
-            return 3, {}    # 今天已经赞过了
+            return 3, {}  # 今天已经赞过了
 
         self.friend.parise(uid)
         self.friend.add_friendly_degree(uid)
@@ -477,21 +477,21 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能打扫自己的工作台
+            return 1, {}  # 不能打扫自己的工作台
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         f_mm = self.mm.get_mm(uid)
         if workbench_id not in f_mm.manufacture.workbenchs:
-            return 3, {}    # 该好友没有解锁此工作台
+            return 3, {}  # 该好友没有解锁此工作台
 
         if not self.is_sweep_workbench(uid, workbench_id):
-            return 4, {}    # 该工作台已被打扫
+            return 4, {}  # 该工作台已被打扫
 
         friend_clean_config = game_config.friend_clean
         if not friend_clean_config:
-            return 5, {}    # 没有好友打扫的配置
+            return 5, {}  # 没有好友打扫的配置
 
         self.friend.add_sweep_workbench(uid, workbench_id)
 
@@ -544,33 +544,33 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能给自己生产加油鼓劲
+            return 1, {}  # 不能给自己生产加油鼓劲
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         f_mm = self.mm.get_mm(uid)
 
         workbench_dict = f_mm.manufacture.workbenchs.get(workbench_id)
 
         if workbench_dict is None:
-            return 3, {}    # 该好友没有解锁此工作台
+            return 3, {}  # 该好友没有解锁此工作台
 
         if not workbench_dict:
-            return 4, {}    # 该好友的此工作台没有进行生产
+            return 4, {}  # 该好友的此工作台没有进行生产
 
         if workbench_dict['encourage']:
-            return 5, {}    # 该工作台已被加油鼓劲
+            return 5, {}  # 该工作台已被加油鼓劲
 
         manu_id = workbench_dict['manu_id']
         manu_config = game_config.manufacture.get(manu_id)
         if not manu_config:
-            return 7, {}    # 没有生成材料的配置
+            return 7, {}  # 没有生成材料的配置
 
         evolution = manu_config['evolution']
         friend_cheer_config = game_config.friend_cheer.get(evolution)
         if not friend_cheer_config:
-            return 6, {}    # 没有好友加油配置
+            return 6, {}  # 没有好友加油配置
 
         time_reduce = friend_cheer_config.get('time_reduce')
         friendly_count = friend_cheer_config.get('friend')
@@ -601,10 +601,10 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能在自己生产中心实地学习
+            return 1, {}  # 不能在自己生产中心实地学习
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         if not self.mm.hero.has_hero(hero_oid):
             return 6, {}
@@ -614,13 +614,13 @@ class FriendLogic(object):
 
         f_mm = self.mm.get_mm(uid)
         if workbench_id not in f_mm.manufacture.workbenchs:
-            return 3, {}    # 该好友没有解锁此工作台
+            return 3, {}  # 该好友没有解锁此工作台
 
         if not f_mm.manufacture.workbenchs[workbench_id]:
-            return 4, {}    # 该好友的此工作台没有进行生产
+            return 4, {}  # 该好友的此工作台没有进行生产
 
         if f_mm.manufacture.workbenchs[workbench_id]['study_hero'].get('uid'):
-            return 5, {}    # 该工程已经有其他人在实地学习了
+            return 5, {}  # 该工程已经有其他人在实地学习了
 
         f_mm.manufacture.workbenchs[workbench_id]['study_hero']['uid'] = self.mm.uid
         f_mm.manufacture.workbenchs[workbench_id]['study_hero']['hero_oid'] = hero_oid
@@ -643,30 +643,31 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 自己的生产中心没有自己的实地学习卡牌
+            return 1, {}  # 自己的生产中心没有自己的实地学习卡牌
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         f_mm = self.mm.get_mm(uid)
         if workbench_id not in f_mm.manufacture.workbenchs:
-            return 3, {}    # 该好友没有解锁此工作台
+            return 3, {}  # 该好友没有解锁此工作台
 
         if not f_mm.manufacture.workbenchs[workbench_id]:
-            return 4, {}    # 该好友的此工作台没有进行生产
+            return 4, {}  # 该好友的此工作台没有进行生产
 
         if not f_mm.manufacture.workbenchs[workbench_id]['study_hero'].get('uid'):
-            return 5, {}    # 该工程没有实地学习的卡牌
+            return 5, {}  # 该工程没有实地学习的卡牌
 
         if hero_oid not in self.mm.hero.heros:
-            return 6, {}    # 自己没有这张卡
+            return 6, {}  # 自己没有这张卡
 
         workbench_dict = f_mm.manufacture.workbenchs[workbench_id]
         manufacture_config = game_config.manufacture.get(workbench_dict['manu_id'])
 
         # 如果好友生产结束
         if f_mm.manufacture.calc_remainder_time(workbench_id,
-                workbench_dict=workbench_dict, manufacture_config=manufacture_config) <= 0:
+                                                workbench_dict=workbench_dict,
+                                                manufacture_config=manufacture_config) <= 0:
             start_time = f_mm.manufacture.workbenchs[workbench_id]['study_hero'].get('time')
             manufacture_id = workbench_dict['manu_id']
             manufacture_config = manufacture_config or game_config.manufacture.get(manufacture_id)
@@ -694,7 +695,7 @@ class FriendLogic(object):
         :return:
         """
         if self.friend.redpacket_update_time():
-            return 1, {}    # 还没到激活红包的时间
+            return 1, {}  # 还没到激活红包的时间
 
         redpacket_id = 0
         lv = self.mm.user.level
@@ -704,7 +705,7 @@ class FriendLogic(object):
                 redpacket_id = k
                 break
         if not redpacket_id:
-            return 2, {}    # 没有红包的配置
+            return 2, {}  # 没有红包的配置
 
         money = redpacket_config.get(redpacket_id)['money']
         sort = redpacket_config.get(redpacket_id)['sort']
@@ -713,7 +714,7 @@ class FriendLogic(object):
 
         money = money - number  # 保证每份红包保底1
         if money < 0:
-            return 3, {}    # 红包配置有误
+            return 3, {}  # 红包配置有误
 
         redpacket_reward = []
         for i in range(number):
@@ -747,11 +748,11 @@ class FriendLogic(object):
         f_mm = ModelManager(f_uid)
         gift = f_mm.friend.get_red_packet()
         if not gift:
-            return 2, {}    # 手慢了, 红包已被领完, 请等待下次激活
+            return 2, {}  # 手慢了, 红包已被领完, 请等待下次激活
 
         reward_player_ids = [i['uid'] for i in f_mm.friend.red_packet['reward_player']]
         if self.mm.user.uid in reward_player_ids:
-            return 3, {}    # 你已经领取过此次红包, 请等待下次激活
+            return 3, {}  # 你已经领取过此次红包, 请等待下次激活
 
         redpacket_id = 0
         redpacket_config = game_config.redpacket
@@ -761,7 +762,7 @@ class FriendLogic(object):
                 redpacket_id = k
                 break
         if not redpacket_id:
-            return 4, {}    # 没有红包的配置
+            return 4, {}  # 没有红包的配置
 
         # 好友获得被领红包奖励
         sort = redpacket_config.get(redpacket_id)['sort']
@@ -771,11 +772,11 @@ class FriendLogic(object):
         reward = add_mult_gift(self.mm, [gift])
 
         f_mm.friend.red_packet['reward_player'].append(
-                {
-                    'uid': self.mm.user.uid,
-                    'name': self.mm.user.name,
-                    'reward_num': gift[-1],
-                }
+            {
+                'uid': self.mm.user.uid,
+                'name': self.mm.user.name,
+                'reward_num': gift[-1],
+            }
         )
         f_mm.friend.save()
 
@@ -793,10 +794,10 @@ class FriendLogic(object):
         :return:
         """
         if not self.friend.has_friend(uid):
-            return 8, {}    # 没有该好友
+            return 8, {}  # 没有该好友
 
         if self.mm.hero.has_friend_employ(uid):
-            return 9, {}   # 该好友已被雇佣过
+            return 9, {}  # 该好友已被雇佣过
 
         self.mm.hero.add_friend_employ(uid)
         # 雇佣增加友好度
@@ -818,20 +819,20 @@ class FriendLogic(object):
         :return:
         """
         if self.mm.uid == uid:
-            return 1, {}    # 不能领取自己的奖励
+            return 1, {}  # 不能领取自己的奖励
 
         if not self.friend.has_friend(uid):
-            return 2, {}    # 没有该好友
+            return 2, {}  # 没有该好友
 
         if self.friend.has_received_friendly(uid, friend_lv):
-            return 3, {}    # 已领取过该奖励
+            return 3, {}  # 已领取过该奖励
 
         need_point = game_config.friend_point.get(friend_lv, {}).get('need_point')
         if need_point == None:
-            return 4, {}    # 配置有误
+            return 4, {}  # 配置有误
 
         if self.friend.friendly_degree.get(uid, 0) < need_point:
-            return 5, {}    # 没有达到领取条件
+            return 5, {}  # 没有达到领取条件
 
         self.friend.receive_friendly_reward(uid, friend_lv)
         self.friend.save()
@@ -844,3 +845,18 @@ class FriendLogic(object):
         }
 
         return 0, result
+
+    def actor_chat_index(self):
+        data = {}
+        for group_id, value in self.friend.actors.iteritems():
+            if not value['show']:
+                continue
+            card_id = self.mm.card.group_ids.get(group_id, '')
+            if not card_id:
+                data[group_id] = {'own': False, 'info': {}}
+            else:
+                data[group_id] = {'own': True, 'info': self.mm.card.get_card(card_id)}
+            data[group_id]['like'] = self.mm.card.attr.get(group_id, {}).get('like', 0)
+            data[group_id]['unfinished_chapter'] = list(
+                set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
+        return 0, data

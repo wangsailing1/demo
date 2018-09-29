@@ -470,4 +470,5 @@ def actor_chat(hm):
 def actor_chat_index(hm):
     mm = hm.mm
     fl = FriendLogic(mm)
-    return 0, {}
+    rc, data = fl.actor_chat_index()
+    return rc, data
