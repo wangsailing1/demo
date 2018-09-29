@@ -42,8 +42,8 @@ class CardBook(ModelBase):
 
 
 class ScriptBook(ModelBase):
-    TARGET = {1: 'shoot_num', 2: 'next_id', 3: 'big_sale', 4: 'output'}
-    TARGETMAPPING = {'shoot_num': 1, 'next_id': 2, 'big_sale': 3, 'output': 4}
+    TARGET = {1: 'shoot_num', 2: 'max_script', 3: 'big_sale', 4: 'output'}
+    TARGETMAPPING = {'shoot_num': 1, 'max_script': 2, 'big_sale': 3, 'output': 4}
 
     def __init__(self, uid):
         self.uid = uid
