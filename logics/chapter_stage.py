@@ -162,8 +162,7 @@ class Chapter_stage(object):
                 # 计算擅长角色，擅长剧本得分
                 score = self.tag_score(script_id, role_id, card_id)
                 tag_score[card_id] = score
-                all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style,{}).get('lv',0)
-
+                all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
 
             fight_data = {}
             rounds = game_config.common.get(23, {}).get('value', 2)
@@ -208,7 +207,7 @@ class Chapter_stage(object):
                     card_info = self.mm.card.get_card(card_id)
                     config = game_config.card_basis[card_info['id']]
                     rate = config['ex_special_rate']
-                    rate_ = random.randint(1,10001) <= rate
+                    rate_ = random.randint(1, 10001) <= rate
                     if rate_:
                         more_attr = config['special_quality']
                         more_attr = weight_choice(more_attr)
@@ -342,7 +341,7 @@ class Chapter_stage(object):
             gift = config[choice_stage]['reward']
             add_val = config[choice_stage]['add_value']
             self.chapter_stage.got_reward_dialogue.append(now_stage)
-            add_value = self.mm.card.add_value(group_id,add_val)
+            add_value = self.mm.card.add_value(group_id, add_val)
             reward = add_mult_gift(self.mm, gift)
             self.mm.card.save()
             self.chapter_stage.save()
@@ -355,7 +354,7 @@ class Chapter_stage(object):
             'add_value': add_value,
             'reward': reward,
             'love_lv': love_lv,
-            'old_value':old_value
+            'old_value': old_value
         }
 
     # 解锁章节
