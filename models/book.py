@@ -88,7 +88,8 @@ class ScriptBook(ModelBase):
                 'big_sale': 0,  # 大卖次数
                 'output': 0,  # 票房
                 'flag': -1,  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
-                'script_id': script_id
+                'script_id': script_id,
+                'max_output': 0  # 最大票房
             }
         self.group[group_id]['shoot_num'] += 1
         if script_config['sequel_count'] > self.group[group_id]['max_script']:
@@ -97,6 +98,8 @@ class ScriptBook(ModelBase):
         if big_sale:
             self.group[group_id]['big_sale'] += 1
         self.group[group_id]['output'] += output
+        if output > self.group[group_id]['max_output']:
+            self.group[group_id]['max_output'] = output
         g_config = group_config[group_id]
         for k, v in g_config['group_target']:
             if self.group[group_id][self.TARGET[k]] < v:
