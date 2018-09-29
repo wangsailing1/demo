@@ -429,10 +429,12 @@ class Friend(ModelBase):
             return 201
         return 0
 
-    def trigger_new_chat(self, group_id, chapter):
+    def trigger_new_chat(self, group_id, chapter,is_save=False):
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}}
-        self.actors[group_id]['chat_log'][chapter] = {'is_over': 0, 'log': []}
+        self.actors[group_id]['chat_log'][chapter] = []
+        if is_save:
+            self.save()
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue

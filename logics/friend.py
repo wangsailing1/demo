@@ -858,5 +858,5 @@ class FriendLogic(object):
                 data[group_id] = {'own': True, 'info': self.mm.card.get_card(card_id)}
             data[group_id]['like'] = self.mm.card.attr.get(group_id, {}).get('like', 0)
             data[group_id]['unfinished_chapter'] = list(
-                set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
+                set(value['mm'].keys()) - set(self.friend.chat_over.get(group_id, [])))
         return 0, data
