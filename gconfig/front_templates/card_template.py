@@ -46,7 +46,6 @@ card_basis = {
 
     # 擅长角色标签
     'tag_role': ('tag_role', 'int_list'),
-    'special_rate2': ('special_rate2', 'int'),  #娱乐触发概率（万分之）
     'phone_card': ('phone_card', 'int'),
     'crit_rate_base': ('crit_rate_base', 'int'),  # 基础暴击率
     'ex_special_rate': ('ex_special_rate', 'int'),  # 额外触发概率( 万分比）
