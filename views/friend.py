@@ -461,6 +461,8 @@ def receive_friendly_reward(hm):
 def actor_chat(hm):
     mm = hm.mm
     choice_id = hm.get_argument('choice_id',0)
+    group_id = hm.get_argument('group_id',0)
+    chapter_id = hm.get_argument('chapter_id',0)
     if not choice_id:
         return 1, {}   #未选择对话
     return 0, {}
