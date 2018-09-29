@@ -42,8 +42,8 @@ class CardBook(ModelBase):
 
 
 class ScriptBook(ModelBase):
-    TARGET = {1: 'shoot_num', 2: 'next_id', 3: 'big_sale', 4: 'output'}
-    TARGETMAPPING = {'shoot_num': 1, 'next_id': 2, 'big_sale': 3, 'output': 4}
+    TARGET = {1: 'shoot_num', 2: 'max_script', 3: 'big_sale', 4: 'output'}
+    TARGETMAPPING = {'shoot_num': 1, 'max_script': 2, 'big_sale': 3, 'output': 4}
 
     def __init__(self, uid):
         self.uid = uid
@@ -87,11 +87,13 @@ class ScriptBook(ModelBase):
                 'max_script': 0,  # 拍摄的最大续集
                 'big_sale': 0,  # 大卖次数
                 'output': 0,  # 票房
-                'flag': -1  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
+                'flag': -1,  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
+                'script_id': script_id
             }
         self.group[group_id]['shoot_num'] += 1
-        if script_id > self.group[group_id]['max_script']:
-            self.group[group_id]['max_script'] = script_id
+        if script_config['sequel_count'] > self.group[group_id]['max_script']:
+            self.group[group_id]['max_script'] = script_config['sequel_count']
+            self.group[group_id]['script_id'] = script_id
         if big_sale:
             self.group[group_id]['big_sale'] += 1
         self.group[group_id]['output'] += output

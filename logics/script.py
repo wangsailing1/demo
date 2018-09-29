@@ -69,6 +69,7 @@ class ScriptLogic(object):
         script.cur_script = film
 
         script.script_pool[script_id] = 1
+        self.mm.script_book.add_book(script_id)
         script.save()
         rc, data = self.index()
         return rc, data
