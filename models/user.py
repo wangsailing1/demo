@@ -182,6 +182,9 @@ class User(ModelBase):
             'coin': 0,
             'silver': 0,
             'dollar': 0,            # 美元
+            'script_license': 0,    # 拍片许可证
+            'used_license_times': 0,  # 许可证当日使用次数
+
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,

@@ -630,6 +630,16 @@ def specail_pop_uk(replace_key):
     return decorator
 
 
+def common_pop_key(replace_key):
+    """一个key的配置拉成只有一级的dict {id: {'key': value}} -> {id: value}"""
+    def decorator(config, data):
+        uk = data.pop('uk')
+        config[uk] = data[replace_key]
+        return config
+
+    return decorator
+
+
 def last_random_name(config, data):
 
     last_name = data.get('uk')
@@ -848,7 +858,7 @@ mapping = {
     'language_zh': language_zh,
     'int_list_to_dict': int_list_to_dict,
     'buy_silver': specail_pop_uk('id'),
-    'common_config': specail_pop_uk('value'),
-    'script_licence_config': specail_pop_uk('cd'),
+    'common_config': common_pop_key('value'),
+    'script_licence_config': common_pop_key('cd'),
 }
 

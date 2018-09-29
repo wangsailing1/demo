@@ -17,6 +17,7 @@ script = {
     'sequel_count': ('sequel_count', 'int'),  # 续作编号
     'hard_rate': ('hard_rate', 'int'),  # 难度系数
     'output': ('output', 'int'),  # 票房基数(万美元)
+    'standard_popularity': ('standard_popularity', 'int'),  # 人气要求
     'star': ('star', 'int'),  # 星级1-6
     'next_id': ('next_id', 'int'),  # 续作id
     'group': ('group', 'int'),  # 组id
@@ -31,7 +32,7 @@ script = {
     'min_attr': (('min_attr1', 'min_attr2', 'min_attr3', 'min_attr4',
                   'min_attr5', 'min_attr6'), ('int', 'mult_force_num_list')),
 
-    'award': ('award', 'int_list'),     # 影片属性达到最低要求的奖励
+    'award': ('award', 'int_list'),     # 影片属性达到3最低要求的奖励
     # 基准演技
     'standard_attr': (('standard_attr1', 'standard_attr2', 'standard_attr3', 'standard_attr4',
                         'standard_attr5', 'standard_attr6'), ('int', 'mult_force_num_list')),
