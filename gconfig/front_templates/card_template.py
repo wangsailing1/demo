@@ -47,8 +47,8 @@ card_basis = {
     # 擅长角色标签
     'tag_role': ('tag_role', 'int_list'),
     'crit_rate_base': ('crit_rate_base', 'int'),  #基础暴击率
-    'special_rate1': ('special_rate1', 'int'),  #艺术触发概率（万分之）
-    'special_rate2': ('special_rate2', 'int'),  #娱乐触发概率（万分之）
+    'ex_special_rate': ('ex_special_rate', 'int'),  #艺术触发概率（万分之）
+    'special_quality': ('special_quality', 'int_list'),  #娱乐触发概率（万分之）
 
 }
 
