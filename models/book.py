@@ -87,7 +87,7 @@ class ScriptBook(ModelBase):
                 'max_script': 0,  # 拍摄的最大续集
                 'big_sale': 0,  # 大卖次数
                 'output': 0,  # 票房
-                'flag': -1  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
+                'flag': -1,  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
                 'script_id':0
             }
         self.group[group_id]['shoot_num'] += 1
