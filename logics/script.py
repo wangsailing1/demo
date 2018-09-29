@@ -272,18 +272,23 @@ class ScriptLogic(object):
             dps_rate = random.randint(*love_config['dps_rate'])      # 伤害系数 万分之
 
             role_config = game_config.script_role[role_id]
-            # 计算基础属性
-            for attr in role_config['role_attr']:
+            role_attr = list(role_config['role_attr'])
+            # 随机属性
+            if random.randint(0, 10000) <= card_config['ex_special_rate']:
+                special_attr = weight_choice(card_config['special_quality'])[0]
+                role_attr.append(special_attr)
+
+            role_effect = effect[role_id] = {}
+            # 计算属性
+            for attr in role_attr:
                 base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
                 if base_value < 0:
                     continue
                 value = base_value * dps_rate / 10000.0
-                if attr in effect:
-                    effect[attr] += value
+                if attr in role_effect:
+                    role_effect[attr] += value
                 else:
-                    effect[attr] = value
-
-            # todo 随机属性
+                    role_effect[attr] = value
 
             # todo 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
