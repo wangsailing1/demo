@@ -75,6 +75,9 @@ class CardLogic(object):
         add_gift_count = 0
         add_exp = 0
         add_love_gift_pro = []
+
+        love_config = game_config.card_love_level[card_dict['love_lv']]
+        gift_lv_max = love_config['gift_lv_max']
         for item_id, item_num in items:
             add_gift_count += item_num
             if item.get_item(item_id) < item_num:
@@ -93,10 +96,9 @@ class CardLogic(object):
                     if tp in card_config['love_gift_type']:
                         add_love_gift_pro.append((tp, num))
 
-        love_config = game_config.card_love_level[card_dict['love_lv']]
-        gift_count = card_dict['gift_count'] + add_gift_count
-        if gift_count > love_config['gift_max']:
-            return 3, {}            # 超出送礼上限
+        # gift_count = card_dict['gift_count'] + add_gift_count
+        # if gift_count > gift_lv_max:
+        #     return 3, {}            # 超出送礼上限
 
         for item_id, item_num in items:
             item.del_item(item_id, item_num)

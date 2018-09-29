@@ -84,7 +84,7 @@ card_level_grow = {
 card_love_level = {
     'uk': ('card_love_level', 'int'),    # 等级
     'exp': ('exp', 'int'),          # 升级所需经验
-    'gift_max': ('gift_max', 'int'),          # 礼物赠送最大数量上限
+    'gift_lv_max': ('gift_lv_max', 'int'),          # 礼物赠送最大数量上限
     # 羁绊晋级需要碎片数量1星卡
     'star_cost': ('star_cost', 'list_2'),
     'train_count': ('train_count', 'int'),        # 培养次数上限

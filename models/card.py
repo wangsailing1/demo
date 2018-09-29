@@ -384,6 +384,12 @@ class Card(ModelBase):
                 next_exp -= config['gift_exp']
                 continue
             break
+
+        love_config = game_config.card_love_level[card_dict['love_lv']]
+        # 味道最大等级受羁绊等级约束
+        if next_lv >= love_config['gift_lv_max']:
+            next_exp = 0
+            next_lv = love_config['gift_lv_max']
         info['lv'] = next_lv
         info['exp'] = next_exp
 
