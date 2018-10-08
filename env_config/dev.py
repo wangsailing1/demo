@@ -11,10 +11,11 @@ DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
 PLATFORM = 'dev'    # 平台标示
 URL_PARTITION = 'big_sale'
-MASTER_HOST = '192.168.1.9'
-IN_MASTER_HOST = '192.168.1.9'
+MASTER_HOST = '219.142.26.114:9180'
+IN_MASTER_HOST = '192.168.1.9'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
-CHAT_IDS = [('192.168.1.9', 9090)]
+# CHAT_IDS = [('192.168.1.9', 9079)]
+CHAT_IDS = [('219.142.26.114', 9079)]
 
 LANGUAGE = 'ch'
 CDN = 'cdncn.cjyx2.hi365.com'
@@ -147,4 +148,4 @@ for k, i in enumerate(apps):
         'config_type': 1,
     }
 
-VIVO_PAY_CALLBACK_URL = 'http://192.168.1.9/genesis2/pay-callback-vivo/?tp=vivo'
+VIVO_PAY_CALLBACK_URL = 'http://%s/%s/pay-callback-vivo/?tp=vivo' % (MASTER_HOST, URL_PARTITION)
