@@ -862,6 +862,40 @@ class FriendLogic(object):
             data[group_id]['open_chapter'] = value['chat_log'].keys()
         return 0, data
 
-    def actor_chat(self, group_id, chapter_id, choice_id):
-        return 0, {}
-
+    def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
+        if not chapter_id:  # 日常对话
+            config = game_config.avg_dialogue
+            daily_config = game_config.phone_daily_dialogue[group_id]
+            if now_stage not in config:
+                return 11, {}  # 当前对话id错误
+            if choice_id not in config[now_stage]['option_team']:
+                return 12, {}  # 对话选项错误
+            if self.friend.phone_daily_times >= daily_config['daily_times']:
+                return 13, {}  # 次数超出
+            reward_config = config[choice_id]['reward']
+            add_value_config = config[choice_id]['add_value']
+            add_value = self.mm.card.add_value(group_id, add_value_config)
+            reward = add_mult_gift(self.mm, reward_config)
+            self.friend.phone_daily_times += 1
+            self.friend.save()
+            return 0, {'reward': reward,
+                       'add_value': add_value}
+        config = game_config.phone_dialogue
+        if now_stage not in config:
+            return 15, {}  # 对话配置错误
+        chat_log = self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, [])
+        if now_stage not in chat_log:
+            return 14, {}  # 当前对话id错误
+        if choice_id not in config[now_stage]['option_team'] and choice_id != config[now_stage]['next']:
+            return 16, {}  # 对话选择错误
+        if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
+                chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
+            return 17, {}   #已选择过对话
+        reward_config = config[choice_id]['reward']
+        add_value_config = config[choice_id]['add_value']
+        add_value = self.mm.card.add_value(group_id, add_value_config)
+        reward = add_mult_gift(self.mm, reward_config)
+        self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
+        self.friend.save()
+        return 0, {'reward': reward,
+                   'add_value': add_value}
