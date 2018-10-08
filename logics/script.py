@@ -139,14 +139,13 @@ class ScriptLogic(object):
         cur_script['suit'] = suit
         script.style_log.append(style)
 
-        # todo: 拍摄结算
-        self.calc_result(cur_script)
         effect = self.calc_film_card_effect()
         finished_reward = self.check_finished_reward()
 
         rc, data = self.index()
         data['effect'] = effect
-        data['finished_reward'] = finished_reward
+        if finished_reward:
+            data['finished_reward'] = finished_reward
         script.save()
         return rc, data
 
@@ -177,22 +176,50 @@ class ScriptLogic(object):
                     reward.append(d)
 
         result['reward'] = reward
-        if not film_info.get('result'):
-            film_info['result'] = result        # 奖励
-            # todo 艺人人气关注度
-
-            attention_info = self.calc_attention(film_info)
-            film_info['attention_info'] = attention_info
-
-            # todo 拍摄属性结算
-            add_attr = {}
-            film_info['add_attr'] = []
+        # if not film_info.get('result'):
+        #     film_info['result'] = result        # 奖励
+        #     # todo 艺人人气关注度
+        #
+        #     attention_info = self.calc_attention(film_info)
+        #     film_info['attention_info'] = attention_info
+        #
+        #     # todo 拍摄属性结算
+        #     add_attr = {}
+        #     film_info['add_attr'] = []
         return result
 
+    # 7.剧本属性计算
+    def calc_script_attr(self):
+        # todo
+        card = self.mm.card
+        script = self.mm.script
+        cur_script = script.cur_script
+
+        skilled = 0     # 总熟练度
+        for role_id, card_oid in cur_script['card'].iteritems():
+            card_info = card.cards[card_oid]
+            for style, lv_info in card_info['style_pro'].iteritems():
+                skilled += lv_info['lv']
+
+        skilled_rate = game_config.common[10]
+        add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
+
+        script_config = game_config.script[cur_script['id']]
+        add_attr = []
+        for min_attr, good_attr in itertools.izip(script_config['min_attr'], script_config['good_attr']):
+            value = 0
+            if min_attr >= 0:
+                value += min_attr
+            if good_attr >= 0:
+                value += good_attr
+            add_attr.append(value)
+        return {'add_attr': add_attr}
+
     # 3.计算影片关注度
-    def calc_attention(self, film_info):
+    def calc_attention(self, film_info=None):
         """计算影片关注度"""
         script = self.mm.script
+        film_info = film_info or script.cur_script
 
         # 1.实际观众之和
         N = attention = sum(script.cur_market)
@@ -240,6 +267,63 @@ class ScriptLogic(object):
             'attention': attention,         # 关注度
             'card_effect': card_popularity / standard_popularity,     # 艺人人气对关注度影响
         }
+
+    def check_finished_step(self, finished_step):
+        """
+
+        :param finished_step:
+            1： 经验、熟练度什么的通用奖励
+            2： 拍摄属性结算
+            3： 弹出新闻关注度
+            4： 专业评价
+            5： 持续上映
+            6： 观众评价
+            7： 票房总结
+            # 8： 票房分析
+        :return:
+        """
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}
+
+        # todo 判断片子已进入结算阶段
+        data = {}
+        if finished_step == 1:
+            if 'finished_common_reward' not in cur_script:
+                # todo: 拍摄结算
+                cur_script['finished_step'] = finished_step
+
+                result = self.calc_result(cur_script)
+                cur_script['finished_common_reward'] = result
+                cur_script['finished_step'] = finished_step
+                data['finished_common_reward'] = result
+                script.save()
+            else:
+                data['finished_common_reward'] = cur_script['finished_common_reward']
+        elif finished_step == 2:
+            if 'finished_attr' not in cur_script:
+                cur_script['finished_step'] = finished_step
+
+                finished_attr = self.calc_script_attr()
+                cur_script['finished_attr'] = finished_attr
+                data['finished_attr'] = finished_attr
+                script.save()
+            else:
+                data['finished_attr'] = cur_script['finished_attr']
+
+        elif finished_step == 3:
+            if 'finished_attention' not in cur_script:
+                cur_script['finished_step'] = finished_step
+
+                finished_attention = self.calc_attention()
+                cur_script['finished_attention'] = finished_attention
+                data['finished_attention'] = finished_attention
+                script.save()
+            else:
+                data['finished_attention'] = cur_script['finished_attention']
+
+        return 0, data
 
     # 4 市场观众 选剧本时显示
     def market_num(self):
@@ -313,24 +397,6 @@ class ScriptLogic(object):
             # 计算输出
 
         return effect
-
-    # 7.剧本属性计算
-    def calc_script_attr(self):
-        # todo
-        card = self.mm.card
-        script = self.mm.script
-        cur_script = script.cur_script
-
-        skilled = 0     # 总熟练度
-        for role_id, card_oid in cur_script['card'].iteritems():
-            card_info = card.cards[card_oid]
-            for style, lv_info in card_info['style_pro'].iteritems():
-                skilled += lv_info['lv']
-
-        skilled_rate = game_config.common[10]
-        add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
-
-
 
 
     # 8.首映票房、收视计算

@@ -76,3 +76,39 @@ def set_style(hm):
     rc, data = sl.set_style(style)
     return rc, data
 
+
+def check_finished_step(hm):
+    """
+    拍摄结算阶段奖励
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    finished_step = hm.get_argument('finished_step', is_int=True)  # 剧本id
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(finished_step)
+    return rc, data
+
+
+def finished_commmon_reward(hm):
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(1)
+    return rc, data
+
+
+def finished_attr_reward(hm):
+    """属性结算"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(2)
+    return rc, data
+
+
+def finished_attention(hm):
+    """关注度结算"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(3)
+    return rc, data

@@ -39,13 +39,15 @@ class Script(ModelBase):
     def pre_use(self):
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
-
+        if self.cur_script and 'finished_step' not in self.cur_script:
+            self.cur_script['finished_step'] = 0
         # todo 拍摄完的片子结算
         if self.cur_script.get('result'):
             cur_script = self.cur_script
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
+
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:
@@ -90,6 +92,8 @@ class Script(ModelBase):
     def make_film(self, script_id, name):
         data = {
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
+            'finished_step': 0,     # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
+                                    # 4: 专业评价; 5: 持续上映; 6: 观众评价; 7: 票房总结
             'name': name,
             'card': {},  # 艺人角色 {rol_id: card_oid}
             'id': script_id,
