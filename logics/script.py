@@ -142,11 +142,23 @@ class ScriptLogic(object):
         # todo: 拍摄结算
         self.calc_result(cur_script)
         effect = self.calc_film_card_effect()
+        finished_reward = self.check_finished_reward()
 
-        script.save()
         rc, data = self.index()
         data['effect'] = effect
+        data['finished_reward'] = finished_reward
+        script.save()
         return rc, data
+
+    def check_finished_reward(self):
+        """todo 检查杀青奖励"""
+        card = self.mm.card
+        script = self.mm.script
+        cur_script = script.cur_script
+        reward = {'coin': 1}
+        if 'finished_reward' not in cur_script:
+            cur_script['finished_reward'] = reward
+        return reward
 
     def calc_result(self, film_info=None):
         """拍摄结算"""
@@ -301,7 +313,6 @@ class ScriptLogic(object):
             # 计算输出
 
         return effect
-
 
     # 7.剧本属性计算
     def calc_script_attr(self):
