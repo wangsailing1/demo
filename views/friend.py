@@ -463,14 +463,13 @@ def actor_chat(hm):
     group_id = hm.get_argument('group_id', 0)
     chapter_id = hm.get_argument('chapter_id', 0)
     choice_id = hm.get_argument('choice_id', 0)
-    if not choice_id:
-        return 1, {}  # 未选择对话
+    now_stage = int(hm.get_argument('now_stage', ''))
     if not group_id:
-        return 2, {}  # 未选择艺人
-    if not chapter_id:
-        return 3, {}  # 未选择章节
+        return 1, {}  # 未选择艺人
+    if not chapter_id and not now_stage:
+        return 0, {'choice_id': mm.friend.get_chat_choice(group_id)}
     fl = FriendLogic(mm)
-    rc, data = fl.actor_chat(group_id, chapter_id, choice_id)
+    rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
     return rc, data
 
 

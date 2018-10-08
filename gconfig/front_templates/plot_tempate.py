@@ -198,8 +198,31 @@ avg_note = {
     'name6': ('name6', 'unicode'),
 }
 
-# 手机互动
+# 手机互动日常
 phone_daily_dialogue = {
     'uk': ('group_id', 'int'),
     'daily_dialogue': ('daily_dialogue', 'int_list'),
+    'daily_times': ('daily_times', 'int'),
+}
+
+# 手机互动剧情
+phone_dialogue = {
+    'uk': ('id', 'int'),
+    'is_option': ('is_option', 'int'),
+    'option_team': ('option_team', 'int_list'),
+    'next': ('next', 'int'),
+    'is_end': ('is_end', 'int'),
+    'hero_id': ('hero_id', 'int'),
+    'word': ('word', 'int'),
+    'reward': ('reward', 'int_list'),
+    'add_value': ('add_value', 'int_list'),
+    'voice': ('voice', 'str'),
+}
+
+# 手机互动剧情触发
+phone_chapter_dialogue = {
+    'uk': ('id', 'int'),
+    'hero_id': ('hero_id', 'int'),
+    'chapter_id': ('chapter_id', 'int'),
+    'dialogue_id': ('dialogue_id', 'int'),
 }

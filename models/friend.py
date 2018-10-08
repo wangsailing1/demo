@@ -91,6 +91,7 @@ class Friend(ModelBase):
             self.received_gift = []
             self.last_refresh_date = now
             self.phone_daily_times = 0
+            self.save()
 
     def set_send_gift(self, friend_id):
         """
