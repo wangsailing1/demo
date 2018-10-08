@@ -460,12 +460,18 @@ def receive_friendly_reward(hm):
 @check_unlock
 def actor_chat(hm):
     mm = hm.mm
-    choice_id = hm.get_argument('choice_id',0)
-    group_id = hm.get_argument('group_id',0)
-    chapter_id = hm.get_argument('chapter_id',0)
+    group_id = hm.get_argument('group_id', 0)
+    chapter_id = hm.get_argument('chapter_id', 0)
+    choice_id = hm.get_argument('choice_id', 0)
     if not choice_id:
-        return 1, {}   #未选择对话
-    return 0, {}
+        return 1, {}  # 未选择对话
+    if not group_id:
+        return 2, {}  # 未选择艺人
+    if not chapter_id:
+        return 3, {}  # 未选择章节
+    fl = FriendLogic(mm)
+    rc, data = fl.actor_chat(group_id, chapter_id, choice_id)
+    return rc, data
 
 
 @check_unlock
@@ -473,4 +479,4 @@ def actor_chat_index(hm):
     mm = hm.mm
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat_index()
-    return rc, data
+    return rc, {'actor': data}
