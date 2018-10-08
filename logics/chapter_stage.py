@@ -337,6 +337,7 @@ class Chapter_stage(object):
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr[group_id])
         reward = {}
+        add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
             gift = config[choice_stage]['reward']
             add_val = config[choice_stage]['add_value']
