@@ -23,9 +23,9 @@ from config_operation import RESOLVE_LIST, FAKE_CONFIG
 
 
 class ReadonlyDict(dict):
-
     def __readyonly__(self, *args, **kwargs):
         raise RuntimeError('cannot modify readyonly dict')
+
     __setitem__ = __readyonly__
     __delitem__ = __readyonly__
     pop = __readyonly__
@@ -36,9 +36,9 @@ class ReadonlyDict(dict):
 
 
 class ReadonlyList(list):
-
     def __readyonly__(self, *args, **kwargs):
         raise RuntimeError('cannot modify readyonly list')
+
     __setitem__ = __readyonly__
     __delitem__ = __readyonly__
     __iadd__ = __readyonly__
@@ -55,12 +55,12 @@ def make_readonly(x, deep=0):
     if x.__class__ is list:
         d = []
         for i in x:
-            d.append(make_readonly(i, deep+1))
+            d.append(make_readonly(i, deep + 1))
         return ReadonlyList(d)
     elif x.__class__ is dict:
         d = {}
         for k, v in x.iteritems():
-            d[k] = make_readonly(v, deep+1)
+            d[k] = make_readonly(v, deep + 1)
         return d if deep else ReadonlyDict(d)
     return x
 
@@ -172,6 +172,7 @@ class GameConfigMixIn(object):
         'character_def_bonus': u'特性普防提升(%)',
         'character_magdef_bonus': u'特性绝防提升(%)',
     }
+
     def __init__(self):
         self.attr_mapping = {
             1: 'phy_atk', 2: 'hp', 3: 'phy_def', 4: 'mag_atk', 5: 'mag_def', 6: 'damage',
@@ -186,7 +187,8 @@ class GameConfigMixIn(object):
             40: 'gene_def_bonus', 41: 'gene_mag_def_bonus',
             42: 'hero_bothatk_bonus', 43: 'gene_bothatk_bonus',
             44: 'final_initial_anger',
-            45: 'character_atk_bonus', 46: 'character_mag_bonus', 47: 'character_def_bonus', 48: 'character_magdef_bonus',
+            45: 'character_atk_bonus', 46: 'character_mag_bonus', 47: 'character_def_bonus',
+            48: 'character_magdef_bonus',
         }
         self.no_in_hero_dict = [44]
         # self.attr_mapping = {  # 属性对应表
@@ -198,8 +200,8 @@ class GameConfigMixIn(object):
         #     100: 'damage', 101: 'strength', 102: 'agility', 103: 'intelligence',
         #     104: 'change_skill', 105: 'add_normal_damage', 106: 'change_atk_skill'
         # }
-        self.base_attr = (1, 2, 3, 4, 5)                      # 基础属性
-        self.hero_basis_init_attr = (7, 8, 9, 10, 11)         # 英雄表基础属性
+        self.base_attr = (1, 2, 3, 4, 5)  # 基础属性
+        self.hero_basis_init_attr = (7, 8, 9, 10, 11)  # 英雄表基础属性
         self.bonus_attr = {  # 加成属性影响的基础属性
             'hero': {'hp': 'hero_hp_bonus', 'phy_atk': 'hero_atk_bonus', 'mag_atk': 'hero_mag_bonus',
                      'phy_def': 'hero_def_bonus', 'mag_def': 'hero_mag_def_bonus'},
@@ -215,7 +217,7 @@ class GameConfigMixIn(object):
             'hp': 'final_hp_bonus', 'phy_atk': 'character_atk_bonus', 'mag_atk': 'character_mag_bonus',
             'phy_def': 'character_def_bonus', 'mag_def': 'character_magdef_bonus',
         }
-        self.bonus_to_base_mapping = {12: {1: 1, 2: 4}, 13: 2, 14: 3, 15: 5}    # 百分比加成对应属性, hp_bonus:hp
+        self.bonus_to_base_mapping = {12: {1: 1, 2: 4}, 13: 2, 14: 3, 15: 5}  # 百分比加成对应属性, hp_bonus:hp
         self.bonus_mapping = {'atk_bonus': 12, 'hp_bonus': 13, 'def_bonus': 14, 'mag_def_bonus': 15}
 
         # self.hero_battle_job = [1, 2, 3, 4, 5, 6]  # 战斗英雄职业
@@ -314,11 +316,12 @@ class GameConfigMixIn(object):
         self.king_war_shop_id_mapping = {}
         self.sign_reward_mapping = {}
         self.doomsday_hunt_mapping = {}
-        self.server_link_mapping = {}   # 限时神将跨服
-        self.server_link_uc_mapping = {}    # 极限挑战跨服
+        self.server_link_mapping = {}  # 限时神将跨服
+        self.server_link_uc_mapping = {}  # 极限挑战跨服
         self.chapter_mapping = {}
         self.shop_goods_mapping = {}
         self.book_mapping = {}
+        self.phone_chapter_dialogue_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -407,6 +410,7 @@ class GameConfigMixIn(object):
         self.server_link_uc_mapping.clear()
         self.chapter_mapping.clear()
         self.book_mapping.clear()
+        self.phone_chapter_dialogue_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -563,7 +567,7 @@ class GameConfigMixIn(object):
         rank_list = sorted(self.arena_award_mapping)
         r = bisect.bisect(rank_list, rank)
 
-        return self.arena_award_mapping.get(rank_list[r-1], 0)
+        return self.arena_award_mapping.get(rank_list[r - 1], 0)
 
     def get_team_boss_id_by_sort(self, sort):
         """
@@ -631,13 +635,13 @@ class GameConfigMixIn(object):
 
         return item_ids
 
-    def get_shop_id_with_level(self,shop_id, level):
+    def get_shop_id_with_level(self, shop_id, level):
         """
         通过玩家等级获得可购买范围的物品
         :param level:
         :return: []
         """
-        if not self.shop_goods_mapping.get(shop_id,{}):
+        if not self.shop_goods_mapping.get(shop_id, {}):
             data = {}
             for k, v in self.get_shop_config(shop_id).iteritems():
                 use_lv = v['show_lv']
@@ -2404,7 +2408,7 @@ class GameConfigMixIn(object):
         :return:
         """
         if not self.all_equip_item_exp_mapping:
-            self.all_equip_item_exp_mapping = {2: {}, 6: {}, 7: {}}    # 两种特殊装备需要不同的材料升级
+            self.all_equip_item_exp_mapping = {2: {}, 6: {}, 7: {}}  # 两种特殊装备需要不同的材料升级
             for k, v in self.use_item.iteritems():
                 if v['is_use'] == 9:
                     self.all_equip_item_exp_mapping[6][k] = v['use_effect']
@@ -2415,34 +2419,41 @@ class GameConfigMixIn(object):
 
     def get_chapter_mapping(self):
         if not self.chapter_mapping:
-            for i,j in self.chapter.iteritems():
+            for i, j in self.chapter.iteritems():
                 if j['num'] not in self.chapter_mapping:
                     self.chapter_mapping[j['num']] = {}
                 j['chapter_id'] = i
                 self.chapter_mapping[j['num']][j['hard_type']] = j
         return self.chapter_mapping
 
-    def get_shop_config(self,shop_id):
+    def get_shop_config(self, shop_id):
         config = self.shop_goods
         shop_config = {}
-        for good_id,value in config.iteritems():
+        for good_id, value in config.iteritems():
             if value['shop_id'] == shop_id:
                 shop_config[good_id] = value
         return shop_config
 
-    def get_book_mapping(self,type='card_book'):
+    def get_book_mapping(self, type='card_book'):
         if not self.book_mapping.get(type):
             self.book_mapping[type] = {}
-            for i,j in getattr(self,type,{}).iteritems():
+            for i, j in getattr(self, type, {}).iteritems():
                 for card in j.get(type.split('_')[0]):
                     self.book_mapping[type][card] = i
         return self.book_mapping[type]
 
+    def get_phone_chapter_dialogue_mapping(self):
+        if not self.phone_chapter_dialogue_mapping:
+            for i, j in self.phone_chapter_dialogue.iteritems():
+                if j['hero_id'] not in self.phone_chapter_dialogue_mapping:
+                    self.phone_chapter_dialogue_mapping[j['hero_id']] = {}
+                self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']] = {'dialogue_id': j['dialogue_id']}
+                self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']]['id'] = i
+        return self.phone_chapter_dialogue_mapping
 
 
 
 class GameConfig(GameConfigMixIn):
-
     __metaclass__ = Singleton
 
     IGONE_NAME = ('keys', 'locked', 'ver_md5')
@@ -2512,7 +2523,7 @@ class GameConfig(GameConfigMixIn):
                 if settings.BACK_CONFIG_SWITCH:
                     cv.versions[name] = c.version
                     cv_save = True
-                # continue
+                    # continue
 
             if v[0]:  # 加载的策划配置的xlsx
                 # print 'reload: %s' % name
@@ -2660,7 +2671,7 @@ class FrontGameConfig(GameConfigMixIn):
                 if settings.FRONT_CONFIG_SWITCH:
                     cv.versions[name] = c.version
                     cv_save = True
-                # continue
+                    # continue
 
             if v[0]:  # 加载的策划配置的xlsx
                 # print 'reload: %s' % name

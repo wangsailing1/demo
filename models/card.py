@@ -93,7 +93,7 @@ class Card(ModelBase):
             'equips': [],  # 装备id
 
             'evo': evo,
-            'star': star,
+            'star': card_config.get('star_level',1),
             '_source': mm.action if mm else '',  # 记录来源
 
             'train_times': 0,  # 培训次数

@@ -34,7 +34,7 @@ class Chapter_stage(object):
             config = game_config.avg_dialogue
             if stage_id not in config:
                 return 25, {}
-            config_reward = config[stage_id]['add_value']
+            # config_reward = config[stage_id]['add_value']
             data = {}
             if chapter not in self.chapter_stage.chapter:
                 self.chapter_stage.chapter[chapter] = {}
@@ -54,8 +54,8 @@ class Chapter_stage(object):
                     self.chapter_stage.next_chapter.extend(next_chapter)
             data['next_chapter'] = self.chapter_stage.next_chapter
             data['chapter'] = self.chapter_stage.chapter
-            reward = add_mult_gift(self.mm, config_reward)
-            data['reward'] = reward
+            # reward = add_mult_gift(self.mm, config_reward)
+            # data['reward'] = reward
             self.chapter_stage.save()
             return 0, data
         if stage_id not in config_s:
@@ -337,6 +337,7 @@ class Chapter_stage(object):
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr[group_id])
         reward = {}
+        add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
             gift = config[choice_stage]['reward']
             add_val = config[choice_stage]['add_value']
