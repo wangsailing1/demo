@@ -213,7 +213,7 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
         add_attr = []
         # pro_id: [add_value, limit_value]
-        add_attr = {1: [1, 100], 2: [2, 100], 4: [2, 150], 5: [5, 200], 3: [20: 100]}
+        add_attr = {1: [1, 100], 2: [2, 100], 4: [2, 150], 5: [5, 200], 3: [20, 100]}
 
         return {'add_attr': add_attr}
 
