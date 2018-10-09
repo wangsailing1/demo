@@ -73,7 +73,8 @@ class Friend(ModelBase):
             'actors': {},
             'chat_over': {},
             'phone_daily_times': 0,
-            'nickname': {}
+            'phone_daily_log': {},
+            'nickname': {},
 
         }
         super(Friend, self).__init__(self.uid)
@@ -92,6 +93,7 @@ class Friend(ModelBase):
             self.received_gift = []
             self.last_refresh_date = now
             self.phone_daily_times = 0
+            self.phone_daily_log = {}
             self.save()
 
     def set_send_gift(self, friend_id):
@@ -442,7 +444,7 @@ class Friend(ModelBase):
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
-        chat_list = chat_config.get(group_id)['daily_dialogue']
+        chat_list = chat_config.get(group_id, {}).get('daily_dialogue',[])
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         chat_choice = []
         for chat in chat_list:
@@ -450,7 +452,11 @@ class Friend(ModelBase):
                 chat_choice.append([chat[0], chat[1]])
         if not chat_choice:
             return 0
-        return weight_choice(chat_choice)[0]
+        self.phone_daily_times += 1
+        choice_id = weight_choice(chat_choice)[0]
+        self.phone_daily_log[self.phone_daily_times] = [choice_id]
+        self.save()
+        return choice_id
 
 
 ModelManager.register_model('friend', Friend)
