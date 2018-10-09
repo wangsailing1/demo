@@ -461,10 +461,10 @@ def receive_friendly_reward(hm):
 @check_unlock
 def actor_chat(hm):
     mm = hm.mm
-    group_id = hm.get_argument('group_id', 0)
-    chapter_id = hm.get_argument('chapter_id', 0)
-    choice_id = hm.get_argument('choice_id', 0)
-    now_stage = int(hm.get_argument('now_stage', ''))
+    group_id = hm.get_argument('group_id', 0, is_int=True)
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    choice_id = hm.get_argument('choice_id', 0, is_int=True)
+    now_stage = hm.get_argument('now_stage', 0, is_int=True)
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
@@ -482,25 +482,24 @@ def actor_chat_index(hm):
     return rc, {'actor': data}
 
 
-
 @check_unlock
 def rename(hm):
     mm = hm.mm
-    uid = hm.get_argument('uid','')
-    name = hm.get_argument('name','')
+    uid = hm.get_argument('uid', '')
+    name = hm.get_argument('name', '')
     if not uid:
-        return 1, {}   #未指定好友
+        return 1, {}  # 未指定好友
     if is_sensitive(name):
-        return 2, {}    # 名字不合法
-    #好友为艺人
+        return 2, {}  # 名字不合法
+    # 好友为艺人
     if uid.isdigit():
         uid = int(uid)
         if uid not in mm.friend.actors:
-            return 3, {}  #不是好友
+            return 3, {}  # 不是好友
         mm.friend.actors[uid]['nickname'] = name
     else:
         if uid not in mm.friend.friends:
-            return 3, {}  #不是好友
+            return 3, {}  # 不是好友
         mm.friend.nickname[uid] = name
     mm.friend.save()
     return 0, {}
