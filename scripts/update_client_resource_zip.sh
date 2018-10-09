@@ -19,8 +19,11 @@ mkdir -p $RES_DIR
 USER="admin"
 HOST="120.92.15.63"
 
-DEST_RES_DIR="/data/sites/superhero2_backend/logs/lr"
-DEST_VER_DIR="/data/sites/superhero2_backend/logs/client_resource"
+# ios资源放二级目录，空为 android
+PLATFORM=""
+# PLATFORM="ios"
+DEST_RES_DIR="/data/sites/big_sale_dev/logs/lr/$PLATFORM"
+DEST_VER_DIR="/data/sites/big_sale_dev/logs/client_resource/$PLATFORM"
 GIT_REPO_PATH=$WORKSPACE
 
 cd $GIT_REPO_PATH
@@ -72,7 +75,7 @@ function gerenate_json(){
     if [ "$different_files" = "" ]; then
         different_files="[]"
     else
-        different_files="[\"$different_files\"]"
+        different_files="[\"$PLATFORM/$different_files\"]"
     fi
     md5_value=$2;
     current_tag=$3;

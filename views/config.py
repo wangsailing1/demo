@@ -21,36 +21,38 @@ def resource_version(hm):
     res_version = hm.get_argument('res_version', '')
     ip = hm.req.request.headers.get('X-Real-Ip', '')
     tpid = hm.get_argument('tpid', 0, is_int=True)
+    appid = hm.get_argument('appd', '')
 
-    if res_version.startswith('tcn') and settings.ENV_NAME in ['dev']:   # 测试服用简体繁体两套资源
-        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource_cn')
+    if appid == '2':    # 和前端协定1:android,2:iOS
+        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource', 'ios')
     else:
         version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource')
+
     current_version = res_version
 
-    # ios补丁tag
-    if tpid == 56:
-        version_path = ''
-        if settings.ENV_NAME == 'dev' and current_version < 't1.2.740':
-            version_path = os.path.join(version_dirs, 'pih1.0.002_pih1.0.001.json')
-
-        elif settings.ENV_NAME == 'release_test3' and current_version < 'ph1.1.151':
-            version_path = os.path.join(version_dirs, 'pih1.1.151_pih1.1.054.json')
-
-        if version_path:
-            try:
-                if os.path.exists(version_path):
-                    fp = open(version_path, 'rb')
-                    data = eval(fp.read())
-                    fp.close()
-                    return 0, data
-            except (OSError, ValueError):
-                return 0, {
-                    'current_version': current_version,
-                    'different_files': [],
-                    'md5': '',
-                    'sum_size': '0K',
-                }
+    # # ios补丁tag
+    # if tpid == 56:
+    #     version_path = ''
+    #     if settings.ENV_NAME == 'dev' and current_version < 't1.2.740':
+    #         version_path = os.path.join(version_dirs, 'pih1.0.002_pih1.0.001.json')
+    #
+    #     elif settings.ENV_NAME == 'release_test3' and current_version < 'ph1.1.151':
+    #         version_path = os.path.join(version_dirs, 'pih1.1.151_pih1.1.054.json')
+    #
+    #     if version_path:
+    #         try:
+    #             if os.path.exists(version_path):
+    #                 fp = open(version_path, 'rb')
+    #                 data = eval(fp.read())
+    #                 fp.close()
+    #                 return 0, data
+    #         except (OSError, ValueError):
+    #             return 0, {
+    #                 'current_version': current_version,
+    #                 'different_files': [],
+    #                 'md5': '',
+    #                 'sum_size': '0K',
+    #             }
 
     if os.path.exists(version_dirs):
         try:
