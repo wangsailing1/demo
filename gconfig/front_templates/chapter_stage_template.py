@@ -29,7 +29,7 @@ chapter = {
     'next_chapter':     ('next_chapter',    'int_list'),  # 解锁章节
     'num':              ('num',             'int'),  # 章节序号
     'hard_type':        ('hard_type',       'int'),  # 难度类型0=普通 1=精英
-    'background':       ('background',      'int_list'),  # 关卡地图背景
+    'background':       ('background',      'str'),  # 关卡地图背景
     'music':            ('music',           'int'),  # 地图背景音乐
     'script_end_level': ('script_end_level','int'),  # 几星扫荡
     'stage_id': (('stage_id1', 'stage_id2', 'stage_id3','stage_id4','stage_id5',
