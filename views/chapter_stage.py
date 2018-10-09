@@ -33,14 +33,14 @@ def get_dialogue_reward(hm):
     rc, data = chapter_stage.get_dialogue_reward(now_stage, choice_stage, card_id)
     return rc, data
 
-#解锁艺人聊天
+
+# 解锁艺人聊天
 def open_actor_chat(hm):
     mm = hm.mm
     now_stage = int(hm.get_argument('now_stage', ''))
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.open_actor_chat(now_stage)
     return rc, {'actor': data}
-
 
 
 # 扫荡
