@@ -120,3 +120,19 @@ def finished_first_income(hm):
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(4)
     return rc, data
+
+
+def finished_medium_judge(hm):
+    """专业评价"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(5)
+    return rc, data
+
+
+def finished_audience_judge(hm):
+    """专业评价"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(7)
+    return rc, data

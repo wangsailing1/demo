@@ -42,7 +42,8 @@ class Script(ModelBase):
         if self.cur_script:
             if 'finished_step' not in self.cur_script:
                 self.cur_script['finished_step'] = 0
-            for k in ['finished_common_reward', 'finished_attr', 'finished_attention']:
+            for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
+                      'finished_first_income']:
                 if k not in self.cur_script:
                     self.cur_script[k] = {}
 
@@ -111,8 +112,7 @@ class Script(ModelBase):
 
             'result_step': 0,       # 结算阶段，前端修改，前端使用
             'result': {},           # 拍片结算结果 {'reward': {}, }
-            'medium_judge': 0,             # 评价 专业评价 {'medium': 3, 'audience': 4}
-            'audience_judge': 0,             # 评价 观众评价 {'medium': 3, 'audience': 4}
+
             'attention_info': {},
             'continue_reward': [],      # 持续上映奖励
             'summary': {'income': 100, 'cost': 50},              # 票房总结
@@ -121,6 +121,9 @@ class Script(ModelBase):
             'finished_common_reward': {},
             'finished_attr': {},
             'finished_attention': {},
+            'finished_first_income': {},
+            'finished_medium_judge': 0,  # 评价 专业评价 100
+            'finished_audience_judge': 0,  # 评价 观众评价 200
 
 
             'attention': 0,     # 关注度

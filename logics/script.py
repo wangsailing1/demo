@@ -285,6 +285,20 @@ class ScriptLogic(object):
 
         return {'first_income': first_income}
 
+    def calc_medium_judge(self):
+        """专业评价"""
+        # todo
+        script = self.mm.script
+        cur_script = script.cur_script
+        return {'score': 100}
+
+    def calc_audience_judge(self):
+        """观众评价"""
+        # todo
+        script = self.mm.script
+        cur_script = script.cur_script
+        return {'score': 200}
+
     def check_finished_step(self, finished_step):
         """
 
@@ -345,6 +359,27 @@ class ScriptLogic(object):
                 cur_script['finished_first_income'] = finished_first_income
                 script.save()
             data['finished_first_income'] = finished_first_income
+
+        elif finished_step == 5:
+            finished_medium_judge = cur_script.get('finished_medium_judge')
+            if not finished_medium_judge:
+                cur_script['finished_step'] = finished_step
+                finished_medium_judge = self.calc_medium_judge()
+                cur_script['finished_medium_judge'] = finished_medium_judge
+                script.save()
+            data['finished_medium_judge'] = finished_medium_judge
+
+        elif finished_step == 6:
+            pass
+
+        elif finished_step == 7:
+            finished_audience_judge = cur_script.get('finished_audience_judge')
+            if not finished_audience_judge:
+                cur_script['finished_step'] = finished_step
+                finished_audience_judge = self.calc_medium_judge()
+                cur_script['finished_audience_judge'] = finished_audience_judge
+                script.save()
+            data['finished_audience_judge'] = finished_audience_judge
 
         data['cur_script'] = script.cur_script
         data['step'] = self.get_step()
