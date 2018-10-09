@@ -507,6 +507,12 @@ limit_discount_mapping = {
     'server_red_bag': ('server_red_bag', True),
 }
 
+rank_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'rank_reward_list': ('rank_reward_list', True),
+    'dan_grading_list': ('dan_grading_list', True),
+}
+
 
 # 注册需要写到最下面
 register_handler()
