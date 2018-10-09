@@ -7,6 +7,7 @@ from tools.gift import add_mult_gift
 from lib.utils import weight_choice
 import copy
 import random
+from logics.friend import FriendLogic
 
 
 class Chapter_stage(object):
@@ -365,3 +366,14 @@ class Chapter_stage(object):
         if stage >= all_stage:
             return config[chapter][type_hard]['next_chapter']
         return []
+
+    #解锁艺人对话
+    def open_actor_chat(self,now_stage):
+        config = game_config.avg_dialogue[now_stage]
+        if config['is_end']:
+            phone_unlock = config['phone_unlock']
+            self.mm.friend.trigger_new_chat(phone_unlock,is_save=True)
+        fl = FriendLogic(self.mm)
+        rc, data = fl.actor_chat_index()
+        return rc, data
+

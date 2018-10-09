@@ -73,6 +73,7 @@ def user_friend_info(mm, uid):
         # 'high_ladder_rank': target_mm.get_obj_tools('high_ladder_rank').get_rank(uid),  # 竞技场排名
         # 'dark_street': target_mm.dark_street.milestone_id,  # 黑街段位
         # 'combat': target_mm.hero.get_max_combat(),
+        'nickname':mm.friend.nickname.get(uid,'')
     }
     result = {
         'user': user_dict

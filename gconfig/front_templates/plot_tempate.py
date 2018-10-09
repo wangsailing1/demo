@@ -15,6 +15,7 @@ avg_dialogue = {
     'next': ('next', 'int'),
     'is_end': ('is_end', 'int'),
     'hero_id': ('hero_id', 'int'),
+    'phone_unlock': ('phone_unlock', 'int'),
     'type': ('type', 'int'),
     # 'name': ('name', 'unicode'),
     'is_turn': ('is_turn', 'int'),

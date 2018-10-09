@@ -111,7 +111,7 @@ def new_user(hm):
     :param hm:
     :return:
     """
-    # name = hm.get_argument('name')
+    name = hm.get_argument('name')
     tpid = hm.get_argument('tpid', 0, is_int=True)
     role = hm.get_argument('role', 100, is_int=True)
     server = hm.get_argument('server')
@@ -125,8 +125,8 @@ def new_user(hm):
     if not role or not server or not account:
         return 'error_100', {}
 
-    # if is_sensitive(name):
-    #     return 2, {}    # 名字不合法
+    if is_sensitive(name):
+        return 2, {}    # 名字不合法
 
     acc = Account.get(account)
     if server in acc.servers:

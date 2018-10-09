@@ -555,3 +555,11 @@ item_coin = {
     'quality': ('quality', 'int'),
     'guide': ('guide', '2int_list'),
 }
+
+
+main_hero = {
+    'uk': ('id', 'int'),
+    'sex': ('sex', 'int'),
+    'painting': ('painting', 'str'),
+    'icon': ('icon', 'str'),
+}

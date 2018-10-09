@@ -6,6 +6,7 @@ from logics.user import UserLogic
 from logics.friend import FriendLogic
 # from logics.manufacture import ManufactureLogic
 from tools.unlock_build import FRIEND_SORT
+from lib.utils.sensitive import is_sensitive
 
 
 def check_unlock(func):
@@ -479,3 +480,27 @@ def actor_chat_index(hm):
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat_index()
     return rc, {'actor': data}
+
+
+
+@check_unlock
+def rename(hm):
+    mm = hm.mm
+    uid = hm.get_argument('uid','')
+    name = hm.get_argument('name','')
+    if not uid:
+        return 1, {}   #未指定好友
+    if is_sensitive(name):
+        return 2, {}    # 名字不合法
+    #好友为艺人
+    if uid.isdigit():
+        uid = int(uid)
+        if uid not in mm.friend.actors:
+            return 3, {}  #不是好友
+        mm.friend.actors[uid]['nickname'] = name
+    else:
+        if uid not in mm.friend.friends:
+            return 3, {}  #不是好友
+        mm.friend.nickname[uid] = name
+    mm.friend.save()
+    return 0, {}
