@@ -216,7 +216,7 @@ class ScriptLogic(object):
         for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
                 continue
-            add_attr[idx] = [random.randint(1,100), random.randint(100, 150)]
+            add_attr[idx] = [random.randint(1, 100), random.randint(100, 150)]
 
         return {'add_attr': add_attr}
 
@@ -298,6 +298,19 @@ class ScriptLogic(object):
         cur_script = script.cur_script
         return {'score': 200}
 
+    def calc_curve(self):
+        # todo 需要计算： 票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+
+        script = self.mm.script
+        cur_script = script.cur_script
+
+        curve_id = 1
+        curve_config = game_config.script_curve[curve_id]
+        finished_first_income = cur_script['finished_first_income']
+        first_income = finished_first_income['first_income']
+
+        return {'curve': [first_income * i / 100 for i in curve_config['curve_rate']]}
+
     def check_finished_step(self, finished_step):
         """
 
@@ -369,7 +382,12 @@ class ScriptLogic(object):
             data['finished_medium_judge'] = finished_medium_judge
 
         elif finished_step == 6:
-            pass
+            result = cur_script.get('finished_continue_income')
+            if not result:
+                result = self.calc_curve()
+                cur_script['finished_continue_income'] = result
+                script.save()
+            data['finished_curve'] = result
 
         elif finished_step == 7:
             finished_audience_judge = cur_script.get('finished_audience_judge')
@@ -456,10 +474,6 @@ class ScriptLogic(object):
             # 计算输出
 
         return effect
-
-
-    # 9.观众、专业评分计算
-
 
 
 

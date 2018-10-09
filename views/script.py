@@ -130,6 +130,14 @@ def finished_medium_judge(hm):
     return rc, data
 
 
+def finished_continue_income(hm):
+    """持续上映"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(6)
+    return rc, data
+
+
 def finished_audience_judge(hm):
     """专业评价"""
     mm = hm.mm
