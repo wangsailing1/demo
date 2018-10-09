@@ -372,6 +372,8 @@ class Chapter_stage(object):
         config = game_config.avg_dialogue[now_stage]
         if config['is_end']:
             phone_unlock = config['phone_unlock']
+            if not phone_unlock:
+                return 0, {}
             self.mm.friend.trigger_new_chat(phone_unlock,is_save=True)
         fl = FriendLogic(self.mm)
         rc, data = fl.actor_chat_index()
