@@ -112,3 +112,11 @@ def finished_attention(hm):
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(3)
     return rc, data
+
+
+def finished_first_income(hm):
+    """首日上映"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(4)
+    return rc, data

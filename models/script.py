@@ -39,8 +39,13 @@ class Script(ModelBase):
     def pre_use(self):
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
-        if self.cur_script and 'finished_step' not in self.cur_script:
-            self.cur_script['finished_step'] = 0
+        if self.cur_script:
+            if 'finished_step' not in self.cur_script:
+                self.cur_script['finished_step'] = 0
+            for k in ['finished_common_reward', 'finished_attr', 'finished_attention']:
+                if k not in self.cur_script:
+                    self.cur_script[k] = {}
+
         # todo 拍摄完的片子结算
         if self.cur_script.get('result'):
             cur_script = self.cur_script
@@ -111,6 +116,11 @@ class Script(ModelBase):
             'attention_info': {},
             'continue_reward': [],      # 持续上映奖励
             'summary': {'income': 100, 'cost': 50},              # 票房总结
+
+            # 结算的几个阶段奖励
+            'finished_common_reward': {},
+            'finished_attr': {},
+            'finished_attention': {},
 
 
             'attention': 0,     # 关注度

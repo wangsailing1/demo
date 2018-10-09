@@ -212,14 +212,14 @@ class ScriptLogic(object):
 
         script_config = game_config.script[cur_script['id']]
         add_attr = []
-        for min_attr, good_attr in itertools.izip(script_config['min_attr'], script_config['good_attr']):
-            value = 0
-            if min_attr >= 0:
-                value += min_attr
-            if good_attr >= 0:
-                value += good_attr
-            add_attr.append(value)
-        return {'add_attr': add_attr}
+        # for min_attr, good_attr in itertools.izip(script_config['min_attr'], script_config['good_attr']):
+        #     value = 0
+        #     if min_attr >= 0:
+        #         value += min_attr
+        #     if good_attr >= 0:
+        #         value += good_attr
+        #     add_attr.append(value)
+        return {'add_attr': add_attr, 'fenmu': []}
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
@@ -274,6 +274,17 @@ class ScriptLogic(object):
             'card_effect': card_popularity / standard_popularity,     # 艺人人气对关注度影响
         }
 
+    # 8.首映票房、收视计算
+    def calc_first_income(self):
+        # todo
+        script = self.mm.script
+        cur_script = script.cur_script
+
+        first_income = 100
+        script_config = game_config.script[cur_script['id']]
+
+        return {'first_income': first_income}
+
     def check_finished_step(self, finished_step):
         """
 
@@ -281,11 +292,12 @@ class ScriptLogic(object):
             1： 经验、熟练度什么的通用奖励
             2： 拍摄属性结算
             3： 弹出新闻关注度
-            4： 专业评价
-            5： 持续上映
-            6： 观众评价
-            7： 票房总结
-            # 8： 票房分析
+            4： 首日上映
+            5： 专业评价
+            6： 持续上映
+            7： 观众评价
+            8： 票房总结
+            # 9： 票房分析
         :return:
         """
         script = self.mm.script
@@ -296,38 +308,43 @@ class ScriptLogic(object):
         # todo 判断片子已进入结算阶段
         data = {}
         if finished_step == 1:
-            if 'finished_common_reward' not in cur_script:
+            result = cur_script.get('finished_common_reward')
+            if not result:
                 # todo: 拍摄结算
                 cur_script['finished_step'] = finished_step
 
                 result = self.calc_result(cur_script)
                 cur_script['finished_common_reward'] = result
-                cur_script['finished_step'] = finished_step
-                data['finished_common_reward'] = result
                 script.save()
-            else:
-                data['finished_common_reward'] = cur_script['finished_common_reward']
+            data['finished_common_reward'] = result
         elif finished_step == 2:
-            if 'finished_attr' not in cur_script:
+            finished_attr = cur_script.get('finished_attr')
+            if not finished_attr:
                 cur_script['finished_step'] = finished_step
 
                 finished_attr = self.calc_script_attr()
                 cur_script['finished_attr'] = finished_attr
-                data['finished_attr'] = finished_attr
                 script.save()
-            else:
-                data['finished_attr'] = cur_script['finished_attr']
+            data['finished_attr'] = finished_attr
 
         elif finished_step == 3:
-            if 'finished_attention' not in cur_script:
+            finished_attention = cur_script.get('finished_attention')
+            if not finished_attention:
                 cur_script['finished_step'] = finished_step
 
                 finished_attention = self.calc_attention()
                 cur_script['finished_attention'] = finished_attention
-                data['finished_attention'] = finished_attention
                 script.save()
-            else:
-                data['finished_attention'] = cur_script['finished_attention']
+            data['finished_attention'] = finished_attention
+
+        elif finished_step == 4:
+            finished_first_income = cur_script.get('finished_first_income')
+            if not finished_first_income:
+                cur_script['finished_step'] = finished_step
+                finished_first_income = self.calc_first_income()
+                cur_script['finished_first_income'] = finished_first_income
+                script.save()
+            data['finished_first_income'] = finished_first_income
 
         data['cur_script'] = script.cur_script
         data['step'] = self.get_step()
@@ -405,15 +422,6 @@ class ScriptLogic(object):
             # 计算输出
 
         return effect
-
-
-    # 8.首映票房、收视计算
-    def calc_income(self):
-        script = self.mm.script
-        cur_script = script.cur_script
-
-        first_income = 100
-        script_config = game_config.script[cur_script['id']]
 
 
     # 9.观众、专业评分计算
