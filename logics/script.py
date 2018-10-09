@@ -329,7 +329,7 @@ class ScriptLogic(object):
             data['finished_common_reward'] = result
         elif finished_step == 2:
             finished_attr = cur_script.get('finished_attr')
-            if not finished_attr:
+            if 1:#not finished_attr:
                 cur_script['finished_step'] = finished_step
 
                 finished_attr = self.calc_script_attr()

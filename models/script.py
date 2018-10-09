@@ -54,7 +54,6 @@ class Script(ModelBase):
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
 
-
     def add_own_script(self, script_id):
         if script_id in self.own_script:
             return False
