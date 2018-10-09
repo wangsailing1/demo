@@ -859,7 +859,7 @@ class FriendLogic(object):
             data[group_id]['like'] = self.mm.card.attr.get(group_id, {}).get('like', 0)
             data[group_id]['unfinished_chapter'] = list(
                 set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
-            data[group_id]['open_chapter'] = value['chat_log'].keys()
+            data[group_id]['open_chapter'] = value['chat_log']
             data[group_id]['nickname'] = value.get('nickname', '')
         return 0, data
 
