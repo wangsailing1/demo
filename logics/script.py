@@ -34,6 +34,8 @@ class ScriptLogic(object):
                 if script.cur_script['style']:
                     step = 4
 
+                step += script.cur_script['finished_step']
+
         return 0, {
             'own_script': script.own_script,
             'step': step,
