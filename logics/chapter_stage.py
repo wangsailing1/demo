@@ -365,3 +365,17 @@ class Chapter_stage(object):
         if stage >= all_stage:
             return config[chapter][type_hard]['next_chapter']
         return []
+
+    #解锁艺人对话
+    def open_actor_chat(self,now_stage):
+        config = game_config.avg_dialogue[now_stage]
+        if config['is_end']:
+            phone_unlock = config['phone_unlock']
+            group_id = config['hero_id']
+            if group_id not in self.mm.friend.actors:
+                self.mm.friend.actors[group_id] = {'show':1,'chat_log':{phone_unlock:[]}}
+            self.mm.friend.actors[group_id]['chat_log'][phone_unlock] = []
+            self.mm.friend.save()
+        return 0, {}
+
+
