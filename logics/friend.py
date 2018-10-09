@@ -860,7 +860,7 @@ class FriendLogic(object):
             data[group_id]['unfinished_chapter'] = list(
                 set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
             data[group_id]['open_chapter'] = value['chat_log'].keys()
-            data[group_id]['nickname'] = value.get('nickname','')
+            data[group_id]['nickname'] = value.get('nickname', '')
         return 0, data
 
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
@@ -869,29 +869,43 @@ class FriendLogic(object):
             daily_config = game_config.phone_daily_dialogue[group_id]
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
-            if choice_id not in config[now_stage]['option_team']:
-                return 12, {}  # 对话选项错误
+            if now_stage and not choice_id:
+                return 19, {}  #未选择对话
+            if config[now_stage]['is_end']:
+                return 18, {}  # 对话已结束
+            if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
+                        config[now_stage]['next'] and choice_id != config[now_stage]['next']):
+                return 16, {}  # 对话选择错误
+            chat_log = self.friend.phone_daily_log.get(self.friend.phone_daily_times)
+            if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
+                    chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
+                return 17, {}  # 已选择过对话
             if self.friend.phone_daily_times >= daily_config['daily_times']:
                 return 13, {}  # 次数超出
+            self.friend.phone_daily_log[self.friend.phone_daily_times].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
             add_value = self.mm.card.add_value(group_id, add_value_config)
             reward = add_mult_gift(self.mm, reward_config)
-            self.friend.phone_daily_times += 1
+            # if config[choice_id]['is_end']:
+            #     self.friend.phone_daily_times += 1
             self.friend.save()
             return 0, {'reward': reward,
                        'add_value': add_value}
         config = game_config.phone_dialogue
         if now_stage not in config:
             return 15, {}  # 对话配置错误
+        if config[now_stage]['is_end']:
+            return 18, {}   #对话已结束
         chat_log = self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, [])
         if now_stage not in chat_log:
             return 14, {}  # 当前对话id错误
-        if choice_id not in config[now_stage]['option_team'] and choice_id != config[now_stage]['next']:
+        if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
+                    config[now_stage]['next'] and choice_id != config[now_stage]['next']):
             return 16, {}  # 对话选择错误
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
-            return 17, {}   #已选择过对话
+            return 17, {}  # 已选择过对话
         reward_config = config[choice_id]['reward']
         add_value_config = config[choice_id]['add_value']
         add_value = self.mm.card.add_value(group_id, add_value_config)
