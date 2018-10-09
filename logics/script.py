@@ -21,7 +21,7 @@ class ScriptLogic(object):
     def __init__(self, mm):
         self.mm = mm
 
-    def index(self):
+    def get_step(self):
         script = self.mm.script
         if not script.script_pool:
             step = 0
@@ -35,10 +35,14 @@ class ScriptLogic(object):
                     step = 4
 
                 step += script.cur_script['finished_step']
+        return step
+
+    def index(self):
+        script = self.mm.script
 
         return 0, {
             'own_script': script.own_script,
-            'step': step,
+            'step': self.get_step(),
             'script_pool': script.script_pool,
             'cur_script': script.cur_script,
             'scripts': script.scripts,
@@ -326,6 +330,7 @@ class ScriptLogic(object):
                 data['finished_attention'] = cur_script['finished_attention']
 
         data['cur_script'] = script.cur_script
+        data['step'] = self.get_step()
         return 0, data
 
     # 4 市场观众 选剧本时显示
