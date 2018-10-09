@@ -861,6 +861,7 @@ class FriendLogic(object):
                 set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
             data[group_id]['open_chapter'] = value['chat_log'].keys()
             data[group_id]['nickname'] = value.get('nickname', '')
+            data[group_id]['chat_log'] = value['chat_log']
         return 0, data
 
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
