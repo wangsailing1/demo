@@ -871,7 +871,7 @@ class FriendLogic(object):
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
             if now_stage and not choice_id:
-                return 19, {}  #未选择对话
+                return 19, {}  # 未选择对话
             if config[now_stage]['is_end']:
                 return 18, {}  # 对话已结束
             if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
@@ -897,7 +897,7 @@ class FriendLogic(object):
         if now_stage not in config:
             return 15, {}  # 对话配置错误
         if config[now_stage]['is_end']:
-            return 18, {}   #对话已结束
+            return 18, {}  # 对话已结束
         chat_log = self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, [])
         if now_stage not in chat_log:
             return 14, {}  # 当前对话id错误
