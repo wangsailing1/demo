@@ -7,6 +7,7 @@ from tools.gift import add_mult_gift
 from lib.utils import weight_choice
 import copy
 import random
+from logics.friend import FriendLogic
 
 
 class Chapter_stage(object):
@@ -371,11 +372,8 @@ class Chapter_stage(object):
         config = game_config.avg_dialogue[now_stage]
         if config['is_end']:
             phone_unlock = config['phone_unlock']
-            group_id = config['hero_id']
-            if group_id not in self.mm.friend.actors:
-                self.mm.friend.actors[group_id] = {'show':1,'chat_log':{phone_unlock:[]}}
-            self.mm.friend.actors[group_id]['chat_log'][phone_unlock] = []
-            self.mm.friend.save()
-        return 0, {}
-
+            self.mm.friend.trigger_new_chat(phone_unlock,is_save=True)
+        fl = FriendLogic(self.mm)
+        rc, data = fl.actor_chat_index()
+        return rc, data
 
