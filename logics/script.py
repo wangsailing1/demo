@@ -212,14 +212,10 @@ class ScriptLogic(object):
 
         script_config = game_config.script[cur_script['id']]
         add_attr = []
-        # for min_attr, good_attr in itertools.izip(script_config['min_attr'], script_config['good_attr']):
-        #     value = 0
-        #     if min_attr >= 0:
-        #         value += min_attr
-        #     if good_attr >= 0:
-        #         value += good_attr
-        #     add_attr.append(value)
-        return {'add_attr': add_attr, 'fenmu': []}
+        # pro_id: [add_value, limit_value]
+        add_attr = {1: [1, 100], 2: [2, 100]}
+
+        return {'add_attr': add_attr}
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
