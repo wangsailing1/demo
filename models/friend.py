@@ -71,8 +71,9 @@ class Friend(ModelBase):
             'send_gift': [],
             'received_gift': [],
             'actors': {},
-            'chat_over':{},
+            'chat_over': {},
             'phone_daily_times': 0,
+            'nickname': {}
 
         }
         super(Friend, self).__init__(self.uid)
@@ -430,21 +431,23 @@ class Friend(ModelBase):
             return 201
         return 0
 
-    def trigger_new_chat(self, group_id, chapter,is_save=False):
+    def trigger_new_chat(self, chat_id, is_save=False):
+        config = game_config.phone_chapter_dialogue[chat_id]
+        group_id = game_config.card_basis[config['hero_id']]['group']
         if group_id not in self.actors:
-            self.actors[group_id] = {'show': 1, 'chat_log': {}}
-        self.actors[group_id]['chat_log'][chapter] = []
+            self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
+        self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
         if is_save:
             self.save()
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
         chat_list = chat_config.get(group_id)['daily_dialogue']
-        like = self.mm.card.attr.get(group_id,{}).get('like', 0)
+        like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         chat_choice = []
         for chat in chat_list:
             if chat[2] <= like < chat[3]:
-                chat_choice.append([chat[0],chat[1]])
+                chat_choice.append([chat[0], chat[1]])
         if not chat_choice:
             return 0
         return weight_choice(chat_choice)[0]

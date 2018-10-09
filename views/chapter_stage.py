@@ -34,6 +34,15 @@ def get_dialogue_reward(hm):
     return rc, data
 
 
+def open_actor_chat(hm):
+    mm = hm.mm
+    now_stage = int(hm.get_argument('now_stage', ''))
+    chapter_stage = Chapter_stage(mm)
+    rc, data = chapter_stage.open_actor_chat(now_stage)
+    return rc, data
+
+
+
 # 扫荡
 def auto_sweep(hm):
     mm = hm.mm

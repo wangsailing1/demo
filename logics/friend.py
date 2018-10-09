@@ -860,6 +860,7 @@ class FriendLogic(object):
             data[group_id]['unfinished_chapter'] = list(
                 set(value['chat_log'].keys()) - set(self.friend.chat_over.get(group_id, [])))
             data[group_id]['open_chapter'] = value['chat_log'].keys()
+            data[group_id]['nickname'] = value.get('nickname','')
         return 0, data
 
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
@@ -896,6 +897,12 @@ class FriendLogic(object):
         add_value = self.mm.card.add_value(group_id, add_value_config)
         reward = add_mult_gift(self.mm, reward_config)
         self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
+        if config[choice_id]['is_end']:
+            if group_id not in self.friend.chat_over:
+                self.friend.chat_over[group_id] = [chapter_id]
+            else:
+                self.friend.chat_over[group_id].append(chapter_id)
+
         self.friend.save()
         return 0, {'reward': reward,
                    'add_value': add_value}
