@@ -211,9 +211,12 @@ class ScriptLogic(object):
         add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
 
         script_config = game_config.script[cur_script['id']]
-        add_attr = []
+        add_attr = {}
         # pro_id: [add_value, limit_value]
-        add_attr = {1: [1, 100], 2: [2, 100], 4: [2, 150], 5: [5, 200], 3: [20, 100]}
+        for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
+            if good_attr < 0:
+                continue
+            add_attr[idx] = [random.randint(1,100), random.randint(100, 150)]
 
         return {'add_attr': add_attr}
 
