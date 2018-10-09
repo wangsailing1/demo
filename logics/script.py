@@ -323,6 +323,7 @@ class ScriptLogic(object):
             else:
                 data['finished_attention'] = cur_script['finished_attention']
 
+        data['cur_script'] = script.cur_script
         return 0, data
 
     # 4 市场观众 选剧本时显示
