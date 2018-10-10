@@ -318,6 +318,17 @@ class ScriptLogic(object):
             'user_rank_up': 3       # 用户排名上升
         }
 
+    def finished_analyse(self):
+        """票房分析"""
+        return {
+
+        }
+
+    def get_func_mapping(self, finished_step):
+        if finished_step == 1:
+            return self.calc_curve
+
+
     def check_finished_step(self, finished_step):
         """
 
@@ -338,82 +349,50 @@ class ScriptLogic(object):
         if not cur_script:
             return 1, {}
 
-        # todo 判断片子已进入结算阶段
         data = {}
         if finished_step == 1:
-            result = cur_script.get('finished_common_reward')
-            if not result:
-                # todo: 拍摄结算
-                cur_script['finished_step'] = finished_step
+            key = 'finished_common_reward'
+            func = self.calc_result
 
-                result = self.calc_result(cur_script)
-                cur_script['finished_common_reward'] = result
-                script.save()
-            data['finished_common_reward'] = result
         elif finished_step == 2:
-            finished_attr = cur_script.get('finished_attr')
-            if 1:#not finished_attr:
-                cur_script['finished_step'] = finished_step
-
-                finished_attr = self.calc_script_attr()
-                cur_script['finished_attr'] = finished_attr
-                script.save()
-            data['finished_attr'] = finished_attr
+            key = 'finished_attr'
+            func = self.calc_script_attr
 
         elif finished_step == 3:
-            finished_attention = cur_script.get('finished_attention')
-            if not finished_attention:
-                cur_script['finished_step'] = finished_step
-
-                finished_attention = self.calc_attention()
-                cur_script['finished_attention'] = finished_attention
-                script.save()
-            data['finished_attention'] = finished_attention
+            key = 'finished_attention'
+            func = self.calc_attention
 
         elif finished_step == 4:
-            finished_first_income = cur_script.get('finished_first_income')
-            if not finished_first_income:
-                cur_script['finished_step'] = finished_step
-                finished_first_income = self.calc_first_income()
-                cur_script['finished_first_income'] = finished_first_income
-                script.save()
-            data['finished_first_income'] = finished_first_income
+            key = 'finished_first_income'
+            func = self.calc_first_income
 
         elif finished_step == 5:
-            finished_medium_judge = cur_script.get('finished_medium_judge')
-            if not finished_medium_judge:
-                cur_script['finished_step'] = finished_step
-                finished_medium_judge = self.calc_medium_judge()
-                cur_script['finished_medium_judge'] = finished_medium_judge
-                script.save()
-            data['finished_medium_judge'] = finished_medium_judge
+            key = 'finished_medium_judge'
+            func = self.calc_medium_judge
 
         elif finished_step == 6:
-            result = cur_script.get('finished_continue_income')
-            if not result:
-                cur_script['finished_step'] = finished_step
-                result = self.calc_curve()
-                cur_script['finished_continue_income'] = result
-                script.save()
-            data['finished_curve'] = result
+            key = 'finished_curve'
+            func = self.calc_curve
 
         elif finished_step == 7:
-            finished_audience_judge = cur_script.get('finished_audience_judge')
-            if not finished_audience_judge:
-                cur_script['finished_step'] = finished_step
-                finished_audience_judge = self.calc_medium_judge()
-                cur_script['finished_audience_judge'] = finished_audience_judge
-                script.save()
-            data['finished_audience_judge'] = finished_audience_judge
+            key = 'finished_audience_judge'
+            func = self.calc_medium_judge
 
         elif finished_step == 8:
-            finished_summary = cur_script.get('finished_summary')
-            if not finished_summary:
-                cur_script['finished_step'] = finished_step
-                finished_summary = self.summary()
-                cur_script['finished_summary'] = finished_summary
-                script.save()
-            data['finished_summary'] = finished_summary
+            key = 'finished_summary'
+            func = self.summary
+
+        elif finished_step == 9:
+            key = 'finished_analyse'
+            func = self.finished_analyse
+
+        result = cur_script.get(key)
+        if not result:
+            cur_script['finished_step'] = finished_step
+            result = func()
+            cur_script[key] = result
+            script.save()
+        data[key] = result
 
         data['cur_script'] = script.cur_script
         data['step'] = self.get_step()

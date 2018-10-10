@@ -147,8 +147,16 @@ def finished_audience_judge(hm):
 
 
 def finished_summary(hm):
-    """票昂总结"""
+    """票房总结"""
     mm = hm.mm
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(8)
+    return rc, data
+
+
+def finished_analyse(hm):
+    """票房分析"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(9)
     return rc, data
