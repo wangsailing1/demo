@@ -391,6 +391,7 @@ class ScriptLogic(object):
         elif finished_step == 6:
             result = cur_script.get('finished_continue_income')
             if not result:
+                cur_script['finished_step'] = finished_step
                 result = self.calc_curve()
                 cur_script['finished_continue_income'] = result
                 script.save()
