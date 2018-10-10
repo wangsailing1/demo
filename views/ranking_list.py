@@ -103,7 +103,15 @@ def get_script_info(hm):
     script_id = hm.get_argument('script_id', 0)
     if not script_id:
         return 1, {}
-    return 0, {'script_info': mm.script.own_script}
+    return 0, {'script_info': mm.script.top_script[script_id]}
+
+
+def get_group_info(hm):
+    mm = hm.mm
+    group_id = hm.get_argument('group_id', 0)
+    if not group_id:
+        return 1, {}
+    return 0, {'script_info': mm.script.top_group[group_id]}
 
 
 def get_user_info(hm):
@@ -114,5 +122,5 @@ def get_user_info(hm):
     umm = ModelManager(uid)
 
     return 0, {
-        'info': umm.user.name
+        'info': umm.user.script_income
     }
