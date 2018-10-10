@@ -111,7 +111,7 @@ def get_group_info(hm):
     group_id = hm.get_argument('group_id', 0)
     if not group_id:
         return 1, {}
-    return 0, {'script_info': mm.script.top_group[group_id]}
+    return 0, {'group_info': mm.script.top_group[group_id]}
 
 
 def get_user_info(hm):
