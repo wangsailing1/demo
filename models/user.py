@@ -1723,7 +1723,7 @@ class User(ModelBase):
         :return:
         """
         return
-        
+
         server_id = settings.get_server_num(self._server_name)
         if server_id not in [1, 2, 3]:
             return
