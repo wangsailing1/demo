@@ -22,11 +22,7 @@ class Block(ModelBase):
     def up_block(self, cup):
         config = game_config.dan_grading_list
         self.cup += cup
-        while True:
-            if self.cup >= config[self.block]['promotion_cup_num']:
-                self.block += 1
-            else:
-                break
+        if self.cup >= config[self.block]['promotion_cup_num']:
+            self.block += 1
 
-        # todo 升级街区  删除原有排行 增加新排行 更新block，block_group
         self.save()
