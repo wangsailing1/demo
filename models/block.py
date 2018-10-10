@@ -9,6 +9,7 @@ from gconfig import game_config
 
 
 class Block(ModelBase):
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
@@ -26,3 +27,10 @@ class Block(ModelBase):
             self.block += 1
 
         self.save()
+
+
+    def add_user_by_block(self):
+        self._key = self.make_key(uid = self.block)
+
+
+ModelManager.register_model('block', Block)
