@@ -182,6 +182,7 @@ class User(ModelBase):
             'coin': 0,
             'silver': 0,
             'dollar': 0,            # 美元
+            'script_income': 0,            # 拍片总票房
             'script_license': 0,    # 拍片许可证
             'used_license_times': 0,  # 许可证当日使用次数
 
@@ -1058,6 +1059,32 @@ class User(ModelBase):
         :return:
         """
         self.dollar += int(num)
+
+    def is_script_income_enough(self, num):
+        """ 是否拍片票房足够
+
+        :param num:
+        :return:
+        """
+        return self.script_income >= int(num)
+
+    def deduct_script_income(self, num):
+        """ 扣除拍片票房
+
+        :param num:
+        :return:
+        """
+        num = int(num)
+        if self.is_script_income_enough(num):
+            self.script_income -= num
+
+    def add_script_income(self, num):
+        """ 增加拍片票房
+
+        :param num:
+        :return:
+        """
+        self.script_income += int(num)
 
     def is_like_enough(self, like):
         """ 是否点赞足够

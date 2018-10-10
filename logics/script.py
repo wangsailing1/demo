@@ -48,6 +48,7 @@ class ScriptLogic(object):
             'scripts': script.scripts,
             'style_log': script.style_log,
             'cur_market': script.cur_market,
+            'top_all': script.top_all,
         }
 
     def pre_filming(self, ):
