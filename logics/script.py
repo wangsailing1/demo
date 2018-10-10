@@ -186,9 +186,6 @@ class ScriptLogic(object):
         #     film_info['result'] = result        # 奖励
         #     # todo 艺人人气关注度
         #
-        #     attention_info = self.calc_attention(film_info)
-        #     film_info['attention_info'] = attention_info
-        #
         #     # todo 拍摄属性结算
         #     add_attr = {}
         #     film_info['add_attr'] = []

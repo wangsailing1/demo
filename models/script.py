@@ -70,7 +70,7 @@ class Script(ModelBase):
         return '%s-%s-%s' % (script_id, int(time.time()), salt_generator())
 
     def pre_filming(self):
-        self.script_pool.clear()
+        self.script_pool = {}
         can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.own_script]
         for i in xrange(self.POOL_SIZE):
             if not can_use_ids:
@@ -98,7 +98,7 @@ class Script(ModelBase):
         data = {
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
             'finished_step': 0,     # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
-                                    # 4: 专业评价; 5: 持续上映; 6: 观众评价; 7: 票房总结
+                                    # 4: 首日上映; 5: 专业评价; 6: 持续上映; 7: 观众评价
             'name': name,
             'card': {},  # 艺人角色 {rol_id: card_oid}
             'id': script_id,
@@ -112,8 +112,6 @@ class Script(ModelBase):
             'result_step': 0,       # 结算阶段，前端修改，前端使用
             'result': {},           # 拍片结算结果 {'reward': {}, }
 
-            'attention_info': {},
-            'continue_reward': [],      # 持续上映奖励
             'summary': {'income': 100, 'cost': 50},              # 票房总结
 
             # 结算的几个阶段奖励
@@ -121,9 +119,11 @@ class Script(ModelBase):
             'finished_attr': {},
             'finished_attention': {},
             'finished_first_income': {},
-            'finished_medium_judge': 0,  # 评价 专业评价 100
-            'finished_audience_judge': 0,  # 评价 观众评价 200
+            'finished_curve': {},           # 持续上映曲线
+            'finished_medium_judge': 0,     # 评价 专业评价 100
+            'finished_audience_judge': 0,   # 评价 观众评价 200
             'finished_summary': {},         # 票房总结
+            'finished_analyse': {},         # 票房分析
 
 
             'attention': 0,     # 关注度
