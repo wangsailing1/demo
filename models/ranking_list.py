@@ -154,7 +154,7 @@ class AppealRank(AllRank):
 class OutPutRank(AllRank):
     """
     票房排行
-    uid 格式 uid + '|' + script_id
+    uid 格式 uid
     """
 
 
