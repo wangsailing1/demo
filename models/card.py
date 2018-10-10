@@ -80,6 +80,8 @@ class Card(ModelBase):
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
+            'popularity': 0,        # 人气
+
             'name': '',     # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
@@ -148,6 +150,7 @@ class Card(ModelBase):
 
         for k, v in self.cards.iteritems():
             v.setdefault('name', '')
+            v.setdefault('popularity', 0)
 
             if 'train_times' not in v:
                 v['train_times'] = 0
@@ -440,6 +443,17 @@ class Card(ModelBase):
         if cur_level != next_level:
             pass
         return True
+
+    def add_card_popularity(self, card_oid, add_num, card_dict=None):
+        """添加卡牌人气
+
+        :param card_oid:
+        :param num:
+        :return:
+        """
+        add_num = int(add_num)
+        card_dict = card_dict or self.cards[card_oid]
+        card_dict['popularity'] += add_num
 
     def add_value(self, card_id, add_value_config, is_save=False):
         """

@@ -33,6 +33,13 @@ class Script(ModelBase):
 
             'script_pool': {},
             'cur_market': [],       # 当前市场关注度
+
+
+            # 各种最高收入排行
+            'top_script': {},       # 按剧本id
+            'top_group': {},        # 按剧本系列
+            'top_all': {},          # 单片票房最高
+
         }
         super(Script, self).__init__(self.uid)
 
@@ -47,12 +54,46 @@ class Script(ModelBase):
                 if k not in self.cur_script:
                     self.cur_script[k] = {}
 
-        # todo 拍摄完的片子结算
-        if self.cur_script.get('result'):
-            cur_script = self.cur_script
+        # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
+        if self.cur_script.get('finished_step') in [8, 9]:
+
+            self.check_top_income(self.cur_script)
+            self.cur_script = {}
+
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
+
+    def check_top_income(self, film_info):
+        script_id = film_info['id']
+        script_config = game_config.script[script_id]
+        group_id = script_config['group']
+
+        cur_top_script = self.top_script.get(script_id, {})
+        cur_top_group = self.top_group.get(group_id, {})
+        income = film_info['finished_summary']['income']
+
+        save = False
+        # 按剧本id记录
+        top_script_income = cur_top_script.get('finished_summary', {'income': 0})['income']
+        if top_script_income < income:
+            self.top_script[script_id] = dict(film_info)
+            save = True
+
+        # 按剧本系列记录
+        top_group_income = cur_top_group.get('finished_summary', {'income': 0})['income']
+        if top_group_income < income:
+            self.top_group[group_id] = dict(film_info)
+            save = True
+
+        # 单片记录
+        top_income = self.top_all.get('finished_summary', {'income': 0})['income']
+        if top_income < income:
+            self.top_all = dict(film_info)
+            save = True
+
+        if save:
+            self.save()
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:

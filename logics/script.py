@@ -153,6 +153,7 @@ class ScriptLogic(object):
         if finished_reward:
             data['finished_reward'] = finished_reward
         script.save()
+        # todo 选择类型之后的关注度增加， script 表的 style_effect 字段里取 script_style_suit
         return rc, data
 
     def check_finished_reward(self):
@@ -182,6 +183,7 @@ class ScriptLogic(object):
                     reward.append(d)
 
         result['reward'] = reward
+        # todo 公司经验 script, 类型经验fight_exp
         # if not film_info.get('result'):
         #     film_info['result'] = result        # 奖励
         #     # todo 艺人人气关注度
@@ -286,7 +288,8 @@ class ScriptLogic(object):
         # todo
         script = self.mm.script
         cur_script = script.cur_script
-        return {'score': 100}
+        # todo 得到点赞数
+        return {'score': 100, 'like': 10}
 
     def calc_audience_judge(self):
         """观众评价"""
@@ -310,6 +313,7 @@ class ScriptLogic(object):
 
     def summary(self):
         """票房总结"""
+        # todo
         return {
             'income': 123,          # 总票房
             'user_rank_up': 3       # 用户排名上升
@@ -427,9 +431,13 @@ class ScriptLogic(object):
         pro = cur_script['pro']
         match_score = self.calc_card_film_match_score(cur_script)
 
+        # todo
+        match_script = {}
+        match_style = {}        # 演员对应类型熟练度
         effect = {}
         # 计算攻击伤害
         for role_id, card_oid in cur_script['card'].iteritems():
+            match_script[role_id] = random.randint(1, 10)
             card_info = card.get_card(card_oid)
             love_lv = card_info['love_lv']
             love_config = game_config.card_love_level[love_lv]
@@ -466,7 +474,7 @@ class ScriptLogic(object):
                 pass
             # 计算输出
 
-        return effect
+        return {'effect': effect, 'match_script': match_script, 'match_style': match_style}
 
 
 
