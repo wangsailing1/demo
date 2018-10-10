@@ -146,7 +146,7 @@ def finished_audience_judge(hm):
     return rc, data
 
 
-def finished_summry(hm):
+def finished_summary(hm):
     """票昂总结"""
     mm = hm.mm
     sl = ScriptLogic(mm)
