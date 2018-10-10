@@ -7,6 +7,7 @@ Created on 2018-08-24
 """
 
 import time
+import math
 import copy
 import bisect
 import itertools
@@ -324,6 +325,7 @@ class Card(ModelBase):
         card_info['tag_role'] = card_config['tag_role']
 
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
+        char_pro = [math.ceil(i) for i in char_pro]
         card_info['char_pro'] = char_pro
         return card_info
 

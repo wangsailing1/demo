@@ -139,8 +139,16 @@ def finished_continue_income(hm):
 
 
 def finished_audience_judge(hm):
-    """专业评价"""
+    """观众评价"""
     mm = hm.mm
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(7)
+    return rc, data
+
+
+def finished_summry(hm):
+    """票昂总结"""
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    rc, data = sl.check_finished_step(8)
     return rc, data

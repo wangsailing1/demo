@@ -43,7 +43,7 @@ class Script(ModelBase):
             if 'finished_step' not in self.cur_script:
                 self.cur_script['finished_step'] = 0
             for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
-                      'finished_first_income']:
+                      'finished_first_income', 'finished_summary']:
                 if k not in self.cur_script:
                     self.cur_script[k] = {}
 
@@ -123,6 +123,7 @@ class Script(ModelBase):
             'finished_first_income': {},
             'finished_medium_judge': 0,  # 评价 专业评价 100
             'finished_audience_judge': 0,  # 评价 观众评价 200
+            'finished_summary': {},         # 票房总结
 
 
             'attention': 0,     # 关注度

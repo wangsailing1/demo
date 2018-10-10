@@ -311,6 +311,13 @@ class ScriptLogic(object):
 
         return {'curve': [first_income * i / 100 for i in curve_config['curve_rate']]}
 
+    def summary(self):
+        """票房总结"""
+        return {
+            'income': 123,          # 总票房
+            'user_rank_up': 3       # 用户排名上升
+        }
+
     def check_finished_step(self, finished_step):
         """
 
@@ -397,6 +404,15 @@ class ScriptLogic(object):
                 cur_script['finished_audience_judge'] = finished_audience_judge
                 script.save()
             data['finished_audience_judge'] = finished_audience_judge
+
+        elif finished_step == 8:
+            finished_summary = cur_script.get('finished_summary')
+            if not finished_summary:
+                cur_script['finished_step'] = finished_step
+                finished_summary = self.summary()
+                cur_script['finished_summary'] = finished_summary
+                script.save()
+            data['finished_summary'] = finished_summary
 
         data['cur_script'] = script.cur_script
         data['step'] = self.get_step()
