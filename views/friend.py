@@ -471,6 +471,8 @@ def actor_chat(hm):
         return 0, {'choice_id': mm.friend.get_chat_choice(group_id)}
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
+    _, actor_data = fl.actor_chat_index()
+    data['actor'] = actor_data
     return rc, data
 
 
