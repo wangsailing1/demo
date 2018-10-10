@@ -865,8 +865,8 @@ class FriendLogic(object):
         return 0, data
 
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
+        config = game_config.phone_dialogue
         if not chapter_id:  # 日常对话
-            config = game_config.avg_dialogue
             daily_config = game_config.phone_daily_dialogue[group_id]
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
@@ -893,7 +893,6 @@ class FriendLogic(object):
             self.friend.save()
             return 0, {'reward': reward,
                        'add_value': add_value}
-        config = game_config.phone_dialogue
         if now_stage not in config:
             return 15, {}  # 对话配置错误
         if config[now_stage]['is_end']:
