@@ -9,7 +9,6 @@ from gconfig import game_config
 
 
 class Block(ModelBase):
-
     NUM = 'num'
     REWORD_TIME = '22:30:00'
 
@@ -20,6 +19,8 @@ class Block(ModelBase):
             'cup': 0,
             'block_group': 1,
         }
+        self._key = self.make_key(uid=uid)
+        self._key_date = self._key + '|' + self.get_date()
 
         super(Block, self).__init__(self.uid)
 
@@ -35,28 +36,24 @@ class Block(ModelBase):
         now = time.strftime('%F')
         now_time = time.strftime('%T')
         if now_time >= self.REWORD_TIME:
-            
+            now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+        return now
 
-    def add_user_by_block(self,uid=None,score = 0):
-        if not uid:
-            uid = self.block
-        self._key = self.make_key(uid = uid)
-        self.fredis.zadd(self._key,self.uid,score)
+    def add_user_by_block(self, uid=None, score=0):
 
-    def delete_user_by_block(self,uid=None):
+        self.fredis.zadd(self._key_date, self.uid, score)
+        self.fredis
+
+    def delete_user_by_block(self, uid=None):
         if not uid:
             uid = self.block - 1
         self._key = self.make_key(uid=uid)
-        self.fredis.zrem(self._key,self.uid)
+        self.fredis.zrem(self._key, self.uid)
 
-    def check_user_exist_by_block(self,uid=None):
+    def check_user_exist_by_block(self, uid=None):
         if not uid:
             uid = self.block
-        self._key = self.make_key(uid = uid)
-
-
-
-
+        self._key = self.make_key(uid=uid)
 
 
 ModelManager.register_model('block', Block)
