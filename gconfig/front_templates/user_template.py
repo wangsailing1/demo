@@ -38,6 +38,15 @@ tag_score = {
     'icon': ('icon', 'str'),  # 得分
 }
 
+
+# 测试服初始账号配置
+initial_account = ({
+    'uk': ('level', 'int'),          # 等级
+    'good': ('good', 'list_3'),         # 道具
+    'card': ('card', 'list_4'),         # 英雄
+}, 'initial_account')
+
+
 # VIP
 vip = {
     'uk': ('vip', 'int'),  # VIP等级

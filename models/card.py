@@ -75,7 +75,7 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, evo=0, star=0, mm=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
 
@@ -90,13 +90,13 @@ class Card(ModelBase):
             'exp': 0,  # 经验
             'lv': lv,  # 等级
 
-            'love_exp': 0,  # 羁绊经验
+            'love_exp': love_exp,  # 羁绊经验、好感度
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
 
             'evo': evo,
-            'star': card_config.get('star_level',1),
+            'star': card_config.get('star_level', 1),
             '_source': mm.action if mm else '',  # 记录来源
 
             'train_times': 0,  # 培训次数
@@ -216,7 +216,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, star=None):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -228,6 +228,8 @@ class Card(ModelBase):
         init_lv = lv or 1
         init_evo = evo or 0
         init_star = star or 0
+        init_love_lv = love_lv or 0
+        init_love_exp = love_exp or 0
 
         card_config = game_config.card_basis[card_id]
 
@@ -239,6 +241,8 @@ class Card(ModelBase):
                                                  lv=init_lv,
                                                  evo=init_evo,
                                                  star=init_star,
+                                                 love_lv=init_love_lv,
+                                                 love_exp=init_love_exp,
                                                  mm=self.mm
                                                  )
         self.mm.card_book.add_book(card_id)
