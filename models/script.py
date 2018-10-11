@@ -37,7 +37,7 @@ class Script(ModelBase):
 
             # 各种最高收入排行
             'top_script': {},       # 按剧本id
-            'top_group': {},        # 按剧本系列
+            'top_group': {},        # 按剧本系列 {gruop_id: film_info}
             'top_all': {},          # 单片票房最高
 
         }
@@ -153,7 +153,7 @@ class Script(ModelBase):
             'result_step': 0,       # 结算阶段，前端修改，前端使用
             'result': {},           # 拍片结算结果 {'reward': {}, }
 
-            'summary': {'income': 100, 'cost': 50},              # 票房总结
+            'finished_summary': {}, # 票房总结{'income': 100, 'cost': 50},
 
             # 结算的几个阶段奖励
             'finished_common_reward': {},
