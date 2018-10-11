@@ -166,7 +166,7 @@ class Chapter_stage(object):
                 all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
 
             fight_data = {}
-            rounds = game_config.common.get(23, {}).get('value', 2)
+            rounds = game_config.common.get(23, 2)
             all_score = 0
             for round_num in range(1, rounds + 1):
                 if round_num not in fight_data:
@@ -219,7 +219,7 @@ class Chapter_stage(object):
                         hurts['more_attr'] = {}
                     fight_data[round_num][card_id] = hurts
 
-            m = game_config.common[10]['value']
+            m = game_config.common[10]
             all_score = int(all_score * (1 + all_pro * 1.0 / m))
             score_config = script_config['stage_score']
             star = self.get_star(all_score, score_config)
