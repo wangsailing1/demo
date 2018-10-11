@@ -161,8 +161,6 @@ class Script(ModelBase):
             'result_step': 0,       # 结算阶段，前端修改，前端使用
             'result': {},           # 拍片结算结果 {'reward': {}, }
 
-            'finished_summary': {}, # 票房总结{'income': 100, 'cost': 50},
-
             # 结算的几个阶段奖励
             'finished_common_reward': {},
             'finished_attr': {},
@@ -171,7 +169,7 @@ class Script(ModelBase):
             'finished_curve': {},           # 持续上映曲线
             'finished_medium_judge': 0,     # 评价 专业评价 100
             'finished_audience_judge': 0,   # 评价 观众评价 200
-            'finished_summary': {},         # 票房总结
+            'finished_summary': {},         # 票房总结{'income': 100, 'cost': 50},
             'finished_analyse': {},         # 票房分析
 
 
