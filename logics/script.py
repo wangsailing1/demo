@@ -187,14 +187,6 @@ class ScriptLogic(object):
                     reward.append(d)
 
         result['reward'] = reward
-        # todo 公司经验 script, 类型经验fight_exp
-        # if not film_info.get('result'):
-        #     film_info['result'] = result        # 奖励
-        #     # todo 艺人人气关注度
-        #
-        #     # todo 拍摄属性结算
-        #     add_attr = {}
-        #     film_info['add_attr'] = []
         return result
 
     # 7.剧本属性计算
@@ -266,10 +258,11 @@ class ScriptLogic(object):
                 if set(recent_style) == 1:
                     attention -= game_config.common[17]
 
-            # todo 6.剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+            card = self.mm.card
             standard_popularity = script_config['standard_popularity']
             for role_id, card_oid in film_info['card'].iteritems():
-                card_popularity += random.randint(0, 100)
+                card_info = card.cards[card_oid]
+                card_popularity += card_info['popularity']
 
         return {
             'attention': attention,         # 关注度
@@ -321,6 +314,30 @@ class ScriptLogic(object):
         # 1。艺人对角色和剧本的发挥 card_effect, style_effect 字段存储
         #   {'match_role': {card_id: score}， 'match_script': {card_id: score}}
         # 2.
+
+        # 公司经验player_exp
+        # script_config['fight_exp']
+        # script_config['player_exp']
+
+        # .剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+        # "finished_attention": {
+        #                           "card_effect": 14,  # 艺人人气对关注度影响
+        #                           "attention": 50  # 关注度
+        #                       },
+
+        card = self.mm.card
+        script = self.mm.script
+        cur_script = script.cur_script
+        style = cur_script['style']
+        script_config = game_config.script[cur_script['id']]
+
+        # 卡牌类型经验fight_exp
+        for role_id, card_oid in cur_script['card'].iteritems():
+            if card_oid in card.cards:
+                card.add_style_exp(card_oid, style, script_config['fight_exp'])
+
+        #  玩家经验player_exp
+        self.mm.user.add_player_exp(script_config['player_exp'])
 
         return {
             'income': 123,          # 总票房
