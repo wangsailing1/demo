@@ -40,9 +40,11 @@ class Block(ModelBase):
         return now
 
     def add_user_by_block(self, uid=None, score=0):
+        if not uid:
+            uid = self.uid
+        self.fredis.zadd(self._key_date, uid, score)
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
-        self.fredis.zadd(self._key_date, self.uid, score)
-        self.fredis
 
     def delete_user_by_block(self, uid=None):
         if not uid:
@@ -51,9 +53,7 @@ class Block(ModelBase):
         self.fredis.zrem(self._key, self.uid)
 
     def check_user_exist_by_block(self, uid=None):
-        if not uid:
-            uid = self.block
-        self._key = self.make_key(uid=uid)
+        return self.fredis.zrank(self._key_date)
 
 
 ModelManager.register_model('block', Block)
