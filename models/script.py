@@ -96,8 +96,8 @@ class Script(ModelBase):
         self.mm.script_book.add_script_group(script_id, True, income)
 
         # todo 跟新艺人号召力排行
-        guid = self.uid + '|' + 1
-        ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
+        # guid = self.uid + '|' + str()
+        # ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
 
         if save:
             self.save()
