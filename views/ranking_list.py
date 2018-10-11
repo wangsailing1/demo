@@ -53,7 +53,9 @@ def rank_index(hm):
         for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            script_id = umm.script.top_all.keys()[0]
+            if umm.script.top_all:
+                script_id = umm.script.top_all['id']
+
             if mm.uid == uid:
                 output_rank_own_list.append({'uid': uid,
                                              'name': name,
