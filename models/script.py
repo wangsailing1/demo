@@ -93,6 +93,13 @@ class Script(ModelBase):
             self.top_all = dict(film_info)
             save = True
 
+        self.mm.script_book.add_book(script_id)
+        self.mm.script_book.add_script_group(script_id, True, income)
+
+        # todo 跟新艺人号召力排行
+        guid = self.uid + '|' + 1
+        ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
+
         if save:
             self.save()
 
@@ -171,16 +178,6 @@ class Script(ModelBase):
             'attention': 0,     # 关注度
             'audience': 0,      # 观众
         }
-        self.mm.script_book.add_book(script_id)
-
-        income = data['finished_summary']['income']
-
-        self.mm.script_book.add_script_group(script_id,True,income)
-
-        #todo 跟新艺人排行
-        guid = self.uid + '|' + 1
-        ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
-
         return data
 
     def get_top_group(self):
