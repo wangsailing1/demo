@@ -17,6 +17,15 @@ player_level = {
 
 }
 
+main_hero = {
+    'uk': ('id', 'int'),  # id
+    'sex': ('sex', 'int'),  # 性别
+    'painting': ('painting', 'str'), #立绘
+    'icon': ('icon', 'str'), #初始头像
+    'half_painting': ('half_painting', 'str') #半身像
+}
+
+
 # 动作可获得的经验
 action_exp = {
     'uk': ('id', 'int'),  # 动作id
