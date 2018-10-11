@@ -181,11 +181,25 @@ class Script(ModelBase):
         return data
 
     def get_top_group(self):
+
+        top_group = {}
+        for script_id,info in self.top_script.iteritems():
+            group_id = game_config.script[script_id]['group']
+            if group_id not in top_group:
+                top_group[group_id] = {}
+            top_group[group_id][script_id] = info
+            top_group[group_id]['top_income'] = top_group[group_id].get('top_income', 0) + info['income']
+            sequel_count = game_config.script[script_id]['sequel_count']
+            if top_group[group_id].get('max_script',0) <= sequel_count:
+                top_group[group_id]['max_script'] = sequel_count
+        return top_group
+
+    def get_top_group_id(self):
         group_id = 0
         income = 0
-        for k,v in self.top_group.iteritems():
-            if v['income'] > income:
-                income = v['income']
+        for k,v in self.get_top_group().iteritems():
+            if v['top_income'] > income:
+                income = v['top_income']
                 group_id = k
         return group_id
 
