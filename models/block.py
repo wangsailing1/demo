@@ -10,7 +10,8 @@ from gconfig import game_config
 
 class Block(ModelBase):
 
-    NUM = ''
+    NUM = 'num'
+    REWORD_TIME = '22:30:00'
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -30,6 +31,11 @@ class Block(ModelBase):
 
         self.save()
 
+    def get_date(self):
+        now = time.strftime('%F')
+        now_time = time.strftime('%T')
+        if now_time >= self.REWORD_TIME:
+            
 
     def add_user_by_block(self,uid=None,score = 0):
         if not uid:
@@ -47,6 +53,9 @@ class Block(ModelBase):
         if not uid:
             uid = self.block
         self._key = self.make_key(uid = uid)
+
+
+
 
 
 
