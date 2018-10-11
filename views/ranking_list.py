@@ -50,17 +50,16 @@ def rank_index(hm):
 
     elif rank_id == 2:
         output_rank_own_list = []
-        for uid_script_id, score in rank_list:
-            uid, script_id = uid_script_id.split('|')
+        for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            script_id = int(script_id)
-            if mm.uid in uid_script_id:
+            script_id = umm.script.top_all.keys()[0]
+            if mm.uid == uid:
                 output_rank_own_list.append({'uid': uid,
                                              'name': name,
                                              'script_id': script_id,
                                              'score': score,
-                                             'rank_own': ar.get_rank(uid_script_id),
+                                             'rank_own': ar.get_rank(uid),
                                              'script_name':''})
             output_rank_list.append({'uid': uid,
                                      'name': name,
@@ -74,17 +73,16 @@ def rank_index(hm):
 
     else:
         alloutput_rank_own_list = []
-        for uid_group_id, score in rank_list:
-            uid, group_id = uid_group_id.split('|')
+        for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            group_id = int(group_id)
-            if mm.uid in uid_group_id:
+            group_id = umm.script.get_top_group()
+            if mm.uid == uid:
                 alloutput_rank_own_list.append({'uid': uid,
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
-                                                'rank_own': ar.get_rank(uid_group_id),
+                                                'rank_own': ar.get_rank(uid),
                                                 'group_name':''})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
