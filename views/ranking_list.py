@@ -60,7 +60,7 @@ def rank_index(hm):
                                              'script_id': script_id,
                                              'score': score,
                                              'rank_own': ar.get_rank(uid),
-                                             'script_name':''})
+                                             'script_name': ''})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
@@ -83,7 +83,7 @@ def rank_index(hm):
                                                 'group_id': group_id,
                                                 'score': score,
                                                 'rank_own': ar.get_rank(uid),
-                                                'group_name':''})
+                                                'group_name': ''})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,

@@ -22,18 +22,18 @@ from models.ranking_list import AppealRank
 class Script(ModelBase):
     POOL_SIZE = 3
 
-    _need_diff = ('own_script', )
-    
+    _need_diff = ('own_script',)
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
-            'style_log': [],       # 连续拍片类型，保留最近10个
-            'own_script': [],      # 已获得的可拍摄的片子
+            'style_log': [],  # 连续拍片类型，保留最近10个
+            'own_script': [],  # 已获得的可拍摄的片子
             'cur_script': {},  # 当前在在拍的片子
             'scripts': {},  # 所有已拍完的片子
 
             'script_pool': {},
-            'cur_market': [],       # 当前市场关注度
+            'cur_market': [],  # 当前市场关注度
 
 
             # 各种最高收入排行
@@ -57,7 +57,6 @@ class Script(ModelBase):
 
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
         if self.cur_script.get('finished_step') in [8, 9]:
-
             self.check_top_income(self.cur_script)
             self.cur_script = {}
 
@@ -146,20 +145,22 @@ class Script(ModelBase):
     def make_film(self, script_id, name):
         data = {
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
-            'finished_step': 0,     # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
-                                    # 4: 首日上映; 5: 专业评价; 6: 持续上映; 7: 观众评价
+            'finished_step': 0,  # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
+            # 4: 首日上映; 5: 专业评价; 6: 持续上映; 7: 观众评价
             'name': name,
             'card': {},  # 艺人角色 {rol_id: card_oid}
             'id': script_id,
             'oid': self._make_oid(script_id),
-            'style': 0,            # 剧本类型
+            'style': 0,  # 剧本类型
             'ts': int(time.time()),
-            'single_style': False,           # 是否连续同样类型
-            'suit': 0,                       # 片子类型适合档次
-            'pro': [0] * 6,                       # 各个属性值
+            'single_style': False,  # 是否连续同样类型
+            'suit': 0,  # 片子类型适合档次
+            'pro': [0] * 6,  # 各个属性值
 
-            'result_step': 0,       # 结算阶段，前端修改，前端使用
-            'result': {},           # 拍片结算结果 {'reward': {}, }
+            'result_step': 0,  # 结算阶段，前端修改，前端使用
+            'result': {},  # 拍片结算结果 {'reward': {}, }
+
+            'summary': {'income': 100, 'cost': 50},  # 票房总结
 
             # 结算的几个阶段奖励
             'finished_common_reward': {},
@@ -173,29 +174,29 @@ class Script(ModelBase):
             'finished_analyse': {},         # 票房分析
 
 
-            'attention': 0,     # 关注度
-            'audience': 0,      # 观众
+            'attention': 0,  # 关注度
+            'audience': 0,  # 观众
         }
         return data
 
     def get_top_group(self):
 
         top_group = {}
-        for script_id,info in self.top_script.iteritems():
+        for script_id, info in self.top_script.iteritems():
             group_id = game_config.script[script_id]['group']
             if group_id not in top_group:
                 top_group[group_id] = {}
             top_group[group_id][script_id] = info
             top_group[group_id]['top_income'] = top_group[group_id].get('top_income', 0) + info['income']
             sequel_count = game_config.script[script_id]['sequel_count']
-            if top_group[group_id].get('max_script',0) <= sequel_count:
+            if top_group[group_id].get('max_script', 0) <= sequel_count:
                 top_group[group_id]['max_script'] = sequel_count
         return top_group
 
     def get_top_group_id(self):
         group_id = 0
         income = 0
-        for k,v in self.get_top_group().iteritems():
+        for k, v in self.get_top_group().iteritems():
             if v['top_income'] > income:
                 income = v['top_income']
                 group_id = k
