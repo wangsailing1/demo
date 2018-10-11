@@ -232,6 +232,7 @@ class Card(ModelBase):
         init_love_exp = love_exp or 0
 
         card_config = game_config.card_basis[card_id]
+        group_id = card_config['group']
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
@@ -245,7 +246,7 @@ class Card(ModelBase):
                                                  love_exp=init_love_exp,
                                                  mm=self.mm
                                                  )
-        self.mm.card_book.add_book(card_id)
+        self.mm.card_book.add_book(group_id)
         self.cards[card_oid] = card_dict
         return card_oid
 
