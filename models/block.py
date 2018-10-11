@@ -10,6 +10,8 @@ from gconfig import game_config
 
 class Block(ModelBase):
 
+    NUM = ''
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
@@ -29,8 +31,23 @@ class Block(ModelBase):
         self.save()
 
 
-    def add_user_by_block(self):
-        self._key = self.make_key(uid = self.block)
+    def add_user_by_block(self,uid=None,score = 0):
+        if not uid:
+            uid = self.block
+        self._key = self.make_key(uid = uid)
+        self.fredis.zadd(self._key,self.uid,score)
+
+    def delete_user_by_block(self,uid=None):
+        if not uid:
+            uid = self.block - 1
+        self._key = self.make_key(uid=uid)
+        self.fredis.zrem(self._key,self.uid)
+
+    def check_user_exist_by_block(self,uid=None):
+        if not uid:
+            uid = self.block
+        self._key = self.make_key(uid = uid)
+
 
 
 ModelManager.register_model('block', Block)
