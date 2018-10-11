@@ -113,6 +113,8 @@ class ScriptLogic(object):
 
         cur_script['step'] = 2
         effect = self.calc_film_card_effect()
+        cur_script['card_effect'] = effect
+
         script.save()
         rc, data = self.index()
         data.update(effect)
@@ -153,8 +155,9 @@ class ScriptLogic(object):
         data.update(effect)
         if finished_reward:
             data['finished_reward'] = finished_reward
+
+        cur_script['style_effect'] = effect
         script.save()
-        # todo 选择类型之后的关注度增加， script 表的 style_effect 字段里取 script_style_suit
         return rc, data
 
     def check_finished_reward(self):
@@ -314,7 +317,11 @@ class ScriptLogic(object):
 
     def summary(self):
         """票房总结"""
-        # todo
+        # todo 需计算项目
+        # 1。艺人对角色和剧本的发挥 card_effect, style_effect 字段存储
+        #   {'match_role': {card_id: score}， 'match_script': {card_id: score}}
+        # 2.
+
         return {
             'income': 123,          # 总票房
             'user_rank_up': 3       # 用户排名上升
@@ -405,7 +412,7 @@ class ScriptLogic(object):
         """选片时计算"""
         pass
 
-    # 5.艺人适配剧本和角色总分
+    # 艺人适配剧本总分
     def calc_card_film_match_score(self, film_info):
         """"""
         all_score = 0
@@ -424,21 +431,40 @@ class ScriptLogic(object):
         return all_score
 
     # 6.艺人的拍摄发挥,选卡算一次，选类型算一次
-    def calc_film_card_effect(self):
+    def calc_film_card_effect(self, action='set_card'):
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
+        script_config = game_config.script[cur_script['id']]
 
         pro = cur_script['pro']
-        match_score = self.calc_card_film_match_score(cur_script)
+        # match_score = self.calc_card_film_match_score(cur_script)
 
+        match_score = 0
         # todo
-        match_script = {}
-        match_style = {}        # 演员对应类型熟练度
+        match_script = {}       # 艺人对剧本发挥
+        match_role = {}         # 艺人对角色发挥
         effect = {}
         # 计算攻击伤害
         for role_id, card_oid in cur_script['card'].iteritems():
-            match_script[role_id] = random.randint(1, 10)
+            # 单个艺人的适配总分 = ∑  (适配的标签品质分数)
+            card_info = self.mm.card.cards[card_oid]
+            card_config = game_config.card_basis[card_info['id']]
+            role_score = 0
+            script_score = 0
+            # 卡牌擅长角色匹配
+            role_config = game_config.script_role[role_id]
+            for tag_id, tag_quality in card_config['tag_role']:
+                if tag_id in role_config['tag_role']:
+                    role_score += game_config.tag_score[tag_quality]['score']
+            match_role[card_oid] = role_score
+
+            # 卡牌擅长剧本匹配
+            for tag_id, tag_quality in card_config['tag_script']:
+                if tag_id in script_config['tag_script']:
+                    script_score += game_config.tag_score[tag_quality]['score']
+            match_script[card_oid] = script_score
+
             card_info = card.get_card(card_oid)
             love_lv = card_info['love_lv']
             love_config = game_config.card_love_level[love_lv]
@@ -465,17 +491,21 @@ class ScriptLogic(object):
                 else:
                     role_effect[attr] = value
 
-            # todo 判断是否暴击
+            # 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
-            c2 = match_score / 100.0
+            c2 = (role_score + script_score) / 100.0
             crit_rate = c1 + c2
             if random.random() < crit_rate:
-                pass
-            else:
-                pass
-            # 计算输出
+                # 暴击效果
+                d = (role_score + script_score) / 100.0
+                for attr in role_effect:
+                    role_effect[attr] = role_effect[attr] * (1.1 + d)
 
-        return {'effect': effect, 'match_script': match_script, 'match_style': match_style}
+        return {
+            'effect': effect,
+            'match_script': match_script,
+            'match_role': match_role
+        }
 
 
 
