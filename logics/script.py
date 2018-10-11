@@ -115,7 +115,7 @@ class ScriptLogic(object):
         effect = self.calc_film_card_effect()
         script.save()
         rc, data = self.index()
-        data['effect'] = effect
+        data.update(effect)
         return rc, data
 
     def set_style(self, style):
@@ -150,7 +150,7 @@ class ScriptLogic(object):
         finished_reward = self.check_finished_reward()
 
         rc, data = self.index()
-        data['effect'] = effect
+        data.update(effect)
         if finished_reward:
             data['finished_reward'] = finished_reward
         script.save()
