@@ -54,7 +54,7 @@ class Block(ModelBase):
         self._key = self.make_key(uid=uid)
         self.fredis.zrem(self._key, self.uid)
 
-    #检查玩家时候在所属街区
+    #检查玩家是否在所属街区
     def check_user_exist_by_block(self, uid=None):
         if not uid:
             uid = self.uid
@@ -64,5 +64,19 @@ class Block(ModelBase):
     def get_num(self):
         self._key_date = '%s|%s'%(self._key_date,self.NUM)
         return self.fredis.incr(self._key_date)
+
+
+    #计算玩家所属组
+    def get_group(self,rank=None):
+        # if not uid:
+        #     uid = self.uid
+        #rank = self.fredis.zrank(self._key_date, uid)
+        if rank == 0:
+            return 1
+        if rank % 100 or not rank % 100 and rank / 100:
+            return rank / 100 + 1
+        return rank / 100
+
+
 
 ModelManager.register_model('block', Block)
