@@ -1,7 +1,6 @@
 #! --*-- coding: utf-8 --*--
 
 import time
-import math
 
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
@@ -12,25 +11,33 @@ class Block(ModelBase):
     NUM = 'num'
     REWORD_TIME = '22:30:00'
 
-    def __init__(self, uid=None):
+    def __init__(self, uid):
         self.uid = uid
         self._attrs = {
-            'block': 1,
+            'block_num': 1,
             'cup': 0,
             'block_group': 1,
         }
-        self._key = self.make_key(uid=uid)
-        self._key_date = self._key + '|' + self.get_date()
 
         super(Block, self).__init__(self.uid)
 
     def up_block(self, cup):
         config = game_config.dan_grading_list
         self.cup += cup
-        if self.cup >= config[self.block]['promotion_cup_num']:
-            self.block += 1
+        if self.cup >= config[self.block_num]['promotion_cup_num']:
+            self.block_num += 1
 
         self.save()
+
+    #
+    def get_key(self):
+        return self.make_key(uid=self.block_num)
+
+    #
+    def get_block_key(self):
+        self._key = self.make_key(uid=self.block_num)
+        self._key_date = self._key + '|' + self.get_date()
+        return self._key_date
 
     #获取日期
     def get_date(self):
@@ -50,7 +57,7 @@ class Block(ModelBase):
     #从街区删除玩家（玩家升级街区后操作）
     def delete_user_by_block(self, uid=None):
         if not uid:
-            uid = self.block - 1
+            uid = self.block_num - 1
         self._key = self.make_key(uid=uid)
         self.fredis.zrem(self._key, self.uid)
 
