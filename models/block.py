@@ -35,9 +35,9 @@ class Block(ModelBase):
 
     #
     def get_block_key(self):
-        self._key = self.make_key(uid=self.block_num)
-        self._key_date = self._key + '|' + self.get_date()
-        return self._key_date
+        key = self.make_key(uid=self.block_num)
+        key_date = key + '|' + self.get_date()
+        return key_date
 
     #获取日期
     def get_date(self):
@@ -51,6 +51,7 @@ class Block(ModelBase):
     def add_user_by_block(self, uid=None, score=0):
         if not uid:
             uid = self.uid
+        key_date = self.get_block_key()
         self.fredis.zadd(self._key_date, uid, score)
         self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
