@@ -110,12 +110,13 @@ class ScriptBook(ModelBase):
             self.group[group_id]['group_max_output'] += output - old
 
         # 计入排行
-        output = OutPutRank(uid=self.uid)  # uid 格式 uid
-        if output > output.get_score(self.uid):
-            output.add_rank(self.uid, output)
+        # uid 格式 uid
+        ar = self.mm.get_obj_tools('output_rank')
+        if output > ar.get_score(self.uid):
+            ar.add_rank(self.uid, output)
 
         auid = self.uid + '|' + str(group_id)
-        aoutput = AllOutPutRank(uid=auid)  # uid 格式 uid
+        aoutput = self.mm.get_obj_tools('alloutput_rank')  # uid 格式 uid
         if self.group[group_id]['group_max_output'] > aoutput.get_score(uid=auid):
             aoutput.add_rank(auid, self.group[group_id]['group_max_output'])
 
