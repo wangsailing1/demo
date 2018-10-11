@@ -32,6 +32,7 @@ class Block(ModelBase):
 
         self.save()
 
+    #获取日期
     def get_date(self):
         now = time.strftime('%F')
         now_time = time.strftime('%T')
@@ -39,21 +40,29 @@ class Block(ModelBase):
             now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
         return now
 
+    #把玩家添加到所属街区
     def add_user_by_block(self, uid=None, score=0):
         if not uid:
             uid = self.uid
         self.fredis.zadd(self._key_date, uid, score)
         self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
-
+    #从街区删除玩家（玩家升级街区后操作）
     def delete_user_by_block(self, uid=None):
         if not uid:
             uid = self.block - 1
         self._key = self.make_key(uid=uid)
         self.fredis.zrem(self._key, self.uid)
 
+    #检查玩家时候在所属街区
     def check_user_exist_by_block(self, uid=None):
-        return self.fredis.zrank(self._key_date)
+        if not uid:
+            uid = self.uid
+        return self.fredis.zscore(self._key_date,uid)
 
+    #获取编号
+    def get_num(self):
+        self._key_date = '%s|%s'%(self._key_date,self.NUM)
+        return self.fredis.incr(self._key_date)
 
 ModelManager.register_model('block', Block)
