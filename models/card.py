@@ -7,6 +7,7 @@ Created on 2018-08-24
 """
 
 import time
+import math
 import copy
 import bisect
 import itertools
@@ -74,11 +75,13 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, evo=0, star=0, mm=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
+            'popularity': 0,        # 人气
+
             'name': '',     # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
@@ -87,13 +90,13 @@ class Card(ModelBase):
             'exp': 0,  # 经验
             'lv': lv,  # 等级
 
-            'love_exp': 0,  # 羁绊经验
+            'love_exp': love_exp,  # 羁绊经验、好感度
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
 
             'evo': evo,
-            'star': card_config.get('star_level',1),
+            'star': card_config.get('star_level', 1),
             '_source': mm.action if mm else '',  # 记录来源
 
             'train_times': 0,  # 培训次数
@@ -147,6 +150,7 @@ class Card(ModelBase):
 
         for k, v in self.cards.iteritems():
             v.setdefault('name', '')
+            v.setdefault('popularity', 0)
 
             if 'train_times' not in v:
                 v['train_times'] = 0
@@ -212,7 +216,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, star=None):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -224,8 +228,11 @@ class Card(ModelBase):
         init_lv = lv or 1
         init_evo = evo or 0
         init_star = star or 0
+        init_love_lv = love_lv or 0
+        init_love_exp = love_exp or 0
 
         card_config = game_config.card_basis[card_id]
+        group_id = card_config['group']
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
@@ -235,9 +242,11 @@ class Card(ModelBase):
                                                  lv=init_lv,
                                                  evo=init_evo,
                                                  star=init_star,
+                                                 love_lv=init_love_lv,
+                                                 love_exp=init_love_exp,
                                                  mm=self.mm
                                                  )
-        self.mm.card_book.add_book(card_id)
+        self.mm.card_book.add_book(group_id)
         self.cards[card_oid] = card_dict
         return card_oid
 
@@ -324,6 +333,7 @@ class Card(ModelBase):
         card_info['tag_role'] = card_config['tag_role']
 
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
+        char_pro = [math.ceil(i) for i in char_pro]
         card_info['char_pro'] = char_pro
         return card_info
 
@@ -438,6 +448,17 @@ class Card(ModelBase):
         if cur_level != next_level:
             pass
         return True
+
+    def add_card_popularity(self, card_oid, add_num, card_dict=None):
+        """添加卡牌人气
+
+        :param card_oid:
+        :param num:
+        :return:
+        """
+        add_num = int(add_num)
+        card_dict = card_dict or self.cards[card_oid]
+        card_dict['popularity'] += add_num
 
     def add_value(self, card_id, add_value_config, is_save=False):
         """

@@ -17,6 +17,14 @@ player_level = {
 
 }
 
+main_hero = {
+    'uk': ('id', 'int'),  # id
+    'sex': ('sex', 'int'),  # 性别
+    'painting': ('painting', 'str'),  # 立绘
+    'icon': ('icon', 'str'),  # 初始头像
+    'half_painting': ('half_painting', 'str')  # 半身像
+}
+
 # 动作可获得的经验
 action_exp = {
     'uk': ('id', 'int'),  # 动作id
@@ -37,6 +45,13 @@ tag_score = {
     'score': ('score', 'int'),  # 得分
     'icon': ('icon', 'str'),  # 得分
 }
+
+# 测试服初始账号配置
+initial_account = ({
+                       'uk': ('level', 'int'),  # 等级
+                       'good': ('good', 'list_3'),  # 道具
+                       'card': ('card', 'list_4'),  # 英雄
+                   }, 'initial_account')
 
 # VIP
 vip = {
@@ -524,9 +539,4 @@ item_coin = {
     'guide': ('guide', '2int_list'),
 }
 
-main_hero = {
-    'uk': ('id', 'int'),
-    'sex': ('sex', 'int'),
-    'painting': ('painting', 'str'),
-    'icon': ('icon', 'str'),
-}
+

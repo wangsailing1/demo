@@ -50,18 +50,19 @@ def rank_index(hm):
 
     elif rank_id == 2:
         output_rank_own_list = []
-        for uid_script_id, score in rank_list:
-            uid, script_id = uid_script_id.split('|')
+        for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            script_id = int(script_id)
-            if mm.uid in uid_script_id:
+            if umm.script.top_all:
+                script_id = umm.script.top_all['id']
+
+            if mm.uid == uid:
                 output_rank_own_list.append({'uid': uid,
                                              'name': name,
                                              'script_id': script_id,
                                              'score': score,
-                                             'rank_own': ar.get_rank(uid_script_id),
-                                             'script_name':''})
+                                             'rank_own': ar.get_rank(uid),
+                                             'script_name': ''})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
@@ -74,18 +75,17 @@ def rank_index(hm):
 
     else:
         alloutput_rank_own_list = []
-        for uid_group_id, score in rank_list:
-            uid, group_id = uid_group_id.split('|')
+        for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            group_id = int(group_id)
-            if mm.uid in uid_group_id:
+            group_id = umm.script.get_top_group_id()
+            if mm.uid == uid:
                 alloutput_rank_own_list.append({'uid': uid,
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
-                                                'rank_own': ar.get_rank(uid_group_id),
-                                                'group_name':''})
+                                                'rank_own': ar.get_rank(uid),
+                                                'group_name': ''})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,
@@ -103,7 +103,15 @@ def get_script_info(hm):
     script_id = hm.get_argument('script_id', 0)
     if not script_id:
         return 1, {}
-    return 0, {'script_info': mm.script.own_script}
+    return 0, {'script_info': mm.script.top_script[script_id]}
+
+
+def get_group_info(hm):
+    mm = hm.mm
+    group_id = hm.get_argument('group_id', 0)
+    if not group_id:
+        return 1, {}
+    return 0, {'group_info': mm.script.get_top_group[group_id]}
 
 
 def get_user_info(hm):
@@ -114,5 +122,5 @@ def get_user_info(hm):
     umm = ModelManager(uid)
 
     return 0, {
-        'info': umm.user.name
+        'info': umm.user.script_income
     }

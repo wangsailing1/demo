@@ -214,6 +214,7 @@ phone_dialogue = {
     'next': ('next', 'int'),
     'is_end': ('is_end', 'int'),
     'hero_id': ('hero_id', 'int'),
+    'type': ('type', 'int'),
     'word': ('word', 'int'),
     'reward': ('reward', 'int_list'),
     'add_value': ('add_value', 'int_list'),

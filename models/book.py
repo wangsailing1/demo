@@ -7,6 +7,7 @@ import math
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
+from models.ranking_list import OutPutRank, AllOutPutRank
 
 
 class CardBook(ModelBase):
@@ -89,8 +90,11 @@ class ScriptBook(ModelBase):
                 'output': 0,  # 票房
                 'flag': -1,  # 目标完成标识 -1 未完成 0 完成未领奖 1已领奖
                 'script_id': script_id,
-                'max_output': 0  # 最大票房
+                'max_output': 0,  # 最大票房
+                'group_max_output': 0,
             }
+        if script_id not in self.group[group_id]:
+            self.group[group_id][script_id] = 0
         self.group[group_id]['shoot_num'] += 1
         if script_config['sequel_count'] > self.group[group_id]['max_script']:
             self.group[group_id]['max_script'] = script_config['sequel_count']
@@ -100,6 +104,22 @@ class ScriptBook(ModelBase):
         self.group[group_id]['output'] += output
         if output > self.group[group_id]['max_output']:
             self.group[group_id]['max_output'] = output
+        if output > self.group[group_id][script_id]:
+            old = self.group[group_id][script_id]
+            self.group[group_id][script_id] = output
+            self.group[group_id]['group_max_output'] += output - old
+
+        # 计入排行
+        # uid 格式 uid
+        ar = self.mm.get_obj_tools('output_rank')
+        if output > ar.get_score(self.uid):
+            ar.add_rank(self.uid, output)
+
+        auid = self.uid
+        aoutput = self.mm.get_obj_tools('alloutput_rank')  # uid 格式 uid
+        if self.group[group_id]['group_max_output'] > aoutput.get_score(uid=auid):
+            aoutput.add_rank(auid, self.group[group_id]['group_max_output'])
+
         g_config = group_config[group_id]
         for k, v in g_config['group_target']:
             if self.group[group_id][self.TARGET[k]] < v:

@@ -48,6 +48,7 @@ class ScriptLogic(object):
             'scripts': script.scripts,
             'style_log': script.style_log,
             'cur_market': script.cur_market,
+            'top_all': script.top_all,
         }
 
     def pre_filming(self, ):
@@ -112,9 +113,11 @@ class ScriptLogic(object):
 
         cur_script['step'] = 2
         effect = self.calc_film_card_effect()
+        cur_script['card_effect'] = effect
+
         script.save()
         rc, data = self.index()
-        data['effect'] = effect
+        data.update(effect)
         return rc, data
 
     def set_style(self, style):
@@ -149,9 +152,11 @@ class ScriptLogic(object):
         finished_reward = self.check_finished_reward()
 
         rc, data = self.index()
-        data['effect'] = effect
+        data.update(effect)
         if finished_reward:
             data['finished_reward'] = finished_reward
+
+        cur_script['style_effect'] = effect
         script.save()
         return rc, data
 
@@ -182,16 +187,6 @@ class ScriptLogic(object):
                     reward.append(d)
 
         result['reward'] = reward
-        # if not film_info.get('result'):
-        #     film_info['result'] = result        # 奖励
-        #     # todo 艺人人气关注度
-        #
-        #     attention_info = self.calc_attention(film_info)
-        #     film_info['attention_info'] = attention_info
-        #
-        #     # todo 拍摄属性结算
-        #     add_attr = {}
-        #     film_info['add_attr'] = []
         return result
 
     # 7.剧本属性计算
@@ -216,7 +211,7 @@ class ScriptLogic(object):
         for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
                 continue
-            add_attr[idx] = [random.randint(1,100), random.randint(100, 150)]
+            add_attr[idx] = [random.randint(1, 100), random.randint(100, 150)]
 
         return {'add_attr': add_attr}
 
@@ -263,10 +258,11 @@ class ScriptLogic(object):
                 if set(recent_style) == 1:
                     attention -= game_config.common[17]
 
-            # todo 6.剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+            card = self.mm.card
             standard_popularity = script_config['standard_popularity']
             for role_id, card_oid in film_info['card'].iteritems():
-                card_popularity += random.randint(0, 100)
+                card_info = card.cards[card_oid]
+                card_popularity += card_info['popularity']
 
         return {
             'attention': attention,         # 关注度
@@ -289,7 +285,8 @@ class ScriptLogic(object):
         # todo
         script = self.mm.script
         cur_script = script.cur_script
-        return {'score': 100}
+        # todo 得到点赞数
+        return {'score': 100, 'like': 10}
 
     def calc_audience_judge(self):
         """观众评价"""
@@ -297,6 +294,66 @@ class ScriptLogic(object):
         script = self.mm.script
         cur_script = script.cur_script
         return {'score': 200}
+
+    def calc_curve(self):
+        # todo 需要计算： 票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+
+        script = self.mm.script
+        cur_script = script.cur_script
+
+        curve_id = 1
+        curve_config = game_config.script_curve[curve_id]
+        finished_first_income = cur_script['finished_first_income']
+        first_income = finished_first_income['first_income']
+
+        return {'curve': [first_income * i / 100 for i in curve_config['curve_rate']]}
+
+    def summary(self):
+        """票房总结"""
+        # todo 需计算项目
+        # 1。艺人对角色和剧本的发挥 card_effect, style_effect 字段存储
+        #   {'match_role': {card_id: score}， 'match_script': {card_id: score}}
+        # 2.
+
+        # 公司经验player_exp
+        # script_config['fight_exp']
+        # script_config['player_exp']
+
+        # .剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+        # "finished_attention": {
+        #                           "card_effect": 14,  # 艺人人气对关注度影响
+        #                           "attention": 50  # 关注度
+        #                       },
+
+        card = self.mm.card
+        script = self.mm.script
+        cur_script = script.cur_script
+        style = cur_script['style']
+        script_config = game_config.script[cur_script['id']]
+
+        # 卡牌类型经验fight_exp
+        for role_id, card_oid in cur_script['card'].iteritems():
+            if card_oid in card.cards:
+                card.add_style_exp(card_oid, style, script_config['fight_exp'])
+
+        #  玩家经验player_exp
+        self.mm.user.add_player_exp(script_config['player_exp'])
+
+        return {
+            'income': 123,          # 总票房
+            'user_rank_up': 3       # 用户排名上升
+        }
+
+    def finished_analyse(self):
+        """票房分析"""
+        return {
+
+        }
+
+    def get_func_mapping(self, finished_step):
+        if finished_step == 1:
+            return self.calc_curve
+
 
     def check_finished_step(self, finished_step):
         """
@@ -318,67 +375,50 @@ class ScriptLogic(object):
         if not cur_script:
             return 1, {}
 
-        # todo 判断片子已进入结算阶段
         data = {}
         if finished_step == 1:
-            result = cur_script.get('finished_common_reward')
-            if not result:
-                # todo: 拍摄结算
-                cur_script['finished_step'] = finished_step
+            key = 'finished_common_reward'
+            func = self.calc_result
 
-                result = self.calc_result(cur_script)
-                cur_script['finished_common_reward'] = result
-                script.save()
-            data['finished_common_reward'] = result
         elif finished_step == 2:
-            finished_attr = cur_script.get('finished_attr')
-            if 1:#not finished_attr:
-                cur_script['finished_step'] = finished_step
-
-                finished_attr = self.calc_script_attr()
-                cur_script['finished_attr'] = finished_attr
-                script.save()
-            data['finished_attr'] = finished_attr
+            key = 'finished_attr'
+            func = self.calc_script_attr
 
         elif finished_step == 3:
-            finished_attention = cur_script.get('finished_attention')
-            if not finished_attention:
-                cur_script['finished_step'] = finished_step
-
-                finished_attention = self.calc_attention()
-                cur_script['finished_attention'] = finished_attention
-                script.save()
-            data['finished_attention'] = finished_attention
+            key = 'finished_attention'
+            func = self.calc_attention
 
         elif finished_step == 4:
-            finished_first_income = cur_script.get('finished_first_income')
-            if not finished_first_income:
-                cur_script['finished_step'] = finished_step
-                finished_first_income = self.calc_first_income()
-                cur_script['finished_first_income'] = finished_first_income
-                script.save()
-            data['finished_first_income'] = finished_first_income
+            key = 'finished_first_income'
+            func = self.calc_first_income
 
         elif finished_step == 5:
-            finished_medium_judge = cur_script.get('finished_medium_judge')
-            if not finished_medium_judge:
-                cur_script['finished_step'] = finished_step
-                finished_medium_judge = self.calc_medium_judge()
-                cur_script['finished_medium_judge'] = finished_medium_judge
-                script.save()
-            data['finished_medium_judge'] = finished_medium_judge
+            key = 'finished_medium_judge'
+            func = self.calc_medium_judge
 
         elif finished_step == 6:
-            pass
+            key = 'finished_curve'
+            func = self.calc_curve
 
         elif finished_step == 7:
-            finished_audience_judge = cur_script.get('finished_audience_judge')
-            if not finished_audience_judge:
-                cur_script['finished_step'] = finished_step
-                finished_audience_judge = self.calc_medium_judge()
-                cur_script['finished_audience_judge'] = finished_audience_judge
-                script.save()
-            data['finished_audience_judge'] = finished_audience_judge
+            key = 'finished_audience_judge'
+            func = self.calc_medium_judge
+
+        elif finished_step == 8:
+            key = 'finished_summary'
+            func = self.summary
+
+        elif finished_step == 9:
+            key = 'finished_analyse'
+            func = self.finished_analyse
+
+        result = cur_script.get(key)
+        if not result:
+            cur_script['finished_step'] = finished_step
+            result = func()
+            cur_script[key] = result
+            script.save()
+        data[key] = result
 
         data['cur_script'] = script.cur_script
         data['step'] = self.get_step()
@@ -389,7 +429,7 @@ class ScriptLogic(object):
         """选片时计算"""
         pass
 
-    # 5.艺人适配剧本和角色总分
+    # 艺人适配剧本总分
     def calc_card_film_match_score(self, film_info):
         """"""
         all_score = 0
@@ -408,17 +448,40 @@ class ScriptLogic(object):
         return all_score
 
     # 6.艺人的拍摄发挥,选卡算一次，选类型算一次
-    def calc_film_card_effect(self):
+    def calc_film_card_effect(self, action='set_card'):
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
+        script_config = game_config.script[cur_script['id']]
 
         pro = cur_script['pro']
-        match_score = self.calc_card_film_match_score(cur_script)
+        # match_score = self.calc_card_film_match_score(cur_script)
 
+        match_score = 0
+        # todo
+        match_script = {}       # 艺人对剧本发挥
+        match_role = {}         # 艺人对角色发挥
         effect = {}
         # 计算攻击伤害
         for role_id, card_oid in cur_script['card'].iteritems():
+            # 单个艺人的适配总分 = ∑  (适配的标签品质分数)
+            card_info = self.mm.card.cards[card_oid]
+            card_config = game_config.card_basis[card_info['id']]
+            role_score = 0
+            script_score = 0
+            # 卡牌擅长角色匹配
+            role_config = game_config.script_role[role_id]
+            for tag_id, tag_quality in card_config['tag_role']:
+                if tag_id in role_config['tag_role']:
+                    role_score += game_config.tag_score[tag_quality]['score']
+            match_role[card_oid] = role_score
+
+            # 卡牌擅长剧本匹配
+            for tag_id, tag_quality in card_config['tag_script']:
+                if tag_id in script_config['tag_script']:
+                    script_score += game_config.tag_score[tag_quality]['score']
+            match_script[card_oid] = script_score
+
             card_info = card.get_card(card_oid)
             love_lv = card_info['love_lv']
             love_config = game_config.card_love_level[love_lv]
@@ -445,21 +508,21 @@ class ScriptLogic(object):
                 else:
                     role_effect[attr] = value
 
-            # todo 判断是否暴击
+            # 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
-            c2 = match_score / 100.0
+            c2 = (role_score + script_score) / 100.0
             crit_rate = c1 + c2
             if random.random() < crit_rate:
-                pass
-            else:
-                pass
-            # 计算输出
+                # 暴击效果
+                d = (role_score + script_score) / 100.0
+                for attr in role_effect:
+                    role_effect[attr] = role_effect[attr] * (1.1 + d)
 
-        return effect
-
-
-    # 9.观众、专业评分计算
-
+        return {
+            'effect': effect,
+            'match_script': match_script,
+            'match_role': match_role
+        }
 
 
 

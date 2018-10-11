@@ -288,19 +288,23 @@ def test_init(mm):
     # 邮件
     good = game_config.initial_account.get('good')
     if good:
-        mail_dict = mm.mail.generate_mail(
-            u'测试道具',
-            title=u'测试道具',
-            gift=good,
-        )
-        mm.mail.add_mail(mail_dict)
+        # 直接给送东西
+        add_mult_gift(mm, good)
+
+        # mail_dict = mm.mail.generate_mail(
+        #     u'测试道具',
+        #     title=u'测试道具',
+        #     gift=good,
+        # )
+        # mm.mail.add_mail(mail_dict)
 
     # 英雄
-    hero_config = game_config.initial_account.get('card')
-    if hero_config:
-        for i in hero_config:
-            mm.card.add_card(i[0], lv=i[1], evo=i[2], star=i[3])
-        mm.hero.save()
+    card_config = game_config.initial_account.get('card')
+    if card_config:
+        # id, 等级，好感，羁绊
+        for cid, lv, love_exp, love_lv in card_config:
+            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp)
+        mm.card.save()
 
 
 def mark_user_login(hm):

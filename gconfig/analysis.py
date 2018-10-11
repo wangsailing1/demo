@@ -621,7 +621,7 @@ def special_battle_item_limit(config, data):
 
 
 def specail_pop_uk(replace_key):
-
+    """处理只有一行的配置"""
     def decorator(config, data):
         value = data.pop('uk')
         data[replace_key] = value

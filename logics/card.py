@@ -105,7 +105,7 @@ class CardLogic(object):
         for tp, num in add_love_gift_pro:
             card.add_love_gift_exp(card_oid, tp, num, card_dict=card_dict)
 
-        card_dict['gift_count'] = gift_count
+        # card_dict['gift_count'] = gift_count
         card_dict['love_exp'] += add_exp
         card_dict['love_exp'] = min(card_dict['love_exp'], love_config['exp'])
         card.save()
