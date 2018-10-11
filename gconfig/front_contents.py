@@ -229,6 +229,7 @@ user_config_mapping = {
     'player_level': ('player_level', True),
     'vip': ('vip', True),
     'initial_account': ('initial_account', False),
+    'main_hero': ('main_hero', True),
 
 
 
@@ -467,7 +468,7 @@ server_active_mapping = {
 
 leading_role_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
-    'main_hero': ('main_hero', True),
+
     'main_hero_evo': ('main_hero_evo', True),
     'main_hero_medal': ('main_hero_medal', True),
     'main_hero_medal_evo': ('main_hero_medal_evo', True),
