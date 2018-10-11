@@ -16,6 +16,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 from lib.core.environ import ModelManager
+from models.ranking_list import AppealRank
 
 
 class Script(ModelBase):
@@ -170,7 +171,26 @@ class Script(ModelBase):
             'attention': 0,     # 关注度
             'audience': 0,      # 观众
         }
+        self.mm.script_book.add_book(script_id)
+
+        income = data['finished_summary']['income']
+
+        self.mm.script_book.add_script_group(script_id,True,income)
+
+        #todo 跟新艺人排行
+        guid = self.uid + '|' + 1
+        ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
+
         return data
+
+    def get_top_group(self):
+        group_id = 0
+        income = 0
+        for k,v in self.top_group.iteritems():
+            if v['income'] > income:
+                income = v['income']
+                group_id = k
+        return group_id
 
 
 ModelManager.register_model('script', Script)
