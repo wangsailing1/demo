@@ -491,30 +491,34 @@ class UserLogic(object):
         :param flag: 1：巅峰战力榜，2：天梯排行榜，3：关卡星级榜
         :return:
         """
-        user_dict = {}
-        if not self.mm.high_ladder.is_robot(user_id):
-            mm = self.mm.get_mm(user_id)
-            user_dict = user_info(mm)
-            user_dict['is_friend'] = self.mm.friend.has_friend(user_id)
-            user_dict['is_black'] = user_id in self.user.blacklist
-
-            if flag == 1:
-                info = hero_info(mm.hero, mm.hero.max_combat_heros.keys())
-            elif flag == 2:
-                info = hero_info(mm.hero, mm.high_ladder.def_heros)
-            elif flag == 3:
-                info = hero_info(mm.hero, mm.hero.max_combat_heros.keys())
-            else:
-                info = []
-
-            user_dict['team_info'] = info
-        else:
-            user_dict = self.mm.high_ladder.generate_robot_info(user_id, self.mm)
-            user_dict['level'] = user_dict['lv']
-            heros = user_dict.pop('heros', {})
-
-            team_info = format_hero_info(heros)
-            user_dict['team_info'] = team_info
+        # user_dict = {}
+        mm = self.mm.get_mm(user_id)
+        user_dict = user_info(mm)
+        user_dict['is_friend'] = self.mm.friend.has_friend(user_id)
+        user_dict['is_black'] = user_id in self.user.blacklist
+        # if not self.mm.high_ladder.is_robot(user_id):
+        #     mm = self.mm.get_mm(user_id)
+        #     user_dict = user_info(mm)
+        #     user_dict['is_friend'] = self.mm.friend.has_friend(user_id)
+        #     user_dict['is_black'] = user_id in self.user.blacklist
+        #
+        #     if flag == 1:
+        #         info = hero_info(mm.hero, mm.hero.max_combat_heros.keys())
+        #     elif flag == 2:
+        #         info = hero_info(mm.hero, mm.high_ladder.def_heros)
+        #     elif flag == 3:
+        #         info = hero_info(mm.hero, mm.hero.max_combat_heros.keys())
+        #     else:
+        #         info = []
+        #
+        #     user_dict['team_info'] = info
+        # else:
+        #     user_dict = self.mm.high_ladder.generate_robot_info(user_id, self.mm)
+        #     user_dict['level'] = user_dict['lv']
+        #     heros = user_dict.pop('heros', {})
+        #
+        #     team_info = format_hero_info(heros)
+        #     user_dict['team_info'] = team_info
 
         return {
             'user_info': user_dict,
