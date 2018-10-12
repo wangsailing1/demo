@@ -175,6 +175,8 @@ class Card(ModelBase):
             v.setdefault('is_cold', False)
 
     def init_card(self):
+        return
+
         # TODO 暂时没配置，先随便给几张写死的卡牌
         if not self.cards:
             for i in self.INIT_CARDS:

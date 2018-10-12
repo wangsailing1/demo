@@ -445,8 +445,8 @@ class Friend(ModelBase):
     def new_actor(self,group_id,is_save=False):
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
-        if is_save:
-            self.save()
+            if is_save:
+                self.save()
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue

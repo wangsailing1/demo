@@ -178,6 +178,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 continue
             mm.equip.add_equip(equip_id, num)
             add_dict(data.setdefault('equip', {}), equip_id, num)
+        mm.equip.save()
     elif gift_sort == 7:  # 点赞数
         for pkg in gift_config:
             add_num = pkg[1]
@@ -244,7 +245,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
     elif gift_sort == 15:  # 获得可拍摄剧本
         save = False
         for pkg in gift_config:
-            script_id = pkg[1]
+            script_id = pkg[0]
             if not script_id:
                 continue
             stats = mm.script.add_own_script(script_id)
