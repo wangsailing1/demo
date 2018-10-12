@@ -244,7 +244,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
     elif gift_sort == 15:  # 获得可拍摄剧本
         save = False
         for pkg in gift_config:
-            script_id = pkg[1]
+            script_id = pkg[0]
             if not script_id:
                 continue
             stats = mm.script.add_own_script(script_id)
