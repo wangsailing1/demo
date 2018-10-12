@@ -72,6 +72,7 @@ name_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'card_name': ('card_name', True),
     'script_name': ('script_name', True),
+    'nic_name': ('nic_name', True),
 }
 
 
