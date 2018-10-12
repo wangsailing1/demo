@@ -42,8 +42,10 @@ class ScriptLogic(object):
 
         return 0, {
             'own_script': script.own_script,
+            'sequel_script': script.sequel_script,
             'step': self.get_step(),
             'script_pool': script.script_pool,
+            'sequel_script_pool': script.sequel_script_pool,
             'cur_script': script.cur_script,
             'scripts': script.scripts,
             'style_log': script.style_log,
@@ -60,22 +62,34 @@ class ScriptLogic(object):
         rc, data = self.index()
         return rc, data
 
-    def filming(self, script_id, name):
+    def filming(self, script_id, name, is_sequel=False):
+        """拍片
+
+        :param script_id:
+        :param name:
+        :param is_sequel:   是否续集
+        :return:
+        """
         script = self.mm.script
 
-        if script_id not in script.script_pool:
+        if is_sequel:
+            pool = script.sequel_script_pool
+        else:
+            pool = script.script_pool
+
+        if script_id not in pool:
             return 1, {}  # 不可选剧本
 
         if script.cur_script:
             return 2, {}  # 拍摄中
 
-        # if script.script_pool[script_id]:
+        # if pool[script_id]:
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
         script.cur_script = film
 
-        script.script_pool[script_id] = 1
+        pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
         script.save()
         rc, data = self.index()

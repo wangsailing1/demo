@@ -222,7 +222,8 @@ class CardLogic(object):
         train_grow = card_config['train_grow']
         idx = bisect.bisect_left([x[0] for x in train_grow], train_times)
         if idx == len(train_grow):
-            idx = -1
+            return 2, {}
+            # idx = -1
         train_grow_id = train_grow[idx][1]
 
         add_pros = {}

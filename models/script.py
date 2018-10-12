@@ -29,10 +29,13 @@ class Script(ModelBase):
         self._attrs = {
             'style_log': [],  # 连续拍片类型，保留最近10个
             'own_script': [],  # 已获得的可拍摄的片子
+            'sequel_script': [],  # 已获得的可拍摄的续集片子
             'cur_script': {},  # 当前在在拍的片子
+
             'scripts': {},  # 所有已拍完的片子
 
             'script_pool': {},
+            'sequel_script_pool': {},
             'cur_market': [],  # 当前市场关注度
 
 
@@ -62,6 +65,7 @@ class Script(ModelBase):
             self.check_next_sequel(cur_script)
             self.cur_script = {}
             self.script_pool = {}
+            self.sequel_script_pool = {}
 
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
@@ -72,8 +76,8 @@ class Script(ModelBase):
         script_config = game_config.script[cur_script['id']]
         sequel_count = script_config['sequel_count']
         # todo 判断是否符合续作条件
-        if sequel_count:
-            self.add_own_script(sequel_count)
+        if sequel_count and sequel_count not in self.sequel_script:
+            self.sequel_script.append(sequel_count)
 
     def check_top_income(self, film_info):
         script_id = film_info['id']
@@ -130,6 +134,7 @@ class Script(ModelBase):
 
     def pre_filming(self):
         self.script_pool = {}
+        self.sequel_script_pool = {}
         can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.own_script]
         for i in xrange(self.POOL_SIZE):
             if not can_use_ids:
@@ -137,6 +142,15 @@ class Script(ModelBase):
             id_weight = weight_choice(can_use_ids)
             can_use_ids.remove(id_weight)
             self.script_pool[id_weight[0]] = 0
+
+        # 续集
+        can_use_sequel_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.sequel_script_pool]
+        for i in xrange(self.POOL_SIZE):
+            if not can_use_sequel_ids:
+                break
+            id_weight = weight_choice(can_use_sequel_ids)
+            can_use_sequel_ids.remove(id_weight)
+            self.sequel_script_pool[id_weight[0]] = 0
 
         # 初始化市场关注度
         all_market = [(v['market'], v['rate']) for k, v in game_config.script_market.iteritems()]
