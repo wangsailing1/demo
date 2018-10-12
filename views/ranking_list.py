@@ -101,26 +101,44 @@ def rank_index(hm):
 def get_script_info(hm):
     mm = hm.mm
     script_id = hm.get_argument('script_id', 0)
+    uid = hm.get_argument('uid', '')
+    if uid:
+        mm = ModelManager(uid)
     if not script_id:
         return 1, {}
-    return 0, {'script_info': mm.script.top_script[script_id]}
+    return 0, {'script_info': mm.script.top_script.get(script_id,{}),
+               'name':mm.user.name,
+               'vip':mm.user.vip,
+               'guild_name':mm.user.guild_name,
+               'actor_num':len(mm.card.cards)}
 
 
 def get_group_info(hm):
     mm = hm.mm
     group_id = hm.get_argument('group_id', 0)
+    uid = hm.get_argument('uid', '')
+    if uid:
+        mm = ModelManager(uid)
     if not group_id:
         return 1, {}
-    return 0, {'group_info': mm.script.get_top_group[group_id]}
+    return 0, {'group_info': mm.script.get_top_group().get(group_id,{}),
+               'group_id':mm.script.get_top_group_id(),
+               'name':mm.user.name,
+               'vip':mm.user.vip,
+               'guild_name':mm.user.guild_name,
+               'actor_num':len(mm.card.cards)}
 
 
 def get_user_info(hm):
     mm = hm.mm
     uid = hm.get_argument('uid', '')
-    if not uid:
-        return 1, {}
-    umm = ModelManager(uid)
+    if uid:
+        mm = ModelManager(uid)
 
     return 0, {
-        'info': umm.user.script_income
-    }
+        'group_info': mm.script.get_top_group(),
+        'script_info': mm.script.top_script,
+        'name': mm.user.name,
+        'vip': mm.user.vip,
+        'guild_name': mm.user.guild_name,
+        'actor_num': len(mm.card.cards)}
