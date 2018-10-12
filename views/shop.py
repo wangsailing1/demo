@@ -46,8 +46,8 @@ def index(hm):
     """
     mm = hm.mm
 
-    if not mm.user.check_build(SHOP_SORT):
-        return -1, {}  # 未解锁
+    # if not mm.user.check_build(SHOP_SORT):
+    #     return -1, {}  # 未解锁
 
     sl = ShopLogics(mm)
     rc, data = sl.index()
@@ -70,8 +70,8 @@ def buy(hm):
     if not id:
         return 'error_100', {}
 
-    if not mm.user.check_build(SHOP_SORT):
-        return -1, {}
+    # if not mm.user.check_build(SHOP_SORT):
+    #     return -1, {}
 
     sl = ShopLogics(mm)
     rc, data = sl.buy(good_id, num)
@@ -91,8 +91,8 @@ def refresh_goods(hm):
     """
     mm = hm.mm
 
-    if not mm.user.check_build(SHOP_SORT):
-        return -1, {}
+    # if not mm.user.check_build(SHOP_SORT):
+    #     return -1, {}
 
     shop_logics = ShopLogics(mm)
     rc, data = shop_logics.refresh_goods()
@@ -114,8 +114,8 @@ def sell(hm):
     if not items:
         return 'error_100', {}
 
-    if not mm.user.check_build(SHOP_SORT):
-        return -1, {}
+    # if not mm.user.check_build(SHOP_SORT):
+    #     return -1, {}
 
     sl = ShopLogics(mm)
     rc, data = sl.sell(items)
@@ -284,8 +284,8 @@ def period_index(hm):
     """
     mm = hm.mm
 
-    if not mm.user.check_build(PERIOD_SHOP):
-        return -1, {}
+    # if not mm.user.check_build(PERIOD_SHOP):
+    #     return -1, {}
 
     psl = PeriodShopLogics(mm)
     rc, data = psl.index()
@@ -307,8 +307,8 @@ def period_buy(hm):
     if not good_id:
         return -1, {}
 
-    if not mm.user.check_build(PERIOD_SHOP):
-        return -2, {}
+    # if not mm.user.check_build(PERIOD_SHOP):
+    #     return -2, {}
 
     psl = PeriodShopLogics(mm)
     rc, data = psl.buy(good_id)
@@ -326,8 +326,8 @@ def period_refresh(hm):
     """
     mm = hm.mm
 
-    if not mm.user.check_build(PERIOD_SHOP):
-        return -1, {}
+    # if not mm.user.check_build(PERIOD_SHOP):
+    #     return -1, {}
 
     psl = PeriodShopLogics(mm)
     rc, data = psl.refresh_goods()
