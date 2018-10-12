@@ -136,7 +136,8 @@ def get_user_info(hm):
         umm = ModelManager(uid)
 
     return 0, {
-        'info': umm.user.script_income,
+        'group_info': mm.script.get_top_group(),
+        'script_info': mm.script.top_script,
         'name': mm.user.name,
         'vip': mm.user.vip,
         'guild_name': mm.user.guild_name,
