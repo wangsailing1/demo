@@ -187,7 +187,7 @@ class Script(ModelBase):
             if group_id not in top_group:
                 top_group[group_id] = {}
             top_group[group_id][script_id] = info
-            top_group[group_id]['top_income'] = top_group[group_id].get('top_income', 0) + info['income']
+            top_group[group_id]['top_income'] = top_group[group_id].get('top_income', 0) + info['summary']['income']
             sequel_count = game_config.script[script_id]['sequel_count']
             if top_group[group_id].get('max_script', 0) <= sequel_count:
                 top_group[group_id]['max_script'] = sequel_count
