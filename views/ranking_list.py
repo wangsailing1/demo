@@ -110,7 +110,8 @@ def get_script_info(hm):
                'name': mm.user.name,
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
-               'actor_num': len(mm.card.cards)}
+               'actor_num': len(mm.card.cards),
+               'level':mm.user.level}
 
 
 def get_group_info(hm):
@@ -127,7 +128,8 @@ def get_group_info(hm):
                'name': mm.user.name,
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
-               'actor_num': len(mm.card.cards)}
+               'actor_num': len(mm.card.cards),
+               'level':mm.user.level}
 
 
 def get_user_info(hm):
@@ -142,4 +144,5 @@ def get_user_info(hm):
         'name': mm.user.name,
         'vip': mm.user.vip,
         'guild_name': mm.user.guild_name,
-        'actor_num': len(mm.card.cards)}
+        'actor_num': len(mm.card.cards),
+        'level':mm.user.level}
