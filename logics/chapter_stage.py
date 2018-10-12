@@ -110,7 +110,7 @@ class Chapter_stage(object):
                 self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
                 old_level = copy.copy(self.mm.user.level)
                 if not auto:
-                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage]['star']:
+                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star',0):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
 
                 self.mm.user.add_player_exp(add_player_exp)
