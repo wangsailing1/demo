@@ -133,7 +133,7 @@ def get_user_info(hm):
     mm = hm.mm
     uid = hm.get_argument('uid', '')
     if uid:
-        umm = ModelManager(uid)
+        mm = ModelManager(uid)
 
     return 0, {
         'group_info': mm.script.get_top_group(),
