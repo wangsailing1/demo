@@ -247,6 +247,7 @@ class Card(ModelBase):
                                                  mm=self.mm
                                                  )
         self.mm.card_book.add_book(group_id)
+        self.mm.friend.new_actor(group_id,is_save=True)
         self.cards[card_oid] = card_dict
         return card_oid
 

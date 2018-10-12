@@ -110,7 +110,7 @@ class Chapter_stage(object):
                 self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
                 old_level = copy.copy(self.mm.user.level)
                 if not auto:
-                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage]['star']:
+                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star',0):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
 
                 self.mm.user.add_player_exp(add_player_exp)
@@ -336,7 +336,7 @@ class Chapter_stage(object):
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
-        old_value = copy.deepcopy(self.mm.card.attr[group_id])
+        old_value = copy.deepcopy(self.mm.card.attr.get(group_id,{}))
         reward = {}
         add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:

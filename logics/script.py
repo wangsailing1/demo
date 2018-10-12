@@ -69,8 +69,8 @@ class ScriptLogic(object):
         if script.cur_script:
             return 2, {}  # 拍摄中
 
-        if script.script_pool[script_id]:
-            return 3, {}  # 已拍摄
+        # if script.script_pool[script_id]:
+        #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
         script.cur_script = film
@@ -191,7 +191,7 @@ class ScriptLogic(object):
 
     # 7.剧本属性计算
     def calc_script_attr(self):
-        # todo
+        # todo 剧本属性计算
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
@@ -271,7 +271,7 @@ class ScriptLogic(object):
 
     # 8.首映票房、收视计算
     def calc_first_income(self):
-        # todo
+        # 首映票房
         script = self.mm.script
         cur_script = script.cur_script
 
@@ -282,7 +282,7 @@ class ScriptLogic(object):
 
     def calc_medium_judge(self):
         """专业评价"""
-        # todo
+        # todo 专业评价
         script = self.mm.script
         cur_script = script.cur_script
         # todo 得到点赞数
@@ -290,7 +290,7 @@ class ScriptLogic(object):
 
     def calc_audience_judge(self):
         """观众评价"""
-        # todo
+        # todo 观众评价
         script = self.mm.script
         cur_script = script.cur_script
         return {'score': 200}

@@ -491,7 +491,7 @@ class WorldBossRank(AllRank):
         self.fredis.delete(self._all_guild_key)
 
 
-# ModelManager.register_model_base_tools('level_rank', LevelRank)
+ModelManager.register_model_base_tools('level_rank', LevelRank)
 # ModelManager.register_model_base_tools('super_active_rank', SuperActiveRank)
 # ModelManager.register_model_base_tools('guild_task_rank', GuildTaskRank)
 # ModelManager.register_model_base_tools('combat_rank', CombatRank)
