@@ -178,6 +178,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 continue
             mm.equip.add_equip(equip_id, num)
             add_dict(data.setdefault('equip', {}), equip_id, num)
+        mm.equip.save()
     elif gift_sort == 7:  # 点赞数
         for pkg in gift_config:
             add_num = pkg[1]
