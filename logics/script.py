@@ -69,8 +69,8 @@ class ScriptLogic(object):
         if script.cur_script:
             return 2, {}  # 拍摄中
 
-        if script.script_pool[script_id]:
-            return 3, {}  # 已拍摄
+        # if script.script_pool[script_id]:
+        #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
         script.cur_script = film

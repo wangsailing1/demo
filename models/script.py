@@ -59,6 +59,7 @@ class Script(ModelBase):
         if self.cur_script.get('finished_step') in [8, 9]:
             self.check_top_income(self.cur_script)
             self.cur_script = {}
+            self.script_pool = {}
 
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
