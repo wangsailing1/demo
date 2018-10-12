@@ -107,10 +107,10 @@ def get_script_info(hm):
     if not script_id:
         return 1, {}
     return 0, {'script_info': mm.script.get_script_info(int(script_id)),
-               'name':mm.user.name,
-               'vip':mm.user.vip,
-               'guild_name':mm.user.guild_name,
-               'actor_num':len(mm.card.cards)}
+               'name': mm.user.name,
+               'vip': mm.user.vip,
+               'guild_name': mm.user.guild_name,
+               'actor_num': len(mm.card.cards)}
 
 
 def get_group_info(hm):
@@ -123,11 +123,11 @@ def get_group_info(hm):
         return 1, {}
     m_script = mm.script.get_max_script_by_group(int(group_id))
     return 0, {'group_info': mm.script.get_script_info(int(m_script)),
-               'group_id':mm.script.get_top_group_id(),
-               'name':mm.user.name,
-               'vip':mm.user.vip,
-               'guild_name':mm.user.guild_name,
-               'actor_num':len(mm.card.cards)}
+               'group_id': mm.script.get_top_group_id(),
+               'name': mm.user.name,
+               'vip': mm.user.vip,
+               'guild_name': mm.user.guild_name,
+               'actor_num': len(mm.card.cards)}
 
 
 def get_user_info(hm):
