@@ -26,7 +26,7 @@ class Block(ModelBase):
         self.cup += cup
         if self.cup >= config[self.block_num]['promotion_cup_num']:
             self.block_num += 1
-
+            self.cup = 0
         self.save()
 
 
@@ -91,7 +91,17 @@ class Block(ModelBase):
     #记录最大的有人街区
     def set_max_block(self):
         key = self.make_key(uid='block')
-        
+        max_block = int(self.fredis.get(key)) if self.fredis.get(key) else 0
+        if self.block_num > max_block:
+            self.fredis.set(key,self.block_num)
+
+    #获取最大的有人街区
+    def get_max_block(self):
+        key = self.make_key(uid='block')
+        return int(self.fredis.get(key)) if self.fredis.get(key) else 0
+
+
+
 
 
 
