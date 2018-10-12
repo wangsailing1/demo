@@ -121,7 +121,7 @@ def get_group_info(hm):
         mm = ModelManager(uid)
     if not group_id:
         return 1, {}
-    m_script = mm.get_max_script_by_group(int(group_id))
+    m_script = mm.script.get_max_script_by_group(int(group_id))
     return 0, {'group_info': mm.script.get_script_info(int(m_script)),
                'group_id':mm.script.get_top_group_id(),
                'name':mm.user.name,
