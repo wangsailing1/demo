@@ -225,7 +225,7 @@ class Script(ModelBase):
         k = 0
         income = 0
         for i, j in group_info.iteritems():
-            if j['summary']['income'] > income:
+            if isinstance(j,dict) and j['summary']['income'] > income:
                 income = j['summary']['income']
                 k = i
         return k
