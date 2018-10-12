@@ -117,13 +117,11 @@ class Script(ModelBase):
             group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
             # 更新艺人号召力排行
             guid = self.uid + '|' + str(group_id)
-            ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
-            ar.incr_rank(self.uid,income)
+            ar = self.mm.get_obj_tools('appeal_rank')  # uid 格式 uid + '|' + group_id
+            ar.incr_rank(guid, income)
 
         self.mm.script_book.add_book(script_id)
         self.mm.script_book.add_script_group(script_id, True, income)
-
-
 
         if save:
             self.save()
