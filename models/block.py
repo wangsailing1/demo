@@ -88,5 +88,8 @@ class Block(ModelBase):
             return rank / 100 + 1
         return rank / 100
 
+    #记录最大的有人街区
+
+
 
 ModelManager.register_model('block', Block)
