@@ -222,7 +222,7 @@ class Script(ModelBase):
         card_info = {}
         for k, card_id in all_card.iteritems():
             card_info[card_id] = {'name': self.mm.card.cards[card_id]['name'],
-                                  'group': game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']}
+                                  'id': game_config.card_basis[self.mm.card.cards[card_id]['id']]}
 
         script_info['card_info'] = card_info
         return script_info
