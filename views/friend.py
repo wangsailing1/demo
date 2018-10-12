@@ -10,6 +10,7 @@ from lib.utils.sensitive import is_sensitive
 
 
 def check_unlock(func):
+    return
     def wrapper(hm):
         mm = hm.mm
         if not mm.user.check_build(FRIEND_SORT):
