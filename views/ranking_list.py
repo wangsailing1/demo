@@ -106,7 +106,7 @@ def get_script_info(hm):
         mm = ModelManager(uid)
     if not script_id:
         return 1, {}
-    return 0, {'script_info': mm.script.top_script.get(int(script_id),{}),
+    return 0, {'script_info': mm.script.get_script_info(int(script_id)),
                'name':mm.user.name,
                'vip':mm.user.vip,
                'guild_name':mm.user.guild_name,
@@ -121,7 +121,8 @@ def get_group_info(hm):
         mm = ModelManager(uid)
     if not group_id:
         return 1, {}
-    return 0, {'group_info': mm.script.get_top_group().get(int(group_id),{}),
+    m_script = mm.get_max_script_by_group(int(group_id))
+    return 0, {'group_info': mm.script.get_script_info(int(m_script)),
                'group_id':mm.script.get_top_group_id(),
                'name':mm.user.name,
                'vip':mm.user.vip,
@@ -136,8 +137,8 @@ def get_user_info(hm):
         mm = ModelManager(uid)
 
     return 0, {
-        'group_info': mm.script.get_top_group(),
-        'script_info': mm.script.top_script,
+        'group_info': mm.script.get_scrip_info_by_num(is_type=2),
+        'script_info': mm.script.get_scrip_info_by_num(),
         'name': mm.user.name,
         'vip': mm.user.vip,
         'guild_name': mm.user.guild_name,

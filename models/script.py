@@ -203,5 +203,49 @@ class Script(ModelBase):
                 group_id = k
         return group_id
 
+    # 获取单片数据
+    def get_script_info(self, script_id):
+        script_info = self.mm.script.top_script.get(int(script_id), {})
+        if not script_info:
+            return {}
+        all_card = script_info['card']
+        card_info = {}
+        for k, card_id in all_card.iteritems():
+            card_info[card_id] = {'name': self.mm.card.cards[card_id]['name'],
+                                  'group': game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']}
+
+        script_info['card_info'] = card_info
+        return script_info
+
+    # 获取系列票房最大单片
+    def get_max_script_by_group(self, group_id):
+        group_info = self.get_top_group().get(group_id, {})
+        if not group_info:
+            return 0
+        k = 0
+        income = 0
+        for i, j in group_info.iteritems():
+            if j['summary']['income'] > income:
+                income = j['summary']['income']
+                k = i
+        return k
+
+    # 获取前n个数据 1是取剧本，2是去系列
+    def get_scrip_info_by_num(self, num=5, is_type=1):
+        if is_type == 1:
+            script_infos = self.mm.script.top_script
+            script_list = sorted(script_infos.items(), key=lambda x: x[1]['summary']['income'], reverse=True)
+            if len(script_list) > num:
+                script_list = script_list[:num]
+            script_info = {i: j for i, j in script_list}
+            return script_info
+        elif is_type == 2:
+            group_infos = self.get_top_group()
+            group_list = sorted(group_infos.items(), key=lambda x: x[1]['top_income'], reverse=True)
+            if len(group_list) > num:
+                group_list = group_list[:num]
+            group_info = {i: j for i, j in group_list}
+            return group_info
+
 
 ModelManager.register_model('script', Script)
