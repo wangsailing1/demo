@@ -107,15 +107,27 @@ class Script(ModelBase):
             self.top_all = dict(film_info)
             save = True
 
+        # 艺人拍片票房及次数记录
+        style_id = script_config['style']
+        for role_id, card_id in film_info['card'].iteritems():
+            self.mm.card.cards[card_id]['style_income'][style_id] = self.mm.card.cards[card_id]['style_income'].get(
+                style_id, 0) + income
+            self.mm.card.cards[card_id]['style_film_num'][style_id] = self.mm.card.cards[card_id]['style_film_num'].get(
+                style_id, 0) + 1
+            group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
+            # 更新艺人号召力排行
+            guid = self.uid + '|' + str(group_id)
+            ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
+            ar.incr_rank(self.uid,income)
+
         self.mm.script_book.add_book(script_id)
         self.mm.script_book.add_script_group(script_id, True, income)
 
-        # todo 跟新艺人号召力排行
-        # guid = self.uid + '|' + str(group_id)
-        # ar = AppealRank(uid=guid)  # uid 格式 uid + '|' + group_id
+
 
         if save:
             self.save()
+            self.mm.card.save()
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:
@@ -249,7 +261,7 @@ class Script(ModelBase):
         k = 0
         income = 0
         for i, j in group_info.iteritems():
-            if isinstance(j,dict) and j['summary']['income'] > income:
+            if isinstance(j, dict) and j['summary']['income'] > income:
                 income = j['summary']['income']
                 k = i
         return k
