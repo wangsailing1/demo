@@ -89,6 +89,11 @@ class Block(ModelBase):
         return rank / 100
 
     #记录最大的有人街区
+    def set_max_block(self):
+        key = self.make_key(uid='block')
+        
+
+
 
 
 
