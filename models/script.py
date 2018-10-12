@@ -57,13 +57,23 @@ class Script(ModelBase):
 
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
         if self.cur_script.get('finished_step') in [8, 9]:
-            self.check_top_income(self.cur_script)
+            cur_script = self.cur_script
+            self.check_top_income(cur_script)
+            self.check_next_sequel(cur_script)
             self.cur_script = {}
             self.script_pool = {}
 
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
+
+    def check_next_sequel(self, cur_script):
+        """根据大卖与否开启续作"""
+        script_config = game_config.script[cur_script['id']]
+        sequel_count = script_config['sequel_count']
+        # todo 判断是否符合续作条件
+        if sequel_count:
+            self.add_own_script(sequel_count)
 
     def check_top_income(self, film_info):
         script_id = film_info['id']
