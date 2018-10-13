@@ -148,4 +148,4 @@ def get_user_info(hm):
         'block': mm.block.block_num,
         'all_income': mm.user.script_income,
         'script_num': len(mm.script.own_script),
-        'battle_cards': mm.card.get_better_card()}
+        'top_cards': mm.card.get_better_card()}
