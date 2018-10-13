@@ -112,7 +112,7 @@ def get_script_info(hm):
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
                'level': mm.user.level,
-               'uid':uid}
+               'uid': uid}
 
 
 def get_group_info(hm):
@@ -131,7 +131,7 @@ def get_group_info(hm):
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
                'level': mm.user.level,
-               'uid':uid}
+               'uid': uid}
 
 
 def get_user_info(hm):
@@ -151,5 +151,5 @@ def get_user_info(hm):
         'all_income': mm.user.script_income,
         'script_num': len(mm.script.own_script),
         'top_cards': mm.card.get_better_card(),
-        'uid':uid,
-        'role':mm.user.role}
+        'uid': uid,
+        'role': mm.user.role}
