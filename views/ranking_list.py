@@ -67,7 +67,7 @@ def rank_index(hm):
                                      'name': name,
                                      'script_id': script_id,
                                      'score': score,
-                                     'script_name': mm.script.top_all['name']})
+                                     'script_name': umm.script.top_all['name']})
         return 0, {
             'rank_list': output_rank_list[start - 1:end],
             'rank_own': output_rank_own_list,
