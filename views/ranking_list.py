@@ -111,7 +111,7 @@ def get_script_info(hm):
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
-               'level':mm.user.level}
+               'level': mm.user.level}
 
 
 def get_group_info(hm):
@@ -129,7 +129,7 @@ def get_group_info(hm):
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
-               'level':mm.user.level,}
+               'level': mm.user.level, }
 
 
 def get_user_info(hm):
@@ -144,7 +144,8 @@ def get_user_info(hm):
         'vip': mm.user.vip,
         'guild_name': mm.user.guild_name,
         'actor_num': len(mm.card.cards),
-        'level':mm.user.level,
-        'block':mm.block.block_num,
-        'all_income':mm.user.script_income,
-        'script_num':len(mm.script.own_script)}
+        'level': mm.user.level,
+        'block': mm.block.block_num,
+        'all_income': mm.user.script_income,
+        'script_num': len(mm.script.own_script),
+        'battle_cards': mm.card.get_better_card()}
