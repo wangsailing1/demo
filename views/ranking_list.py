@@ -151,4 +151,5 @@ def get_user_info(hm):
         'all_income': mm.user.script_income,
         'script_num': len(mm.script.own_script),
         'top_cards': mm.card.get_better_card(),
-        'uid':uid}
+        'uid':uid,
+        'role':mm.user.role}
