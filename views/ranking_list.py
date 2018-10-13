@@ -146,5 +146,5 @@ def get_user_info(hm):
         'actor_num': len(mm.card.cards),
         'level':mm.user.level,
         'block':mm.block.block_num,
-        'all_income':mm.user.script_incom,
+        'all_income':mm.user.script_income,
         'script_num':len(mm.script.own_script)}
