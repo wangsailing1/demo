@@ -80,9 +80,9 @@ class Card(ModelBase):
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
-            'popularity': 0,        # 人气
+            'popularity': 0,  # 人气
 
-            'name': '',     # 卡牌名字
+            'name': '',  # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
             'is_cold': False,  # 是否雪藏
@@ -104,8 +104,8 @@ class Card(ModelBase):
 
             'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': )}}
             'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': )}}
-            'style_income':{},   #拍片类型票房
-            'style_film_num':{}  #拍片类型数量
+            'style_income': {},  # 拍片类型票房
+            'style_film_num': {}  # 拍片类型数量
 
         }
         return card_oid, card_dict
@@ -492,6 +492,17 @@ class Card(ModelBase):
         if is_save:
             self.save()
         return add_value
+
+    # 获取最佳艺人
+    def get_better_card(self, num=5):
+        card_info = self.cards
+        for card_id, value in card_info:
+            card_info[card_id]['max_income'] = sum(value['style_income'].values())
+        card_list = sorted(card_info.items(), key=lambda x: sum(x[1]['style_income'].values()), reverse=True)
+        if len(card_list) > num:
+            card_list = card_list[:num]
+        card_info = {i: j for i, j in card_list}
+        return card_info
 
 
 ModelManager.register_model('card', Card)
