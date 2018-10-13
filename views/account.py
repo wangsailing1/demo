@@ -113,7 +113,7 @@ def new_user(hm):
     """
     name = hm.get_argument('name')
     tpid = hm.get_argument('tpid', 0, is_int=True)
-    role = hm.get_argument('role', 100, is_int=True)
+    role = hm.get_argument('role', 1, is_int=True)
     server = hm.get_argument('server')
     account = hm.get_argument('account')
     device_mark = hm.get_argument('device_mark')
