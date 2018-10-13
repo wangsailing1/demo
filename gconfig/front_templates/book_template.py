@@ -20,6 +20,7 @@ script_book = {
 
 script_group_object = {
     'uk':               ('id',              'int'),         # id
+    'name':             ('name',            'int'),         # 名字
     'group_target':     ('group_target',    'int_list'),         # 组目标
     'award':            ('award',           'int_list'),    # 奖励
 }
