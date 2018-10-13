@@ -488,7 +488,7 @@ class Card(ModelBase):
     # 获取最佳艺人
     def get_better_card(self, num=5):
         card_info = self.cards
-        for card_id, value in card_info:
+        for card_id, value in card_info.iteritems():
             card_info[card_id]['max_income'] = sum(value['style_income'].values())
         card_list = sorted(card_info.items(), key=lambda x: sum(x[1]['style_income'].values()), reverse=True)
         if len(card_list) > num:
