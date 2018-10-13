@@ -247,7 +247,7 @@ class Chapter_stage(object):
     def get_hurt(self, attr_id, card_id, score, is_enemy=False):
         if is_enemy:
             card_info = game_config.chapter_enemy[int(card_id)]
-            v = card_info['charpro'][attr_id - 1]
+            v = card_info['char_pro'][attr_id - 1]
             rate = card_info['dps_rate']
             dps_rate = random.randint(rate[0], rate[1]) / 10000.0
             hurt = max(int(v * dps_rate), 1)
