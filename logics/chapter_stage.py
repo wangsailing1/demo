@@ -346,6 +346,7 @@ class Chapter_stage(object):
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+        old_value.setdefault('like',0)
         reward = {}
         add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
