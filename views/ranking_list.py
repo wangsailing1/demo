@@ -129,7 +129,7 @@ def get_group_info(hm):
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
-               'level':mm.user.level}
+               'level':mm.user.level,}
 
 
 def get_user_info(hm):
@@ -137,7 +137,6 @@ def get_user_info(hm):
     uid = hm.get_argument('uid', '')
     if uid:
         mm = ModelManager(uid)
-
     return 0, {
         'group_info': mm.script.get_scrip_info_by_num(is_type=2),
         'script_info': mm.script.get_scrip_info_by_num(),
@@ -145,4 +144,7 @@ def get_user_info(hm):
         'vip': mm.user.vip,
         'guild_name': mm.user.guild_name,
         'actor_num': len(mm.card.cards),
-        'level':mm.user.level}
+        'level':mm.user.level,
+        'block':mm.block.block_num,
+        'all_income':mm.user.script_incom,
+        'script_num':len(mm.script.own_script)}

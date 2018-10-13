@@ -116,6 +116,7 @@ class Script(ModelBase):
         if script_id in self.own_script:
             return False
         self.own_script.append(script_id)
+        self.mm.script_book.add_book(script_id)
         return True
 
     @classmethod
