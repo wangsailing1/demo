@@ -48,7 +48,7 @@ def join_award_ceremony(hm):
                 mm = ModelManager(uid)
                 name = mm.user.name
                 script_id = int(script_id)
-                script_name = mm.block.top_script[date][script_id]['name']
+                script_name = mm.block.top_script.get(date,{}).get(script_id,{}).get('name','')
                 if not data[tp]['win']:
                     data[tp]['win'] = {
                         'name': name,
