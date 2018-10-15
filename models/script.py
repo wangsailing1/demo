@@ -156,7 +156,7 @@ class Script(ModelBase):
         # uid格式 uid_scriptid
         bmr_score = bmr.get_score(br_uid)
         if medium_score > bmr_score:
-            btr.add_rank(br_uid, medium_score)
+            bmr.add_rank(br_uid, medium_score)
 
         # 按观众评分记录排行（发奖用）'audience'
         block_audience_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
