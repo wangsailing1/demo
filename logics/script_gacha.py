@@ -8,9 +8,7 @@ import random
 
 from gconfig import game_config
 from lib.utils import weight_choice
-from tools.gift import add_mult_gift
-from lib.utils.debug import print_log
-from lib.utils import not_repeat_weight_choice
+from tools.gift import add_mult_gift, del_mult_goods
 
 
 class ScriptGachaLogics(object):
@@ -49,17 +47,22 @@ class ScriptGachaLogics(object):
         :param count: 1或10次
         :return:
         """
-        cost_type = ''
-        cost_num = 0
+        cd_expire = self.gacha.cd_expire(gacha_type=sort)
+        if cd_expire:
+            return 1, {}    # cd未结束
+
+        cost = game_config.script_gacha_cost[sort]['cost']
+        rc, _ = del_mult_goods(self.mm, cost)
+        if rc:
+            return rc, {}
 
         if sort == 1:
-            cost = ''
+            cost_type = 'diamond'
             script_id = self.get_diamond_gacha()
             self.gacha.diamond_times += 1
             self.gacha.diamond_time = int(time.time())
         else:
             cost_type = 'coin'
-            cost = ''
             script_id = self.get_coin_gacha()
             self.gacha.coin_times += 1
             self.gacha.coin_time = int(time.time())
@@ -71,7 +74,8 @@ class ScriptGachaLogics(object):
         self.mm.user.save()
 
         result = {
-            '_bdc_event_info': {'cost_num': cost_num, 'cost_type': cost_type},
+            '_bdc_event_info': {'cost': cost, 'cost_type': cost_type},
+
             'script_id': script_id,
             'new_script': new_script,
         }

@@ -186,6 +186,14 @@ card_msg = {
 
 }
 
+
+script_msg = {
+    'script_gacha.get_gacha': {
+        1: u'cd未结束'
+    }
+}
+
+
 chapter_stage_msg = {
     'chapter_stage.chapter_stage_fight':{
         1: u'关卡参数错误',
