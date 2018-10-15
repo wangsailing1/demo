@@ -124,6 +124,7 @@ class Script(ModelBase):
             self.mm.block.top_script[date][script_id] = dict(film_info)
             if film_info.get('big_sale',0) >= 6:
                 big_sale += 1
+                self.block.big_sale += 1
             self.mm.block.top_script[date][script_id]['big_sale_num'] = big_sale
             if len(self.mm.block.top_script) >= 2:
                 del_date = min(self.mm.block.top_script.items(),key=lambda x:x[0])[0]

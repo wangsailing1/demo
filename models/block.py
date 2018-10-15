@@ -35,7 +35,6 @@ class Block(ModelBase):
             #todo 计算奖杯
             self.reward_data = self.count_cup()
             self.big_sale = 0
-            self.top_script = {}
             self.award_ceremony = 0
             self.save()
 
