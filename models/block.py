@@ -19,10 +19,11 @@ class Block(ModelBase):
             'block_group': 1,
             'top_script':{},
             'big_sale':0,
-            'last_date':'',
-            'reward_data':{},
-            'award_ceremony':0,
-            'reward_daily':'',
+            'last_date':'', #最进操作时间
+            'reward_data':{}, #奖励
+            'award_ceremony':0, #是否参加过颁奖典礼
+            'reward_daily':'',  #日常奖励领取时间
+            'get_award_ceremony':0, #典礼奖励是否领取
         }
 
         super(Block, self).__init__(self.uid)
@@ -34,7 +35,6 @@ class Block(ModelBase):
             #todo 计算奖杯
             self.reward_data = self.count_cup()
             self.big_sale = 0
-            self.top_script = {}
             self.award_ceremony = 0
             self.save()
 
@@ -68,6 +68,14 @@ def get_date():
     now_time = time.strftime('%T')
     if now_time >= REWORD_TIME:
         now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+    return now
+
+#获取前一天日期
+def get_date_before():
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time < REWORD_TIME:
+        now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
     return now
 
 
