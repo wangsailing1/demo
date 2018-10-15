@@ -16,13 +16,14 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 from lib.core.environ import ModelManager
-from models.ranking_list import AppealRank
+from models.ranking_list import AppealRank, BlockRank,get_date
 
 
 class Script(ModelBase):
     POOL_SIZE = 3
 
     _need_diff = ('own_script',)
+    SEXMAPPING = {1: 'nv', 2: 'nan'}
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -40,9 +41,9 @@ class Script(ModelBase):
 
 
             # 各种最高收入排行
-            'top_script': {},       # 按剧本id
-            'top_group': {},        # 按剧本系列 {gruop_id: film_info}
-            'top_all': {},          # 单片票房最高
+            'top_script': {},  # 按剧本id
+            'top_group': {},  # 按剧本系列 {gruop_id: film_info}
+            'top_all': {},  # 单片票房最高
 
         }
         super(Script, self).__init__(self.uid)
@@ -107,6 +108,68 @@ class Script(ModelBase):
             self.top_all = dict(film_info)
             save = True
 
+        # 记录街区总排行（显示用,按剧本）
+        block_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                      'script')
+        br = BlockRank(block_rank_uid, self._server_name)
+        date = get_date()
+
+        #记录当天街区拍片记录
+        cur_block_top_script = self.mm.block.top_script.get(date, {}).get(script_id,{})
+        top_block_script_income = cur_block_top_script.get('finished_summary', {'income': 0})['income']
+        if top_block_script_income < income:
+            if date not in self.mm.block.top_script:
+                self.mm.block.top_script[date] = {}
+            self.mm.block.top_script[date][script_id] = dict(film_info)
+            if len(self.mm.block.top_script) >= 2:
+                del_date = min(self.mm.block.top_script.items(),key=lambda x:x[0])[0]
+                self.mm.block.top_script.pop(del_date)
+            save = True
+
+        # uid格式 uid_scriptid
+        br_uid = "%s_%s" % (self.uid, script_id)
+        br_score = br.get_score(br_uid)
+        if income > br_score:
+            br.add_rank(br_uid, income)
+
+        # 记录街区总排行（显示用,按票房）
+        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                          'income')
+        bir = BlockRank(block_income_rank_uid, self._server_name)
+        bir.incr_rank(self.uid, income)
+
+
+        # 按剧本类型记录排行（发奖用）
+        script_type = script_config['type']
+        block_type_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                           script_type)
+        btr = BlockRank(block_type_rank_uid, self._server_name)
+        # uid格式 uid_scriptid
+        btr_score = btr.get_score(br_uid)
+        if income > btr_score:
+            btr.add_rank(br_uid, income)
+
+        # 按媒体评分记录排行（发奖用）'medium'
+        block_medium_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'medium')
+        bmr = BlockRank(block_medium_rank_uid, self._server_name)
+        medium_score = film_info['finished_medium_judge']['score']
+        # uid格式 uid_scriptid
+        bmr_score = bmr.get_score(br_uid)
+        if medium_score > bmr_score:
+            bmr.add_rank(br_uid, medium_score)
+
+        # 按观众评分记录排行（发奖用）'audience'
+        block_audience_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'audience')
+        bar = BlockRank(block_audience_rank_uid, self._server_name)
+        audience_score = film_info['finished_audience_judge']['score']
+        # uid格式 uid_scriptid
+        bar_score = bar.get_score(br_uid)
+        if audience_score > bar_score:
+            bar.add_rank(br_uid, audience_score)
+
+
         # 艺人拍片票房及次数记录
         style_id = script_config['style']
         for role_id, card_id in film_info['card'].iteritems():
@@ -115,6 +178,14 @@ class Script(ModelBase):
             self.mm.card.cards[card_id]['style_film_num'][style_id] = self.mm.card.cards[card_id]['style_film_num'].get(
                 style_id, 0) + 1
             group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
+            # 记录主角总票房排行
+            sex = game_config.card_basis[self.mm.card.cards[card_id]['id']]['sex_type']
+            block_sex_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                              self.SEXMAPPING[sex])
+            bsr = BlockRank(block_sex_rank_uid, self._server_name)
+            bsr_uid = "%s_%s" % (self.uid, card_id)
+            bsr.incr_rank(bsr_uid, income)
+
             # 更新艺人号召力排行
             guid = self.uid + '|' + str(group_id)
             ar = self.mm.get_obj_tools('appeal_rank')  # uid 格式 uid + '|' + group_id
@@ -126,6 +197,7 @@ class Script(ModelBase):
         if save:
             self.save()
             self.mm.card.save()
+            self.mm.block.save()
 
     def add_own_script(self, script_id):
         if script_id in self.own_script:
@@ -203,11 +275,11 @@ class Script(ModelBase):
             'finished_attr': {},
             'finished_attention': {},
             'finished_first_income': {},
-            'finished_curve': {},           # 持续上映曲线
-            'finished_medium_judge': 0,     # 评价 专业评价 100
-            'finished_audience_judge': 0,   # 评价 观众评价 200
-            'finished_summary': {},         # 票房总结{'income': 100, 'cost': 50},
-            'finished_analyse': {},         # 票房分析
+            'finished_curve': {},  # 持续上映曲线
+            'finished_medium_judge': 0,  # 评价 专业评价 100
+            'finished_audience_judge': 0,  # 评价 观众评价 200
+            'finished_summary': {},  # 票房总结{'income': 100, 'cost': 50},
+            'finished_analyse': {},  # 票房分析
 
 
             'attention': 0,  # 关注度
