@@ -10,6 +10,7 @@ from lib.db import ModelTools
 from lib.utils import generate_rank_score, round_float_or_str
 import settings
 from lib.db import get_redis_client
+from models.block import get_date
 
 
 class AllRank(ModelTools):
@@ -494,30 +495,22 @@ class WorldBossRank(AllRank):
 
 class BlockRank(AllRank):
     """
-    奖励类型 ：剧本类型（1=电影，2=电视，3=综艺，nv=女主角，nan=男主角，audience=用户，medium=媒体）
+    奖励类型 ：剧本类型（1=电影，2=电视，3=综艺，nv=女主角，nan=男主角，audience=用户，medium=媒体,reward=记录获奖人）
     """
     NUM = 'num'
     REWORD_TIME = '22:30:00'
 
-    def __init__(self, uid='', server='', *args, **kwargs):
+    def __init__(self, uid='', server='', date='',*args, **kwargs):
         super(AllRank, self).__init__()
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
         self.fredis = self.get_father_redis(father_server)
-        self._key_date = self.key_date()
+        self._key_date = self.key_date(date)
 
-    def key_date(self,date=None):
+    def key_date(self,date=''):
         if not date:
-            date = self.get_date()
+            date = get_date()
         return self._key + '||' + date
-
-    # 获取日期
-    def get_date(self):
-        now = time.strftime('%F')
-        now_time = time.strftime('%T')
-        if now_time >= self.REWORD_TIME:
-            now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
-        return now
 
     # 把玩家添加到所属街区
     def add_user_by_block(self, uid=None, score=0):
