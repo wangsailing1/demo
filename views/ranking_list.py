@@ -1,7 +1,7 @@
 # -*- coding: utf-8 –*-
 from lib.core.environ import ModelManager
 from gconfig import game_config
-from models.ranking_list import BlockRank
+from models.ranking_list import BlockRank,get_date
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -172,7 +172,7 @@ def block_index(hm):
     block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
                                              rank_type)
     br = BlockRank(block_rank_uid, mm.block._server_name)
-    date = br.get_date()
+    date = get_date()
 
     rank_list = br.get_all_user(withscores=True)
 
