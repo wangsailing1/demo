@@ -29,8 +29,20 @@ class Block(ModelBase):
             self.cup = 0
         self.save()
 
+    def get_key_profix(self, block=1, group='', type=''):
+        """
+        :param block: 
+        :param group: 
+        :param type:  剧本type ，男，女，媒体评分，观众评分
+        :return: 
+        """
+        if not group and not type:
+            return '%s' % (block)
+        if not type:
+            return '%s||%s' % (block, group)
+        return '%s||%s||%s' % (block, group, type)
 
-    #获取玩家存储key
+    # 获取玩家存储key
     def get_block_key(self):
         key = self.make_key(uid=self.block_num)
         key_date = key + '|' + self.get_date()
@@ -53,7 +65,7 @@ class Block(ModelBase):
         self.fredis.expire(key_date, 7 * 24 * 3600)
 
     # 从街区删除玩家（玩家升级街区后操作）
-    def delete_user_by_block(self, uid=None,date = None,num = None):
+    def delete_user_by_block(self, uid=None, date=None, num=None):
         if not num:
             num = self.block_num - 1
         if not date:
@@ -88,23 +100,17 @@ class Block(ModelBase):
             return rank / 100 + 1
         return rank / 100
 
-    #记录最大的有人街区
+    # 记录最大的有人街区
     def set_max_block(self):
         key = self.make_key(uid='block')
         max_block = int(self.fredis.get(key)) if self.fredis.get(key) else 0
         if self.block_num > max_block:
-            self.fredis.set(key,self.block_num)
+            self.fredis.set(key, self.block_num)
 
-    #获取最大的有人街区
+    # 获取最大的有人街区
     def get_max_block(self):
         key = self.make_key(uid='block')
         return int(self.fredis.get(key)) if self.fredis.get(key) else 0
-
-
-
-
-
-
 
 
 ModelManager.register_model('block', Block)

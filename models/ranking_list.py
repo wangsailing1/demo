@@ -491,6 +491,29 @@ class WorldBossRank(AllRank):
         self.fredis.delete(self._all_guild_key)
 
 
+
+class BlockRank(AllRank):
+    NUM = 'num'
+    REWORD_TIME = '22:30:00'
+
+    def __init__(self, uid='', server='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = settings.get_father_server(server)
+        self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
+        self.fredis = self.get_father_redis(father_server)
+        self.key_date = self._key + '||' + self.get_date()
+
+    # 获取日期
+    def get_date(self):
+        now = time.strftime('%F')
+        now_time = time.strftime('%T')
+        if now_time >= self.REWORD_TIME:
+            now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+        return now
+
+
+
+
 ModelManager.register_model_base_tools('level_rank', LevelRank)
 # ModelManager.register_model_base_tools('super_active_rank', SuperActiveRank)
 # ModelManager.register_model_base_tools('guild_task_rank', GuildTaskRank)
@@ -503,3 +526,4 @@ ModelManager.register_model_base_tools('level_rank', LevelRank)
 ModelManager.register_model_base_tools('appeal_rank', AppealRank)
 ModelManager.register_model_base_tools('output_rank', OutPutRank)
 ModelManager.register_model_base_tools('alloutput_rank', AllOutPutRank)
+ModelManager.register_model_base_tools('block_rank', BlockRank)
