@@ -289,7 +289,7 @@ class ScriptLogic(object):
         script = self.mm.script
         cur_script = script.cur_script
 
-        first_income = 100
+        first_income = random.randint(1000, 10000)
         script_config = game_config.script[cur_script['id']]
 
         return {'first_income': first_income}

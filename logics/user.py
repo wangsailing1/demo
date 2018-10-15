@@ -496,6 +496,10 @@ class UserLogic(object):
         user_dict = user_info(mm)
         user_dict['is_friend'] = self.mm.friend.has_friend(user_id)
         user_dict['is_black'] = user_id in self.user.blacklist
+        user_dict['block'] = mm.block.block_num
+        user_dict['script_info'] = mm.script.get_scrip_info_by_num()
+        user_dict['top_cards'] = mm.card.get_better_card()
+        user_dict['block_rank'] = 1
         # if not self.mm.high_ladder.is_robot(user_id):
         #     mm = self.mm.get_mm(user_id)
         #     user_dict = user_info(mm)

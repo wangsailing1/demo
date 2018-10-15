@@ -110,7 +110,7 @@ class Chapter_stage(object):
                 self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
                 old_level = copy.copy(self.mm.user.level)
                 if not auto:
-                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star',0):
+                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star', 0):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
 
                 self.mm.user.add_player_exp(add_player_exp)
@@ -329,14 +329,24 @@ class Chapter_stage(object):
     def get_dialogue_reward(self, now_stage, choice_stage, card_id):
         config = game_config.avg_dialogue
         card_config = game_config.card_basis
+        card_id = config[choice_stage]['hero_id']
         if now_stage not in config:
             return 11, {}  # 剧情关配置错误
         if choice_stage not in config[now_stage]['option_team']:
             return 12, {}  # 剧情选择错误
+        if not card_id:
+            return 0, {
+                'add_value': {},
+                'reward': {},
+                'love_lv': 0,
+                'old_value': {}
+                }
+
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
-        old_value = copy.deepcopy(self.mm.card.attr.get(group_id,{}))
+        old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+        old_value.setdefault('like',0)
         reward = {}
         add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:

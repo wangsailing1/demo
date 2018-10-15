@@ -62,12 +62,12 @@ def rank_index(hm):
                                              'script_id': script_id,
                                              'score': score,
                                              'rank_own': ar.get_rank(uid),
-                                             'script_name': ''})
+                                             'script_name': mm.script.top_all['name']})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
                                      'score': score,
-                                     'script_name': ''})
+                                     'script_name': umm.script.top_all['name']})
         return 0, {
             'rank_list': output_rank_list[start - 1:end],
             'rank_own': output_rank_own_list,
@@ -85,12 +85,12 @@ def rank_index(hm):
                                                 'group_id': group_id,
                                                 'score': score,
                                                 'rank_own': ar.get_rank(uid),
-                                                'group_name': ''})
+                                                'group_name': game_config.script_group_object[group_id]['name']})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,
                                         'score': score,
-                                        'group_name': ''})
+                                        'group_name': game_config.script_group_object[group_id]['name']})
 
         return 0, {
             'rank_list': alloutput_rank_list[start - 1:end],
@@ -151,4 +151,5 @@ def get_user_info(hm):
         'all_income': mm.user.script_income,
         'script_num': len(mm.script.own_script),
         'top_cards': mm.card.get_better_card(),
-        'uid':uid}
+        'uid':uid,
+        'role':mm.user.role}
