@@ -33,7 +33,7 @@ class ScriptGachaLogics(object):
 
         data = {
             'coin_cd_expire': self.gacha.cd_expire(),                   # 普通抽cd倒计时
-            'diamond_cd_expire': self.gacha.cd_expire(gacha_type=1),    # 钻石抽cd倒计时
+            'diamond_cd_expire': self.gacha.cd_expire(gacha_type=2),    # 钻石抽cd倒计时
             'coin_time': self.gacha.coin_time,                  # 探寻时间
             'coin_times': self.gacha.coin_times,                # 探寻次数
             'diamond_time': self.gacha.diamond_time,            # 探寻时间
@@ -45,7 +45,7 @@ class ScriptGachaLogics(object):
     def get_gacha(self, sort, count=1):
         """
         抽卡
-        :param sort: 1:钻石抽, 0:金币抽,
+        :param sort: 1:金币抽, 2:钻石抽
         :param count: 1或10次
         :return:
         """

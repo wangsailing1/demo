@@ -39,16 +39,16 @@ class ScriptGacha(ModelBase):
             self.coin_times = 0
             self.diamond_times = 0
 
-    def cd_expire(self, gacha_type=0):
+    def cd_expire(self, gacha_type=1):
         if not game_config.script_gacha_cd:
             return 0
 
         if gacha_type == 1:
-            times = self.diamond_times
-            last_time = self.diamond_time
-        else:
             times = self.coin_times
             last_time = self.coin_time
+        else:
+            times = self.diamond_times
+            last_time = self.diamond_time
 
         if not times:
             return 0
