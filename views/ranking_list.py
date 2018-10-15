@@ -185,7 +185,7 @@ def block_index(hm):
             umm = ModelManager(uid)
             script_id = int(script_id)
             name = umm.user.name
-            script_name = umm.block.top_script.get(date, {}).get(script_id)['name']
+            script_name = umm.block.top_script.get(date, {}).get(script_id,{}).get('name','')
             if mm.uid in uid_script_id:
                 rank_own_list.append({'uid': uid,
                                       'name': name,
