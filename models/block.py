@@ -6,10 +6,10 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 
+REWORD_TIME = '22:30:00'
 
 class Block(ModelBase):
     NUM = 'num'
-    REWORD_TIME = '22:30:00'
 
     def __init__(self, uid):
         self.uid = uid
@@ -18,9 +18,28 @@ class Block(ModelBase):
             'cup': 0,
             'block_group': 1,
             'top_script':{},
+            'big_sale':0,
+            'last_date':'',
+            'reward_data':{},
+            'award_ceremony':0,
+            'reward_daily':'',
         }
 
         super(Block, self).__init__(self.uid)
+
+    def pre_use(self):
+        if self.last_date != get_date():
+            self.last_date = get_date()
+
+            #todo 计算奖杯
+            self.reward_data = self.count_cup()
+            self.big_sale = 0
+            self.top_script = {}
+            self.award_ceremony = 0
+            self.save()
+
+    def count_cup(self):
+        return {}
 
     def up_block(self, cup):
         config = game_config.dan_grading_list
@@ -42,6 +61,14 @@ class Block(ModelBase):
         if not type:
             return '%s||%s' % (block, group)
         return '%s||%s||%s' % (block, group, type)
+
+# 获取日期
+def get_date():
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time >= REWORD_TIME:
+        now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+    return now
 
 
 
