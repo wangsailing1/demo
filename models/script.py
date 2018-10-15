@@ -118,7 +118,8 @@ class Script(ModelBase):
         cur_block_top_script = self.mm.block.top_script.get(date, {}).get(script_id,{})
         top_block_script_income = cur_block_top_script.get('finished_summary', {'income': 0})['income']
         if top_block_script_income < income:
-            self.mm.block.top_script.setdefault(date,{})
+            if date not in self.mm.block.top_script:
+                self.mm.block.top_script[date] = {}
             self.mm.block.top_script[date][script_id] = dict(film_info)
             if len(self.mm.block.top_script) >= 2:
                 del_date = min(self.mm.block.top_script.items(),key=lambda x:x[0])[0]
