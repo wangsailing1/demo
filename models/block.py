@@ -17,6 +17,7 @@ class Block(ModelBase):
             'block_num': 1,
             'cup': 0,
             'block_group': 1,
+            'top_script':{},
         }
 
         super(Block, self).__init__(self.uid)
@@ -33,7 +34,7 @@ class Block(ModelBase):
         """
         :param block: block(记录街区所有人)  block_num(取编码)
         :param group: 
-        :param type:  剧本type ，男，女，媒体评分，观众评分
+        :param type:  剧本type ，nan=男，nv=女，medium=媒体评分，audience=观众评分,income=总票房,script=单片票房
         :return: 
         """
         if not group and not type:

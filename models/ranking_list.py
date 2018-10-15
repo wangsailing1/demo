@@ -493,6 +493,9 @@ class WorldBossRank(AllRank):
 
 
 class BlockRank(AllRank):
+    """
+    奖励类型 ：剧本类型（1=电影，2=电视，3=综艺，nv=女主角，nan=男主角，audience=用户，medium=媒体）
+    """
     NUM = 'num'
     REWORD_TIME = '22:30:00'
 
@@ -501,7 +504,12 @@ class BlockRank(AllRank):
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
         self.fredis = self.get_father_redis(father_server)
-        self.key_date = self._key + '||' + self.get_date()
+        self._key_date = self.key_date()
+
+    def key_date(self,date=None):
+        if not date:
+            date = self.get_date()
+        return self._key + '||' + date
 
     # 获取日期
     def get_date(self):
@@ -513,24 +521,24 @@ class BlockRank(AllRank):
 
     # 把玩家添加到所属街区
     def add_user_by_block(self, uid=None, score=0):
-        self.fredis.zadd(self.key_date, uid, score)
-        self.fredis.expire(self.key_date, 7 * 24 * 3600)
+        self.fredis.zadd(self._key_date, uid, score)
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     # 从街区删除玩家（玩家升级街区后操作）
     def delete_user_by_block(self, uid=None):
-        self.fredis.zrem(self.key_date, uid)
+        self.fredis.zrem(self._key_date, uid)
 
     # 检查玩家是否在所属街区
     def check_user_exist_by_block(self, uid=None):
-        return self.fredis.zscore(self.key_date, uid)
+        return self.fredis.zscore(self._key_date, uid)
 
     # 获取编号
     def get_num(self):
-        return self.fredis.incr(self.key_date)
+        return self.fredis.incr(self._key_date)
 
     # 计算玩家所属组
     def get_group(self, uid=None):
-        rank = self.fredis.zrank(self.key_date, uid)
+        rank = self.fredis.zrank(self._key_date, uid)
         if rank == 0:
             return 1
         if rank % 100 or not rank % 100 and rank / 100:
@@ -539,13 +547,13 @@ class BlockRank(AllRank):
 
     # 记录最大的有人街区
     def set_max_block(self,block_num):
-        max_block = int(self.fredis.get(self.key_date)) if self.fredis.get(self.key_date) else 0
+        max_block = int(self.fredis.get(self._key_date)) if self.fredis.get(self._key_date) else 0
         if block_num > max_block:
-            self.fredis.set(self.key_date, block_num)
+            self.fredis.set(self._key_date, block_num)
 
     # 获取最大的有人街区
     def get_max_block(self):
-        return int(self.fredis.get(self.key_date)) if self.fredis.get(self.key_date) else 0
+        return int(self.fredis.get(self._key_date)) if self.fredis.get(self._key_date) else 0
 
 
 
