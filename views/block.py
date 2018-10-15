@@ -63,7 +63,7 @@ def join_award_ceremony(hm):
                     'score':score
                 }
                 id += 1
-    return 0, {}
+    return 0, data
 
 
 
