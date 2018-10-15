@@ -18,6 +18,7 @@ from lib.utils import add_dict
 from lib.core.environ import ModelManager
 
 from gconfig import game_config
+from gconfig import get_str_words
 
 
 class Card(ModelBase):
@@ -75,12 +76,6 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def get_card_default_name(cls, card_id, card_config=None):
-        card_config = card_config or game_config.card_basis[card_id]
-        default_name = game_config.ZH_CN.get(str(card_config['name']), '')
-        return default_name
-
-    @classmethod
     def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
@@ -88,7 +83,7 @@ class Card(ModelBase):
         card_dict = {
             'popularity': 0,  # 人气
 
-            'name': cls.get_card_default_name(card_id, card_config),  # 卡牌名字
+            'name': get_str_words('1', card_config['name']),  # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
             'is_cold': False,  # 是否雪藏
@@ -158,7 +153,8 @@ class Card(ModelBase):
 
         for k, v in self.cards.iteritems():
             if not v.get('name'):
-                v['name'] = self.get_card_default_name(v['id'])
+                card_config = game_config.card_basis[v['id']]
+                v['name'] = get_str_words('1', card_config['name'])
 
             v.setdefault('popularity', 0)
 
