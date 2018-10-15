@@ -22,7 +22,8 @@ main_hero = {
     'sex': ('sex', 'int'),  # 性别
     'painting': ('painting', 'str'),  # 立绘
     'icon': ('icon', 'str'),  # 初始头像
-    'half_painting': ('half_painting', 'str')  # 半身像
+    'half_painting': ('half_painting', 'str'),  # 半身像
+    'price': ('price', 'int')  # 钻石价格
 }
 
 # 动作可获得的经验
