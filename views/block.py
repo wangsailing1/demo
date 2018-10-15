@@ -16,6 +16,8 @@ def join_award_ceremony(hm):
                    'get_award_ceremony': mm.block.get_award_ceremony}
     block = Block(mm)
     data = block.join_award_ceremony()
+    data['award_ceremony'] = 0
+    data['get_award_ceremony'] = 0
     return 0, data
 
 
