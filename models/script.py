@@ -16,7 +16,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 from lib.core.environ import ModelManager
-from models.ranking_list import AppealRank, BlockRank
+from models.ranking_list import AppealRank, BlockRank,get_date
 
 
 class Script(ModelBase):
@@ -112,7 +112,7 @@ class Script(ModelBase):
         block_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                       'script')
         br = BlockRank(block_rank_uid, self._server_name)
-        date = br.get_date()
+        date = get_date()
 
         #记录当天街区拍片记录
         cur_block_top_script = self.mm.block.top_script.get(date, {}).get(script_id,{})
