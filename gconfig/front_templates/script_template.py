@@ -149,3 +149,28 @@ script_gacha = {
 
 }
 
+
+# 抽剧本
+diamond_script_gacha = {
+    'uk': ('id', 'int'),  #
+    'script_id': ('script_id', 'int'),  #
+    'weight': ('weight', 'int'),  #
+    'weight_special': ('weight_special', 'int'),  #
+
+}
+
+# 抽剧本cd
+script_gacha_cd = {
+    'uk': ('time', 'int'),  #
+    'cd': ('cd', 'int'),  #
+
+}
+
+
+# 抽剧本cost
+script_gacha_cost = {
+    'uk': ('type', 'int'),  #
+    'cost': ('cost', 'int_list'),  #
+
+}
+
