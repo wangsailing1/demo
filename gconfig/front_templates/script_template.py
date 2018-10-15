@@ -59,6 +59,8 @@ script_style_suit = {
     'attention': ('attention', 'int'),  # 市场关注度影响
     'desc1': ('desc1', 'int'),  # desc
     'desc2': ('desc2', 'int'),  # desc
+    'icon': ('icon', 'str'),  # icon
+    'icon2': ('icon2', 'str'),  # icon
 
 }
 
@@ -136,4 +138,14 @@ script_license = ({
     'uk': ('num', 'int'),  # 今日恢复数量
     'cd': ('cd', 'int'),  # 冷却时间（分钟）
 }, 'script_licence_config')
+
+
+# 抽剧本
+script_gacha = {
+    'uk': ('id', 'int'),  #
+    'script_id': ('script_id', 'int'),  #
+    'weight': ('weight', 'int'),  #
+    'weight_special': ('weight_special', 'int'),  #
+
+}
 
