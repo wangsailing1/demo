@@ -6,7 +6,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 
-REWORD_TIME = '22:30:00'
+REWARD_TIME = '22:30:00'
 
 
 class Block(ModelBase):
@@ -67,7 +67,7 @@ class Block(ModelBase):
 def get_date():
     now = time.strftime('%F')
     now_time = time.strftime('%T')
-    if now_time >= REWORD_TIME:
+    if now_time >= REWARD_TIME:
         now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
     return now
 
@@ -76,7 +76,7 @@ def get_date():
 def get_date_before():
     now = time.strftime('%F')
     now_time = time.strftime('%T')
-    if now_time < REWORD_TIME:
+    if now_time < REWARD_TIME:
         now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
     return now
 
