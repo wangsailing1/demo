@@ -205,10 +205,23 @@ class ScriptLogic(object):
 
     # 7.剧本属性计算
     def calc_script_attr(self):
+        """
+        总熟练度 = Σ【参演演员的熟练度等级】
+        每项属性值 = 拍摄结果属性值 × [1+总熟练度/熟练度系数m]
+        PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
+        PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
+
+        熟练度除以系数走common表数据id10，m=25
+        :return:
+        """
         # todo 剧本属性计算
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
+
+        # 选卡、设置类型两轮操作艺人发挥，累计得出拍摄结果属性
+        card_effect = cur_script['card_effect']
+        style_effect = cur_script['style_effect']
 
         skilled = 0     # 总熟练度
         for role_id, card_oid in cur_script['card'].iteritems():
@@ -216,6 +229,7 @@ class ScriptLogic(object):
             for style, lv_info in card_info['style_pro'].iteritems():
                 skilled += lv_info['lv']
 
+        # 熟练度系数
         skilled_rate = game_config.common[10]
         add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
 

@@ -79,7 +79,8 @@ class Script(ModelBase):
         """根据大卖与否开启续作"""
         script_config = game_config.script[cur_script['id']]
         sequel_count = script_config['sequel_count']
-        # todo 判断是否符合续作条件
+        # todo 判断是否符合续作条件 script_end_level表if_next_script字段
+
         if sequel_count and sequel_count not in self.sequel_script:
             self.sequel_script.append(sequel_count)
 
