@@ -27,6 +27,7 @@ class Block(ModelBase):
             'reward_daily': '',  # 日常奖励领取时间
             'get_award_ceremony': 0,  # 典礼奖励是否领取
             'has_ceremony': 0,
+            'cup_log':{}  #奖杯获取
         }
 
         super(Block, self).__init__(self.uid)

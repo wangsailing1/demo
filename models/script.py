@@ -180,11 +180,20 @@ class Script(ModelBase):
 
         # 艺人拍片票房及次数记录
         style_id = script_config['style']
+        type_id = script_config['type']
         for role_id, card_id in film_info['card'].iteritems():
+
+            #按类型记录
             self.mm.card.cards[card_id]['style_income'][style_id] = self.mm.card.cards[card_id]['style_income'].get(
                 style_id, 0) + income
             self.mm.card.cards[card_id]['style_film_num'][style_id] = self.mm.card.cards[card_id]['style_film_num'].get(
                 style_id, 0) + 1
+            #按种类记录
+            self.mm.card.cards[card_id]['type_income'][type_id] = self.mm.card.cards[card_id]['type_income'].get(
+                type_id, 0) + income
+            self.mm.card.cards[card_id]['type_film_num'][type_id] = self.mm.card.cards[card_id]['type_film_num'].get(
+                type_id, 0) + 1
+
             group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
             # 记录主角总票房排行
             sex = game_config.card_basis[self.mm.card.cards[card_id]['id']]['sex_type']

@@ -616,11 +616,12 @@ class UserLogic(object):
         if is_sensitive(name):
             return 1, {}
 
-        cost_list = game_config.get_value(15, [200])
-        if self.user.change_name < len(cost_list):
-            cost = cost_list[self.user.change_name]
-        else:
-            cost = cost_list[-1]
+        # cost_list = game_config.get_value(15, [200])
+        # if self.user.change_name < len(cost_list):
+        #     cost = cost_list[self.user.change_name]
+        # else:
+        #     cost = cost_list[-1]
+        cost = game_config.common(29, 500)
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
 
@@ -942,11 +943,17 @@ class UserLogic(object):
         :param icon:
         :return:
         """
-        unlock_icon = self.unlock_icon()
-
-        if icon not in unlock_icon:
-            return 1, {}    # 该头像未解锁
-
+        # unlock_icon = self.unlock_icon()
+        #
+        # if icon not in unlock_icon:
+        #     return 1, {}    # 该头像未解锁
+        config = game_config.main_hero.get(icon,{})
+        if not config:
+            return 1, {} #没有头像
+        need_diamond = config['price']
+        if not self.user.is_diamond_enough(need_diamond):
+            return 'error_diamond', {}
+        self.user.deduct_diamond(need_diamond)
         self.user.role = icon
         self.user.save()
 

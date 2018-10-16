@@ -106,7 +106,9 @@ class Card(ModelBase):
             'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': )}}
             'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': )}}
             'style_income': {},  # 拍片类型票房
-            'style_film_num': {}  # 拍片类型数量
+            'style_film_num': {},  # 拍片类型数量
+            'type_income':{}, #拍片种类票房
+            'type_film_num':{} #拍片种类次数
 
         }
         return card_oid, card_dict
@@ -182,6 +184,11 @@ class Card(ModelBase):
                 v['style_income'] = {}
             if 'style_film_num' not in v:
                 v['style_film_num'] = {}
+
+            if 'type_income' not in v:
+                v['type_income'] = {}
+            if 'type_film_num' not in v:
+                v['type_film_num'] = {}
 
             v.setdefault('is_cold', False)
 
