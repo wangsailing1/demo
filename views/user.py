@@ -12,6 +12,7 @@ from lib.sdk_platform.sdk_uc import send_role_data_uc
 from models.user import GSMessage
 from models import server as serverM
 from models.config import ConfigRefresh
+from logics.block import Block
 
 
 def main(hm):
@@ -45,7 +46,6 @@ def main(hm):
     # 触发通关任务
     task_event_dispatch = mm.get_event('task_event_dispatch')
     task_event_dispatch.call_method('daily_login')
-
 
     # # vip每日礼包
     # mm.user.send_vip_daily_reward()
@@ -135,7 +135,8 @@ def game_info(hm):
     #                  citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
     #                  aitem=mm.awaken_item.items, )
     item_info = dict(item=mm.item.items)
-
+    block = Block(mm)
+    block.check_has_ceremony()
     info.update(**item_info)
 
     return 0, info
@@ -235,8 +236,7 @@ def player_info(hm):
     mm = hm.mm
 
     user_id = hm.get_argument('user_id')
-    flag = hm.get_argument('flag', is_int=True)     # 标志，1：巅峰战力榜，2：天梯排行榜，3：关卡星级榜
-
+    flag = hm.get_argument('flag', is_int=True)  # 标志，1：巅峰战力榜，2：天梯排行榜，3：关卡星级榜
 
     if not user_id:
         return 'error_100', {}
@@ -427,7 +427,8 @@ def top_rank(hm):
     :return:
     """
     mm = hm.mm
-    NEW_RANK_KEY = {'combat', 'endless', 'level', 'single_hero', 'high_ladder', 'home_flower', 'guild_level', 'private_city_star',
+    NEW_RANK_KEY = {'combat', 'endless', 'level', 'single_hero', 'high_ladder', 'home_flower', 'guild_level',
+                    'private_city_star',
                     'decisive_battle', 'dark_street', 'big_world_power'}
 
     sort = hm.get_argument('sort', '')
@@ -435,7 +436,7 @@ def top_rank(hm):
     num = hm.get_argument('num', default=20, is_int=True)
 
     if sort not in NEW_RANK_KEY:
-        return -1, {}   # 没有该类排行榜
+        return -1, {}  # 没有该类排行榜
 
     if page < 0:
         page = 0
@@ -572,8 +573,8 @@ def set_title(hm):
     """
     mm = hm.mm
 
-    title = hm.get_argument('title', is_int=True)   # 称号id
-    down = hm.get_argument('down', is_int=True)     # 是否卸下称号，1:卸下，其他不处理
+    title = hm.get_argument('title', is_int=True)  # 称号id
+    down = hm.get_argument('down', is_int=True)  # 是否卸下称号，1:卸下，其他不处理
 
     if title <= 0:
         return 'error_100', {}
@@ -627,10 +628,10 @@ def gs_msg(hm):
 
     now = int(time.time())
     if now - mm.user.last_add_gs_msg < 20:
-        return 1, {}            # 您提出的建议太频繁了, 请稍后再提
+        return 1, {}  # 您提出的建议太频繁了, 请稍后再提
 
     if len(msg) > 100:
-        return 2, {}            # 建议在100个字符内
+        return 2, {}  # 建议在100个字符内
 
     gs_message = GSMessage()
     gs_message.add_msg(mm.user, msg, msg_type)
@@ -669,7 +670,7 @@ def slg_index(hm):
     :param hm:
     :return:
     """
-    slg_open_remain_days = 2         # 开服几天后开启slg
+    slg_open_remain_days = 2  # 开服几天后开启slg
     hours = 12
 
     # config_id = 143
