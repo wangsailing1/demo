@@ -30,8 +30,10 @@ def friends(hm):
     mm = hm.mm
 
     fl = FriendLogic(mm)
-
+    _, actor_data = fl.actor_chat_index()
     data = fl.friends_info()
+    data['actor'] = actor_data
+    data['newest_friend'] = mm.friend.newest_friend
 
     return 0, data
 
