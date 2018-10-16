@@ -57,15 +57,15 @@ class ScriptGachaLogics(object):
             return rc, {}
 
         if sort == 1:
-            cost_type = 'diamond'
-            script_id = self.get_diamond_gacha()
-            self.gacha.diamond_times += 1
-            self.gacha.diamond_time = int(time.time())
-        else:
             cost_type = 'coin'
             script_id = self.get_coin_gacha()
             self.gacha.coin_times += 1
             self.gacha.coin_time = int(time.time())
+        else:
+            cost_type = 'diamond'
+            script_id = self.get_diamond_gacha()
+            self.gacha.diamond_times += 1
+            self.gacha.diamond_time = int(time.time())
 
         new_script = self.mm.script.add_own_script(script_id)
 

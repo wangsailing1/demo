@@ -45,6 +45,9 @@ class Script(ModelBase):
             'top_group': {},  # 按剧本系列 {gruop_id: film_info}
             'top_all': {},  # 单片票房最高
 
+
+            'end_lv_log': {}     # 剧本大卖统计 {script_id: {end_lv: times}}
+
         }
         super(Script, self).__init__(self.uid)
 
@@ -285,6 +288,8 @@ class Script(ModelBase):
             'finished_audience_judge': 0,  # 评价 观众评价 200
             'finished_summary': {},  # 票房总结{'income': 100, 'cost': 50},
             'finished_analyse': {},  # 票房分析
+
+            'end_lv': 0,                # 结束档次
 
 
             'attention': 0,  # 关注度
