@@ -26,7 +26,7 @@ class Block(ModelBase):
             'award_ceremony': 0,  # 是否参加过颁奖典礼
             'reward_daily': '',  # 日常奖励领取时间
             'get_award_ceremony': 0,  # 典礼奖励是否领取
-            'has_ceremony':1,
+            'has_ceremony': 0,
         }
 
         super(Block, self).__init__(self.uid)

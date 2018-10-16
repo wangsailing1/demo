@@ -19,7 +19,7 @@ class Block(object):
         data = {}
         for tp in self.block.rank_list:
             rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
-                                                    tp)
+                                                 tp)
             data.setdefault(tp, {'win': {}, 'nomination': {}})
             date = get_date_before()
             br = BlockRank(rank_uid, self.block._server_name, date)
@@ -103,17 +103,16 @@ class Block(object):
                 robot_data.append([name, script_name])
         return {'own': data, 'robot': robot_data}
 
-
     def get_reward(self):
         self.count_cup()
         data = {}
         info = self.mm.block.reward_data
         cup = 0
-        for k,v in info.iteritems():
+        for k, v in info.iteritems():
             if k == 'big_sale_cup':
                 cup += v
             else:
-                cup += 1  #类型奖杯奖励读配置
+                cup += 1  # 类型奖杯奖励读配置
         data['old_block_num'] = self.block.block_num
         data['old_block_group'] = self.block.block_group
         self.block.get_award_ceremony = 1
@@ -128,8 +127,8 @@ class Block(object):
             self.block.block_group = group
         reward = {}
         if self.block.block_num > data['old_block_num']:
-            gift = game_config.dan_grading_list.get(self.block.block_num).get('reach_rewards',[])
-            reward = add_mult_gift(self.mm,gift)
+            gift = game_config.dan_grading_list.get(self.block.block_num).get('reach_rewards', [])
+            reward = add_mult_gift(self.mm, gift)
         data['new_block_num'] = self.block.block_num
         data['new_block_group'] = self.block.block_group
         data['cup'] = cup
@@ -142,7 +141,7 @@ class Block(object):
         data = {}
         for tp in self.block.rank_list:
             rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
-                                                    tp)
+                                                 tp)
             data.setdefault(tp, {})
             date = get_date_before()
             br = BlockRank(rank_uid, self.block._server_name, date)
@@ -175,3 +174,12 @@ class Block(object):
                     }
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
+
+    def check_has_ceremony(self):
+        date = get_date_before()
+        block_rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
+                                                   'script')
+        br = BlockRank(block_rank_uid, self.block._server_name, date)
+        if br.get_all_user():
+            self.block.has_ceremony = 1
+            self.block.save()
