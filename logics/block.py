@@ -14,6 +14,7 @@ class Block(object):
     def __init__(self, mm):
         self.mm = mm
         self.block = self.mm.block
+        self.card = self.mm.card
 
     def join_award_ceremony(self):
         data = {}
@@ -159,6 +160,7 @@ class Block(object):
                         'card_name': card_name,
                         'score': score
                     }
+                    self.block.cup_log[tp] = self.block.cup_log.get(tp,0) + 1
             else:
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
@@ -172,6 +174,7 @@ class Block(object):
                         'script_name': script_name,
                         'score': score
                     }
+                    self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
 
