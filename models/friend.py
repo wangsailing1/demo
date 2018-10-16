@@ -75,6 +75,7 @@ class Friend(ModelBase):
             'phone_daily_times': 0,
             'phone_daily_log': {},
             'nickname': {},
+            'newest_friend':[]
 
         }
         super(Friend, self).__init__(self.uid)
@@ -205,6 +206,8 @@ class Friend(ModelBase):
             message['id'] = self.messages[-1]['id'] + 1
 
         self.messages.append(message)
+        self.newest_friend.append(message['send_uid'])
+        self.newest_friend = self.newest_friend[-10:]
 
         if save:
             self.save()

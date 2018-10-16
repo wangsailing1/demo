@@ -916,7 +916,9 @@ class FriendLogic(object):
                 self.friend.chat_over[group_id] = [chapter_id]
             else:
                 self.friend.chat_over[group_id].append(chapter_id)
-
+        if group_id not in self.friend.newest_friend:
+            self.friend.newest_friend.append(group_id)
+            self.friend.newest_friend = self.friend.newest_friend[-10:]
         self.friend.save()
         return 0, {'reward': reward,
                    'add_value': add_value}
