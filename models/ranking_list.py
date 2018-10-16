@@ -525,7 +525,7 @@ class BlockRank(AllRank):
 
     # 获取编号
     def get_num(self):
-        return self.fredis.incr(self._key_date)
+        return self.fredis.incr('%s||%s'%(self._key_date,'num'))
 
     # 计算玩家所属组
     def get_group(self, uid=None):
