@@ -492,20 +492,19 @@ class WorldBossRank(AllRank):
         self.fredis.delete(self._all_guild_key)
 
 
-
 class BlockRank(AllRank):
     """
     奖励类型 ：剧本类型（1=电影，2=电视，3=综艺，nv=女主角，nan=男主角，audience=用户，medium=媒体,reward=记录获奖人）
     """
 
-    def __init__(self, uid='', server='', date='',*args, **kwargs):
+    def __init__(self, uid='', server='', date='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
         self.fredis = self.get_father_redis(father_server)
         self._key_date = self.key_date(date)
 
-    def key_date(self,date=''):
+    def key_date(self, date=''):
         if not date:
             date = get_date()
         return self._key + '||' + date
@@ -525,7 +524,7 @@ class BlockRank(AllRank):
 
     # 获取编号
     def get_num(self):
-        return self.fredis.incr('%s||%s'%(self._key_date,'num'))
+        return self.fredis.incr('%s_%s' % (self._key_date, 'num'))
 
     # 计算玩家所属组
     def get_group(self, uid=None):
@@ -537,7 +536,7 @@ class BlockRank(AllRank):
         return rank / 100
 
     # 记录最大的有人街区
-    def set_max_block(self,block_num):
+    def set_max_block(self, block_num):
         max_block = int(self.fredis.get(self._key_date)) if self.fredis.get(self._key_date) else 0
         if block_num > max_block:
             self.fredis.set(self._key_date, block_num)
@@ -545,8 +544,6 @@ class BlockRank(AllRank):
     # 获取最大的有人街区
     def get_max_block(self):
         return int(self.fredis.get(self._key_date)) if self.fredis.get(self._key_date) else 0
-
-
 
 
 ModelManager.register_model_base_tools('level_rank', LevelRank)
