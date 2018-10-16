@@ -26,6 +26,7 @@ class Block(ModelBase):
             'award_ceremony': 0,  # 是否参加过颁奖典礼
             'reward_daily': '',  # 日常奖励领取时间
             'get_award_ceremony': 0,  # 典礼奖励是否领取
+            'has_ceremony':1,
         }
 
         super(Block, self).__init__(self.uid)
@@ -37,8 +38,8 @@ class Block(ModelBase):
             # todo 计算奖杯
             self.big_sale = 0
             self.award_ceremony = 0
+            self.has_ceremony = 1
             self.save()
-
 
     def up_block(self, cup, is_save=False):
         config = game_config.dan_grading_list

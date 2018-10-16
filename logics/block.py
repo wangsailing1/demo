@@ -7,6 +7,7 @@ from models.ranking_list import BlockRank
 from lib.core.environ import ModelManager
 from models.block import get_date_before
 from gconfig import game_config, get_str_words
+from tools.gift import add_mult_gift
 
 
 class Block(object):
@@ -116,6 +117,7 @@ class Block(object):
         data['old_block_num'] = self.block.block_num
         data['old_block_group'] = self.block.block_group
         self.block.get_award_ceremony = 1
+        self.block.has_ceremony = 0
         self.block.up_block(cup)
         key_uid = self.block.get_key_profix(self.block.block_num)
         b = BlockRank(key_uid, self.block._server_name)
@@ -124,9 +126,14 @@ class Block(object):
             b.add_user_by_block(self.mm.uid, num)
             group = b.get_group(self.mm.uid)
             self.block.block_group = group
+        reward = {}
+        if self.block.block_num > data['old_block_num']:
+            gift = game_config.dan_grading_list.get(self.block.block_num).get('reach_rewards',[])
+            reward = add_mult_gift(self.mm,gift)
         data['new_block_num'] = self.block.block_num
         data['new_block_group'] = self.block.block_group
         data['cup'] = cup
+        data['reach_rewards'] = reward
         self.block.save()
 
         return data

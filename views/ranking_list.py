@@ -187,7 +187,8 @@ def block_index(hm):
     own_info = {'block_num':mm.block.block_num,
                 'cup':mm.block.cup,
                 'need_cup':game_config.dan_grading_list[mm.block.block_num]['promotion_cup_num'],
-                'remain_time':remain_time}
+                'remain_time':remain_time,
+                'reward_daily':time.strftime('%F') == mm.block.reward_daily}
     if rank_id == 1:
         rank_own_list = []
         for uid_script_id, score in rank_list:

@@ -62,6 +62,9 @@ def main(hm):
     config_refresh, _, config_refresh_text = ConfigRefresh.check()
     result['config_refresh'] = 0 if mm.user.level < 6 else config_refresh
     result['config_refresh_text'] = config_refresh_text
+    result['award_ceremony'] = mm.block.award_ceremony
+    result['get_award_ceremony'] = mm.block.get_award_ceremony
+    result['has_ceremony'] = mm.block.has_ceremony
 
     return 0, result
 
