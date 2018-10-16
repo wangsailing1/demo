@@ -1,7 +1,9 @@
 # -*- coding: utf-8 –*-
+import time
 from lib.core.environ import ModelManager
 from gconfig import game_config
-from models.ranking_list import BlockRank,get_date
+from models.ranking_list import BlockRank
+from models.block import REWARD_TIME,get_date
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -178,6 +180,14 @@ def block_index(hm):
 
     script_list = []
     income_list = []
+    reward_time = date + ' ' + REWARD_TIME
+    reward_time = int(time.mktime(time.strptime(reward_time,'%Y-%m-%d %H:%M:%S')))
+    now_time = int(time.time())
+    remain_time = reward_time - now_time
+    own_info = {'block_num':mm.block.block_num,
+                'cup':mm.block.cup,
+                'need_cup':game_config.dan_grading_list[mm.block.block_num]['promotion_cup_num'],
+                'remain_time':remain_time}
     if rank_id == 1:
         rank_own_list = []
         for uid_script_id, score in rank_list:
@@ -200,7 +210,8 @@ def block_index(hm):
                                 'script_name': script_name})
         return 0, {
             'rank_list': script_list[start - 1:end],
-            'rank_own': rank_own_list
+            'rank_own': rank_own_list,
+            'own_info':own_info
         }
     elif rank_id == 2:
         income_rank_own_list = []
@@ -218,5 +229,6 @@ def block_index(hm):
 
         return 0, {
             'rank_list': income_list[start - 1:end],
-            'rank_own': income_rank_own_list
+            'rank_own': income_rank_own_list,
+            'own_info': own_info
         }

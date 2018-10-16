@@ -497,8 +497,6 @@ class BlockRank(AllRank):
     """
     奖励类型 ：剧本类型（1=电影，2=电视，3=综艺，nv=女主角，nan=男主角，audience=用户，medium=媒体,reward=记录获奖人）
     """
-    NUM = 'num'
-    REWORD_TIME = '22:30:00'
 
     def __init__(self, uid='', server='', date='',*args, **kwargs):
         super(AllRank, self).__init__()
