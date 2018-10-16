@@ -59,10 +59,10 @@ class Block(ModelBase):
         :return: 
         """
         if not group and not type:
-            return '%s' % (block)
+            return 'block_%s_all' % (block)
         if not type:
-            return '%s||%s' % (block, group)
-        return '%s||%s||%s' % (block, group, type)
+            return 'block_%s||group_%s' % (block, group)
+        return 'block_%s||group_%s||type_%s' % (block, group, type)
 
 
 # 获取日期
