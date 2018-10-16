@@ -219,10 +219,6 @@ class ScriptLogic(object):
         script = self.mm.script
         cur_script = script.cur_script
 
-        # 选卡、设置类型两轮操作艺人发挥，累计得出拍摄结果属性
-        card_effect = cur_script['card_effect']
-        style_effect = cur_script['style_effect']
-
         skilled = 0     # 总熟练度
         for role_id, card_oid in cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
@@ -233,15 +229,36 @@ class ScriptLogic(object):
         skilled_rate = game_config.common[10]
         add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
 
+
+        # 选卡、设置类型两轮操作艺人发挥，累计得出拍摄结果属性
+        # {role_id: {attr: value}}
+        card_effect = cur_script['card_effect']
+        style_effect = cur_script['style_effect']
+
+        script_effect = {}  # 拍摄结果
+        for per_effect in [card_effect, style_effect]:
+            for _, info in per_effect.iteritems():
+                for attr, value in info.iteritems():
+                    script_effect[attr] = script_effect.get(attr, 0) + value
+
+        # 每项属性值
+        attrs = {}
+        for attr, effect in script_effect:
+            attrs[attr] = effect * [1 + skilled / skilled_rate]
+
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
-        # pro_id: [add_value, limit_value]
+        # pro_id: [add_value, limit_value]  # todo limit_value
         for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
                 continue
-            add_attr[idx] = [random.randint(1, 100), random.randint(100, 150)]
+            add_attr[idx] = [attrs.get(idx, 0), random.randint(100, 150)]
 
-        return {'add_attr': add_attr}
+        return {
+            'add_attr': add_attr,
+            'part_a': 0,
+            'part_b': 0,
+        }
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
