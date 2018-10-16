@@ -227,4 +227,5 @@ phone_chapter_dialogue = {
     'hero_id': ('hero_id', 'int'),
     'chapter_id': ('chapter_id', 'int'),
     'dialogue_id': ('dialogue_id', 'int'),
+    'dialogue_name': ('dialogue_name', 'int'),
 }
