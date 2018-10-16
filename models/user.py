@@ -74,7 +74,8 @@ class User(ModelBase):
     :var coin: 金币
     :var silver: 银币
     :var total_silver: 累积银币
-    :var role: 角色id, 主英雄的icon
+    :var role: 角色id, 主英雄的性别
+    :var icon: 主英雄的头像
     :var vip: vip等级
     :var vip_exp: vip经验
     :var active_time: 最后活跃时间

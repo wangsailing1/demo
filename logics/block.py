@@ -133,7 +133,7 @@ class Block(object):
         data['new_block_num'] = self.block.block_num
         data['new_block_group'] = self.block.block_group
         data['cup'] = cup
-        data['reach_rewards'] = reward
+        data['reward'] = reward
         self.block.save()
 
         return data
