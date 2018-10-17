@@ -1551,13 +1551,13 @@ class GameConfigMixIn(object):
         name = first_name + last_name
         return name
 
-    def get_last_random_name(self, lan_sort, mod_id=None):
+    def get_last_random_name(self, lan_sort, mod_id=None,sex=1):
         """ 获取后缀随机名字
         :param mod_id: 指定第几个名字
         :return:
         """
         from gconfig import get_str_words
-        last_name = self.last_random_name.get('last_name', [])
+        last_name = self.last_random_name.get(sex,{}).get('last_name', [])
         name = ''
         if last_name:
             if mod_id is None:

@@ -179,9 +179,12 @@ class Script(ModelBase):
             bar.add_rank(br_uid, audience_score)
 
 
-        # 艺人拍片票房及次数记录
+
         style_id = script_config['style']
         type_id = script_config['type']
+
+
+        # 艺人拍片票房及次数记录
         for role_id, card_id in film_info['card'].iteritems():
 
             #按类型记录
@@ -373,6 +376,28 @@ class Script(ModelBase):
                 group_list = group_list[:num]
             group_info = {i: j for i, j in group_list}
             return group_info
+
+
+    #统计
+    def count_info(self):
+        # 剧本大卖统计 {script_id: {end_lv: times}}
+        end_level = {}
+        style_log = {}
+        type_log = {}
+        for script_id,value in self.end_lv_log.iteritems():
+            script_config = game_config.script[script_id]
+            tp = script_config['type']
+            style = script_config['style']
+            for end_lv,times in value.iteritems():
+                end_level[end_lv] = end_level.get(end_lv,0) + times
+                style_log[style] = style_log.get(style,0) + times
+                type_log[tp] = type_log.get(tp,0) + times
+        return {
+            'end_level':end_level,
+            'style_log':style_log,
+            'type_log':type_log
+        }
+
 
 
 ModelManager.register_model('script', Script)

@@ -65,6 +65,7 @@ def main(hm):
     result['award_ceremony'] = mm.block.award_ceremony
     result['get_award_ceremony'] = mm.block.get_award_ceremony
     result['has_ceremony'] = mm.block.has_ceremony
+    result['ceremony_remain_time'] = mm.block.get_remain_time()
 
     return 0, result
 
@@ -529,6 +530,21 @@ def get_player_icon(hm):
 
     return 0, data
 
+def unlock_icon(hm):
+    mm = hm.mm
+
+    icon = hm.get_argument('icon', is_int=True)
+    if icon <= 0:
+        return 'error_100', {}
+
+    ul = UserLogic(mm)
+    rc, data = ul.set_got_icon(icon)
+
+    if rc != 0:
+        return rc, {}
+
+    return 0, data
+
 
 def change_icon(hm):
     """
@@ -704,6 +720,15 @@ def slg_index(hm):
 
 def user_info(hm):
     mm = hm.mm
+    all_info = mm.script.count_info()
+    ar = mm.get_obj_tools('output_rank')
     data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
             'script_info': mm.script.get_scrip_info_by_num(),
-            }
+            'end_level':all_info['end_level'],
+            'style_log': all_info['style_log'],
+            'type_log': all_info['type_log'],
+            'cup':mm.block.cup_log,
+            'block_num':mm.block.block_num,
+            'rank':ar.get_rank(mm.uid),
+            'chapter':mm.chapter_stage.get_now_stage()}
+    return 0, data

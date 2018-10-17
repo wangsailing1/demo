@@ -288,7 +288,8 @@ first_random_name = ({
 # 主角姓名随机
 last_random_name = ({
                         'uk': ('last_name', 'unicode'),  # 名字
-                    }, 'last_random_name')
+                        'gender': ('gender', 'int'),  # 类型
+                    },'last_random_name')
 
 # 剧情对话
 drama = {

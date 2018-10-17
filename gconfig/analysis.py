@@ -643,7 +643,10 @@ def common_pop_key(replace_key):
 def last_random_name(config, data):
 
     last_name = data.get('uk')
-    add_dict_list(config, 'last_name', last_name)
+    sex = data.get('gender')
+    if sex not in config:
+        config[sex] = {}
+    add_dict_list(config[sex], 'last_name', last_name)
 
     return config
 

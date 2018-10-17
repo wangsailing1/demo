@@ -39,5 +39,15 @@ class Chapter_stage(ModelBase):
                         s_v['fight_times'] = 0
             self.save()
 
+    def get_now_stage(self):
+        chapter = max(self.next_chapter)
+        stage = self.chapter.get(chapter,{}).get(0,{}).keys()
+        if not stage:
+            stage = 1
+        else:
+            stage = max(stage)
+        return '%s-%s'%(chapter,stage)
+
+
 
 ModelManager.register_model('chapter_stage', Chapter_stage)

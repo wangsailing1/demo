@@ -104,6 +104,7 @@ class User(ModelBase):
     :var guild_exp_times: {    # 公会经验副本挑战次数
         coin_id: 0                   # 据点id:使用的次数
     },
+    :var got_icon: [],   # 已解锁icon
     :var opera_awards: [],   # 剧情奖励领取记录
     :var level_mail_done: [],   # 已领取的等级奖励邮件id
     :var coin_log: [],          # 钻石获取记录
@@ -175,6 +176,7 @@ class User(ModelBase):
             'update_exp_pot': 0,
             'privileges': {},
             'update_privilege': 0,
+            'got_icon':[],
             # 'diamond': 0,
             'consume_diamond': 0,   # 历史消费钻石
             'consume_silver': 0,    # 历史消费钻石

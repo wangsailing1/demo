@@ -169,6 +169,11 @@ user_msg = {
     'user.change_icon': {
         1: u'该头像未解锁',
     },
+    'user.unlock_icon': {
+        1: u'没有头像',
+        2: u'头像已解锁',
+        3: u'性别不符',
+    },
 }
 
 card_msg = {
@@ -323,6 +328,9 @@ block_msg = {
     'block.get_daily_reward': {
         1: u'已领奖',
         2: u'配置错误'
+    },
+    'block.congratulation': {
+        1: u'已祝贺',
     }
 }
 
