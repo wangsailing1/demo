@@ -64,6 +64,9 @@ class Block(object):
                     name = umm.user.name
                     script_id = int(script_id)
                     script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    if not script_name:
+                        script_name = game_config.script[script_id]['name']
+                        script_name = get_str_words(self.mm.user.language_sort, script_name)
 
                     if not data[tp_num]['win']:
                         data[tp_num]['win'] = {

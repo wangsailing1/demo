@@ -705,6 +705,7 @@ def slg_index(hm):
 def user_info(hm):
     mm = hm.mm
     all_info = mm.script.count_info()
+    ar = mm.get_obj_tools('output_rank')
     data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
             'script_info': mm.script.get_scrip_info_by_num(),
             'end_level':all_info['end_level'],
@@ -712,5 +713,5 @@ def user_info(hm):
             'type_log': all_info['type_log'],
             'cup':mm.block.cup_log,
             'block_num':mm.block.block_num,
-            }
+            'rank':ar.get_rank(mm.uid)}
     return 0, data
