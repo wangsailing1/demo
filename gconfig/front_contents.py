@@ -492,7 +492,7 @@ rank_mapping = {
     'rank_reward_list': ('rank_reward_list', True),
     'dan_grading_list': ('dan_grading_list', True),
     'cup_num':          ('cup_num',          True),
-    'compere_lines':    ('compere_lines',    True),
+    'dan_grading_privilage':    ('dan_grading_privilage',    True),
 }
 
 
