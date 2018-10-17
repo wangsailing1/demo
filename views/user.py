@@ -713,5 +713,6 @@ def user_info(hm):
             'type_log': all_info['type_log'],
             'cup':mm.block.cup_log,
             'block_num':mm.block.block_num,
-            'rank':ar.get_rank(mm.uid)}
+            'rank':ar.get_rank(mm.uid),
+            'chapter':mm.chapter_stage.get_now_stage()}
     return 0, data
