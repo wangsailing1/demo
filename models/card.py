@@ -176,7 +176,7 @@ class Card(ModelBase):
             if 'equips' not in v:
                 v['equips'] = []
 
-            if 'style_pro' not in v:
+            if 'style_pro' not in v or not v['style_pro']:
                 v['style_pro'] = {}
                 for style_id in game_config.script_style.keys():
                     v['style_pro'][style_id] = {'exp': 0, 'lv': 0}
