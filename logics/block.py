@@ -21,13 +21,15 @@ class Block(object):
         for tp in self.block.rank_list:
             rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                  tp)
-            data.setdefault(tp, {'win': {}, 'nomination': {}})
+            data = {}
             date = get_date_before()
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
                 tp_num = self.block.RANKMAPPING[tp]
                 id = 1
+                if tp_num not in data:
+                    data[tp_num] = {'win': {}, 'nomination': {}}
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
                     umm = ModelManager(uid)
@@ -55,12 +57,15 @@ class Block(object):
                 if tp in ['medium', 'audience']:
                     tp_num = self.block.RANKMAPPING[tp]
                 id = 1
+                if tp_num not in data:
+                    data[tp_num]= {'win': {}, 'nomination': {}}
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
                     umm = ModelManager(uid)
                     name = umm.user.name
                     script_id = int(script_id)
                     script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+
                     if not data[tp_num]['win']:
                         data[tp_num]['win'] = {
                             'uid': uid,
