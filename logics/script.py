@@ -253,6 +253,7 @@ class ScriptLogic(object):
         limit_value = max(script_config['good_attr']) * game_config.common[27] + game_config.common[28]
         for pro_id, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
+                attrs.pop(pro_id, '')
                 continue
             add_attr[pro_id] = [attrs.get(pro_id, 0), limit_value]
 
@@ -272,17 +273,17 @@ class ScriptLogic(object):
 
         # PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
         part_a = (
-                     add_attr.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
-                     add_attr.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
+                     attrs.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
+                     attrs.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
 
                  ) + (1 + skilled / skilled_rate)
 
         # PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
         part_b = (
-                         add_attr.get(entertainment_pro_id, 0) / standard_attr[pro_id_mapping[entertainment_pro_id]] +
-                         add_attr.get(sports_pro_id, 0) / standard_attr[pro_id_mapping[sports_pro_id]] +
-                         add_attr.get(song_pro_id, 0) / standard_attr[pro_id_mapping[song_pro_id]] +
-                         add_attr.get(performance_pro_id, 0) / standard_attr[pro_id_mapping[performance_pro_id]]
+                     attrs.get(entertainment_pro_id, 0) / standard_attr[pro_id_mapping[entertainment_pro_id]] +
+                     attrs.get(sports_pro_id, 0) / standard_attr[pro_id_mapping[sports_pro_id]] +
+                     attrs.get(song_pro_id, 0) / standard_attr[pro_id_mapping[song_pro_id]] +
+                     attrs.get(performance_pro_id, 0) / standard_attr[pro_id_mapping[performance_pro_id]]
 
                  ) + (1 + skilled / skilled_rate)
 
