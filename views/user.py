@@ -529,6 +529,21 @@ def get_player_icon(hm):
 
     return 0, data
 
+def unlock_icon(hm):
+    mm = hm.mm
+
+    icon = hm.get_argument('icon', is_int=True)
+    if icon <= 0:
+        return 'error_100', {}
+
+    ul = UserLogic(mm)
+    rc, data = ul.set_got_icon(icon)
+
+    if rc != 0:
+        return rc, {}
+
+    return 0, data
+
 
 def change_icon(hm):
     """

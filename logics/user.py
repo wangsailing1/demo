@@ -934,8 +934,21 @@ class UserLogic(object):
 
             if flag:
                 unlock_icon.add(i)
-
+        unlock_icon = unlock_icon | set(self.got_icon)
         return unlock_icon
+
+    def set_got_icon(self,icon):
+
+        config = game_config.main_hero.get(icon,{})
+        if not config:
+            return 1, {} #没有头像
+        if icon in self.got_icon:
+            return 2, {}  #头像已解锁
+        need_diamond = config['price']
+        if not self.user.is_diamond_enough(need_diamond):
+            return 'error_diamond', {}
+        self.user.deduct_diamond(need_diamond)
+        self.got_icon.append(icon)
 
     def change_icon(self, icon):
         """
@@ -943,17 +956,17 @@ class UserLogic(object):
         :param icon:
         :return:
         """
-        # unlock_icon = self.unlock_icon()
-        #
-        # if icon not in unlock_icon:
-        #     return 1, {}    # 该头像未解锁
-        config = game_config.main_hero.get(icon,{})
-        if not config:
-            return 1, {} #没有头像
-        need_diamond = config['price']
-        if not self.user.is_diamond_enough(need_diamond):
-            return 'error_diamond', {}
-        self.user.deduct_diamond(need_diamond)
+        unlock_icon = self.unlock_icon()
+
+        if icon not in unlock_icon:
+            return 1, {}    # 该头像未解锁
+        # config = game_config.main_hero.get(icon,{})
+        # if not config:
+        #     return 1, {} #没有头像
+        # need_diamond = config['price']
+        # if not self.user.is_diamond_enough(need_diamond):
+        #     return 'error_diamond', {}
+        # self.user.deduct_diamond(need_diamond)
         self.user.role = icon
         self.user.save()
 
