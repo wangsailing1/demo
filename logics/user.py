@@ -651,6 +651,7 @@ class UserLogic(object):
 
         self.user.name = name
         self.user.role = role
+        self.user.got_icon.append(role)
         # if role not in game_config.main_hero:
         #     return 4, {}    # 角色ID错误
         # self.mm.role_info.init_role(role)
