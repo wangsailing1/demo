@@ -8,14 +8,17 @@ from gconfig import game_config
 
 def join_award_ceremony(hm):
     mm = hm.mm
+    block = Block(mm)
+    block.count_cup(is_save=True)
     if mm.block.award_ceremony:
         return 0, {'award_ceremony': mm.block.award_ceremony,
-                   'get_award_ceremony': mm.block.get_award_ceremony}
-    block = Block(mm)
+                   'get_award_ceremony': mm.block.get_award_ceremony,
+                   'reward':mm.block.reward_data}
+
     data = block.join_award_ceremony()
     data['award_ceremony'] = 0
     data['get_award_ceremony'] = 0
-    data['reward_data'] = mm.block.reward_data
+    data['reward'] = mm.block.reward_data
     return 0, data
 
 
