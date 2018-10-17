@@ -196,6 +196,9 @@ class Block(object):
                     rank = br.get_rank(uid)
                     script_id = int(script_id)
                     script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    if not script_name:
+                        script_name = game_config.script[script_id]['name']
+                        script_name = get_str_words(self.mm.user.language_sort, script_name)
                     reward_type = 'win_cup_num'
                     if rank > 1:
                         reward_type = 'nomi_cup_num'

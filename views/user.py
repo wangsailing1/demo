@@ -704,6 +704,13 @@ def slg_index(hm):
 
 def user_info(hm):
     mm = hm.mm
+    all_info = mm.script.count_info()
     data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
             'script_info': mm.script.get_scrip_info_by_num(),
+            'end_level':all_info['end_level'],
+            'style_log': all_info['style_log'],
+            'type_log': all_info['type_log'],
+            'cup':mm.block.cup_log,
+            'block_num':mm.block.block_num,
             }
+    return 0, data

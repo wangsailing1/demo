@@ -381,8 +381,22 @@ class Script(ModelBase):
     #统计
     def count_info(self):
         # 剧本大卖统计 {script_id: {end_lv: times}}
+        end_level = {}
+        style_log = {}
+        type_log = {}
         for script_id,value in self.end_lv_log.iteritems():
-            pass
+            script_config = game_config.script[script_id]
+            tp = script_config['type']
+            style = script_config['style']
+            for end_lv,times in value.iteritems():
+                end_level[end_lv] = end_level.get(end_lv,0) + times
+                style_log[style] = style_log.get(style,0) + times
+                type_log[tp] = type_log.get(tp,0) + times
+        return {
+            'end_level':end_level,
+            'style_log':style_log,
+            'type_log':type_log
+        }
 
 
 
