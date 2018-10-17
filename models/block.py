@@ -12,6 +12,7 @@ REWARD_TIME = '22:30:00'
 class Block(ModelBase):
     NUM = 'num'
     rank_list = [1, 2, 3, 'nv', 'nan', 'medium', 'audience']
+    RANKMAPPING = {'nv': 4, 'nan': 5, 'medium': 6, 'audience': 7}
 
     def __init__(self, uid):
         self.uid = uid

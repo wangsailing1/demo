@@ -153,8 +153,12 @@ class Block(object):
                     uid, card_id = uid_card_id.split('_')
                     if self.mm.uid != uid:
                         continue
+                    rank = br.get_rank(uid)
                     card_cid = self.card.cards[card_id]['id']
                     card_name = self.card.cards[card_id]['name']
+                    reward_type = 1
+                    if rank > 1:
+                        reward_type = 2
                     data[tp] = {
                         'name': self.mm.user.name,
                         'card_cid': card_cid,
