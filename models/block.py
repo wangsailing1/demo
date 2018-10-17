@@ -69,6 +69,14 @@ class Block(ModelBase):
             return 'block_%s||group_%s' % (block, group)
         return 'block_%s||group_%s||type_%s' % (block, group, type)
 
+    def get_remain_time(self):
+        date = get_date()
+        reward_time = date + ' ' + REWARD_TIME
+        reward_time = int(time.mktime(time.strptime(reward_time, '%Y-%m-%d %H:%M:%S')))
+        now_time = int(time.time())
+        remain_time = reward_time - now_time
+        return remain_time
+
 
 # 获取日期
 def get_date():

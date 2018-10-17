@@ -180,10 +180,7 @@ def block_index(hm):
 
     script_list = []
     income_list = []
-    reward_time = date + ' ' + REWARD_TIME
-    reward_time = int(time.mktime(time.strptime(reward_time,'%Y-%m-%d %H:%M:%S')))
-    now_time = int(time.time())
-    remain_time = reward_time - now_time
+    remain_time = mm.block.get_remain_time()
     own_info = {'block_num':mm.block.block_num,
                 'cup':mm.block.cup,
                 'need_cup':game_config.dan_grading_list[mm.block.block_num]['promotion_cup_num'],

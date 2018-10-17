@@ -65,6 +65,7 @@ def main(hm):
     result['award_ceremony'] = mm.block.award_ceremony
     result['get_award_ceremony'] = mm.block.get_award_ceremony
     result['has_ceremony'] = mm.block.has_ceremony
+    result['ceremony_remain_time'] = mm.block.get_remain_time()
 
     return 0, result
 
