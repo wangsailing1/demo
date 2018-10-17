@@ -243,7 +243,7 @@ class ScriptLogic(object):
         # 每项属性值
         attrs = {}
         for attr, effect in script_effect.iteritems():
-            attrs[attr] = effect * [1 + skilled / skilled_rate]
+            attrs[attr] = effect * (1 + skilled / skilled_rate)
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
