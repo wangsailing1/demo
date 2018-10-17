@@ -27,7 +27,7 @@ cup_num = {
     'win_cup_num': ('win_cup_num', 'int'),
     'nomi_cup_num': ('nomi_cup_num', 'int'),
     'like_num': ('like_num', 'int_list'),
-    'first_lines': ('first_lines', 'int'),
+    'first_lines': ('first_lines', 'int_list'),
     'last_lines': ('last_lines', 'int'),
     'sort': ('sort', 'int'),
 }
