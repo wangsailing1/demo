@@ -103,14 +103,17 @@ class Card(ModelBase):
             'train_times': 0,  # 培训次数
             'train_ext_pro': [0] * len(cls.PRO_IDX_MAPPING),  # 训练属性加成
 
-            'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': )}}
-            'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': )}}
+            'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': }}
+            'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': 0}}
             'style_income': {},  # 拍片类型票房
             'style_film_num': {},  # 拍片类型数量
             'type_income':{}, #拍片种类票房
             'type_film_num':{} #拍片种类次数
 
         }
+        for style_id in game_config.script_style.keys():
+            card_dict['style_pro'][style_id] = {'exp': 0, 'lv': 0}
+
         return card_oid, card_dict
 
     @property
@@ -177,8 +180,10 @@ class Card(ModelBase):
             if 'equips' not in v:
                 v['equips'] = []
 
-            if 'style_pro' not in v:
+            if 'style_pro' not in v or not v['style_pro']:
                 v['style_pro'] = {}
+                for style_id in game_config.script_style.keys():
+                    v['style_pro'][style_id] = {'exp': 0, 'lv': 0}
 
             if 'style_income' not in v:
                 v['style_income'] = {}
