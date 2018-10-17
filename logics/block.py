@@ -147,7 +147,7 @@ class Block(object):
             data.setdefault(tp, {})
             date = get_date_before()
             br = BlockRank(rank_uid, self.block._server_name, date)
-            nomination = br.get_all_user(0, 0, withscores=True)
+            nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
@@ -159,11 +159,14 @@ class Block(object):
                     reward_type = 1
                     if rank > 1:
                         reward_type = 2
+                    tp = self.block.RANKMAPPING[tp]
                     data[tp] = {
                         'name': self.mm.user.name,
                         'card_cid': card_cid,
                         'card_name': card_name,
-                        'score': score
+                        'score': score,
+                        'reward_type':reward_type,
+
                     }
                     self.block.cup_log[tp] = self.block.cup_log.get(tp,0) + 1
             else:
@@ -171,13 +174,20 @@ class Block(object):
                     uid, script_id = uid_script_id.split('_')
                     if self.mm.uid != uid:
                         continue
+                    rank = br.get_rank(uid)
                     script_id = int(script_id)
                     script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    reward_type = 1
+                    if rank > 1:
+                        reward_type = 2
+                    if tp in ['medium','audience']:
+                        tp = self.block.RANKMAPPING[tp]
                     data[tp] = {
                         'name': self.mm.user.name,
                         'script_id': script_id,
                         'script_name': script_name,
-                        'score': score
+                        'score': score,
+                        'reward_type': reward_type,
                     }
                     self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
