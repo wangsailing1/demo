@@ -29,6 +29,7 @@ cup_num = {
     'like_num': ('like_num', 'int_list'),
     'first_lines': ('first_lines', 'int'),
     'last_lines': ('last_lines', 'int'),
+    'sort': ('sort', 'int'),
 }
 
 # #颁奖设置
