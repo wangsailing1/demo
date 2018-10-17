@@ -112,7 +112,7 @@ class Block(object):
             if k == 'big_sale_cup':
                 cup += v
             else:
-                cup += 1  # 类型奖杯奖励读配置
+                cup += info['cup']  # 类型奖杯奖励读配置
         data['old_block_num'] = self.block.block_num
         data['old_block_group'] = self.block.block_group
         self.block.get_award_ceremony = 1
@@ -156,16 +156,18 @@ class Block(object):
                     rank = br.get_rank(uid)
                     card_cid = self.card.cards[card_id]['id']
                     card_name = self.card.cards[card_id]['name']
-                    reward_type = 1
+                    reward_type = 'win_cup_num'
                     if rank > 1:
-                        reward_type = 2
+                        reward_type = 'nomi_cup_num'
                     tp = self.block.RANKMAPPING[tp]
+                    cup = game_config.cup_num[int(tp)].get(reward_type,1)
                     data[tp] = {
                         'name': self.mm.user.name,
                         'card_cid': card_cid,
                         'card_name': card_name,
                         'score': score,
                         'reward_type':reward_type,
+                        'cup':cup
 
                     }
                     self.block.cup_log[tp] = self.block.cup_log.get(tp,0) + 1
@@ -177,17 +179,19 @@ class Block(object):
                     rank = br.get_rank(uid)
                     script_id = int(script_id)
                     script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
-                    reward_type = 1
+                    reward_type = 'win_cup_num'
                     if rank > 1:
-                        reward_type = 2
+                        reward_type = 'nomi_cup_num'
                     if tp in ['medium','audience']:
                         tp = self.block.RANKMAPPING[tp]
+                    cup = game_config.cup_num[int(tp)].get(reward_type, 1)
                     data[tp] = {
                         'name': self.mm.user.name,
                         'script_id': script_id,
                         'script_name': script_name,
                         'score': score,
                         'reward_type': reward_type,
+                        'cup': cup
                     }
                     self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
             data['big_sale_cup'] = self.block.big_sale

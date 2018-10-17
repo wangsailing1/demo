@@ -18,3 +18,19 @@ rank_reward_list = {
     'rank': ('rank', 'int_list'),
     'daily_reward': ('daily_reward', 'int_list'),
 }
+
+#奖杯设置
+cup_num = {
+    'uk': ('id', 'int'),
+    'award_name': ('award_name', 'int'),
+    'win_cup_num': ('win_cup_num', 'int'),
+    'nomi_cup_num': ('nomi_cup_num', 'int'),
+}
+
+#颁奖设置
+compere_lines = {
+    'uk': ('id', 'int'),
+    'first_lines': ('first_lines', 'int'),
+    'mid_lines': ('mid_lines', 'int'),
+    'last_lines': ('last_lines', 'int'),
+}
