@@ -26,7 +26,7 @@ class Block(object):
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
-                tp = self.block.RANKMAPPING[tp]
+                tp_num = self.block.RANKMAPPING[tp]
                 id = 1
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
@@ -34,15 +34,15 @@ class Block(object):
                     name = umm.user.name
                     card_cid = umm.card.cards[card_id]['id']
                     card_name = umm.card.cards[card_id]['name']
-                    if not data[tp]['win']:
-                        data[tp]['win'] = {
+                    if not data[tp_num]['win']:
+                        data[tp_num]['win'] = {
                             'uid':uid,
                             'name': name,
                             'card_cid': card_cid,
                             'card_name': card_name,
                             'score': score
                         }
-                    data[tp]['nomination'][id] = {
+                    data[tp_num]['nomination'][id] = {
                         'uid': uid,
                         'name': name,
                         'card_cid': card_cid,
@@ -51,8 +51,9 @@ class Block(object):
                     }
                     id += 1
             else:
+                tp_num = tp
                 if tp in ['medium', 'audience']:
-                    tp = self.block.RANKMAPPING[tp]
+                    tp_num = self.block.RANKMAPPING[tp]
                 id = 1
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
@@ -60,15 +61,15 @@ class Block(object):
                     name = umm.user.name
                     script_id = int(script_id)
                     script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
-                    if not data[tp]['win']:
-                        data[tp]['win'] = {
+                    if not data[tp_num]['win']:
+                        data[tp_num]['win'] = {
                             'uid': uid,
                             'name': name,
                             'script_id': script_id,
                             'script_name': script_name,
                             'score': score
                         }
-                    data[tp]['nomination'][id] = {
+                    data[tp_num]['nomination'][id] = {
                         'uid': uid,
                         'name': name,
                         'script_id': script_id,
@@ -157,7 +158,7 @@ class Block(object):
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
-                tp = self.block.RANKMAPPING[tp]
+                tp_num = self.block.RANKMAPPING[tp]
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
                     if self.mm.uid != uid:
@@ -169,8 +170,8 @@ class Block(object):
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
 
-                    cup = game_config.cup_num[int(tp)].get(reward_type,1)
-                    data[tp] = {
+                    cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
+                    data[tp_num] = {
                         'name': self.mm.user.name,
                         'card_cid': card_cid,
                         'card_name': card_name,
@@ -179,10 +180,11 @@ class Block(object):
                         'cup':cup
 
                     }
-                    self.block.cup_log[tp] = self.block.cup_log.get(tp,0) + 1
+                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
             else:
+                tp_num = tp
                 if tp in ['medium', 'audience']:
-                    tp = self.block.RANKMAPPING[tp]
+                    tp_num = self.block.RANKMAPPING[tp]
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
                     if self.mm.uid != uid:
@@ -193,8 +195,8 @@ class Block(object):
                     reward_type = 'win_cup_num'
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
-                    cup = game_config.cup_num[int(tp)].get(reward_type, 1)
-                    data[tp] = {
+                    cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
+                    data[tp_num] = {
                         'name': self.mm.user.name,
                         'script_id': script_id,
                         'script_name': script_name,
@@ -202,7 +204,7 @@ class Block(object):
                         'reward_type': reward_type,
                         'cup': cup
                     }
-                    self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
+                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         if is_save:
