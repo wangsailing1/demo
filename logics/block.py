@@ -159,9 +159,9 @@ class Block(object):
                     reward_type = 'win_cup_num'
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
-                    tp = self.block.RANKMAPPING[tp]
-                    cup = game_config.cup_num[int(tp)].get(reward_type,1)
-                    data[tp] = {
+                    tp_num = self.block.RANKMAPPING[tp]
+                    cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
+                    data[tp_num] = {
                         'name': self.mm.user.name,
                         'card_cid': card_cid,
                         'card_name': card_name,
@@ -183,9 +183,9 @@ class Block(object):
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
                     if tp in ['medium','audience']:
-                        tp = self.block.RANKMAPPING[tp]
-                    cup = game_config.cup_num[int(tp)].get(reward_type, 1)
-                    data[tp] = {
+                        tp_num = self.block.RANKMAPPING[tp]
+                    cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
+                    data[tp_num] = {
                         'name': self.mm.user.name,
                         'script_id': script_id,
                         'script_name': script_name,
