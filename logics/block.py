@@ -149,6 +149,7 @@ class Block(object):
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
+                tp_num = self.block.RANKMAPPING[tp]
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
                     if self.mm.uid != uid:
@@ -159,7 +160,7 @@ class Block(object):
                     reward_type = 'win_cup_num'
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
-                    tp_num = self.block.RANKMAPPING[tp]
+
                     cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
                     data[tp_num] = {
                         'name': self.mm.user.name,
@@ -170,8 +171,10 @@ class Block(object):
                         'cup':cup
 
                     }
-                    self.block.cup_log[tp] = self.block.cup_log.get(tp,0) + 1
+                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
             else:
+                if tp in ['medium', 'audience']:
+                    tp_num = self.block.RANKMAPPING[tp]
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
                     if self.mm.uid != uid:
@@ -182,8 +185,6 @@ class Block(object):
                     reward_type = 'win_cup_num'
                     if rank > 1:
                         reward_type = 'nomi_cup_num'
-                    if tp in ['medium','audience']:
-                        tp_num = self.block.RANKMAPPING[tp]
                     cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
                     data[tp_num] = {
                         'name': self.mm.user.name,
@@ -193,7 +194,7 @@ class Block(object):
                         'reward_type': reward_type,
                         'cup': cup
                     }
-                    self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
+                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         if is_save:
