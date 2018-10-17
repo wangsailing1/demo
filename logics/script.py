@@ -272,21 +272,29 @@ class ScriptLogic(object):
         sports_pro_id = name_pro_mapping['sports']
 
         # PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
-        part_a = (
-                     attrs.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
-                     attrs.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
+        base_a = 0
+        for pro_id in [art_pro_id, temperament_pro_id]:
+            # 系数为 0 表示无此属性不生效
+            if not standard_attr[pro_id_mapping[pro_id]]:
+                continue
+            base_a += attrs.get(pro_id, 0) / standard_attr[pro_id_mapping[pro_id]]
+        part_a = base_a + (1 + skilled / skilled_rate)
 
-                 ) + (1 + skilled / skilled_rate)
+        # part_a = (
+        #              attrs.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
+        #              attrs.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
+        #
+        #          ) + (1 + skilled / skilled_rate)
 
         # PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
-        base = 0
+        base_b = 0
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
             # 系数为 0 表示无此属性不生效
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
-            base += attrs.get(pro_id, 0) / standard_attr[pro_id_mapping[pro_id]]
+            base_b += attrs.get(pro_id, 0) / standard_attr[pro_id_mapping[pro_id]]
+        part_b = base_b + (1 + skilled / skilled_rate)
 
-        part_b = base + (1 + skilled / skilled_rate)
         #
         # part_b = (
         #              attrs.get(entertainment_pro_id, 0) / (standard_attr[pro_id_mapping[entertainment_pro_id]] or 1) +
