@@ -486,6 +486,8 @@ rank_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'rank_reward_list': ('rank_reward_list', True),
     'dan_grading_list': ('dan_grading_list', True),
+    'cup_num':          ('cup_num',          True),
+    'compere_lines':    ('compere_lines',    True),
 }
 
 
