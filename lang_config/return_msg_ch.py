@@ -328,6 +328,9 @@ block_msg = {
     'block.get_daily_reward': {
         1: u'已领奖',
         2: u'配置错误'
+    },
+    'block.congratulation': {
+        1: u'已祝贺',
     }
 }
 
