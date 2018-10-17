@@ -701,3 +701,9 @@ def slg_index(hm):
         'level': config.get('unlock_limit', 100)
     }
     return 0, data
+
+def user_info(hm):
+    mm = hm.mm
+    data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
+            'script_info': mm.script.get_scrip_info_by_num(),
+            }
