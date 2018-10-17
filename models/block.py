@@ -13,6 +13,7 @@ class Block(ModelBase):
     NUM = 'num'
     rank_list = [1, 2, 3, 'nv', 'nan', 'medium', 'audience']
     RANKMAPPING = {'nv': 4, 'nan': 5, 'medium': 6, 'audience': 7}
+    RANK = {1: 1, 2: 2, 3: 3, 4: 'nv', 5: 'nan', 6: 'medium', 7: 'audience'}
 
     def __init__(self, uid):
         self.uid = uid
@@ -29,7 +30,7 @@ class Block(ModelBase):
             'get_award_ceremony': 0,  # 典礼奖励是否领取
             'has_ceremony': 0,
             'cup_log': {},  # 奖杯获取
-            'is_count': 0,  #是否计算奖杯
+            'is_count': 0,  # 是否计算奖杯
         }
 
         super(Block, self).__init__(self.uid)

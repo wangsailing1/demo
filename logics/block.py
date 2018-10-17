@@ -26,6 +26,7 @@ class Block(object):
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:
+                tp = self.block.RANKMAPPING[tp]
                 id = 1
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
@@ -35,12 +36,14 @@ class Block(object):
                     card_name = umm.card.cards[card_id]['name']
                     if not data[tp]['win']:
                         data[tp]['win'] = {
+                            'uid':uid,
                             'name': name,
                             'card_cid': card_cid,
                             'card_name': card_name,
                             'score': score
                         }
                     data[tp]['nomination'][id] = {
+                        'uid': uid,
                         'name': name,
                         'card_cid': card_cid,
                         'card_name': card_name,
@@ -48,6 +51,8 @@ class Block(object):
                     }
                     id += 1
             else:
+                if tp in ['medium', 'audience']:
+                    tp = self.block.RANKMAPPING[tp]
                 id = 1
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
@@ -57,12 +62,14 @@ class Block(object):
                     script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not data[tp]['win']:
                         data[tp]['win'] = {
+                            'uid': uid,
                             'name': name,
                             'script_id': script_id,
                             'script_name': script_name,
                             'score': score
                         }
                     data[tp]['nomination'][id] = {
+                        'uid': uid,
                         'name': name,
                         'script_id': script_id,
                         'script_name': script_name,
@@ -71,8 +78,9 @@ class Block(object):
                     id += 1
         big_sale_info = self.get_big_sale_info()
         data['big_sale_info'] = big_sale_info
-        self.block.award_ceremony = 1
-        self.block.save()
+        if not self.block.award_ceremony:
+            self.block.award_ceremony = 1
+            self.block.save()
         return data
 
     def get_big_sale_info(self):
