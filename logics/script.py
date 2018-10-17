@@ -216,7 +216,6 @@ class ScriptLogic(object):
         熟练度除以系数走common表数据id10，m=25
         :return:
         """
-        # todo 剧本属性计算
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
@@ -237,7 +236,7 @@ class ScriptLogic(object):
 
         script_effect = {}  # 拍摄结果
         for per_effect in [card_effect, style_effect]:
-            for _, info in per_effect.iteritems():
+            for _, info in per_effect['effect'].iteritems():
                 for attr, value in info.iteritems():
                     script_effect[attr] = script_effect.get(attr, 0) + value
 
@@ -359,25 +358,57 @@ class ScriptLogic(object):
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
-        """专业评价"""
-        # todo 专业评价
+        """
+        专业评分 = PartA/剧本难度系数/专业评分系数A +题材类型匹配度加成/10
+        观众评分 = PartB/剧本难度系数/观众评分系数B +题材类型匹配度加成/10
+        
+        剧本难度系数读取script表的字段hard_rate
+        题材类型匹配度加成读取script_style_suit表的rate字段
+        评分系数AB读取common表数据id12、13
+        """
+
         script = self.mm.script
         cur_script = script.cur_script
-        # todo 得到点赞数
-        return {'score': 100, 'like': 10}
+        script_config = game_config.script[cur_script['id']]
+
+        finished_attr = cur_script['finished_attr']
+        part_a = finished_attr.get('part_a', 0)
+        score_rate = game_config.common[12]
+        suit_config = game_config.script_style_suit[cur_script['suit']]
+
+        score = part_a / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
+        # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
+        like_rate = game_config.common[14]
+        return {'score': score, 'like': int(score * like_rate)}
 
     def calc_audience_judge(self):
-        """观众评价"""
-        # todo 观众评价
+        """观众评分 = PartB/剧本难度系数/观众评分系数B +题材类型匹配度加成/10
+        """
+
         script = self.mm.script
         cur_script = script.cur_script
-        return {'score': 200}
+        script_config = game_config.script[cur_script['id']]
+
+        finished_attr = cur_script['finished_attr']
+        part_b = finished_attr.get('part_b', 0)
+        score_rate = game_config.common[13]
+        suit_config = game_config.script_style_suit[cur_script['suit']]
+
+        score = part_b / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
+
+        return {'score': score}
 
     def calc_curve(self):
         # todo 需要计算： 票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
 
         script = self.mm.script
         cur_script = script.cur_script
+
+        finished_medium_judge = cur_script['finished_medium_judge']
+        finished_audience_judge = cur_script['finished_audience_judge']
+
+        medium_score = finished_medium_judge['score']
+        audience_score = finished_audience_judge['score']
 
         curve_id = 1
         curve_config = game_config.script_curve[curve_id]
