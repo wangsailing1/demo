@@ -16,6 +16,8 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 
+from models.card import Card
+
 
 class ScriptLogic(object):
     def __init__(self, mm):
@@ -227,8 +229,6 @@ class ScriptLogic(object):
 
         # 熟练度系数
         skilled_rate = game_config.common[10]
-        add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
-
 
         # 选卡、设置类型两轮操作艺人发挥，累计得出拍摄结果属性
         # {role_id: {attr: value}}
@@ -248,16 +248,49 @@ class ScriptLogic(object):
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
-        # pro_id: [add_value, limit_value]  # todo limit_value
-        for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
+        # pro_id: [add_value, limit_value]
+        # 战斗属性显示上限 = 最高的单项标准数值*系数1+系数2
+        # 系数1 common 27， 系数2 28
+        limit_value = max(script_config['good_attr']) * game_config.common[27] + game_config.common[28]
+        for pro_id, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
                 continue
-            add_attr[idx] = [attrs.get(idx, 0), random.randint(100, 150)]
+            add_attr[pro_id] = [attrs.get(pro_id, 0), limit_value]
+
+        # CHAR_PRO_NAME = ['演技',        '歌艺', '娱乐',         '艺术', '气质',         '动感']
+        # CHAR_PRO_NAME = ['performance', 'song', 'entertainment', 'art', 'temperament', 'sports']
+        name_pro_mapping = Card.CHAR_PRO_NAME_PRO_ID_MAPPING
+        pro_id_mapping = Card.PRO_IDX_MAPPING
+
+        standard_attr = script_config['standard_attr']
+
+        performance_pro_id = name_pro_mapping['performance']
+        song_pro_id = name_pro_mapping['song']
+        entertainment_pro_id = name_pro_mapping['entertainment']
+        art_pro_id = name_pro_mapping['art']
+        temperament_pro_id = name_pro_mapping['temperament']
+        sports_pro_id = name_pro_mapping['sports']
+
+        # PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
+        part_a = (
+                     add_attr.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
+                     add_attr.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
+
+                 ) + (1 + skilled / skilled_rate)
+
+        # PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
+        part_b = (
+                         add_attr.get(entertainment_pro_id, 0) / standard_attr[pro_id_mapping[entertainment_pro_id]] +
+                         add_attr.get(sports_pro_id, 0) / standard_attr[pro_id_mapping[sports_pro_id]] +
+                         add_attr.get(song_pro_id, 0) / standard_attr[pro_id_mapping[song_pro_id]] +
+                         add_attr.get(performance_pro_id, 0) / standard_attr[pro_id_mapping[performance_pro_id]]
+
+                 ) + (1 + skilled / skilled_rate)
 
         return {
             'add_attr': add_attr,
-            'part_a': 0,
-            'part_b': 0,
+            'part_a': part_a,
+            'part_b': part_b,
         }
 
     # 3.计算影片关注度
