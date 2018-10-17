@@ -20,6 +20,7 @@ def join_award_ceremony(hm):
     data['award_ceremony'] = mm.block.award_ceremony
     data['get_award_ceremony'] = mm.block.get_award_ceremony
     data['reward'] = mm.block.reward_data
+    data['remain_time'] = mm.block.get_remain_time()
     mm.block.save()
     return 0, data
 
