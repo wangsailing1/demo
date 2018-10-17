@@ -166,6 +166,7 @@ month_card = {
     'price':            ('price',           'int'),  # 所需RMB
     'effective_days':   ('effective_days',  'int'),  # 持续天数
     'daily_rebate':     ('daily_rebate',    'int_list'),  # 每日奖励
+    'des':              ('des',             'int'),  # 每日奖励
 }
 
 charge_ios = {
