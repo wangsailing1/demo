@@ -378,4 +378,12 @@ class Script(ModelBase):
             return group_info
 
 
+    #统计
+    def count_info(self):
+        # 剧本大卖统计 {script_id: {end_lv: times}}
+        for script_id,value in self.end_lv_log.iteritems():
+            pass
+
+
+
 ModelManager.register_model('script', Script)
