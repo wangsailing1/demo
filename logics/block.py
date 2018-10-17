@@ -137,7 +137,7 @@ class Block(object):
 
         return data
 
-    def count_cup(self):
+    def count_cup(self,is_save=False):
         data = {}
         if self.block.is_count:
             return
@@ -178,6 +178,8 @@ class Block(object):
                     self.block.cup_log[tp] = self.block.cup_log.get(tp, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
+        if is_save:
+            self.block.save()
 
     def check_has_ceremony(self):
         date = get_date_before()
