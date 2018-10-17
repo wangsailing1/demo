@@ -175,28 +175,6 @@ book_mapping = {
     'script_group_object': ('script_group_object', True),
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 danmu_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'danmu': ('danmu', True),
@@ -236,13 +214,6 @@ user_config_mapping = {
     'vip': ('vip', True),
     'initial_account': ('initial_account', False),
     'main_hero': ('main_hero', True),
-
-
-
-
-
-
-
     'action_exp': ('action_exp', True),
     'vip_pay': ('vip_pay', True),
     'city_inside': ('city_inside', True),
@@ -250,6 +221,7 @@ user_config_mapping = {
     'speed_up_cost': ('speed_up_cost', True),
     'building_unlock': ('building_unlock', True),
     'charge': ('charge', True),
+    'month_card':   ('month_card',  True),
     'charge_ios': ('charge_ios', True),
     'currency_exchange': ('currency_exchange', True),
     'value': ('value', True),
