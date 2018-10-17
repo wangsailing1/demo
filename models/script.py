@@ -44,8 +44,6 @@ class Script(ModelBase):
             'top_script': {},  # 按剧本id
             'top_group': {},  # 按剧本系列 {gruop_id: film_info}
             'top_all': {},  # 单片票房最高
-            'type_num':{},  # 按类型记录拍摄结果
-            'style_num': {}  #按擅长记录拍摄结果
 
         }
         super(Script, self).__init__(self.uid)
@@ -181,14 +179,6 @@ class Script(ModelBase):
         style_id = script_config['style']
         type_id = script_config['type']
 
-        #记录拍摄结果
-        sc = 1  #评价结果取film_info中的值
-        if type_id not in self.type_num:
-            self.type_num[type_id] = {}
-        self.type_num[type_id][sc] = self.type_num.get(type_id,{}).get(sc,0) + 1
-        if style_id not in self.style_num:
-            self.style_num[style_id] = {}
-        self.style_num[style_id][sc] = self.style_num.get(style_id,{}).get(sc,0) + 1
 
         # 艺人拍片票房及次数记录
         for role_id, card_id in film_info['card'].iteritems():
