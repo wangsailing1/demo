@@ -105,7 +105,6 @@ class Block(object):
         return {'own': data, 'robot': robot_data}
 
     def get_reward(self):
-        self.count_cup()
         data = {}
         info = self.mm.block.reward_data
         cup = 0
@@ -140,6 +139,8 @@ class Block(object):
 
     def count_cup(self):
         data = {}
+        if self.block.is_count:
+            return
         for tp in self.block.rank_list:
             rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                  tp)

@@ -27,7 +27,8 @@ class Block(ModelBase):
             'reward_daily': '',  # 日常奖励领取时间
             'get_award_ceremony': 0,  # 典礼奖励是否领取
             'has_ceremony': 0,
-            'cup_log':{}  #奖杯获取
+            'cup_log': {},  # 奖杯获取
+            'is_count': 0,  #是否计算奖杯
         }
 
         super(Block, self).__init__(self.uid)
@@ -40,6 +41,8 @@ class Block(ModelBase):
             self.big_sale = 0
             self.award_ceremony = 0
             self.has_ceremony = 1
+            self.is_count = 0
+            self.reward_data = {}
             self.save()
 
     def up_block(self, cup, is_save=False):
