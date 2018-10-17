@@ -221,7 +221,7 @@ user_config_mapping = {
     'speed_up_cost': ('speed_up_cost', True),
     'building_unlock': ('building_unlock', True),
     'charge': ('charge', True),
-    'month_card':   ('month_card',  True),
+    'month_privilege':   ('month_privilege',  True),
     'charge_ios': ('charge_ios', True),
     'currency_exchange': ('currency_exchange', True),
     'value': ('value', True),

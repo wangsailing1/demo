@@ -161,7 +161,7 @@ charge = {
 }
 
 
-month_card = {
+month_privilege = {
     'uk':               ('card_type',       'int'),  # id
     'price':            ('price',           'int'),  # 所需RMB
     'effective_days':   ('effective_days',  'int'),  # 持续天数
