@@ -8,6 +8,7 @@ Created on 2018-09-04
 
 import time
 import copy
+import math
 import random
 import itertools
 from gconfig import game_config
@@ -417,7 +418,16 @@ class ScriptLogic(object):
         return {'score': score}
 
     def calc_curve(self):
-        # todo 需要计算： 票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+        """
+        票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+
+        其中专业评分影响线、影响率走common表数据id15、16
+        根据计算出的票房曲线参数读取script_curve表
+        每日上映票房收益 =  首映票房 × 今日曲线参数/固定参数X
+        总票房=首映票房 + Σ（每日上映票房收益）
+        其中每日上映票房收益固定参数X走common表数据id18
+
+        """
 
         script = self.mm.script
         cur_script = script.cur_script
@@ -428,12 +438,18 @@ class ScriptLogic(object):
         medium_score = finished_medium_judge['score']
         audience_score = finished_audience_judge['score']
 
-        curve_id = 1
+        curve_id = audience_score + (medium_score - game_config.common[15]) / game_config.common[16]
+        curve_id = math.ceil(curve_id)
+        max_config_id = max(game_config.script_curve)
+        if curve_id >= max_config_id:
+            curve_id = max_config_id
+
         curve_config = game_config.script_curve[curve_id]
         finished_first_income = cur_script['finished_first_income']
         first_income = finished_first_income['first_income']
 
-        return {'curve': [first_income * i / 100 for i in curve_config['curve_rate']]}
+        rate = game_config.common[18]
+        return {'curve': [first_income * i / 100 * rate for i in curve_config['curve_rate']]}
 
     def summary(self):
         """票房总结"""

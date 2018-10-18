@@ -297,8 +297,8 @@ class Script(ModelBase):
             'finished_attention': {},
             'finished_first_income': {},
             'finished_curve': {},  # 持续上映曲线
-            'finished_medium_judge': 0,  # 评价 专业评价 100
-            'finished_audience_judge': 0,  # 评价 观众评价 200
+            'finished_medium_judge': {},  # 评价 专业评价 100
+            'finished_audience_judge': {},  # 评价 观众评价 200
             'finished_summary': {},  # 票房总结{'income': 100, 'cost': 50},
             'finished_analyse': {},  # 票房分析
 
