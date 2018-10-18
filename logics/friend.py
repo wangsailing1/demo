@@ -237,7 +237,7 @@ class FriendLogic(object):
                                                send_name=self.mm.user.name,
                                                send_role=self.mm.user.role,
                                                send_level=self.mm.user.level,
-                                               send_block=self.mm.user.block_num,
+                                               send_block=self.mm.block.block_num,
                                                send_block_rank = rank)
         mail_dict['send_guild_name'] = send_guild_name
         mail_dict['send_guild_id'] = send_guild_id
