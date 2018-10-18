@@ -86,7 +86,8 @@ class User(ModelBase):
     :var exit_guild_time: 退工会时间
     :var guild_guard: 公会护卫列表
     :var utime: 更新时间 '2015-12-15'
-    :var sid: session_id
+    :var sid: session_id attention
+    :var attention: 关注度
     :var expired: session过期时间
     :var mk: 登录+1, 用于验证多点登录
     :var unlock_build: [], 解锁建筑物id
@@ -188,7 +189,7 @@ class User(ModelBase):
             'script_income': 0,            # 拍片总票房
             'script_license': 0,    # 拍片许可证
             'used_license_times': 0,  # 许可证当日使用次数
-
+            'attention':{},
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,
@@ -1114,6 +1115,9 @@ class User(ModelBase):
         :return:
         """
         self.like += int(like)
+
+    def add_attention(self,type,attention):
+        self.attention[type] = self.attention.get(type,0) + int(attention)
 
     def is_silver_enough(self, silver):
         """ 是否银币足够

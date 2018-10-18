@@ -264,6 +264,16 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 add_dict(data.setdefault('actors', {}), item_id, item_num)
         mm.friend.save()
 
+    elif gift_sort == 19:  # 关注度
+        for pkg in gift_config:
+            add_type = pkg[0]
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.user.add_attention(add_type,add_num)
+            add_dict(data.setdefault('attention', {}), add_type, add_num)
+        mm.user.save()
+
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]

@@ -48,6 +48,8 @@ class FansActivity(ModelBase):
         old_items = item_produce['items']
 
         for card in value['cards']:
+            if card in ['0']:
+                continue
             # 计算item
             items = []
             for _ in range(item_choice_times):
@@ -71,7 +73,7 @@ class FansActivity(ModelBase):
             attention_per_card = config_id['attention_per_card'] * (1 + attention_increase)
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
             # todo 关注度添加到统一奖励里 类型待定
-            new_items.append([20, 0, attention_num])
+            new_items.append([19, 1, attention_num])
             all_items.append(new_items)
 
         all_items = calc_gift(all_items)
@@ -85,3 +87,5 @@ class FansActivity(ModelBase):
         self.save()
 
         return all_items
+
+ModelManager.register_model('fans_activity',FansActivity)
