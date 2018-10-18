@@ -441,8 +441,11 @@ class ScriptLogic(object):
         curve_id = audience_score + (medium_score - game_config.common[15]) / game_config.common[16]
         curve_id = math.ceil(curve_id)
         max_config_id = max(game_config.script_curve)
+        min_config_id = min(game_config.script_curve)
         if curve_id >= max_config_id:
             curve_id = max_config_id
+        if curve_id < min_config_id:
+            curve_id = min_config_id
 
         curve_config = game_config.script_curve[curve_id]
         finished_first_income = cur_script['finished_first_income']
