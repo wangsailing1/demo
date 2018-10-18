@@ -621,7 +621,7 @@ class UserLogic(object):
         #     cost = cost_list[self.user.change_name]
         # else:
         #     cost = cost_list[-1]
-        cost = game_config.common(29, 500)
+        cost = game_config.common.get(29, 500)
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
 
