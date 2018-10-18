@@ -40,8 +40,8 @@ class Card(ModelBase):
     attr:{group_id:{attr1:1,attr2:2}}
     """
 
-    # CHAR_PRO_NAME = ['演技', '歌艺', '娱乐', '艺术', '气质', '动感']
-    CHAR_PRO_NAME = ['performance', 'song', 'entertainment', 'art', 'temperament', 'sports']
+    # CHAR_PRO_NAME = ['演技', '歌艺', '气质', '动感', '艺术', '娱乐']
+    CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
 
     LOVE_GIFT_MAPPING = ['酸', '甜', '苦', '辣', '冰', '饮']
     ADD_VALUE_MAPPING = {1: 'like'}  # 策划添加新属性的时候添加
