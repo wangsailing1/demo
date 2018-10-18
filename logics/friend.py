@@ -226,7 +226,8 @@ class FriendLogic(object):
         else:
             send_guild_name = ''
             send_guild_id = 0
-
+        ar = self.mm.get_obj_tools('output_rank')
+        rank = ar.get_rank(self.mm.user.uid)
         mail_dict = self.mm.mail.generate_mail(content,
                                                title=i18n_msg.get('friend',
                                                                   self.mm.user.language_sort) % self.mm.user.name,
@@ -235,7 +236,9 @@ class FriendLogic(object):
                                                send_uid=self.mm.user.uid,
                                                send_name=self.mm.user.name,
                                                send_role=self.mm.user.role,
-                                               send_level=self.mm.user.level)
+                                               send_level=self.mm.user.level,
+                                               send_block=self.mm.block.block_num,
+                                               send_block_rank = rank)
         mail_dict['send_guild_name'] = send_guild_name
         mail_dict['send_guild_id'] = send_guild_id
         mail_dict.update(kwargs)

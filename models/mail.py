@@ -20,7 +20,7 @@ class Mail(ModelBase):
     SORT_FRIEND = 'system'
     SORT_GUILD = 'system'
 
-    AUTO_DEL_TIME = 15 * 24 * 60 * 60    # 已读(已领取)邮件, 7天后自动删除
+    AUTO_DEL_TIME = 15 * 24 * 60 * 60  # 已读(已领取)邮件, 7天后自动删除
 
     def __init__(self, uid):
         self.uid = uid
@@ -46,7 +46,7 @@ class Mail(ModelBase):
             #     remove_mail.append(i)
             # elif ((not self.has_gift(i) and j.get('status', 0) == 1) or (self.has_gift(i) and j.get('status', 0) == 2))\
             #         and now-read_time >= self.AUTO_DEL_TIME:    # 没有过期时间,已读或已领取的自动删除
-            if now - send_time >= self.AUTO_DEL_TIME:   # 过期后删除
+            if now - send_time >= self.AUTO_DEL_TIME:  # 过期后删除
                 remove_mail.append(i)
 
         for mail_id in remove_mail:
@@ -73,7 +73,8 @@ class Mail(ModelBase):
 
     @classmethod
     def generate_mail(cls, content, title='', gift=None, sort=SORT_SYSTEM,
-                      send_uid='', send_name='', send_role='', send_level=1, over_time=0, url=''):
+                      send_uid='', send_name='', send_role='', send_level=1, over_time=0, url='', send_block=1,
+                      send_block_rank=0):
         """ 生成邮件内容
 
         :param content: 邮件内容
@@ -93,12 +94,14 @@ class Mail(ModelBase):
             'send_name': send_name,
             'send_role': send_role,
             'send_level': send_level,
+            'send_block':send_block,
+            'send_block_rank':send_block_rank,
             'title': title,
             'send_time': 0,
             'read_time': 0,
             'over_time': over_time,
             'auto_over_time': cls.AUTO_DEL_TIME,
-            'status': 0,       # 邮件读取状态,0: 未读取, 1: 已读取, 2: 已领取
+            'status': 0,  # 邮件读取状态,0: 未读取, 1: 已读取, 2: 已领取
             'content': content,
             'gift': [] if gift is None else gift,
             'url': url,

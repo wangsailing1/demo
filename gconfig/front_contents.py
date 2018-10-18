@@ -497,6 +497,10 @@ rank_mapping = {
     'dan_grading_privilage':    ('dan_grading_privilage',    True),
 }
 
+fans_activity_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'fans_activity': ('fans_activity', True),
+}
 
 # 注册需要写到最下面
 register_handler()
