@@ -258,8 +258,9 @@ class ScriptLogic(object):
                 continue
             add_attr[pro_id] = [attrs.get(pro_id, 0), limit_value]
 
-        # CHAR_PRO_NAME = ['演技',        '歌艺', '娱乐',         '艺术', '气质',         '动感']
-        # CHAR_PRO_NAME = ['performance', 'song', 'entertainment', 'art', 'temperament', 'sports']
+        # CHAR_PRO_NAME = ['演技',         '歌艺', '气质',         '动感',   '艺术', '娱乐']
+        # CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
+
         name_pro_mapping = Card.CHAR_PRO_NAME_PRO_ID_MAPPING
         pro_id_mapping = Card.PRO_IDX_MAPPING
 
