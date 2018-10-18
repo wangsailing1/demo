@@ -367,13 +367,33 @@ class ScriptLogic(object):
 
     # 8.首映票房、收视计算
     def calc_first_income(self):
+        """
+        首映票房=票房基数×(1+关注度/10）×(PartA+PartB)/首播票房固定参数z
+        票房基数读取剧本表output字段
+        首播票房参数z走common数据id9
+        如果作品类型是电视剧、综艺节目，则
+        首映收视 = 首映票房/首播收视系数，小数点后保留4位，
+        首播收视系数走common表数据id11
+
+        :return:
+        """
         # 首映票房
         script = self.mm.script
         cur_script = script.cur_script
-
-        first_income = random.randint(1000, 10000)
         script_config = game_config.script[cur_script['id']]
 
+        attention = cur_script['finished_attention'].get('attention', 0)
+        finished_attr = cur_script['finished_attr']
+        part_a = finished_attr.get('part_a', 0)
+        part_b = finished_attr.get('part_b', 0)
+
+        # first_income = random.randint(1000, 10000)
+
+        z = game_config.common[9]
+        first_income = script_config['output'] * (1 + attention) * (part_a + part_b) / z
+        # 如果作品类型是电视剧、综艺节目
+        if script_config['type'] != 1:
+            first_income = first_income / game_config.common[11]
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
