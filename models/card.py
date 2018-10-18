@@ -334,7 +334,11 @@ class Card(ModelBase):
         for base_pro, grow_add_pro in itertools.izip(base_char_pro, pro_grow_add):
             # 只计算卡牌拥有的属性
             if base_pro > 0:
-                char_pro.append(base_pro + grow_add_pro / 10000)
+                char_pro.append(base_pro + cur_lv / 2 * grow_add_pro / 10000)
+                # if cur_lv % 2:
+                #     char_pro.append(base_pro + (cur_lv - 1) / 2 * grow_add_pro / 10000)
+                # else:
+                #     char_pro.append(base_pro + cur_lv / 2 * grow_add_pro / 10000)
             else:
                 char_pro.append(base_pro)
 
