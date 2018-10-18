@@ -47,7 +47,8 @@ class ScriptGachaLogics(object):
         :param count: 1或10次
         :return:
         """
-        cd_expire = self.gacha.cd_expire(gacha_type=sort)
+        # 钻石抽不判断cd
+        cd_expire = self.gacha.cd_expire()
         if cd_expire:
             return 1, {}    # cd未结束
 
