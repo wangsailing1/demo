@@ -507,8 +507,8 @@ class ScriptLogic(object):
             3： 弹出新闻关注度
             4： 首日上映
             5： 专业评价
-            6： 持续上映
-            7： 观众评价
+            6： 观众评价
+            7： 持续上映
             8： 票房总结
             # 9： 票房分析
         :return:
@@ -540,12 +540,12 @@ class ScriptLogic(object):
             func = self.calc_medium_judge
 
         elif finished_step == 6:
-            key = 'finished_curve'
-            func = self.calc_curve
-
-        elif finished_step == 7:
             key = 'finished_audience_judge'
             func = self.calc_medium_judge
+
+        elif finished_step == 7:
+            key = 'finished_curve'
+            func = self.calc_curve
 
         elif finished_step == 8:
             key = 'finished_summary'
