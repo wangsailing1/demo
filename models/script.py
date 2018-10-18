@@ -272,7 +272,10 @@ class Script(ModelBase):
             self.cur_market = cur_market
 
     def make_film(self, script_id, name):
+        script_config = game_config.script[script_id]
+        type_config = game_config.script_type_style[script_config['type']]
         data = {
+            'length': random.randint(*type_config['length']),       # 剧集时间/集数
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
             'finished_step': 0,  # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
             # 4: 首日上映; 5: 专业评价; 6: 持续上映; 7: 观众评价
