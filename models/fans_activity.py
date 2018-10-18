@@ -11,6 +11,10 @@ from tools.gift import calc_gift
 
 
 class FansActivity(ModelBase):
+    # NEED_MAPPING = [位置编号，性别，类型，分类，演技，歌艺，气质，动感，娱乐，人气]
+    NEED_MAPPING = ['pos_id', 'sex', 'profession_class', 'profession_type', 'performance', 'song', 'temperament',
+                    'entertainment', 'popularity']
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
@@ -32,7 +36,7 @@ class FansActivity(ModelBase):
         gold_produce = value['gold_produce']
         attention_produce = value['attention_produce']
         all_time = config_id['240'] * 60
-        now = min(now,all_time + value['start_time'])
+        now = min(now, all_time + value['start_time'])
         item_remain_time = (now - item_produce['last_time']) % config_id['ratio_per_time']
         item_choice_times = (now - item_produce['last_time']) / config_id['ratio_per_time']
         gold_remain_time = (now - gold_produce['last_time']) % config_id['gold_per_time']
@@ -66,7 +70,7 @@ class FansActivity(ModelBase):
             attention_increase = 0.1
             attention_per_card = config_id['attention_per_card'] * (1 + attention_increase)
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
-            #todo 关注度添加到统一奖励里 类型待定
+            # todo 关注度添加到统一奖励里 类型待定
             new_items.append([20, 0, attention_num])
             all_items.append(new_items)
 
