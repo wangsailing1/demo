@@ -143,6 +143,8 @@ script_mapping = {
     'diamond_script_gacha': ('diamond_script_gacha', True),
     'script_gacha_cd': ('script_gacha_cd', True),
     'script_gacha_cost': ('script_gacha_cost', True),
+    'attention_level': ('attention_level', True),
+    'difficulty_level': ('difficulty_level', True),
 
 }
 

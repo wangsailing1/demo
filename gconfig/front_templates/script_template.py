@@ -174,3 +174,22 @@ script_gacha_cost = {
 
 }
 
+
+# 关注度等级
+attention_level = {
+    'uk': ('level', 'int'),  #
+    'name': ('name', 'int'),  #
+    'min_attention': ('min_attention', 'int'),  #
+    'max_attention': ('max_attention', 'int'),  #
+
+}
+
+
+# 难度等级
+difficulty_level = {
+    'uk': ('level', 'int'),  #
+    'name': ('name', 'int'),  #
+    'min_completely': ('min_completely', 'int'),  #
+    'max_completely': ('max_completely', 'int'),  #
+
+}
