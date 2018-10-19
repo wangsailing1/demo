@@ -75,7 +75,8 @@ class Friend(ModelBase):
             'phone_daily_times': 0,
             'phone_daily_log': {},
             'nickname': {},
-            'newest_friend':[]
+            'newest_friend':[],
+            'got_point_daily':0
 
         }
         super(Friend, self).__init__(self.uid)
@@ -94,6 +95,7 @@ class Friend(ModelBase):
             self.received_gift = []
             self.last_refresh_date = now
             self.phone_daily_times = 0
+            self.got_point_daily = 0
             self.phone_daily_log = {}
             self.save()
 

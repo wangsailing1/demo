@@ -94,11 +94,17 @@ class FriendLogic(object):
         if friend_id not in self.friend.received_gift:
             return 2, {}  # 没有该好友赠送的胶囊
 
-        item_id = self.mm.home.FLOWER_ITEM_ID  # 时间胶囊
+        # item_id = self.mm.home.FLOWER_ITEM_ID  # 时间胶囊
+        if self.friend.got_point_daily >= game_config.common[25]:
+            self.friend.receive_gift(friend_id)
+            self.friend.save()
+            return 3, {}  #体力领取已达上限
+        point = game_config.common[26]
         if reward is None:
             reward = {}
-        add_mult_gift(self.mm, [[3, item_id, 1]], reward)
+        add_mult_gift(self.mm, [[3, 0, point]], reward)
         self.friend.receive_gift(friend_id)
+        self.friend.got_point_daily += point
 
         self.friend.save()
 
