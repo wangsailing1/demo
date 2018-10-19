@@ -17,6 +17,11 @@ player_level = {
 
 }
 
+common_attention = {
+    'uk': ('id', 'int'),  # 等级
+    'name': ('name', 'int'),  # 等级
+}
+
 main_hero = {
     'uk': ('id', 'int'),  # id
     'sex': ('sex', 'int'),  # 性别

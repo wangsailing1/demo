@@ -249,6 +249,7 @@ user_config_mapping = {
     # 'dirtyword_ch': ('dirtyword_ch', True),
     'homepage_button': ('homepage_button', True),
     'message': ('message', True),
+    'common_attention': ('common_attention', True),
     'play_help': ('play_help', True),
     'push_message': ('push_message', True),
     # 'level_mail': ('level_mail', True),

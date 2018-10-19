@@ -124,6 +124,9 @@ class Chapter_stage(object):
                     if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 reward = add_mult_gift(self.mm, all_gift)
+                if is_first:
+                    if stage_config['fans_activity'] and stage_config['fans_activity'] not in self.mm.fans_activity.can_unlock_activity:
+                        self.mm.fans_activity.can_unlock_activity.append(stage_config['fans_activity'])
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level

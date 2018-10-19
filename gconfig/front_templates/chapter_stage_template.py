@@ -4,6 +4,7 @@
 chapter_stage = {
     'uk':               ('stage_id',        'int'),  # id
     'script_id':        ('script_id',       'int'),  # 关卡剧本id
+    'fans_activity':    ('fans_activity',   'int'),  # 解锁的粉丝活动id
     'show_reward':      ('show_reward',     'int_list'),  # 显示用奖励
     'player_exp':       ('player_exp',      'int'),  # 公司经验
     'fight_exp':        ('fight_exp',       'int'),  # 类型经验

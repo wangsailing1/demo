@@ -11,9 +11,9 @@ from tools.gift import calc_gift
 
 
 class FansActivity(ModelBase):
-    # NEED_MAPPING = [位置编号，性别，类型，分类，演技，歌艺，气质，动感，娱乐，人气]
-    NEED_MAPPING = ['pos_id', 'sex', 'profession_class', 'profession_type', 'performance', 'song', 'temperament',
-                    'entertainment', 'popularity']
+    # NEED_MAPPING = ['演技', '歌艺', '气质', '动感', '艺术'，'娱乐',性别，类型，分类，人气]
+    NEED_MAPPING = ['performance', 'song', 'temperament', 'sports','art', 'entertainment', 'sex', 'profession_class',
+                    'profession_type','popularity']
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -81,11 +81,16 @@ class FansActivity(ModelBase):
         item_produce['last_time'] = now - item_remain_time
         item_produce['items'] = item_produce_new
         if get_reward:
-            gold_produce['last_time'] = now - gold_remain_time
-            attention_produce['last_time'] = now - attention_remain_time
-            item_produce['items'] = []
+            if now ==  all_time + value['start_time']:
+                self.activity_log[activity_id] = {}
+            else:
+                gold_produce['last_time'] = now - gold_remain_time
+                attention_produce['last_time'] = now - attention_remain_time
+                item_produce['items'] = []
+
         self.save()
 
         return all_items
 
-ModelManager.register_model('fans_activity',FansActivity)
+
+ModelManager.register_model('fans_activity', FansActivity)
