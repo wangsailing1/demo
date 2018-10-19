@@ -206,8 +206,9 @@ class Friend(ModelBase):
             message['id'] = self.messages[-1]['id'] + 1
 
         self.messages.append(message)
-        self.newest_friend.append(message['send_uid'])
-        self.newest_friend = self.newest_friend[-10:]
+        if message['send_uid'] not in self.newest_friend.append:
+            self.newest_friend.append(message['send_uid'])
+            self.newest_friend = self.newest_friend[-10:]
 
         if save:
             self.save()
