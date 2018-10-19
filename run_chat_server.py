@@ -384,7 +384,7 @@ def request_handler(client_socket, addr):
         if tp == 'friend' and sendToUid:    # and not receivers:
             to_user = UserM.get(sendToUid, from_req=False)
             mm = ModelManager(client.uid)
-            mm.friend.add_newest_uid(sendToUid)
+            mm.friend.add_newest_uid(sendToUid,is_save=True)
             if client.uid not in to_user.blacklist:
                 if not receivers:
                     receivers.append(gevent.spawn(client.socket.sendall, client.msg))
