@@ -206,10 +206,7 @@ class Friend(ModelBase):
             message['id'] = self.messages[-1]['id'] + 1
 
         self.messages.append(message)
-        if message['send_uid'] not in self.newest_friend.append:
-            self.newest_friend.append(message['send_uid'])
-            self.newest_friend = self.newest_friend[-10:]
-
+        self.add_newest_uid(message['send_uid'])
         if save:
             self.save()
 
@@ -467,6 +464,12 @@ class Friend(ModelBase):
         self.phone_daily_log[self.phone_daily_times] = [choice_id]
         self.save()
         return choice_id
+
+    def add_newest_uid(self,uid):
+        if uid not in self.newest_friend:
+            self.newest_friend.append(uid)
+            self.newest_friend = self.newest_friend[-10:]
+
 
 
 ModelManager.register_model('friend', Friend)

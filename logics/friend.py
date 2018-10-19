@@ -367,6 +367,10 @@ class FriendLogic(object):
         f_mm = self.mm.get_mm(uid)
         f_mm.friend.remove_friend(self.mm.uid)
         self.friend.remove_friend(uid)
+        if uid in self.friend.newest_friend:
+            self.friend.newest_friend.remove(uid)
+        if self.mm.uid in f_mm.friend.newest_friend:
+            f_mm.friend.newest_friend.remove(self.mm.uid)
         f_mm.friend.save()
         self.friend.save()
 
@@ -893,9 +897,7 @@ class FriendLogic(object):
             reward = add_mult_gift(self.mm, reward_config)
             # if config[choice_id]['is_end']:
             #     self.friend.phone_daily_times += 1
-            if group_id not in self.friend.newest_friend:
-                self.friend.newest_friend.append(group_id)
-                self.friend.newest_friend = self.friend.newest_friend[-10:]
+            self.friend.add_newest_uid(group_id)
             self.friend.save()
             return 0, {'reward': reward,
                        'add_value': add_value}
@@ -922,9 +924,7 @@ class FriendLogic(object):
                 self.friend.chat_over[group_id] = [chapter_id]
             else:
                 self.friend.chat_over[group_id].append(chapter_id)
-        if group_id not in self.friend.newest_friend:
-            self.friend.newest_friend.append(group_id)
-            self.friend.newest_friend = self.friend.newest_friend[-10:]
+        self.friend.add_newest_uid(group_id)
         self.friend.save()
         return 0, {'reward': reward,
                    'add_value': add_value}
