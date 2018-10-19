@@ -453,6 +453,8 @@ class Friend(ModelBase):
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
+        if self.phone_daily_times >= chat_config[group_id]['daily_times']:
+            return 0
         chat_list = chat_config.get(group_id, {}).get('daily_dialogue', [])
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         chat_choice = []
