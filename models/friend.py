@@ -466,11 +466,12 @@ class Friend(ModelBase):
         return choice_id
 
     def add_newest_uid(self,uid,is_save=False):
-        if uid not in self.newest_friend:
-            self.newest_friend.append(uid)
-            self.newest_friend = self.newest_friend[-10:]
-            if is_save:
-                self.save()
+        if uid in self.newest_friend:
+            self.newest_friend.remove(uid)
+        self.newest_friend.append(uid)
+        self.newest_friend = self.newest_friend[-10:]
+        if is_save:
+            self.save()
 
 
 
