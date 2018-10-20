@@ -8,16 +8,21 @@ class FansActivity(object):
     def __init__(self, mm=None):
         self.mm = mm
 
-    def event(self, activity_id, cards):
-        now = time.time()
+    def activity(self, activity_id, cards):
+        now = int(time.time())
         cards = cards.split('_')
         if cards.count('0') == len(cards):
             return 12, {}  # 没有艺人参加
         config = game_config.fans_activity.get(activity_id, {})
         cost = config['cost']
         if self.mm.user.dollar < cost:
-            return 17, {}  #美元不足
+            return 17, {}  # 美元不足
         card_config = game_config.card_basis
+        value = self.mm.fans_activity.activity_log.get(activity_id, {})
+        all_time = config['time'] * 60
+        remian_time = max(all_time + value.get('start_time', 0) - int(time.time()), 0)
+        if remian_time > 0:
+            return 18, {}  # 活动未结束
         for k, card_id in enumerate(cards):
             if card_id in ['0']:
                 continue
@@ -49,4 +54,42 @@ class FansActivity(object):
         self.mm.user.dollar -= cost
         self.mm.fans_activity.save()
         self.mm.user.save()
-        return 0, {}
+        _, data = self.fans_index(activity_id)
+        return 0, data
+
+    def fans_index(self, activity_id=0):
+        config = game_config.fans_activity
+        data = {}
+        if activity_id:
+            if activity_id not in self.mm.fans_activity.activity_log:
+                return 11, {}  # 未举办该活动
+            value = self.mm.fans_activity.activity_log[activity_id]
+            items = self.mm.fans_activity.count_produce(activity_id=activity_id)
+            config_id = config[activity_id]
+            all_time = config_id['time'] * 60
+            print all_time, value['start_time'], int(time.time())
+            remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
+            data[activity_id] = {
+                'items': items,
+                'remian_time': remian_time,
+                'cards': value['cards'],
+            }
+            data['activity'] = self.mm.fans_activity.activity
+            data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
+            data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity
+            return 0, data
+
+        for id, value in self.mm.fans_activity.activity_log.iteritems():
+            items = self.mm.fans_activity.count_produce(activity_id=id)
+            config_id = config[id]
+            all_time = config_id['time'] * 60
+            remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
+            data[id] = {
+                'items': items,
+                'remian_time': remian_time,
+                'cards': value['cards'],
+            }
+        data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
+        data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity
+        data['activity'] = self.mm.fans_activity.activity
+        return 0, data

@@ -12,12 +12,13 @@ from tools.gift import calc_gift
 
 class FansActivity(ModelBase):
     # NEED_MAPPING = ['演技', '歌艺', '气质', '动感', '艺术'，'娱乐',性别，类型，分类，人气]
-    NEED_MAPPING = ['performance', 'song', 'temperament', 'sports','art', 'entertainment', 'sex', 'profession_class',
-                    'profession_type','popularity']
+    NEED_MAPPING = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment', 'sex', 'profession_class',
+                    'profession_type', 'popularity']
 
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
+            'activity': {},
             'unlocked_activity': [],
             'can_unlock_activity': [],
             'activity_log': {},  # {1:{'start_time':11,item_produce:{items:[],last_time:111},
@@ -35,10 +36,10 @@ class FansActivity(ModelBase):
         item_produce = value['item_produce']
         gold_produce = value['gold_produce']
         attention_produce = value['attention_produce']
-        all_time = config_id['240'] * 60
+        all_time = config_id['time'] * 60
         now = min(now, all_time + value['start_time'])
         item_remain_time = (now - item_produce['last_time']) % config_id['ratio_per_time']
-        item_choice_times = (now - item_produce['last_time']) / config_id['ratio_per_time']
+        item_choice_times = int((now - item_produce['last_time']) / config_id['ratio_per_time'])
         gold_remain_time = (now - gold_produce['last_time']) % config_id['gold_per_time']
         gold_per_time = config_id['gold_per_time']
         attention_per_time = config_id['attention_per_time']
@@ -57,15 +58,14 @@ class FansActivity(ModelBase):
                 if can_choice:
                     item = weight_choice(config_id['item'])[:-1]
                     items.append(item)
-            new_items = calc_gift(items)
-            item_produce_new.extend(new_items)
+            item_produce_new = calc_gift(items)
 
             # 计算金币
             # todo 产量gold_increase 取配置
             gold_increase = 0.1
             gold_per_card = config_id['gold_per_card'] * (1 + gold_increase)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
-            new_items.append([1, 0, god_num])
+            new_items = [[1, 0, god_num]]
 
             # 计算关注度
             # todo 产量attention_increase 取配置
@@ -74,14 +74,17 @@ class FansActivity(ModelBase):
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
             # todo 关注度添加到统一奖励里 类型待定
             new_items.append([19, 1, attention_num])
-            all_items.append(new_items)
-
+            all_items.extend(new_items)
+        item_produce_new.extend(old_items)
+        all_items.extend(item_produce_new)
         all_items = calc_gift(all_items)
-        item_produce_new = calc_gift(item_produce_new.extend(old_items))
+
+        if item_produce_new:
+            item_produce_new = calc_gift(item_produce_new)
         item_produce['last_time'] = now - item_remain_time
         item_produce['items'] = item_produce_new
         if get_reward:
-            if now ==  all_time + value['start_time']:
+            if now == all_time + value['start_time']:
                 self.activity_log[activity_id] = {}
             else:
                 gold_produce['last_time'] = now - gold_remain_time
@@ -91,6 +94,13 @@ class FansActivity(ModelBase):
         self.save()
 
         return all_items
+
+    # 添加可解锁粉丝活动
+    def add_can_unlock_activity(self, activity_id, is_save=False):
+        if activity_id and activity_id not in self.mm.fans_activity.can_unlock_activity:
+            self.mm.fans_activity.can_unlock_activity.append(activity_id)
+            if is_save:
+                self.save()
 
 
 ModelManager.register_model('fans_activity', FansActivity)

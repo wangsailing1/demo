@@ -125,8 +125,7 @@ class Chapter_stage(object):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 reward = add_mult_gift(self.mm, all_gift)
                 if is_first:
-                    if stage_config['fans_activity'] and stage_config['fans_activity'] not in self.mm.fans_activity.can_unlock_activity:
-                        self.mm.fans_activity.can_unlock_activity.append(stage_config['fans_activity'])
+                    self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
@@ -343,13 +342,13 @@ class Chapter_stage(object):
                 'reward': {},
                 'love_lv': 0,
                 'old_value': {}
-                }
+            }
 
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
-        old_value.setdefault('like',0)
+        old_value.setdefault('like', 0)
         reward = {}
         add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:
