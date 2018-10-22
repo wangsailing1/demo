@@ -188,6 +188,7 @@ class Block(object):
 
                     }
                     self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
+                    self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
             else:
                 tp_num = tp
                 if tp in ['medium', 'audience']:
