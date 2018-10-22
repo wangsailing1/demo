@@ -324,17 +324,20 @@ class Card(ModelBase):
         grow_id = card_config['lv_growid']
         grow_config = game_config.card_level_grow[grow_id]
 
-        if cur_lv % 2:
-            pro_grow_add = grow_config['pro_grow_odd']
-        else:
-            pro_grow_add = grow_config['pro_grow_even']
-
         # 格调加成
         char_pro = []
-        for base_pro, grow_add_pro in itertools.izip(base_char_pro, pro_grow_add):
+        for idx, base_pro in enumerate(base_char_pro):
             # 只计算卡牌拥有的属性
             if base_pro > 0:
-                char_pro.append(base_pro + cur_lv // 2 * grow_add_pro / 10000)
+                lv_grow_add = 0
+                for lv in xrange(1, cur_lv + 1):
+                    if lv % 2:
+                        pro_grow_add = grow_config['pro_grow_odd'][idx]
+                    else:
+                        pro_grow_add = grow_config['pro_grow_even'][idx]
+
+                    lv_grow_add += lv // 2 * pro_grow_add / 10000
+                char_pro.append(base_pro + lv_grow_add)
             else:
                 char_pro.append(base_pro)
 
@@ -352,7 +355,7 @@ class Card(ModelBase):
             gift_config = game_config.card_love_gift.get(info['lv'])
             if not gift_config:
                 continue
-            attr_id = game_config.card_love_gift_taste[gift_id]
+            attr_id = game_config.card_love_gift_taste[gift_id]['attr']
             if base_char_pro[self.PRO_IDX_MAPPING[attr_id]] > 0:
                 gift_attr = game_config.common.get(2, 10)
                 char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
