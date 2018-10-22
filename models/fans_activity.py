@@ -32,6 +32,8 @@ class FansActivity(ModelBase):
         now = int(time.time())
         config = game_config.fans_activity
         value = self.activity_log[activity_id]
+        if not value:
+            return []
         config_id = config[activity_id]
         item_produce = value['item_produce']
         gold_produce = value['gold_produce']
