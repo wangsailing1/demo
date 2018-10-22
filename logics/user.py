@@ -953,7 +953,7 @@ class UserLogic(object):
         self.user.deduct_diamond(need_diamond)
         self.user.got_icon.append(icon)
         self.user.save()
-        return 0, {}
+        return 0, {'got_icon':self.user.got_icon}
 
     def change_icon(self, icon):
         """

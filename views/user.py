@@ -139,6 +139,7 @@ def game_info(hm):
     block = Block(mm)
     block.check_has_ceremony()
     info.update(**item_info)
+    info['got_icon'] = mm.user.got_icon
 
     return 0, info
 
