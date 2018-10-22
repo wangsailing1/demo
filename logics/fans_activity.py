@@ -59,7 +59,7 @@ class FansActivity(object):
 
     def fans_index(self, activity_id=0):
         config = game_config.fans_activity
-        data = {}
+        data = {'activity_log':{}}
         if activity_id:
             if activity_id not in self.mm.fans_activity.activity_log:
                 return 11, {}  # 未举办该活动
@@ -69,7 +69,7 @@ class FansActivity(object):
             all_time = config_id['time'] * 60
             print all_time, value['start_time'], int(time.time())
             remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
-            data[activity_id] = {
+            data['activity_log'][activity_id] = {
                 'items': items,
                 'remian_time': remian_time,
                 'cards': value['cards'],
@@ -84,7 +84,7 @@ class FansActivity(object):
             config_id = config[id]
             all_time = config_id['time'] * 60
             remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
-            data[id] = {
+            data['activity_log'][id] = {
                 'items': items,
                 'remian_time': remian_time,
                 'cards': value['cards'],
