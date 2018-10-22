@@ -80,6 +80,8 @@ class FansActivity(object):
             return 0, data
 
         for id, value in self.mm.fans_activity.activity_log.iteritems():
+            if not value:
+                continue
             items = self.mm.fans_activity.count_produce(activity_id=id)
             config_id = config[id]
             all_time = config_id['time'] * 60
