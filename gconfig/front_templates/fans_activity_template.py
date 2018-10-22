@@ -6,6 +6,7 @@ fans_activity = {
     'uk': ('id', 'int'),  # 活动id
     'name': ('name', 'int'),  # 活动名字
     'groupid': ('groupid', 'int'),
+    'type': ('type', 'int'),
     'next_id': ('next_id', 'int'),  # 下一级id
     'unlock_cost': ('unlock_cost', 'int'),  # 解锁消耗美元
     'time': ('time', 'int'),  # 活动时长（分钟）

@@ -39,6 +39,8 @@ def unlock_activity(hm):
     mm = hm.mm
     activity_id = hm.get_argument('activity_id', 0, is_int=True)
     config = game_config.fans_activity[activity_id]
+    if not config['type']:
+        return 5, {}  # 首次建筑的等级错误
     cost = config['unlock_cost']
     if mm.user.dollar < cost:
         return 3, {}  # 美元不足

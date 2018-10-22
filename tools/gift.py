@@ -91,6 +91,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
     12: "guild_coin"    # 公会资金
     13: ""              # 公会贡献
     14: "vip_exp"       # vip经验
+    19:关注度
     
 
 """

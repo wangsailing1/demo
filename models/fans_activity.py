@@ -26,6 +26,14 @@ class FansActivity(ModelBase):
         }
         super(FansActivity, self).__init__(self.uid)
 
+    def pre_use(self):
+        if not self.can_unlock_activity:
+            all_id = game_config.fans_activity.keys()
+            all_luck_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+            self.can_unlock_activity = list(set(all_id) - set(all_luck_id))
+            self.save()
+
+
     def count_produce(self, get_reward=False, activity_id=0):
         if activity_id not in self.activity_log:
             return []
@@ -63,18 +71,14 @@ class FansActivity(ModelBase):
             item_produce_new = calc_gift(items)
 
             # 计算金币
-            # todo 产量gold_increase 取配置
-            gold_increase = 0.1
-            gold_per_card = config_id['gold_per_card'] * (1 + gold_increase)
+            increase = value.get('effect_id') / 10000.0  #活动加成
+            gold_per_card = config_id['gold_per_card'] * (1 + increase)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
             new_items = [[1, 0, god_num]]
 
             # 计算关注度
-            # todo 产量attention_increase 取配置
-            attention_increase = 0.1
-            attention_per_card = config_id['attention_per_card'] * (1 + attention_increase)
+            attention_per_card = config_id['attention_per_card'] * (1 + increase)
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
-            # todo 关注度添加到统一奖励里 类型待定
             new_items.append([19, 1, attention_num])
             all_items.extend(new_items)
         item_produce_new.extend(old_items)
@@ -104,18 +108,20 @@ class FansActivity(ModelBase):
             if is_save:
                 self.save()
 
+
     def get_card_effect(self,cards):
         group_list = set()
         config = game_config.card_basis
         for card in cards:
             if card in ['0']:
                 continue
-            group_list.add(config[self.card.cards[cards]['id']]['group'])
+            group_list.add(config[self.mm.card.cards[card]['id']]['group'])
         effect_dict = {}
         for k,value in game_config.card_book.iteritems():
             if len(group_list & set(value['card'])) == len(value['card']):
                 effect_dict[k] = value['fans_ativity']
-        return max(effect_dict.items(),key=lambda x:x[1]) if effect_dict else 0
+        return max(effect_dict.items(),key=lambda x:x[1])[0] if effect_dict else 0
+
 
 
 
