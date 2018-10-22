@@ -730,5 +730,6 @@ def user_info(hm):
             'cup':mm.block.cup_log,
             'block_num':mm.block.block_num,
             'rank':ar.get_rank(mm.uid),
-            'chapter':mm.chapter_stage.get_now_stage()}
+            'chapter':mm.chapter_stage.get_now_stage(),
+            'cup_log_card':mm.block.cup_log_card}
     return 0, data
