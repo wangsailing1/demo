@@ -330,7 +330,8 @@ class Card(ModelBase):
             # 只计算卡牌拥有的属性
             if base_pro > 0:
                 lv_grow_add = 0
-                for lv in xrange(1, cur_lv + 1):
+                # 公式确定后可以优化，只是奇偶数取不同列的话 复杂度可以做成常量的
+                for lv in xrange(2, cur_lv + 1):
                     if lv % 2:
                         pro_grow_add = grow_config['pro_grow_odd'][idx]
                     else:
