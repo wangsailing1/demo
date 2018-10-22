@@ -183,6 +183,11 @@ class Script(ModelBase):
         style_id = script_config['style']
         type_id = script_config['type']
 
+        #记录总的拍片总结
+        if script_id not in self.end_lv_log:
+            self.end_lv_log[script_id] = {}
+        self.end_lv_log[script_id][film_info['end_lv']] = self.end_lv_log[script_id].get(film_info['end_lv'],0) + 1
+
 
         # 艺人拍片票房及次数记录
         for role_id, card_id in film_info['card'].iteritems():

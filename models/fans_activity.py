@@ -104,5 +104,20 @@ class FansActivity(ModelBase):
             if is_save:
                 self.save()
 
+    def get_card_effect(self,cards):
+        group_list = set()
+        config = game_config.card_basis
+        for card in cards:
+            if card in ['0']:
+                continue
+            group_list.add(config[self.card.cards[cards]['id']]['group'])
+        effect_list = {}
+        for k,value in game_config.card_book.iteritems():
+            if len(group_list & set(value['card'])) == len(value['card']):
+                effect_list.append(k)
+        return max(effect_list) if effect_list else 0
+
+
+
 
 ModelManager.register_model('fans_activity', FansActivity)

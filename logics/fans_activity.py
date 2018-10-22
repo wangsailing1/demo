@@ -44,12 +44,14 @@ class FansActivity(object):
                 else:
                     if self.mm.card.cards[card_id]['popularity'] < need_num:
                         return 16, {}  # 有卡牌人气不足
+        effect_id = self.mm.fans_activity.get_card_effect(cards)
         self.mm.fans_activity.activity_log[activity_id] = {
             'start_time': now,
             'item_produce': {'items': [], 'last_time': now},
             'gold_produce': {'last_time': now},
             'attention_produce': {'last_time': now},
-            'cards': cards
+            'cards': cards,
+            'effect_id':effect_id,
         }
         self.mm.user.dollar -= cost
         self.mm.fans_activity.save()
@@ -73,6 +75,7 @@ class FansActivity(object):
                 'items': items,
                 'remian_time': remian_time,
                 'cards': value['cards'],
+                'effect_id': value.get('effect_id',0),
             }
             data['activity'] = self.mm.fans_activity.activity
             data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
@@ -90,6 +93,7 @@ class FansActivity(object):
                 'items': items,
                 'remian_time': remian_time,
                 'cards': value['cards'],
+                'effect_id': value.get('effect_id', 0),
             }
         data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
         data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity
