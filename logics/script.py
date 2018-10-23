@@ -436,7 +436,9 @@ class ScriptLogic(object):
 
         score = part_b / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
 
-        return {'score': score}
+        # todo 观众评星
+        star = random.randint(1, 5)
+        return {'score': score, 'star': star}
 
     def calc_curve(self):
         """
