@@ -199,12 +199,14 @@ def block_index(hm):
                                       'name': name,
                                       'script_id': script_id,
                                       'score': score,
+                                      'role':umm.user.role,
                                       'rank_own': br.get_rank(uid_script_id),
                                       'script_name': script_name})
             script_list.append({'uid': uid,
                                 'name': name,
                                 'script_id': script_id,
                                 'score': score,
+                                'role': umm.user.role,
                                 'script_name': script_name})
         return 0, {
             'rank_list': script_list[start - 1:end],
@@ -218,10 +220,12 @@ def block_index(hm):
             name = umm.user.name
             if mm.uid == uid:
                 income_rank_own_list.append({'uid': uid,
+                                             'role': umm.user.role,
                                                 'name': name,
                                                 'score': score,
                                                 'rank_own': br.get_rank(uid),})
             income_list.append({'uid': uid,
+                                'role': umm.user.role,
                                 'name': name,
                                 'score': score,})
 
