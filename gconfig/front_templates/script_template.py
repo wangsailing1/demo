@@ -193,3 +193,41 @@ difficulty_level = {
     'max_completely': ('max_completely', 'int'),  #
 
 }
+
+
+# 随机观众评价选择
+audi_comment_choice = {
+    'uk': ('id', 'int'),
+    'audi_grade_range': ('audi_grade_range', 'int_list'),   # 观众评价区间
+    'grade_weight': ('grade_weight', 'int_list'),           # 评分权重[观众评论星级，权重]
+    'barrage_weight': ('barrage_weight', 'int_list'),       # 弹幕区间[弹幕星级，区间下限，区间上限]
+}
+
+
+# 媒体评价
+media_comment = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int_list'),   # 媒体评论
+    'pos_id': ('pos_id', 'int'),           # 出现位置
+    'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+    'grade_wave_range': ('grade_wave_range', 'int_list'),       # 显示评分波动范围(已放大100倍）
+}
+
+
+# 观众评价
+audi_comment = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int_list'),   # 观众评论
+    'star': ('star', 'int'),           # 评论星级
+    'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+}
+
+
+# 弹幕
+barrage = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int_list'),   # 观众评论
+    'star': ('star', 'int'),           # 评论星级
+}
+
+

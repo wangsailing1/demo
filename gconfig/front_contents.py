@@ -146,6 +146,13 @@ script_mapping = {
     'attention_level': ('attention_level', True),
     'difficulty_level': ('difficulty_level', True),
 
+    'audi_comment_choice': ('audi_comment_choice', True),
+    'media_comment': ('media_comment', True),
+    'audi_comment': ('audi_comment', True),
+    'barrage': ('barrage', True),
+
+
+
 }
 
 
