@@ -207,7 +207,7 @@ audi_comment_choice = {
 # 媒体评价
 media_comment = {
     'uk': ('id', 'int'),
-    'name': ('name', 'int_list'),   # 媒体评论
+    'name': ('name', 'int'),   # 媒体评论
     'pos_id': ('pos_id', 'int'),           # 出现位置
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
     'grade_wave_range': ('grade_wave_range', 'int_list'),       # 显示评分波动范围(已放大100倍）
@@ -217,7 +217,7 @@ media_comment = {
 # 观众评价
 audi_comment = {
     'uk': ('id', 'int'),
-    'name': ('name', 'int_list'),   # 观众评论
+    'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
 }
@@ -226,7 +226,7 @@ audi_comment = {
 # 弹幕
 barrage = {
     'uk': ('id', 'int'),
-    'name': ('name', 'int_list'),   # 观众评论
+    'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
 }
 
