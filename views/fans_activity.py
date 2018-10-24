@@ -106,4 +106,7 @@ def get_reward(hm):
         return 2, {}  # 未参加活动
     gift = mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id)
     reward = add_mult_gift(mm, gift)
-    return 0, {'reward': reward}
+    fa = FansActivity(mm)
+    rc, data = fa.fans_index()
+    data['reward'] = reward
+    return 0, data
