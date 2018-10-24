@@ -3,7 +3,7 @@ import time
 from lib.core.environ import ModelManager
 from gconfig import game_config, get_str_words
 from models.ranking_list import BlockRank
-from models.block import REWARD_TIME,get_date
+from models.block import REWARD_TIME, get_date
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -93,12 +93,14 @@ def rank_index(hm):
                                                 'group_id': group_id,
                                                 'score': score,
                                                 'rank_own': ar.get_rank(uid),
-                                                'group_name': game_config.script_group_object[group_id]['name']})
+                                                'group_name': game_config.script_group_object.get(group_id, {}).get(
+                                                    'name', '')})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'group_id': group_id,
                                         'score': score,
-                                        'group_name': game_config.script_group_object[group_id]['name']})
+                                        'group_name': game_config.script_group_object.get(group_id, {}).get('name',
+                                                                                                            '')})
 
         return 0, {
             'rank_list': alloutput_rank_list[start - 1:end],
@@ -185,11 +187,11 @@ def block_index(hm):
     script_list = []
     income_list = []
     remain_time = mm.block.get_remain_time()
-    own_info = {'block_num':mm.block.block_num,
-                'cup':mm.block.cup,
-                'need_cup':game_config.dan_grading_list[mm.block.block_num]['promotion_cup_num'],
-                'remain_time':remain_time,
-                'reward_daily':time.strftime('%F') == mm.block.reward_daily}
+    own_info = {'block_num': mm.block.block_num,
+                'cup': mm.block.cup,
+                'need_cup': game_config.dan_grading_list[mm.block.block_num]['promotion_cup_num'],
+                'remain_time': remain_time,
+                'reward_daily': time.strftime('%F') == mm.block.reward_daily}
     if rank_id == 1:
         rank_own_list = []
         for uid_script_id, score in rank_list:
@@ -197,13 +199,13 @@ def block_index(hm):
             umm = ModelManager(uid)
             script_id = int(script_id)
             name = umm.user.name
-            script_name = umm.block.top_script.get(date, {}).get(script_id,{}).get('name','')
+            script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
             if mm.uid in uid_script_id:
                 rank_own_list.append({'uid': uid,
                                       'name': name,
                                       'script_id': script_id,
                                       'score': score,
-                                      'role':umm.user.role,
+                                      'role': umm.user.role,
                                       'rank_own': br.get_rank(uid_script_id),
                                       'script_name': script_name})
             script_list.append({'uid': uid,
@@ -215,7 +217,7 @@ def block_index(hm):
         return 0, {
             'rank_list': script_list[start - 1:end],
             'rank_own': rank_own_list,
-            'own_info':own_info
+            'own_info': own_info
         }
     elif rank_id == 2:
         income_rank_own_list = []
@@ -225,13 +227,13 @@ def block_index(hm):
             if mm.uid == uid:
                 income_rank_own_list.append({'uid': uid,
                                              'role': umm.user.role,
-                                                'name': name,
-                                                'score': score,
-                                                'rank_own': br.get_rank(uid),})
+                                             'name': name,
+                                             'score': score,
+                                             'rank_own': br.get_rank(uid), })
             income_list.append({'uid': uid,
                                 'role': umm.user.role,
                                 'name': name,
-                                'score': score,})
+                                'score': score, })
 
         return 0, {
             'rank_list': income_list[start - 1:end],
