@@ -47,8 +47,9 @@ class ScriptGacha(ModelBase):
             times = self.coin_times
             last_time = self.coin_time
         else:
-            times = self.diamond_times
-            last_time = self.diamond_time
+            return 0        # 钻石抽不cd
+            # times = self.diamond_times
+            # last_time = self.diamond_time
 
         if not times:
             return 0

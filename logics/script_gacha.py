@@ -48,7 +48,7 @@ class ScriptGachaLogics(object):
         :return:
         """
         # 钻石抽不判断cd
-        cd_expire = self.gacha.cd_expire()
+        cd_expire = self.gacha.cd_expire(sort)
         if cd_expire:
             return 1, {}    # cd未结束
 
