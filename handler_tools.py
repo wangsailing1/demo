@@ -77,6 +77,7 @@ def user_status(mm):
         'config_type': mm.user.config_type,
         'chat_times': mm.user.chat_times,       # 聊天次数
         'got_icon':mm.user.got_icon,
+        'attention': mm.user.attention,
     }
     return data
 
