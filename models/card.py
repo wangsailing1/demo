@@ -366,9 +366,14 @@ class Card(ModelBase):
         card_info['tag_script'] = card_config['tag_script']
         card_info['tag_role'] = card_config['tag_role']
 
+        all_char_pro = [char_pro[i] + card_info['train_ext_pro'][i] for i in range(6)]
+
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
+        all_char_pro = [x * add_percent / 100 if x > 0 else x for x in all_char_pro]
         char_pro = [math.ceil(i) for i in char_pro]
+        all_char_pro = [math.ceil(i) for i in all_char_pro]
         card_info['char_pro'] = char_pro
+        card_info['all_char_pro'] = all_char_pro
         return card_info
 
     def card_tag(self, card_info):
