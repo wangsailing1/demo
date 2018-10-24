@@ -82,7 +82,7 @@ def up_activity(hm):
     if activity_id != mm.fans_activity.activity.get(group, 0):
         return 5, {}  # 升级id错误
     old_data = mm.fans_activity.activity_log[activity_id]
-    mm.fans_activity.activity.pop(activity_id)
+    mm.fans_activity.activity_log.pop(activity_id)
     mm.fans_activity.activity[group] = next_id
     mm.fans_activity.activity_log[next_id] = old_data
     mm.fans_activity.unlocked_activity.append(next_id)
