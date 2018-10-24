@@ -57,7 +57,9 @@ def unlock_activity(hm):
     mm.user.dollar -= cost
     mm.user.save()
     mm.fans_activity.save()
-    return 0, {}
+    fa = FansActivity(mm)
+    rc, data = fa.fans_index()
+    return 0, data
 
 
 # 升级活动
@@ -87,7 +89,9 @@ def up_activity(hm):
     mm.user.dollar -= cost
     mm.fans_activity.save()
     mm.user.save()
-    return 0, {}
+    fa = FansActivity(mm)
+    rc, data = fa.fans_index()
+    return 0, data
 
 
 # 领奖
