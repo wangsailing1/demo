@@ -32,7 +32,7 @@ class FansActivity(object):
             need = config['card_need']
             for tp, need_num in need[k]:
                 if tp <= 6:
-                    if card_info['char_pro'][tp - 1] < need_num:
+                    if card_info['all_char_pro'][tp - 1] < need_num:
                         return 13, {}  # 有卡牌属性值不够
                 elif tp == 7:
                     if need_num != card_config[card_info['id']]['sex_type']:
