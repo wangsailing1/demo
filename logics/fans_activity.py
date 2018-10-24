@@ -56,7 +56,7 @@ class FansActivity(object):
         self.mm.user.dollar -= cost
         self.mm.fans_activity.save()
         self.mm.user.save()
-        _, data = self.fans_index(activity_id)
+        _, data = self.fans_index()
         return 0, data
 
     def fans_index(self, activity_id=0):
