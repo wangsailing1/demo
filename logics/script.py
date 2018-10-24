@@ -11,6 +11,7 @@ import copy
 import math
 import random
 import itertools
+from collections import Counter
 from gconfig import game_config
 
 from lib.db import ModelBase
@@ -211,9 +212,8 @@ class ScriptLogic(object):
         """
         总熟练度 = Σ【参演演员的熟练度等级】
         每项属性值 = 拍摄结果属性值 × [1+总熟练度/熟练度系数m]
-        PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
-        PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
-
+        partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数+（气质/含气质属性的角色数量/气质基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
+        partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数+（动感/含动感属性的角色数量/动感基准系数）^属性作用指数+（歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+（演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
         熟练度除以系数走common表数据id10，m=25
         :return:
         """
@@ -222,10 +222,19 @@ class ScriptLogic(object):
         cur_script = script.cur_script
 
         skilled = 0     # 总熟练度
+        role_num = 0
+
+        role_count_by_attr = Counter()
         for role_id, card_oid in cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
+            role_config = game_config.script_role[role_id]
+            role_count_by_attr.update(role_config['role_attr'])
+
+            role_num += 1
             for style, lv_info in card_info['style_pro'].iteritems():
                 skilled += lv_info['lv']
+
+        avg_skilled = skilled / role_num
 
         # 熟练度系数
         skilled_rate = game_config.common[10]
@@ -235,16 +244,11 @@ class ScriptLogic(object):
         card_effect = cur_script['card_effect']
         style_effect = cur_script['style_effect']
 
-        script_effect = {}  # 拍摄结果
+        attrs = {}  # 拍摄结果
         for per_effect in [card_effect, style_effect]:
             for _, info in per_effect['effect'].iteritems():
                 for attr, value in info.iteritems():
-                    script_effect[attr] = script_effect.get(attr, 0) + value
-
-        # 每项属性值
-        attrs = {}
-        for attr, effect in script_effect.iteritems():
-            attrs[attr] = effect * (1 + skilled / skilled_rate)
+                    attrs[attr] = attrs.get(attr, 0) + value
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
@@ -273,38 +277,30 @@ class ScriptLogic(object):
         temperament_pro_id = name_pro_mapping['temperament']
         sports_pro_id = name_pro_mapping['sports']
 
-        # PartA =[艺术/艺术基准系数 +气质/气质基准系数]×[1+总熟练度/熟练度系数m]
+        # 属性作用指数
+        attr_rate = game_config.common[33] / 100.0
+
+        # partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数 +
+        # （气质/含气质属性的角色数量/气质基准系数）^ 属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
         base_a = 0
         for pro_id in [art_pro_id, temperament_pro_id]:
             # 系数为 0 表示无此属性不生效
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
-            base_a += attrs.get(pro_id, 0) / standard_attr[pro_id_mapping[pro_id]]
-        part_a = base_a + (1 + skilled / skilled_rate)
+            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
+        part_a = (base_a / len(role_count_by_attr)) * (1 + avg_skilled)
 
-        # part_a = (
-        #              attrs.get(art_pro_id, 0) / standard_attr[pro_id_mapping[art_pro_id]] +
-        #              attrs.get(temperament_pro_id, 0) / standard_attr[pro_id_mapping[temperament_pro_id]]
-        #
-        #          ) + (1 + skilled / skilled_rate)
-
-        # PartB =[娱乐/娱乐基准系数+动感/动感基准系数+歌艺/歌艺基准系数演+演技/演技基准系数] × [1+总熟练度/熟练度系数m]
+        # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
+        # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
+        # （歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+
+        # （演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
         base_b = 0
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
             # 系数为 0 表示无此属性不生效
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
-            base_b += attrs.get(pro_id, 0) / standard_attr[pro_id_mapping[pro_id]]
-        part_b = base_b + (1 + skilled / skilled_rate)
-
-        #
-        # part_b = (
-        #              attrs.get(entertainment_pro_id, 0) / (standard_attr[pro_id_mapping[entertainment_pro_id]] or 1) +
-        #              attrs.get(sports_pro_id, 0) / standard_attr[pro_id_mapping[sports_pro_id]] +
-        #              attrs.get(song_pro_id, 0) / standard_attr[pro_id_mapping[song_pro_id]] +
-        #              attrs.get(performance_pro_id, 0) / standard_attr[pro_id_mapping[performance_pro_id]]
-        #
-        #          ) + (1 + skilled / skilled_rate)
+            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
+        part_b = (base_b / len(role_count_by_attr)) * (1 + avg_skilled)
 
         return {
             'add_attr': add_attr,
