@@ -353,6 +353,44 @@ friend_msg = {
     }
 }
 
+fans_activity_msg = {
+    'fans_activity.fans_index': {
+        11: u'未举办该活动',
+
+    },
+    'fans_activity.activity': {
+        1: u'没有艺人参加',
+        2: u'未选活动',
+        3: u'活动id错误',
+        11: u'卡牌错误',
+        12: u'没有艺人参加',
+        13: u'有卡牌属性值不够',
+        14: u'有卡牌性别不符',
+        15: u'有卡牌类型不符',
+        16: u'有卡牌人气不足',
+        17: u'美元不足',
+        18: u'活动未结束',
+    },
+    'fans_activity.unlock_activity': {
+        1: u'没有活动',
+        2: u'该活动尚不能解锁',
+        3: u'美元不足',
+        4: u'已解锁',
+        5: u'首次建筑的等级错误',
+    },
+    'fans_activity.up_activity': {
+        1: u'活动等级已经最大',
+        2: u'该活动尚不能解锁',
+        3: u'美元不足',
+        4: u'活动错误',
+        5: u'升级id错误',
+    },
+    'fans_activity.get_reward': {
+        1: u'请选择活动',
+        2: u'未参加活动',
+    },
+}
+
 i18n = {
     'user_name': u'敢斗团',
     'dark_steet': u'黑街擂台',
