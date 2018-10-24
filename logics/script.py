@@ -319,41 +319,37 @@ class ScriptLogic(object):
         film_info = film_info or script.cur_script
 
         # 1.实际观众之和
-        N = attention = sum(script.cur_market)
+        L = N = M = style_suit_effect = 0
+
+        # todo 当前初始关注度
+        init_attention = 0
 
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
             # 2.各个市场类型都符合剧本要求，增加额外关注度
             script_config = game_config.script[script_id]
-            script_market = list(script_config['market'])
-            for need, cur in itertools.izip(script_market, script.cur_market):
-                if need > cur:
-                    break
-            else:
-                attention += game_config.common[18]
 
-            # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
             style = film_info['style']
-            if style:
-                attention += game_config.script_style.get(int(style), {}).get('market_num', 0)
+            style_config = game_config.script_style.get(int(style), {})
 
-            # 3.类型人口增量
-            if film_info['style']:
-                script_need = sum(script_config['market'])
-                market_num = game_config.script_style.get(int(style), {}).get('market_num', 0)
-                if N - script_need >= market_num:
-                    attention += market_num
+            # 剧本人口预估
+            script_market = list(script_config['market'])
+            for market, (need, cur) in enumerate(itertools.izip(script_market, script.cur_market), start=1):
+                # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
+                if style_config and script_config['market'] == market:
+                    need += style_config['market_num']
+                N += min(cur, need)
 
             # 4.题材与类型
             suit = film_info['suit']
-            attention += game_config.script_style_suit.get(suit, {}).get('attention', 0)
+            style_suit_effect = game_config.script_style_suit.get(suit, {}).get('attention', 0)
 
             # 5.连续拍摄类型
             recent_style = script.style_log[-3:]
             if film_info['style'] and len(recent_style) == 3:
                 if set(recent_style) == 1:
-                    attention -= game_config.common[17]
+                    M = game_config.common[17]
 
             card = self.mm.card
             standard_popularity = script_config['standard_popularity']
@@ -361,8 +357,30 @@ class ScriptLogic(object):
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
 
+        # 总人气
+        all_popularity = 0
+        for role_id, card_oid in script.cur_script['card'].iteritems():
+            card_info = card.cards[card_oid]
+            all_popularity += card_info['popularity']
+
+        # 总人气指数、人气计算常数、人气系数
+        all_popularity_rate = game_config.common[34] / 100.0
+        popularity_constant = game_config.common[35] / 100.0
+        popularity_rate = game_config.common[36] / 100.0
+
+        standard_popularity = script_config['standard_popularity']
+        # 6、最后结算人气时
+        # 读取剧本的人气要求属性，(1+(艺人总人气^总人气指数/(艺人总人气^总人气指数+剧本人气要求)- 人气计算常数)* 人气系数)
+        # 所得到的值就是关注度加成系数。
+        # 总人气指数，人气计算常数，人气系数读取common表/100，（common表34,35,36行，计算后结果值为1.5,0.49，0.2）
+
+        attention_rate = 1 + (all_popularity ** all_popularity_rate /
+                              (all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+
+        attention = (init_attention + L + N + style_suit_effect - M) * attention_rate
+
         return {
-            'attention': attention,         # 关注度
+            'attention': int(attention),         # 关注度
             'card_effect': card_popularity / standard_popularity,     # 艺人人气对关注度影响
         }
 
