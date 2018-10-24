@@ -419,7 +419,7 @@ class ScriptLogic(object):
         score = part_a / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
-        return {'score': score, 'like': int(score * like_rate)}
+        return {'score': round(score, 1), 'like': int(score * like_rate)}
 
     def calc_audience_judge(self):
         """观众评分 = PartB/剧本难度系数/观众评分系数B +题材类型匹配度加成/10
@@ -438,7 +438,7 @@ class ScriptLogic(object):
 
         # todo 观众评星
         star = random.randint(1, 5)
-        return {'score': score, 'star': star}
+        return {'score': round(score, 1), 'star': star}
 
     def calc_curve(self):
         """
@@ -570,7 +570,7 @@ class ScriptLogic(object):
 
         elif finished_step == 6:
             key = 'finished_audience_judge'
-            func = self.calc_medium_judge
+            func = self.calc_audience_judge
 
         elif finished_step == 7:
             key = 'finished_curve'
