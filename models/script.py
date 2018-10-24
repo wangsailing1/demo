@@ -186,7 +186,7 @@ class Script(ModelBase):
         #记录总的拍片总结
         if script_id not in self.end_lv_log:
             self.end_lv_log[script_id] = {}
-        self.end_lv_log[script_id][film_info['end_lv']] = self.end_lv_log[script_id].get(film_info['end_lv'],0) + 1
+        self.end_lv_log[script_id][film_info.get('end_lv',0)] = self.end_lv_log[script_id].get(film_info.get('end_lv',0),0) + 1
 
 
         # 艺人拍片票房及次数记录
