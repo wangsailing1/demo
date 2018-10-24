@@ -1,7 +1,7 @@
 # -*- coding: utf-8 –*-
 import time
 from lib.core.environ import ModelManager
-from gconfig import game_config
+from gconfig import game_config, get_str_words
 from models.ranking_list import BlockRank
 from models.block import REWARD_TIME,get_date
 
@@ -59,6 +59,10 @@ def rank_index(hm):
             name = umm.user.name
             if umm.script.top_all:
                 script_id = umm.script.top_all['id']
+            script_name = mm.script.top_all.get('name', '')
+            if not script_name:
+                script_name = game_config.script[script_id]['name']
+                script_name = get_str_words(mm.user.language_sort, script_name)
 
             if mm.uid == uid:
                 output_rank_own_list.append({'uid': uid,
@@ -66,12 +70,12 @@ def rank_index(hm):
                                              'script_id': script_id,
                                              'score': score,
                                              'rank_own': ar.get_rank(uid),
-                                             'script_name': mm.script.top_all['name']})
+                                             'script_name': script_name})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
                                      'score': score,
-                                     'script_name': umm.script.top_all['name']})
+                                     'script_name': script_name})
         return 0, {
             'rank_list': output_rank_list[start - 1:end],
             'rank_own': output_rank_own_list,
