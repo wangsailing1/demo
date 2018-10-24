@@ -131,6 +131,7 @@ script_curve = {
     'name': ('name', 'int'),  # 曲线名
     'weeks': ('weeks', 'int'),  # 上映周数
     'curve_rate': ('curve_rate', 'int_list'),  # 曲线变化
+    'icon': ('icon', 'str'),  # 曲线变化
 }
 
 # 许可证恢复
