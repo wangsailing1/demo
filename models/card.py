@@ -337,8 +337,8 @@ class Card(ModelBase):
                     else:
                         pro_grow_add = grow_config['pro_grow_even'][idx]
 
-                    lv_grow_add += pro_grow_add / 10000
-                char_pro.append(base_pro + lv_grow_add)
+                    lv_grow_add += pro_grow_add / 10000.0
+                char_pro.append(base_pro * (1 + lv_grow_add))
             else:
                 char_pro.append(base_pro)
 
