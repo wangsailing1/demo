@@ -475,7 +475,10 @@ class ScriptLogic(object):
         first_income = finished_first_income['first_income']
 
         rate = game_config.common[18]
-        return {'curve': [first_income * i / 100 * rate for i in curve_config['curve_rate']]}
+        return {
+            'curve_id': curve_id,
+            'curve': [first_income * i / 100 * rate for i in curve_config['curve_rate']]
+        }
 
     def summary(self):
         """票房总结"""
