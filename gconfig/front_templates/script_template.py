@@ -103,6 +103,7 @@ script_role = {
 script_end_level = {
     'uk': ('level', 'int'),  #
     'name': ('name', 'int'),  # name
+    'icon': ('icon', 'str'),  # name
     'line': ('line', 'int'),  # 占结算线比重（万分之)
     'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
