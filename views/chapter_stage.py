@@ -16,10 +16,11 @@ def chapter_stage_fight(hm):
     stage = hm.get_argument('stage', '')
     type_hard = int(hm.get_argument('type_hard', 0))
     align = hm.get_argument('align', '')
+    step = hm.get_argument('step', 2,is_int=True)
     if not stage:
         return 1, {}  # 关卡参数错误
     chapter_stage = Chapter_stage(mm)
-    rc, data = chapter_stage.chapter_stage_fight(stage, type_hard, align=align)
+    rc, data = chapter_stage.chapter_stage_fight(stage, type_hard, align=align,step=step)
     return rc, data
 
 
