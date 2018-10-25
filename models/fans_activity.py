@@ -103,8 +103,8 @@ class FansActivity(ModelBase):
 
     # 添加可解锁粉丝活动
     def add_can_unlock_activity(self, activity_id, is_save=False):
-        if activity_id and activity_id not in self.mm.fans_activity.can_unlock_activity:
-            self.mm.fans_activity.can_unlock_activity.append(activity_id)
+        if activity_id and activity_id not in self.can_unlock_activity:
+            self.can_unlock_activity.append(activity_id)
             if is_save:
                 self.save()
 
