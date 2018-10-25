@@ -236,6 +236,11 @@ class ScriptLogic(object):
 
         avg_skilled = skilled / role_num
 
+        if avg_skilled in game_config.card_script_exp:
+            skilled_lv_addition = game_config.card_script_exp[avg_skilled]['lv_addition'] / 10000.0
+        else:
+            skilled_lv_addition = 0
+
         # 熟练度系数
         skilled_rate = game_config.common[10]
 
@@ -288,7 +293,7 @@ class ScriptLogic(object):
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
             base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
-        part_a = (base_a / len(role_count_by_attr)) * (1 + avg_skilled)
+        part_a = (base_a / len(role_count_by_attr)) * (1 + skilled_lv_addition)
 
         # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
         # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
@@ -300,7 +305,7 @@ class ScriptLogic(object):
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
             base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
-        part_b = (base_b / len(role_count_by_attr)) * (1 + avg_skilled)
+        part_b = (base_b / len(role_count_by_attr)) * (1 + skilled_lv_addition)
 
         return {
             'add_attr': add_attr,
@@ -383,7 +388,7 @@ class ScriptLogic(object):
     # 8.首映票房、收视计算
     def calc_first_income(self):
         """
-        首映票房=票房基数×(1+关注度/10）×(PartA+PartB)/首播票房固定参数z
+        首映票房=票房基数×(1+关注度等级/10）×(PartA+PartB)/2/首播票房固定参数z
         票房基数读取剧本表output字段
         首播票房参数z走common数据id9
         如果作品类型是电视剧、综艺节目，则
@@ -405,16 +410,18 @@ class ScriptLogic(object):
         # first_income = random.randint(1000, 10000)
 
         z = game_config.common[9]
-        first_income = script_config['output'] * (1 + attention) * (part_a + part_b) / z
+        first_income = script_config['output'] * (1 + attention/10.0) * (part_a + part_b) / z
+        first_income = int(first_income)
         # 如果作品类型是电视剧、综艺节目
         if script_config['type'] != 1:
-            first_income = first_income / game_config.common[11]
+            first_income = 1.0 * first_income / game_config.common[11]
+            first_income = round(first_income, 4)
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
         """
-        专业评分 = PartA/剧本难度系数/专业评分系数A +题材类型匹配度加成/10
-        观众评分 = PartB/剧本难度系数/观众评分系数B +题材类型匹配度加成/10
+        专业评分 = PartA/剧本难度系数*专业评分系数A + 题材类型匹配度加成/10，（如果PartA<1,则难度系数为1）
+        观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
         
         剧本难度系数读取script表的字段hard_rate
         题材类型匹配度加成读取script_style_suit表的rate字段
@@ -426,17 +433,18 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         finished_attr = cur_script['finished_attr']
-        part_a = finished_attr.get('part_a', 0)
+        part_a = float(max(1.0, finished_attr.get('part_a', 0)))
         score_rate = game_config.common[12]
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
-        score = part_a / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
+        score = part_a / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        score = round(score, 2)
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
-        return {'score': round(score, 1), 'like': int(score * like_rate)}
+        return {'score': score, 'like': int(score * like_rate)}
 
     def calc_audience_judge(self):
-        """观众评分 = PartB/剧本难度系数/观众评分系数B +题材类型匹配度加成/10
+        """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
         """
 
         script = self.mm.script
@@ -444,15 +452,15 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         finished_attr = cur_script['finished_attr']
-        part_b = finished_attr.get('part_b', 0)
+        part_b = float(max(1.0, finished_attr.get('part_b', 0)))
         score_rate = game_config.common[13]
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
-        score = part_b / script_config['hard_rate'] / score_rate + suit_config['rate'] / 10
-
+        score = part_b / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        score = int(score)
         # todo 观众评星
         star = random.randint(1, 5)
-        return {'score': round(score, 1), 'star': star}
+        return {'score': score, 'star': star}
 
     def calc_curve(self):
         """

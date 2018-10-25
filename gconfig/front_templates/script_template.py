@@ -70,6 +70,7 @@ script_style = {
     'name': ('name', 'int'),  #
     'market': ('market', 'int'),  # 市场偏好2男1女3童
     'market_num': ('market_num', 'int'),  # 市场偏好2男1女3童
+    'icon': ('icon', 'str'),
 
 }
 
