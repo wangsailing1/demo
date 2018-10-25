@@ -216,6 +216,9 @@ class Block(object):
                         'cup': cup
                     }
                     self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
+                    if script_id not in self.block.cup_log_script:
+                        self.block.cup_log_script[script_id] = {}
+                    self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         if is_save:
