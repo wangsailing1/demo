@@ -31,7 +31,8 @@ class Block(ModelBase):
             'has_ceremony': 0,
             'cup_log': {},  # 奖杯获取
             'is_count': 0,  # 是否计算奖杯
-            'cup_log_card':{}
+            'cup_log_card':{},
+            'cup_log_script':{}
         }
 
         super(Block, self).__init__(self.uid)

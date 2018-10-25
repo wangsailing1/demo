@@ -731,5 +731,6 @@ def user_info(hm):
             'block_num':mm.block.block_num,
             'rank':ar.get_rank(mm.uid),
             'chapter':mm.chapter_stage.get_now_stage(),
-            'cup_log_card':mm.block.cup_log_card}
+            'cup_log_card':mm.block.cup_log_card,
+            'cup_log_script': mm.block.cup_log_script}
     return 0, data
