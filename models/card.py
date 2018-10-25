@@ -337,8 +337,8 @@ class Card(ModelBase):
                     else:
                         pro_grow_add = grow_config['pro_grow_even'][idx]
 
-                    lv_grow_add += pro_grow_add / 10000
-                char_pro.append(base_pro + lv_grow_add)
+                    lv_grow_add += pro_grow_add / 10000.0
+                char_pro.append(base_pro * (1 + lv_grow_add))
             else:
                 char_pro.append(base_pro)
 
@@ -366,9 +366,14 @@ class Card(ModelBase):
         card_info['tag_script'] = card_config['tag_script']
         card_info['tag_role'] = card_config['tag_role']
 
+        all_char_pro = [char_pro[i] + card_info['train_ext_pro'][i] for i in range(6)]
+
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
+        all_char_pro = [x * add_percent / 100 if x > 0 else x for x in all_char_pro]
         char_pro = [math.ceil(i) for i in char_pro]
+        all_char_pro = [math.ceil(i) for i in all_char_pro]
         card_info['char_pro'] = char_pro
+        card_info['all_char_pro'] = all_char_pro
         return card_info
 
     def card_tag(self, card_info):

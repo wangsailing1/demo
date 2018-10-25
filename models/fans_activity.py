@@ -23,6 +23,7 @@ class FansActivity(ModelBase):
             'can_unlock_activity': [],
             'activity_log': {},  # {1:{'start_time':11,item_produce:{items:[],last_time:111},
             # gold_produce:{last_time:111},attention_produce:{last_time:111},},'cards':[]}
+            'card_mapping': {},  # 记录卡牌所在活动
         }
         super(FansActivity, self).__init__(self.uid)
 
@@ -33,8 +34,7 @@ class FansActivity(ModelBase):
             self.can_unlock_activity = list(set(all_id) - set(all_luck_id))
             self.save()
 
-
-    def count_produce(self, get_reward=False, activity_id=0):
+    def count_produce(self, get_reward=False, activity_id=0, is_save=True):
         if activity_id not in self.activity_log:
             return []
         now = int(time.time())
@@ -71,7 +71,7 @@ class FansActivity(ModelBase):
             item_produce_new = calc_gift(items)
 
             # 计算金币
-            increase = value.get('effect_id') / 10000.0  #活动加成
+            increase = value.get('effect_id') / 10000.0  # 活动加成
             gold_per_card = config_id['gold_per_card'] * (1 + increase)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
             new_items = [[1, 0, god_num]]
@@ -96,8 +96,8 @@ class FansActivity(ModelBase):
                 gold_produce['last_time'] = now - gold_remain_time
                 attention_produce['last_time'] = now - attention_remain_time
                 item_produce['items'] = []
-
-        self.save()
+        if is_save:
+            self.save()
 
         return all_items
 
@@ -108,8 +108,7 @@ class FansActivity(ModelBase):
             if is_save:
                 self.save()
 
-
-    def get_card_effect(self,cards):
+    def get_card_effect(self, cards):
         group_list = set()
         config = game_config.card_basis
         for card in cards:
@@ -117,13 +116,24 @@ class FansActivity(ModelBase):
                 continue
             group_list.add(config[self.mm.card.cards[card]['id']]['group'])
         effect_dict = {}
-        for k,value in game_config.card_book.iteritems():
+        for k, value in game_config.card_book.iteritems():
             if len(group_list & set(value['card'])) == len(value['card']):
                 effect_dict[k] = value['fans_ativity']
-        return max(effect_dict.items(),key=lambda x:x[1])[0] if effect_dict else 0
+        return max(effect_dict.items(), key=lambda x: x[1])[0] if effect_dict else 0
 
+    def add_card_mapping(self, cards, activity_id, is_save=False):
+        for card in cards:
+            if card not in ['0']:
+                self.card_mapping[card] = activity_id
+        if is_save:
+            self.save()
 
-
+    def delete_card_mapping(self, cards, is_save=False):
+        for card in cards:
+            if card not in ['0'] and card in self.card_mapping:
+                self.card_mapping.pop(card)
+        if is_save:
+            self.save()
 
 
 ModelManager.register_model('fans_activity', FansActivity)
