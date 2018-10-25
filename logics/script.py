@@ -293,6 +293,8 @@ class ScriptLogic(object):
             # 系数为 0 表示无此属性不生效
             if not standard_attr[pro_id_mapping[pro_id]]:
                 continue
+            if not role_count_by_attr[pro_id]:
+                continue
             base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
         part_a = (base_a / len(role_count_by_attr)) * (1 + skilled_lv_addition)
 
@@ -304,6 +306,8 @@ class ScriptLogic(object):
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
             # 系数为 0 表示无此属性不生效
             if not standard_attr[pro_id_mapping[pro_id]]:
+                continue
+            if not role_count_by_attr[pro_id]:
                 continue
             base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
         part_b = (base_b / len(role_count_by_attr)) * (1 + skilled_lv_addition)
@@ -534,6 +538,9 @@ class ScriptLogic(object):
         style = cur_script['style']
         script_config = game_config.script[cur_script['id']]
 
+        # todo 杀青步骤的 reward
+
+
         # 卡牌类型经验fight_exp
         for role_id, card_oid in cur_script['card'].iteritems():
             if card_oid in card.cards:
@@ -542,7 +549,7 @@ class ScriptLogic(object):
         #  玩家经验player_exp
         self.mm.user.add_player_exp(script_config['player_exp'])
 
-        # 总票房
+        # 总票房 给美金
         finished_first_income = cur_script['finished_first_income']
         finished_curve = cur_script['finished_curve']
         all_income = int(finished_first_income['first_income'] + sum(finished_curve['curve']))
@@ -572,10 +579,6 @@ class ScriptLogic(object):
         return {
 
         }
-
-    def get_func_mapping(self, finished_step):
-        if finished_step == 1:
-            return self.calc_curve
 
     def check_finished_step(self, finished_step):
         """
