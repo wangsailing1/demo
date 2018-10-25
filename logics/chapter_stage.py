@@ -17,7 +17,7 @@ class Chapter_stage(object):
         self.mm = mm
         self.chapter_stage = self.mm.chapter_stage
 
-    def chapter_stage_fight(self, stage, type_hard, align='', auto=False, times=1, step=2):
+    def chapter_stage_fight(self, stage, type_hard, align='', auto=False, times=1):
         config = game_config.get_chapter_mapping()
         chapter, stage = [int(i) for i in stage.split('-')]
         config_s = game_config.chapter_stage
@@ -86,7 +86,7 @@ class Chapter_stage(object):
             if len(align) % 2:
                 return 20, {}  # 参数错误
             align = {int(align[i * 2]): align[i * 2 + 1] for i in range(len(align) / 2)}
-        rc, data = self.fight(stage_id, align, auto=auto, times=times, is_first=is_first, step=step)
+        rc, data = self.fight(stage_id, align, auto=auto, times=times, is_first=is_first)
         if not rc:
             if data.get('win', True):
                 add_player_exp = stage_config['player_exp'] * times
@@ -136,7 +136,7 @@ class Chapter_stage(object):
         return rc, data
 
     # 战斗（只计算战斗结果,星级过关）
-    def fight(self, stage_id, align, save=True, auto=False, times=1, is_first=False, step=2):
+    def fight(self, stage_id, align, save=True, auto=False, times=1, is_first=False):
         config = game_config.chapter_stage
         stage_config = config[stage_id]
         script_id = stage_config['script_id']
@@ -166,8 +166,6 @@ class Chapter_stage(object):
                 score = self.tag_score(script_id, role_id, card_id)
                 tag_score[card_id] = score
                 all_pro += self.mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
-            if step == 1:
-                return 0, {'tag_score': tag_score}
 
             fight_data = {}
             rounds = game_config.common.get(23, 2)
@@ -232,6 +230,7 @@ class Chapter_stage(object):
             data['fight_data'] = fight_data
             data['all_score'] = all_score
             data['star'] = star
+            data['tag_score'] = tag_score
             if not data['win']:
                 return 0, data
 
