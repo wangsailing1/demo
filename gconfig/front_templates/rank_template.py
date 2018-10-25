@@ -31,6 +31,7 @@ cup_num = {
     'mid_lines': ('mid_lines', 'int'),
     'last_lines': ('last_lines', 'int'),
     'sort': ('sort', 'int'),
+    'icon': ('icon', 'str'),
 }
 
 # #颁奖设置
