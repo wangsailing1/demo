@@ -266,7 +266,7 @@ class Script(ModelBase):
         if all_market:
             choiced_market = weight_choice(all_market)
             cur_market = list(choiced_market[0])
-            del_unit = game_config.common[17]
+            del_unit = game_config.common[7]
             # 随机三次减少关注度
             market_length = len(cur_market)
             for i in range(3):
@@ -281,21 +281,21 @@ class Script(ModelBase):
         type_config = game_config.script_type_style[script_config['type']]
         data = {
             'length': random.randint(*type_config['length']),       # 剧集时间/集数
-            'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
-            'finished_step': 0,  # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
+            'step': 1,              # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青
+            'finished_step': 0,     # 拍摄结算进度 1: 通用奖励、艺人关注度；2：拍摄属性、熟练度；3：弹出新闻关注度
             # 4: 首日上映; 5: 专业评价; 6: 持续上映; 7: 观众评价
             'name': name,
-            'card': {},  # 艺人角色 {rol_id: card_oid}
+            'card': {},             # 艺人角色 {rol_id: card_oid}
             'id': script_id,
             'oid': self._make_oid(script_id),
-            'style': 0,  # 剧本类型
+            'style': 0,             # 剧本类型
             'ts': int(time.time()),
             'single_style': False,  # 是否连续同样类型
-            'suit': 0,  # 片子类型适合档次
-            'pro': [0] * 6,  # 各个属性值
+            'suit': 0,              # 片子类型适合档次
+            'pro': [0] * 6,         # 各个属性值
 
-            'result_step': 0,  # 结算阶段，前端修改，前端使用
-            'result': {},  # 拍片结算结果 {'reward': {}, }
+            'result_step': 0,       # 结算阶段，前端修改，前端使用
+            'result': {},           # 拍片结算结果 {'reward': {}, }
 
             'summary': {'income': 100, 'cost': 50},  # 票房总结
 
@@ -304,13 +304,13 @@ class Script(ModelBase):
             'finished_attr': {},
             'finished_attention': {},
             'finished_first_income': {},
-            'finished_curve': {},  # 持续上映曲线
-            'finished_medium_judge': {},  # 评价 专业评价 100
+            'finished_curve': {},           # 持续上映曲线
+            'finished_medium_judge': {},    # 评价 专业评价 100
             'finished_audience_judge': {},  # 评价 观众评价 200
-            'finished_summary': {},  # 票房总结{'income': 100, 'cost': 50},
-            'finished_analyse': {},  # 票房分析
+            'finished_summary': {},         # 票房总结{'income': 100, 'cost': 50},
+            'finished_analyse': {},         # 票房分析
 
-            'end_lv': 0,                # 结束档次
+            'end_lv': 0,                    # 结束档次
 
 
             'attention': 0,  # 关注度

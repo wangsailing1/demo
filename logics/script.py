@@ -9,6 +9,7 @@ Created on 2018-09-04
 import time
 import copy
 import math
+import bisect
 import random
 import itertools
 from collections import Counter
@@ -489,7 +490,7 @@ class ScriptLogic(object):
         medium_score = finished_medium_judge['score']
         audience_score = finished_audience_judge['score']
 
-        curve_id = audience_score + (medium_score - game_config.common[15]) / game_config.common[16]
+        curve_id = audience_score + float(medium_score - game_config.common[15]) / game_config.common[16]
         curve_id = math.ceil(curve_id)
         max_config_id = max(game_config.script_curve)
         min_config_id = min(game_config.script_curve)
@@ -503,9 +504,11 @@ class ScriptLogic(object):
         first_income = finished_first_income['first_income']
 
         rate = game_config.common[18]
+        curve = [first_income * i / 100.0 / rate for i in curve_config['curve_rate']]
+        curve = [int(i) for i in curve]
         return {
             'curve_id': curve_id,
-            'curve': [first_income * i / 100 * rate for i in curve_config['curve_rate']]
+            'curve': curve,
         }
 
     def summary(self):
@@ -539,9 +542,29 @@ class ScriptLogic(object):
         #  玩家经验player_exp
         self.mm.user.add_player_exp(script_config['player_exp'])
 
+        # 总票房
+        finished_first_income = cur_script['finished_first_income']
+        finished_curve = cur_script['finished_curve']
+        all_income = int(finished_first_income['first_income'] + sum(finished_curve['curve']))
+
+        ticket_line = script_config['ticket_line']
+        ticket_rate = 10000.0 * all_income / ticket_line
+
+        # 票房评级
+        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()]
+        end_lv_rate.sort(key=lambda x: x[0])
+        idx = bisect.bisect_left([i[1] for i in end_lv_rate], ticket_rate)
+        if idx >= len(end_lv_rate):
+            idx = -1
+        end_lv = end_lv_rate[idx][0]
+
+        cur_script['end_lv'] = end_lv
+        script.save()
+
         return {
-            'income': 123,          # 总票房
-            'user_rank_up': 3       # 用户排名上升
+            'income': all_income,          # 总票房
+            'user_rank_up': 3,               # 用户排名上升
+            'end_lv': end_lv,               # 票房评级
         }
 
     def finished_analyse(self):
@@ -554,10 +577,8 @@ class ScriptLogic(object):
         if finished_step == 1:
             return self.calc_curve
 
-
     def check_finished_step(self, finished_step):
         """
-
         :param finished_step:
             1： 经验、熟练度什么的通用奖励
             2： 拍摄属性结算
@@ -629,24 +650,6 @@ class ScriptLogic(object):
         """选片时计算"""
         pass
 
-    # 艺人适配剧本总分
-    def calc_card_film_match_score(self, film_info):
-        """"""
-        all_score = 0
-        card = self.mm.card
-        script_config = game_config.script[film_info['id']]
-        for role_id, card_oid in film_info['card'].iteritems():
-            # role_config = game_config.script_role[role_id]
-            card_info = card.cards[card_oid]
-            quality = game_config.card_basis[card_info['id']]['qualityid']
-            if quality in game_config.tag_score:
-                score = game_config.tag_score[quality]['score']
-                all_score += score
-            else:
-                print 'quality "%s" not exists in game_config' % quality, card_oid
-
-        return all_score
-
     # 6.艺人的拍摄发挥,选卡算一次，选类型算一次
     def calc_film_card_effect(self, action='set_card'):
         card = self.mm.card
@@ -655,10 +658,8 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         pro = cur_script['pro']
-        # match_score = self.calc_card_film_match_score(cur_script)
 
         match_score = 0
-        # todo
         match_script = {}       # 艺人对剧本发挥
         match_role = {}         # 艺人对角色发挥
         effect = {}
