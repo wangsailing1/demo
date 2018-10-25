@@ -107,6 +107,7 @@ script_end_level = {
     'line': ('line', 'int'),  # 占结算线比重（万分之)
     'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
+    'icon': ('icon', 'str'),
 
 }
 
