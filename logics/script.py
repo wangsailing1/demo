@@ -14,6 +14,7 @@ import random
 import itertools
 from collections import Counter
 from gconfig import game_config
+from tools.gift import add_mult_gift
 
 from lib.db import ModelBase
 from lib.utils import salt_generator
@@ -46,6 +47,8 @@ class ScriptLogic(object):
         script = self.mm.script
 
         return 0, {
+            'continued_script': script.continued_script,
+
             'own_script': script.own_script,
             'sequel_script': script.sequel_script,
             'step': self.get_step(),
@@ -526,7 +529,7 @@ class ScriptLogic(object):
         # script_config['fight_exp']
         # script_config['player_exp']
 
-        # .剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+        # 剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
         # "finished_attention": {
         #                           "card_effect": 14,  # 艺人人气对关注度影响
         #                           "attention": 50  # 关注度
@@ -538,8 +541,9 @@ class ScriptLogic(object):
         style = cur_script['style']
         script_config = game_config.script[cur_script['id']]
 
-        # todo 杀青步骤的 reward
-
+        # 杀青步骤的 reward
+        finished_common_reward = cur_script['finished_common_reward']
+        reward = add_mult_gift(self.mm, finished_common_reward['finished_common_reward'])
 
         # 卡牌类型经验fight_exp
         for role_id, card_oid in cur_script['card'].iteritems():
@@ -553,6 +557,7 @@ class ScriptLogic(object):
         finished_first_income = cur_script['finished_first_income']
         finished_curve = cur_script['finished_curve']
         all_income = int(finished_first_income['first_income'] + sum(finished_curve['curve']))
+        self.mm.user.add_dollar(all_income)
 
         ticket_line = script_config['ticket_line']
         ticket_rate = 10000.0 * all_income / ticket_line
@@ -566,11 +571,18 @@ class ScriptLogic(object):
         end_lv = end_lv_rate[idx][0]
 
         cur_script['end_lv'] = end_lv
+
+        card.save()
         script.save()
+        self.mm.user.save()
 
         return {
-            'income': all_income,          # 总票房
-            'user_rank_up': 3,               # 用户排名上升
+            'user_rank_up': 3,  # 用户排名上升
+
+
+
+            'reward': reward,               # 获得的杀青奖励
+            'income': all_income,           # 总票房
             'end_lv': end_lv,               # 票房评级
         }
 

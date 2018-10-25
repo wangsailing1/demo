@@ -28,16 +28,17 @@ class Script(ModelBase):
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
-            'style_log': [],  # 连续拍片类型，保留最近10个
-            'own_script': [],  # 已获得的可拍摄的片子
-            'sequel_script': [],  # 已获得的可拍摄的续集片子
-            'cur_script': {},  # 当前在在拍的片子
+            'continued_script': {},         # 持续收益的片子
+            'style_log': [],                # 连续拍片类型，保留最近10个
+            'own_script': [],               # 已获得的可拍摄的片子
+            'sequel_script': [],            # 已获得的可拍摄的续集片子
+            'cur_script': {},               # 当前在在拍的片子
 
-            'scripts': {},  # 所有已拍完的片子
+            'scripts': {},                  # 所有已拍完的片子
 
             'script_pool': {},
             'sequel_script_pool': {},
-            'cur_market': [],  # 当前市场关注度
+            'cur_market': [],               # 当前市场关注度
 
 
             # 各种最高收入排行
@@ -65,6 +66,27 @@ class Script(ModelBase):
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
         if self.cur_script.get('finished_step') in [8, 9]:
             cur_script = self.cur_script
+            # 进入持续收益流程
+            self.continued_script['%s_%s' % (cur_script['ts'], cur_script['id'])] = cur_script
+
+            finished_summary = cur_script['finished_summary']
+            all_income = finished_summary['income']
+
+            end_lv = cur_script['end_lv']
+            end_lv_config = game_config.script_end_level[end_lv]
+            continued_lv = end_lv_config['continued_level']
+            continued_lv_config = game_config.script_continued_level[continued_lv]
+
+            continued_income = continued_lv_config['parm'] * all_income
+            continued_time = game_config.common[19]
+            continued_income_unit = continued_income / continued_time
+
+            # todo 是否激活续作
+            if end_lv_config['if_next_script']:
+                pass
+            else:
+                pass
+
             self.check_top_income(cur_script)
             self.check_next_sequel(cur_script)
             self.cur_script = {}
