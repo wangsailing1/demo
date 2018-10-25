@@ -369,7 +369,7 @@ fans_activity_msg = {
         15: u'有卡牌类型不符',
         16: u'有卡牌人气不足',
         17: u'美元不足',
-        18: u'活动未结束',
+        18: u'活动已结束，请先领取奖励',
     },
     'fans_activity.unlock_activity': {
         1: u'没有活动',

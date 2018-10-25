@@ -22,7 +22,14 @@ class FansActivity(object):
         value = self.mm.fans_activity.activity_log.get(activity_id, {})
         all_time = config['time'] * 60
         remian_time = max(all_time + value.get('start_time', 0) - int(time.time()), 0)
+
+        # 活动已结束换人，要先领奖
+        if remian_time <= 0 and value.get('start_time', 0):
+            return 18, {}  #活动已结束，请先领取奖励
+
         if remian_time > 0:  # 替换人物
+            effect_activity = [activity_id]
+            gift = self.mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id, is_save=False)
             for k, card_id in enumerate(cards):
                 if card_id in ['0']:
                     continue
@@ -44,20 +51,27 @@ class FansActivity(object):
                     else:
                         if self.mm.card.cards[card_id]['popularity'] < need_num:
                             return 16, {}  # 有卡牌人气不足
-            gift = self.mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id, is_save=False)
+                effect_activity_id = self.mm.fans_activity.card_mapping.get(card_id, 0)
+                if effect_activity_id not in effect_activity:
+                    effect_activity.append(effect_activity_id)
+                    effect_activity_gift = self.mm.fans_activity.count_produce(get_reward=True,
+                                                                               activity_id=effect_activity_id,
+                                                                               is_save=False)
+                    gift.extend(effect_activity_gift)
+                if effect_activity_id != activity_id:
+                    self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
+                        self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
             reward = add_mult_gift(self.mm, gift)
+            self.mm.fans_activity.delete_card_mapping(self.mm.fans_activity.activity_log.get(activity_id,{}).get('cards',[]))
             effect_id = self.mm.fans_activity.get_card_effect(cards)
             self.mm.fans_activity.activity_log[activity_id]['cards'] = cards
             self.mm.fans_activity.activity_log[activity_id]['effect_id'] = effect_id
-            self.mm.fans_activity.add_card_mapping()
+            self.mm.fans_activity.add_card_mapping(cards)
             self.mm.fans_activity.save()
             _, data = self.fans_index()
             data['reward'] = reward
             return 0, data
 
-        # 活动已结束换人
-        if remian_time <= 0 and value.get('start_time', 0):
-            pass
 
         for k, card_id in enumerate(cards):
             if card_id in ['0']:
@@ -117,6 +131,7 @@ class FansActivity(object):
             data['activity'] = self.mm.fans_activity.activity
             data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
             data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity
+            data['card_mapping'] = self.mm.fans_activity.card_mapping
             return 0, data
 
         for id, value in self.mm.fans_activity.activity_log.iteritems():
@@ -135,4 +150,5 @@ class FansActivity(object):
         data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
         data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity
         data['activity'] = self.mm.fans_activity.activity
+        data['card_mapping'] = self.mm.fans_activity.card_mapping
         return 0, data
