@@ -457,9 +457,15 @@ class ScriptLogic(object):
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
         score = part_b / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
-        score = int(score)
-        # todo 观众评星
-        star = random.randint(1, 5)
+        score = round(score, 1)
+        audi_grade = score * 100
+
+        star = 0
+        for k, v in game_config.audi_comment_choice.iteritems():
+            audi_grade_range = v['audi_grade_range']
+            if audi_grade_range[0] <= audi_grade <= audi_grade_range[1]:
+                star = k
+                break
         return {'score': score, 'star': star}
 
     def calc_curve(self):
