@@ -15,7 +15,7 @@ from gconfig import game_config
 
 class Chapter_stage(ModelBase):
     FORMAT = '%Y-%m-%d'
-    MAPPING = {1:'like'}
+    MAPPING = {1: 'like'}
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -23,7 +23,8 @@ class Chapter_stage(ModelBase):
             'chapter': {},
             'last_time': 0,  # 最近操作时间
             'next_chapter': [1],  # 解锁章节
-            'got_reward_dialogue':[]   #已领奖剧情关
+            'got_reward_dialogue': [],  # 已领奖剧情关
+            'done_chapter_log': []
         }
         super(Chapter_stage, self).__init__(self.uid)
 
@@ -41,13 +42,12 @@ class Chapter_stage(ModelBase):
 
     def get_now_stage(self):
         chapter = max(self.next_chapter)
-        stage = self.chapter.get(chapter,{}).get(0,{}).keys()
+        stage = self.chapter.get(chapter, {}).get(0, {}).keys()
         if not stage:
             stage = 1
         else:
             stage = max(stage)
-        return '%s-%s'%(chapter,stage)
-
+        return '%s-%s' % (chapter, stage)
 
 
 ModelManager.register_model('chapter_stage', Chapter_stage)

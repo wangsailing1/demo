@@ -43,6 +43,7 @@ chapter = {
     'star_num2':        ('star_num2',       'int'),  # 奖励2需求星数
     'fight_reward3':    ('fight_reward3',   'int_list'),  # 星级奖励3
     'star_num3':        ('star_num3',       'int'),  # 奖励3需求星数
+    'chapter_icon':        ('chapter_icon',       'str'),  # 章节图标
 
 }
 

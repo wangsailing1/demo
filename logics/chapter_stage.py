@@ -68,7 +68,7 @@ class Chapter_stage(object):
             if chapter not in self.chapter_stage.chapter or type_hard not in self.chapter_stage.chapter[chapter] \
                     or stage not in self.chapter_stage.chapter[chapter][type_hard]:
                 return 21, {}  # 尚未通关
-            if config[chapter][type_hard]['script_end_level'] > self.chapter_stage.chapter[chapter][type_hard][
+            if config[chapter][type_hard]['script_end_level'] >= self.chapter_stage.chapter[chapter][type_hard][
                 stage].get('star', 0):
                 return 22, {}  # 未达到扫荡星级
         stage_config = config_s[stage_id]
@@ -126,6 +126,7 @@ class Chapter_stage(object):
                 reward = add_mult_gift(self.mm, all_gift)
                 if is_first:
                     self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+                    self.mm.chapter_stage.done_chapter_log.append(stage_id)
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
@@ -133,6 +134,7 @@ class Chapter_stage(object):
                 data['reward'] = reward
                 data['rewards'] = rewards
                 data['next_chapter'] = self.chapter_stage.next_chapter
+                data['stage_id'] = stage_id
         return rc, data
 
     # 战斗（只计算战斗结果,星级过关）
