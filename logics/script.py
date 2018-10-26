@@ -312,7 +312,7 @@ class ScriptLogic(object):
                 continue
             if not role_count_by_attr[pro_id]:
                 continue
-            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
+            base_b += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
         part_b = (base_b / len(role_count_by_attr)) * (1 + skilled_lv_addition)
 
         return {
