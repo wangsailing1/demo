@@ -81,6 +81,7 @@ class Script(ModelBase):
             continued_time = game_config.common[19]
             continued_income_unit = continued_income / continued_time
 
+            cur_script['continued_lv'] = continued_lv
             # todo 是否激活续作
             if end_lv_config['if_next_script']:
                 self.add_next_sequel(cur_script)
@@ -333,6 +334,7 @@ class Script(ModelBase):
             'finished_analyse': {},         # 票房分析
 
             'end_lv': 0,                    # 结束档次
+            'continued_lv': 0,              # 持续收入等级 可手动升级
 
 
             'attention': 0,  # 关注度

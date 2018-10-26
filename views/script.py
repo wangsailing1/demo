@@ -161,3 +161,36 @@ def finished_analyse(hm):
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(9)
     return rc, data
+
+
+def continued_script(hm):
+    """查看持续收入阶段的电影
+
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    return 0, {'continued_script': mm.script.continued_script}
+
+
+def upgrade_continued_level(hm):
+    """
+
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    script_id = hm.get_argument('script_id')
+    sl = ScriptLogic(mm)
+    rc, data = sl.upgrade_continued_level(script_id)
+    return rc, data
+
+
+def get_continued_reward(hm):
+    """领取持续奖励
+    """
+    mm = hm.mm
+    script_id = hm.get_argument('script_id')
+    sl = ScriptLogic(mm)
+    rc, data = sl.get_continued_reward(script_id)
+    return rc, data

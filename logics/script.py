@@ -14,7 +14,7 @@ import random
 import itertools
 from collections import Counter
 from gconfig import game_config
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift, del_mult_goods
 
 from lib.db import ModelBase
 from lib.utils import salt_generator
@@ -47,8 +47,6 @@ class ScriptLogic(object):
         script = self.mm.script
 
         return 0, {
-            'continued_script': script.continued_script,
-
             'own_script': script.own_script,
             'sequel_script': script.sequel_script,
             'step': self.get_step(),
@@ -760,6 +758,36 @@ class ScriptLogic(object):
             'match_script': match_script,
             'match_role': match_role
         }
+
+    def upgrade_continued_level(self, script_id):
+        script = self.mm.script
+        if script_id not in script.continued_script:
+            return 1, {}
+
+        script_info = script.continued_script[script_id]
+        continued_lv = script_info['continued_lv']
+        if continued_lv + 1 not in game_config.script_continued_level:
+            return 2, {}        # 已是最大等级
+
+        continued_lv_config = game_config.script_continued_level[continued_lv + 1]
+        upgrade_cost = continued_lv_config['upgrade_cost']
+        rc, data = del_mult_goods(self.mm, upgrade_cost)
+        if rc:
+            return rc, data
+
+        script_info['continued_lv'] = continued_lv + 1
+        script.save()
+        return 0, {}
+
+    def get_continued_reward(self, script_id):
+        script = self.mm.script
+        if script_id not in script.continued_script:
+            return 1, {}
+
+        script_info = script.continued_script[script_id]
+
+        script.save()
+        return 0, {'dollar': 100, 'continued_script': script.continued_script}
 
 
 
