@@ -126,6 +126,7 @@ class Chapter_stage(object):
                 reward = add_mult_gift(self.mm, all_gift)
                 if is_first:
                     self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+                    self.mm.chapter_stage.done_chapter_log.append(stage_id)
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
