@@ -9,10 +9,20 @@ from gconfig import game_config
 from lib.utils import weight_choice
 
 
+# 推图
 def chapter_stage_args(hm, data, mission):
-    return {}
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
+    stage_id = data['stage_id']
+    star = data['star']
+    target_sort_first = mission._CHAPTER_FIRST
+    target_sort_num = mission._CHAPTER_NUM
+    return {target_sort_first: {'type_hard': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+                                'star': star},
+            target_sort_num: {'type_hard': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+                              'star': star}, }
 
 
+# 拍摄（type，style，income）
 def script_make(hm, data, mission):
     script_id = data['cur_script']['id']
     end_lv = data['cur_script']['end_lv']
@@ -20,6 +30,15 @@ def script_make(hm, data, mission):
     target_sort_style = mission._SCRIPT_STYLE
     return {target_sort_type: {'script_id': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'script_id': script_id, 'end_lv': end_lv, 'value': 1}}
+
+
+# 推图次数
+def chapter_stage_auto_args(hm, data, mission):
+    times = hm.get_argument('times', 1, is_int=True)
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
+    stage_id = data['stage_id']
+    target_sort_num = mission._CHAPTER_NUM
+    return {target_sort_num: {'type_hard': type_hard, 'value': times, 'stage_id': stage_id}, }
 
 
 class Mission(ModelBase):
@@ -50,6 +69,7 @@ class Mission(ModelBase):
         # todo dataosha, survice
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
         'script.finished_analyse': script_make,
+        'chapter_stage.auto_sweep': chapter_stage_auto_args,
     }
 
     # 配置target_sort映射
@@ -83,6 +103,7 @@ class Mission(ModelBase):
             'daily_data': {},
             'random_done': [],  # 随机任务
             'random_data': {},
+            'randmission_refresh_time': 0,
             'live_done': [],  # 每日活跃
             'liveness': 0,
             'box_office': {},
@@ -94,7 +115,7 @@ class Mission(ModelBase):
         if self.date != today:
             config = game_config.liveness
             self.daily_done = []
-            self.daily_data = {i: 0 for i in config.keys()}
+            self.daily_data = {i: 1 if i == 1001 else 0 for i in config.keys()}
             self.live_done = []
             self.liveness = 0
             self.box_office = {self.get_box_office(): 0} if self.get_box_office() else {}
@@ -204,6 +225,7 @@ class MissionDaily(ModelBase):
                     self.data[mission_id] += value
                 else:
                     self.data[mission_id] = value
+
         elif self.config[mission_id]['sort'] == 14:
             target_data = self.config[mission_id]['target']
             script_style = game_config.script[value['script_id']]['style']
@@ -212,6 +234,22 @@ class MissionDaily(ModelBase):
                     self.data[mission_id] += value
                 else:
                     self.data[mission_id] = value
+
+        elif self.config[mission_id]['sort'] == 7:
+            target_data = self.config[mission_id]['target']
+            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+                self.data[mission_id] = value['stage_id']
+
+        elif self.config[mission_id]['sort'] == 8:
+            target_data = self.config[mission_id]['target']
+            star = value['star']
+            type_hard = value['type_hard']
+            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+
         else:
             if mission_id in self.data:
                 self.data[mission_id] += value
@@ -226,7 +264,6 @@ class MissionDaily(ModelBase):
 
 
 class MissionGuide(ModelBase):
-
     def __init__(self, obj):
         self.uid = obj.uid
         self.done = obj.guide_done
@@ -253,6 +290,22 @@ class MissionGuide(ModelBase):
                     self.data[mission_id] += value
                 else:
                     self.data[mission_id] = value
+
+        elif self.config[mission_id]['sort'] == 7:
+            target_data = self.config[mission_id]['target']
+            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+                self.data[mission_id] = value['stage_id']
+
+        elif self.config[mission_id]['sort'] == 8:
+            target_data = self.config[mission_id]['target']
+            star = value['star']
+            type_hard = value['type_hard']
+            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+
         else:
             if mission_id in self.data:
                 self.data[mission_id] += value
@@ -293,6 +346,22 @@ class MissionRandom(ModelBase):
                     self.data[mission_id] += value
                 else:
                     self.data[mission_id] = value
+
+        elif self.config[mission_id]['sort'] == 7:
+            target_data = self.config[mission_id]['target']
+            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+                self.data[mission_id] = value['stage_id']
+
+        elif self.config[mission_id]['sort'] == 8:
+            target_data = self.config[mission_id]['target']
+            star = value['star']
+            type_hard = value['type_hard']
+            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+
         else:
             if mission_id in self.data:
                 self.data[mission_id] += value

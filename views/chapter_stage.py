@@ -14,7 +14,7 @@ def chapter_stage_index(hm):
 def chapter_stage_fight(hm):
     mm = hm.mm
     stage = hm.get_argument('stage', '')
-    type_hard = int(hm.get_argument('type_hard', 0))
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
     align = hm.get_argument('align', '')
     if not stage:
         return 1, {}  # 关卡参数错误
@@ -47,8 +47,8 @@ def open_actor_chat(hm):
 def auto_sweep(hm):
     mm = hm.mm
     stage = hm.get_argument('stage', '')
-    times = int(hm.get_argument('times', 1))
-    type_hard = int(hm.get_argument('type_hard', 0))
+    times = hm.get_argument('times', 1, is_int=True)
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.chapter_stage_fight(stage, type_hard, auto=True, times=times)
     return rc, data
