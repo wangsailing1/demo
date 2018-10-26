@@ -78,7 +78,12 @@ class ScriptLogic(object):
         :param is_sequel:   是否续集
         :return:
         """
+        user = self.mm.user
         script = self.mm.script
+        script_config = game_config.script[script_id]
+        cost = script_config['cost']
+        if not user.is_dollar_enough(cost):
+            return 'error_dollar', {}
 
         if is_sequel:
             pool = script.sequel_script_pool
@@ -96,10 +101,13 @@ class ScriptLogic(object):
 
         film = script.make_film(script_id, name)
         script.cur_script = film
+        film['cost'] = cost
 
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
+        user.deduct_dollar(cost)
         script.save()
+        user.save()
         rc, data = self.index()
         return rc, data
 
@@ -110,7 +118,9 @@ class ScriptLogic(object):
         :param role_card:  [(role, card_id), (role, card_id)]
         :return:
         """
+        user = self.mm.user
         script = self.mm.script
+        card = self.mm.card
 
         cur_script = script.cur_script
         if not cur_script:
@@ -118,6 +128,7 @@ class ScriptLogic(object):
         if cur_script['card']:
             return 2, {}  # 已选完角色
 
+        cost = 0
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
@@ -129,15 +140,25 @@ class ScriptLogic(object):
             if role in used_role:
                 return 3, {}
 
+            card_info = card.cards[card_id]
+            card_config = game_config.card_basis[card_info['id']]
+            cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
+
             used_card.add(card_id)
             used_role.add(role)
             cur_script['card'][role] = card_id
 
+        if not user.is_dollar_enough(cost):
+            return 'error_dollar', {}
+
+        user.deduct_dollar(cost)
         cur_script['step'] = 2
+        cur_script['cost'] += cost
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
 
         script.save()
+        user.save()
         rc, data = self.index()
         data.update(effect)
         return rc, data
