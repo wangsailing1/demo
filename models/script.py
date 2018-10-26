@@ -67,7 +67,7 @@ class Script(ModelBase):
         if self.cur_script.get('finished_step') in [8, 9]:
             cur_script = self.cur_script
             # 进入持续收益流程
-            self.continued_script['%s_%s' % (cur_script['ts'], cur_script['id'])] = cur_script
+            self.continued_script[cur_script['oid']] = cur_script
 
             finished_summary = cur_script['finished_summary']
             all_income = finished_summary['income']
@@ -83,12 +83,11 @@ class Script(ModelBase):
 
             # todo 是否激活续作
             if end_lv_config['if_next_script']:
-                pass
+                self.add_next_sequel(cur_script)
             else:
                 pass
 
             self.check_top_income(cur_script)
-            self.check_next_sequel(cur_script)
             self.cur_script = {}
             self.script_pool = {}
             self.sequel_script_pool = {}
@@ -97,7 +96,7 @@ class Script(ModelBase):
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
 
-    def check_next_sequel(self, cur_script):
+    def add_next_sequel(self, cur_script):
         """根据大卖与否开启续作"""
         script_config = game_config.script[cur_script['id']]
         sequel_count = script_config['sequel_count']

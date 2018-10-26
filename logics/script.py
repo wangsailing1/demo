@@ -543,7 +543,7 @@ class ScriptLogic(object):
 
         # 杀青步骤的 reward
         finished_common_reward = cur_script['finished_common_reward']
-        reward = add_mult_gift(self.mm, finished_common_reward['finished_common_reward'])
+        reward = add_mult_gift(self.mm, finished_common_reward['reward'])
 
         # 卡牌类型经验fight_exp
         for role_id, card_oid in cur_script['card'].iteritems():
