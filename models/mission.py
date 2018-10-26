@@ -7,11 +7,19 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
-from tools.gift import calc_gift
 
 
-def chapter_stage_args(hm, data, reward):
+def chapter_stage_args(hm, data, mission):
     return {}
+
+
+def script_make(hm, data, mission):
+    script_id = data['cur_script']['id']
+    end_lv = data['cur_script']['end_lv']
+    target_sort_type = mission._SCRIPT_TYPE
+    target_sort_style = mission._SCRIPT_STYLE
+    return {target_sort_type: {'script_id': script_id, 'end_lv': end_lv, 'value': 1},
+            target_sort_style: {'script_id': script_id, 'end_lv': end_lv, 'value': 1}}
 
 
 class Mission(ModelBase):
@@ -41,7 +49,29 @@ class Mission(ModelBase):
     _METHOD_FUNC_MAP = {
         # todo dataosha, survice
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
+        'script.finished_analyse': script_make,
     }
+
+    # 配置target_sort映射
+    _PLAYER_LV = 1  # 玩家等级
+    _CARD_LV = 2  # 艺人等级
+    _CARD_GACHA = 3  # 艺人抽取
+    _SCRIPT_GACHA = 4  # 剧本抽取
+    _INCOME = 5  # 总票房
+    _FRIEND_GIFT = 6  # 好友送礼
+    _CHAPTER_FIRST = 7  # 关卡首次通关
+    _CHAPTER_NUM = 8  # 关卡通关次数
+    _CARD_TRAIN = 9  # 艺人培养
+    _FANS_ACTIVITY = 10  # 粉丝活动
+    _EQUIP_COMPOSE = 11  # 武器合成
+    _SCRIPT_TYPE = 12  # 剧本type
+    _GROW = 13  # 格调进阶
+    _SCRIPT_STYLE = 14  # 剧本style
+    _CARD_NUM = 15  # 艺人数量
+    _SCRIPT_NUM = 16  # 剧本数量
+    _SHOP = 17  # 购物
+    _SCRIPT_REWRITE = 18  # 剧本重写
+    _COMPANY_VALUE = 19  # 公司市值
 
     def __init__(self, uid):
         self.uid = uid
@@ -104,7 +134,7 @@ class Mission(ModelBase):
         rand_id = weight_choice(pool)[0]
         return rand_id
 
-    def get_guide_mission(self,is_save=True):
+    def get_guide_mission(self, is_save=True):
         done_mission = self.guide_done
         all_mission = game_config.guide_mission.keys()
         while True:
@@ -118,17 +148,41 @@ class Mission(ModelBase):
         if is_save:
             self.save()
 
-    #判断新手任务是否已结束
+    # 判断新手任务是否已结束
     def check_guide_over(self):
         return len(self.guide_done) == len(game_config.guide_mission.keys())
 
+    @classmethod
+    def do_task_api(cls, mm, method, hm, rc, data):
+        """做任务, 从 RequestHandler中调用
+        args:
+            method: 接口名字
+            hm: 运行环境
+            rc: 返回标识
+            data: 返回数据
+        """
+        if rc != 0 or method not in cls._METHOD_FUNC_MAP:
+            return
 
+        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, mm.mission)
+        if kwargs:
+            mm.mission.do_task(kwargs)
 
+    def do_task(self, kwargs):
+        for k, value in self.daily_data:
+            sort = game_config.liveness[k]['sort']
+            if sort in kwargs:
+                self.daily.add_count(k, kwargs[k])
 
+        for k, value in self.guide_data:
+            sort = game_config.guide_mission[k]['sort']
+            if sort in kwargs:
+                self.guide.add_count(k, kwargs[k])
 
-
-
-
+        for k, value in self.random_data:
+            sort = game_config.random_mission[k]['sort']
+            if sort in kwargs:
+                self.randmission.add_count(k, kwargs[k])
 
 
 class MissionDaily(ModelBase):
@@ -138,25 +192,40 @@ class MissionDaily(ModelBase):
         self.data = obj.daily_data
         self.config = game_config.liveness
 
-    def get_count(self, sort):
-        return self.data.get(sort, 0)
+    def get_count(self, mission_id):
+        return self.data.get(mission_id, 0)
 
-    def add_count(self, sort, value):
-        if sort in self.data:
-            self.data[sort] += value
+    def add_count(self, mission_id, value):
+        if self.config[mission_id]['sort'] == 12:
+            target_data = self.config[mission_id]['target']
+            script_type = game_config.script[value['script_id']]['type']
+            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+        elif self.config[mission_id]['sort'] == 14:
+            target_data = self.config[mission_id]['target']
+            script_style = game_config.script[value['script_id']]['style']
+            if script_style == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
         else:
-            self.data[sort] = value
+            if mission_id in self.data:
+                self.data[mission_id] += value
+            else:
+                self.data[mission_id] = value
 
-    def done_task(self, award_id):
+    def done_task(self, mission_id):
         """完成任务
         """
-        if award_id not in self.done:
-            self.done.append(award_id)
+        if mission_id not in self.done:
+            self.done.append(mission_id)
 
 
 class MissionGuide(ModelBase):
-    COUNTTYPE = [11, 9, 13, 12]
-    NUMTYPE = [19, 1, 7, 2]
 
     def __init__(self, obj):
         self.uid = obj.uid
@@ -164,47 +233,77 @@ class MissionGuide(ModelBase):
         self.data = obj.guide_data
         self.config = game_config.guide_mission
 
-    def get_count(self, sort):
-        return self.data.get(sort, 0)
+    def get_count(self, mission_id):
+        return self.data.get(mission_id, 0)
 
-    def add_count(self, sort, value):
-        if self.config[sort]['sort'] in self.COUNTTYPE:
-            if sort in self.data:
-                self.data[sort] += value
+    def add_count(self, mission_id, value):
+        if self.config[mission_id]['sort'] == 12:
+            target_data = self.config[mission_id]['target']
+            script_type = game_config.script[value['script_id']]['type']
+            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+        elif self.config[mission_id]['sort'] == 14:
+            target_data = self.config[mission_id]['target']
+            script_style = game_config.script[value['script_id']]['style']
+            if script_style == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+        else:
+            if mission_id in self.data:
+                self.data[mission_id] += value
             else:
-                self.data[sort] = value
-        elif self.config[sort]['sort'] in self.NUMTYPE:
-            self.data[sort] = value
+                self.data[mission_id] = value
 
-    def done_task(self, award_id):
+    def done_task(self, mission_id):
         """完成任务
         """
-        if award_id not in self.done:
-            self.done.append(award_id)
+        if mission_id not in self.done:
+            self.done.append(mission_id)
 
 
 class MissionRandom(ModelBase):
-
     def __init__(self, obj):
         self.uid = obj.uid
         self.done = obj.random_done
         self.data = obj.random_data
         self.config = game_config.random_mission
 
-    def get_count(self, sort):
-        return self.data.get(sort, 0)
+    def get_count(self, mission_id):
+        return self.data.get(mission_id, 0)
 
-    def add_count(self, sort, value):
-        if sort in self.data:
-            self.data[sort] += value
+    def add_count(self, mission_id, value):
+        if self.config[mission_id]['sort'] == 12:
+            target_data = self.config[mission_id]['target']
+            script_type = game_config.script[value['script_id']]['type']
+            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
+        elif self.config[mission_id]['sort'] == 14:
+            target_data = self.config[mission_id]['target']
+            script_style = game_config.script[value['script_id']]['style']
+            if script_style == target_data[1] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value
+                else:
+                    self.data[mission_id] = value
         else:
-            self.data[sort] = value
+            if mission_id in self.data:
+                self.data[mission_id] += value
+            else:
+                self.data[mission_id] = value
 
-    def done_task(self, award_id):
+    def done_task(self, mission_id):
         """完成任务
         """
-        if award_id not in self.done:
-            self.done.append(award_id)
+        if mission_id not in self.done:
+            self.done.append(mission_id)
 
 
 ModelManager.register_model('mission', Mission)
