@@ -63,6 +63,7 @@ class Script(ModelBase):
                 if k not in self.cur_script:
                     self.cur_script[k] = {}
 
+        save = False
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
         if self.cur_script.get('finished_step') in [8, 9]:
             cur_script = self.cur_script
@@ -98,6 +99,8 @@ class Script(ModelBase):
             self.script_pool = {}
             self.sequel_script_pool = {}
 
+            save = True
+
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
@@ -106,6 +109,9 @@ class Script(ModelBase):
         for k, v in self.continued_script.items():
             if v.get('continued_start', 0) >= v.get('continued_expire', 0):
                 self.continued_script.pop(k)
+
+        if save:
+            self.save()
 
     def add_next_sequel(self, cur_script):
         """根据大卖与否开启续作"""
