@@ -79,9 +79,14 @@ class Script(ModelBase):
 
             continued_income = continued_lv_config['parm'] * all_income
             continued_time = game_config.common[19]
-            continued_income_unit = continued_income / continued_time
+            continued_income_unit = continued_income / (continued_time * 60)
 
+            now = int(time.time())
             cur_script['continued_lv'] = continued_lv
+            cur_script['continued_income_unit'] = continued_income_unit
+            cur_script['continued_expire'] = now + continued_time * 60
+            cur_script['continued_start'] = now
+
             # todo 是否激活续作
             if end_lv_config['if_next_script']:
                 self.add_next_sequel(cur_script)
@@ -96,6 +101,11 @@ class Script(ModelBase):
             # if cur_script['step'] == 4:
             #     self.scripts[cur_script['oid']] = cur_script
             #     self.cur_script = {}
+
+        # 清除过期影片
+        for k, v in self.continued_script.items():
+            if v.get('continued_expire', 0) >= v.get('continued_start', 0):
+                self.continued_script.pop(k)
 
     def add_next_sequel(self, cur_script):
         """根据大卖与否开启续作"""
@@ -335,7 +345,9 @@ class Script(ModelBase):
 
             'end_lv': 0,                    # 结束档次
             'continued_lv': 0,              # 持续收入等级 可手动升级
-
+            'continued_start': 0,  # 持续收入开始时间
+            'continued_expire': 0,              # 持续收入结束时间
+            'continued_income_unit': 0,              # 持续收入 每秒收入数
 
             'attention': 0,  # 关注度
             'audience': 0,  # 观众

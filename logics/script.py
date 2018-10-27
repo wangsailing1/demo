@@ -775,19 +775,51 @@ class ScriptLogic(object):
         if rc:
             return rc, data
 
+        now = int(time.time())
+        last_dollar = now - script_info['continued_start'] * script_info['continued_income_unit']
+        # 开发环境改时间可能会出负数，处理下
+        last_dollar = max(last_dollar, 0)
+
+        finished_summary = script_info['finished_summary']
+        all_income = finished_summary['income']
+
+        continued_income = continued_lv_config['parm'] * all_income
+        continued_time = game_config.common[19]
+        continued_income_unit = continued_income / (continued_time * 60)
+
         script_info['continued_lv'] = continued_lv + 1
+        script_info['continued_income_unit'] = continued_income_unit
+        script_info['continued_start'] = now
+
+        self.mm.user.add_dollar(last_dollar)
+        self.mm.user.save()
         script.save()
-        return 0, {}
+        return 0, {
+            'dollar': last_dollar,
+            'continued_script': script.continued_script
+        }
 
     def get_continued_reward(self, script_id):
         script = self.mm.script
         if script_id not in script.continued_script:
             return 1, {}
 
-        script_info = script.continued_script[script_id]
+        now = int(time.time())
 
+        script_info = script.continued_script[script_id]
+        last_dollar = now - script_info['continued_start'] * script_info['continued_income_unit']
+        # 开发环境改时间可能会出负数，处理下
+        last_dollar = max(last_dollar, 0)
+        script_info['continued_start'] = now
+
+        self.mm.user.add_dollar(last_dollar)
+        self.mm.user.save()
         script.save()
-        return 0, {'dollar': 100, 'continued_script': script.continued_script}
+
+        return 0, {
+            'dollar': last_dollar,
+            'continued_script': script.continued_script
+        }
 
 
 
