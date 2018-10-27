@@ -796,7 +796,7 @@ class ScriptLogic(object):
         self.mm.user.save()
         script.save()
         return 0, {
-            'dollar': last_dollar,
+            'reward': {'dollar': last_dollar},
             'continued_script': script.continued_script
         }
 
@@ -821,7 +821,7 @@ class ScriptLogic(object):
         script.save()
 
         return 0, {
-            'dollar': last_dollar,
+            'reward': {'dollar': last_dollar},
             'continued_script': script.continued_script
         }
 
