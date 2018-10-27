@@ -117,7 +117,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 13  公会贡献
                 14  VIP经验
                 15
-                16
+                16 点赞
                 17
                 18  艺人名片
                 996 艺人经验
@@ -255,6 +255,15 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 data.setdefault('own_script', []).append(script_id)
         if save:
             mm.script.save()
+
+    if gift_sort == 16:  # 点赞
+        for pkg in gift_config:
+            add_like = pkg[1]
+            if not add_like:
+                continue
+            mm.user.add_like(add_like)
+            add_dict(data, 'like', add_like)
+        mm.user.save()
 
     elif gift_sort == 18:  # 增加艺人名片
         for pkg in gift_config:
