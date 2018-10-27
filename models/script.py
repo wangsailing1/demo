@@ -22,7 +22,7 @@ from models.ranking_list import AppealRank, BlockRank,get_date
 class Script(ModelBase):
     POOL_SIZE = 3
 
-    _need_diff = ('own_script', 'continued_script')
+    _need_diff = ('own_script', )
     SEXMAPPING = {1: 'nv', 2: 'nan'}
 
     def __init__(self, uid=None):
