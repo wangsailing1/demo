@@ -104,7 +104,7 @@ class Script(ModelBase):
 
         # 清除过期影片
         for k, v in self.continued_script.items():
-            if v.get('continued_expire', 0) >= v.get('continued_start', 0):
+            if v.get('continued_start', 0) >= v.get('continued_expire', 0):
                 self.continued_script.pop(k)
 
     def add_next_sequel(self, cur_script):

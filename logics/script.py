@@ -776,7 +776,7 @@ class ScriptLogic(object):
             return rc, data
 
         now = int(time.time())
-        last_dollar = now - script_info['continued_start'] * script_info['continued_income_unit']
+        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
 
@@ -804,10 +804,12 @@ class ScriptLogic(object):
         if script_id not in script.continued_script:
             return 1, {}
 
-        now = int(time.time())
-
         script_info = script.continued_script[script_id]
-        last_dollar = now - script_info['continued_start'] * script_info['continued_income_unit']
+        now = int(time.time())
+        if now >= script_info['continued_expire']:
+            now = script_info['continued_expire']
+
+        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
         script_info['continued_start'] = now
