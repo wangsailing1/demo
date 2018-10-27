@@ -54,6 +54,8 @@ class ItemLogic(object):
             reward = add_gift(self.mm, 6, use_effect * item_num, cur_data=reward)
         elif is_use == 15:  # 增加艺人
             reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
+        elif is_use == 16:  # 点赞
+            reward = add_gift(self.mm, 16, [[0, use_effect]] * item_num, cur_data=reward)
         elif is_use == 18:  # 增加艺人名片
             rc = self.mm.friend.check_actor(use_effect)
             if rc != 0:
