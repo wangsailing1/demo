@@ -771,9 +771,9 @@ class ScriptLogic(object):
 
         continued_lv_config = game_config.script_continued_level[continued_lv + 1]
         upgrade_cost = continued_lv_config['upgrade_cost']
-        rc, data = del_mult_goods(self.mm, upgrade_cost)
+        rc, _ = del_mult_goods(self.mm, upgrade_cost)
         if rc:
-            return rc, data
+            return rc, {}
 
         now = int(time.time())
         last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
