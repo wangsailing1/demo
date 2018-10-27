@@ -62,13 +62,13 @@ def script_gacha(hm, data, mission):
 # 等级
 def user_lv(hm, data, mission):
     lv = hm.mm.user.level
-    return {mission._PLAYER_LV: {'target1': 0, 'value': lv}}
+    return {mission._PLAYER_LV: {'target1': lv, 'value': 1}}
 
 
 # 卡牌等级
 def card_lv(hm, data, mission):
     card_oid = hm.get_argument('card_oid')
-    return {mission._CARD_LV: {'target1': 0, 'value': hm.mm.card.cards[card_oid]['lv']}}
+    return {mission._CARD_LV: {'target1': 0, 'value': hm.mm.card.cards[card_oid]['lv'], 'card_id': card_oid}}
 
 
 # 好友送礼
@@ -122,11 +122,13 @@ def script_rewrite(hm, data, mission):
 
 # 公司市值
 def compamy_value(hm, data, mission):
-    return {mission._COMPANY_VALUE: {'target1': 0, 'value': 1}}
+    v = 20
+    return {mission._COMPANY_VALUE: {'target1': v, 'value': 1}}
 
 
 TYPE_MAPPING = {12: 'type', 14: 'style'}
-CHANGE_NUM = [1,2,19]
+CHANGE_NUM = [1, 19]
+
 
 class Mission(ModelBase):
     """各种奖励数据模型
@@ -193,6 +195,8 @@ class Mission(ModelBase):
     _SCRIPT_REWRITE = 18  # 剧本重写
     _COMPANY_VALUE = 19  # 公司市值
 
+    RANDOMREFRESHTIME = 4 * 60 * 60
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
@@ -203,23 +207,28 @@ class Mission(ModelBase):
             'daily_data': {},
             'random_done': [],  # 随机任务
             'random_data': {},
-            'randmission_refresh_time': 0,
             'live_done': [],  # 每日活跃
             'liveness': 0,
-            'box_office': {},
+            'box_office_done': [],
+            'box_office_data': {},
         }
         super(Mission, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
         if self.date != today:
-            config = game_config.liveness
+
             self.daily_done = []
-            self.daily_data = {i: 1 if i == 1001 else 0 for i in config.keys()}
+            self.daily_data = self.get_daily_mission()
             self.live_done = []
             self.liveness = 0
-            self.box_office = {self.get_box_office(): 0} if self.get_box_office() else {}
+            self.box_office_done = []
+            self.box_office_data = {self.get_box_office(): 0} if self.get_box_office() else {}
             self.save()
+
+    def get_daily_mission(self):
+        config = game_config.liveness
+        return {i: 1 if i == 1001 else 0 for i in config.keys()}
 
     def get_box_office(self):
         config = game_config.box_office
@@ -230,6 +239,12 @@ class Mission(ModelBase):
         if not box_id:
             return 0
         return min(box_id)
+
+    @property
+    def box_office(self):
+        if not hasattr(self, '_box_office'):
+            self._box_office = BoxOffice(self)
+        return self._box_office
 
     @property
     def daily(self):
@@ -248,6 +263,31 @@ class Mission(ModelBase):
         if not hasattr(self, '_randmission'):
             self._randmission = MissionRandom(self)
         return self._randmission
+
+    def get_all_random_mission(self):
+        if not self.random_data:
+            for _ in xrange(4):
+                while True:
+                    mission_id = self.get_random_mission()
+                    if mission_id in self.random_data:
+                        continue
+                    self.random_data[mission_id] = 0
+                    break
+        else:
+            now = int(time.time())
+            del_dict = {}
+            for k, v in self.random_data.iteritems():
+                if isinstance(k, str) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
+                    while True:
+                        mission_id = self.get_random_mission()
+                        if mission_id in self.random_data or mission_id in del_dict:
+                            continue
+                        del_dict[mission_id] = k
+                        break
+            if del_dict:
+                for add_key, del_key in del_dict.iteritems():
+                    self.random_data.pop(del_key)
+                    self.random_data[add_key] = 0
 
     def get_random_mission(self):
         config = game_config.random_mission
@@ -293,17 +333,62 @@ class Mission(ModelBase):
         for k, value in self.daily_data:
             sort = game_config.liveness[k]['sort']
             if sort in kwargs:
-                self.daily.add_count(k, kwargs[k])
+                self.daily.add_count(k, kwargs[sort])
 
         for k, value in self.guide_data:
             sort = game_config.guide_mission[k]['sort']
             if sort in kwargs:
-                self.guide.add_count(k, kwargs[k])
+                self.guide.add_count(k, kwargs[sort])
 
         for k, value in self.random_data:
+            if 'refresh_ts' in k:
+                continue
             sort = game_config.random_mission[k]['sort']
             if sort in kwargs:
-                self.randmission.add_count(k, kwargs[k])
+                self.randmission.add_count(k, kwargs[sort])
+
+        for k, value in self.box_office_data:
+            sort = game_config.box_office[k]['sort']
+            if sort in kwargs and sort == 5:
+                self.randmission.add_count(k, kwargs[sort])
+
+
+class BoxOffice(object):
+    """
+    """
+
+    def __init__(self, obj):
+        """初始化
+        """
+        self.uid = obj.uid
+        self.done = obj.box_office_done
+        self.data = obj.box_office_data
+        self.config = game_config.box_office
+
+    def get_count(self, mission_id):
+        return self.data.get(mission_id, 0)
+
+    def add_count(self, mission_id, value):
+        if mission_id in self.data:
+            self.data[mission_id] += value
+        else:
+            self.data[mission_id] = value
+
+    def done_task(self, mission_id):
+        """完成任务
+        """
+        if mission_id not in self.done:
+            self.done.append(mission_id)
+            self.start_next(mission_id)
+
+    def start_next(self, mission_id):
+        next_id = self.config[mission_id]['next_id']
+        self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
+        self.data.pop(mission_id)
+
+    def get_box_office_status(self, mission_id):
+        return self.data[mission_id] >= self.config[mission_id]['target1'], self.data[mission_id], \
+               self.config[mission_id]['target1']
 
 
 class MissionDaily(ModelBase):
@@ -328,6 +413,14 @@ class MissionDaily(ModelBase):
                 else:
                     self.data[mission_id] = value
 
+        elif self.config[mission_id]['sort'] == 2:
+            target_data = self.config[mission_id]['target']
+            card_id = value['card_id']
+            if isinstance(self.data[mission_id], int):
+                self.data[mission_id] = []
+            if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
+                self.data[mission_id].append(card_id)
+
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
@@ -343,8 +436,9 @@ class MissionDaily(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
         elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            if value['value'] > self.data.get(mission_id):
-                self.data[mission_id] = value['value']
+            target_data = self.config[mission_id]['target']
+            if value['target1'] > target_data[0]:
+                self.data[mission_id] = 1
 
         else:
             if mission_id in self.data:
@@ -357,6 +451,7 @@ class MissionDaily(ModelBase):
         """
         if mission_id not in self.done:
             self.done.append(mission_id)
+            self.data.pop(mission_id)
 
 
 class MissionGuide(ModelBase):
@@ -380,6 +475,14 @@ class MissionGuide(ModelBase):
                 else:
                     self.data[mission_id] = value
 
+        elif self.config[mission_id]['sort'] == 2:
+            target_data = self.config[mission_id]['target']
+            card_id = value['card_id']
+            if isinstance(self.data[mission_id], int):
+                self.data[mission_id] = []
+            if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
+                self.data[mission_id].append(card_id)
+
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
@@ -409,6 +512,7 @@ class MissionGuide(ModelBase):
         """
         if mission_id not in self.done:
             self.done.append(mission_id)
+            self.data.pop(mission_id)
 
 
 class MissionRandom(ModelBase):
@@ -432,6 +536,14 @@ class MissionRandom(ModelBase):
                 else:
                     self.data[mission_id] = value
 
+        elif self.config[mission_id]['sort'] == 2:
+            target_data = self.config[mission_id]['target']
+            card_id = value['card_id']
+            if isinstance(self.data[mission_id], int):
+                self.data[mission_id] = []
+            if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
+                self.data[mission_id].append(card_id)
+
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
@@ -459,8 +571,14 @@ class MissionRandom(ModelBase):
     def done_task(self, mission_id):
         """完成任务
         """
-        if mission_id not in self.done:
-            self.done.append(mission_id)
+        now = int(time.time())
+        self.done.append(mission_id)
+        for key in range(1, 5):
+            refresh_key = '%s%s' % ('refresh_ts', key)
+            if refresh_key not in self.data:
+                break
+        self.data[refresh_key] = now
+        self.data.pop(mission_id)
 
 
 ModelManager.register_model('mission', Mission)
