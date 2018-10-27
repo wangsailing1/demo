@@ -93,12 +93,17 @@ class Chapter_stage(object):
                 add_fight_exp = stage_config['fight_exp'] * times
                 script_type = game_config.script[script_id]['style']
                 card_config = game_config.card_basis
+                style_info = {}
                 if not auto:
                     for k, v in align.iteritems():
                         if v not in self.mm.card.cards:
                             continue
                         if script_type in [i[0] for i in card_config[self.mm.card.cards[v]['id']]['tag_script']]:
+                            if v not in style_info:
+                                style_info[v] = {}
+                            style_info[v]['old'] = copy.deepcopy(self.mm.card.cards[v]['style_pro'][script_type])
                             self.mm.card.add_style_exp(v, script_type, add_fight_exp)
+                            style_info[v]['new'] = self.mm.card.cards[v]['style_pro'][script_type]
                 self.mm.user.action_point -= need_point
                 if chapter not in self.chapter_stage.chapter:
                     self.chapter_stage.chapter[chapter] = {}
@@ -109,6 +114,7 @@ class Chapter_stage(object):
                 fight_time = self.chapter_stage.chapter[chapter][type_hard][stage].get('fight_times', 0)
                 self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
                 old_level = copy.copy(self.mm.user.level)
+                old_exp = copy.copy(self.mm.user.exp)
                 if not auto:
                     if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star', 0):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
@@ -130,11 +136,14 @@ class Chapter_stage(object):
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
+                data['old_exp'] = old_exp
                 data['new_level'] = self.mm.user.level
+                data['new_exp'] = self.mm.user.exp
                 data['reward'] = reward
                 data['rewards'] = rewards
                 data['next_chapter'] = self.chapter_stage.next_chapter
                 data['stage_id'] = stage_id
+                data['style_info'] = style_info
         return rc, data
 
     # 战斗（只计算战斗结果,星级过关）
