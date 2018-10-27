@@ -44,4 +44,10 @@ class Mission(object):
 
     def has_reward_daily(self):
         reward_obj = self.mission.daily
+        for mission_id,value in self.mission.daily.iteritems():
+            config = game_config.liveness
+            status = self.get_status(reward_obj, mission_id, config)
+
+    def get_status(self):
+        pass
 
