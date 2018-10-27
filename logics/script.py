@@ -790,6 +790,7 @@ class ScriptLogic(object):
         script_info['continued_lv'] = continued_lv + 1
         script_info['continued_income_unit'] = continued_income_unit
         script_info['continued_start'] = now
+        script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)
         self.mm.user.save()
@@ -813,6 +814,7 @@ class ScriptLogic(object):
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
         script_info['continued_start'] = now
+        script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)
         self.mm.user.save()

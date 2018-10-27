@@ -84,6 +84,7 @@ class Script(ModelBase):
 
             now = int(time.time())
             cur_script['continued_lv'] = continued_lv
+            cur_script['continued_income'] = 0
             cur_script['continued_income_unit'] = continued_income_unit
             cur_script['continued_expire'] = now + continued_time * 60
             cur_script['continued_start'] = now
@@ -107,6 +108,8 @@ class Script(ModelBase):
 
         # 清除过期影片
         for k, v in self.continued_script.items():
+            if 'continued_income' not in v:
+                v['continued_income'] = 0
             if v.get('continued_start', 0) >= v.get('continued_expire', 0):
                 self.continued_script.pop(k)
 
@@ -353,6 +356,7 @@ class Script(ModelBase):
             'continued_lv': 0,              # 持续收入等级 可手动升级
             'continued_start': 0,  # 持续收入开始时间
             'continued_expire': 0,              # 持续收入结束时间
+            'continued_income': 0,              # 已领取持续收入
             'continued_income_unit': 0,              # 持续收入 每秒收入数
 
             'attention': 0,  # 关注度
