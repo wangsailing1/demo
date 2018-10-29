@@ -94,8 +94,8 @@ class Mission(object):
         }
 
     def get_status_liveness(self):
-        config = game_config.liveness_reward
-        data = {}
+        # config = game_config.liveness_reward
+        # data = {}
         done = self.mm.mission.live_done
         # for id, value in config.iteritems():
         #     if self.mm.mission.liveness >= value['need_liveness'] and id not in done:
