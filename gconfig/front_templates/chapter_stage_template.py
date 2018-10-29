@@ -53,8 +53,8 @@ chapter_enemy = {
     'charpro': (('charpro1', 'charpro2', 'charpro3','charpro4','charpro5',
                 'charpro6'), ('int', 'mult_force_num_list')),  #演技，歌艺，气质，动感，娱乐，艺术
     'dps_rate':         ('dps_rate',         'int_list'),  #伤害输出系数区间值（万分之）
-    'special_rate1':    ('special_rate1',    'int'),  #艺术触发概率（万分之）
-    'special_rate2':    ('special_rate2',    'int'),  #娱乐触发概率（万分之）
+    'ex_special_rate':    ('ex_special_rate',    'int'),  #额外触发概率( 万分比）
+    'special_quality':    ('special_quality',    'int_list'),  #艺术/娱乐触发权重
     'crit_rate_base':   ('crit_rate_base',   'int'),  #基础暴击率(万分之)
 
 }

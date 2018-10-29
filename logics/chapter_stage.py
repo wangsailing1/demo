@@ -197,13 +197,16 @@ class Chapter_stage(object):
                             all_score += hurt
                         fight_data[round_num][card_id] = hurts
                         # 概率触发属性伤害
-                        config = game_config.chapter_enemy[int(card_id)]
-                        more_attr = [[5, config[self.MAPPING[5]]], [6, config[self.MAPPING[6]]]]
-                        more_attr = weight_choice(more_attr)
-                        hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
                         hurts['more_attr'] = {}
-                        hurts['more_attr'][more_attr[0]] = hurt
-                        all_score += hurt
+                        config = game_config.chapter_enemy[int(card_id)]
+                        rate = config['ex_special_rate']
+                        rate_ = random.randint(1, 10001) <= rate
+                        if rate_:
+                            more_attr = config['special_quality']
+                            more_attr = weight_choice(more_attr)
+                            hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
+                            hurts['more_attr'][more_attr[0]] = hurt
+                            all_score += hurt
                         fight_data[round_num][card_id] = hurts
                         continue
 

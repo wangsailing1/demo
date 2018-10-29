@@ -12,13 +12,13 @@ from lib.utils import weight_choice
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
-    stage_id = data['stage_id']
-    star = data['star']
+    stage_id = data.get('stage_id',0)
+    star = data.get('star',0)
     target_sort_first = mission._CHAPTER_FIRST
     target_sort_num = mission._CHAPTER_NUM
-    return {target_sort_first: {'target1': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+    return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
                                 'star': star},
-            target_sort_num: {'target1': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+            target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
                               'star': star}, }
 
 
@@ -114,7 +114,6 @@ def scrip_get(hm, data, mission):
 def shop_args(hm, data, mission):
     return {mission._SHOP: {'target1': 0, 'value': 1}}
 
-
 # 剧本重写
 def script_rewrite(hm, data, mission):
     return {mission._SCRIPT_REWRITE: {'target1': 0, 'value': 1}}
@@ -159,8 +158,8 @@ class Mission(ModelBase):
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
         'script.finished_analyse': script_make,
         'chapter_stage.auto_sweep': chapter_stage_auto_args,
-        'script_gacha.get_gacha': script_gacha,
-        'gacha.get_gacha': card_gacha,
+        'script_gacha.receive': script_gacha,
+        'gacha.receive': card_gacha,
         'card.card_level_up': card_lv,
         'friend.sent_gift': send_gift,
         'friend.sent_gift_all': send_gift,
@@ -171,6 +170,8 @@ class Mission(ModelBase):
         'shop.shop': shop_args,
 
     }
+    # mission_mapping
+    MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission'}
 
     # 配置target_sort映射
 
@@ -211,19 +212,23 @@ class Mission(ModelBase):
             'liveness': 0,
             'box_office_done': [],
             'box_office_data': {},
+            'refresh_times':0,
         }
         super(Mission, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
         if self.date != today:
-
+            self.date = today
             self.daily_done = []
             self.daily_data = self.get_daily_mission()
             self.live_done = []
             self.liveness = 0
             self.box_office_done = []
             self.box_office_data = {self.get_box_office(): 0} if self.get_box_office() else {}
+            self.refresh_times = 0
+            if not self.guide_done and not self.guide_data:
+                self.get_guide_mission()
             self.save()
 
     def get_daily_mission(self):
@@ -277,7 +282,7 @@ class Mission(ModelBase):
             now = int(time.time())
             del_dict = {}
             for k, v in self.random_data.iteritems():
-                if isinstance(k, str) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
+                if isinstance(k, (str,unicode)) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
                     while True:
                         mission_id = self.get_random_mission()
                         if mission_id in self.random_data or mission_id in del_dict:
@@ -288,6 +293,17 @@ class Mission(ModelBase):
                 for add_key, del_key in del_dict.iteritems():
                     self.random_data.pop(del_key)
                     self.random_data[add_key] = 0
+
+    def refresh_random_misstion(self,mission_id,is_save=False):
+        new_mission_id = mission_id
+        while new_mission_id == mission_id:
+            new_mission_id = self.get_random_mission()
+        self.random_data.pop(mission_id)
+        self.random_data[new_mission_id] = 0
+        self.refresh_times += 1
+        if is_save:
+            self.save()
+
 
     def get_random_mission(self):
         config = game_config.random_mission
@@ -314,7 +330,7 @@ class Mission(ModelBase):
         return len(self.guide_done) == len(game_config.guide_mission.keys())
 
     @classmethod
-    def do_task_api(cls, mm, method, hm, rc, data):
+    def do_task_api(cls, method, hm, rc, data):
         """做任务, 从 RequestHandler中调用
         args:
             method: 接口名字
@@ -322,35 +338,38 @@ class Mission(ModelBase):
             rc: 返回标识
             data: 返回数据
         """
+
         if rc != 0 or method not in cls._METHOD_FUNC_MAP:
             return
 
-        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, mm.mission)
+        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, hm.mm.mission)
         if kwargs:
-            mm.mission.do_task(kwargs)
+            mission = hm.mm.mission
+            mission.do_task(kwargs)
 
     def do_task(self, kwargs):
-        for k, value in self.daily_data:
+        for k, value in self.daily_data.iteritems():
             sort = game_config.liveness[k]['sort']
             if sort in kwargs:
                 self.daily.add_count(k, kwargs[sort])
 
-        for k, value in self.guide_data:
+        for k, value in self.guide_data.iteritems():
             sort = game_config.guide_mission[k]['sort']
             if sort in kwargs:
                 self.guide.add_count(k, kwargs[sort])
 
-        for k, value in self.random_data:
+        for k, value in self.random_data.iteritems():
             if 'refresh_ts' in k:
                 continue
             sort = game_config.random_mission[k]['sort']
             if sort in kwargs:
                 self.randmission.add_count(k, kwargs[sort])
 
-        for k, value in self.box_office_data:
+        for k, value in self.box_office_data.iteritems():
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == 5:
                 self.randmission.add_count(k, kwargs[sort])
+        self.save()
 
 
 class BoxOffice(object):
@@ -385,10 +404,6 @@ class BoxOffice(object):
         next_id = self.config[mission_id]['next_id']
         self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
         self.data.pop(mission_id)
-
-    def get_box_office_status(self, mission_id):
-        return self.data[mission_id] >= self.config[mission_id]['target1'], self.data[mission_id], \
-               self.config[mission_id]['target1']
 
 
 class MissionDaily(ModelBase):
