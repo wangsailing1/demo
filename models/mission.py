@@ -12,13 +12,13 @@ from lib.utils import weight_choice
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
-    stage_id = data['stage_id']
-    star = data['star']
+    stage_id = data.get('stage_id',0)
+    star = data.get('star',0)
     target_sort_first = mission._CHAPTER_FIRST
     target_sort_num = mission._CHAPTER_NUM
-    return {target_sort_first: {'target1': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+    return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
                                 'star': star},
-            target_sort_num: {'target1': type_hard, 'value': 1 if data['win'] else 0, 'stage_id': stage_id,
+            target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
                               'star': star}, }
 
 
@@ -329,7 +329,6 @@ class Mission(ModelBase):
 
     @classmethod
     def do_task_api(cls, mm, method, hm, rc, data):
-        print 111111111111,'do--------'
         """做任务, 从 RequestHandler中调用
         args:
             method: 接口名字
@@ -345,24 +344,24 @@ class Mission(ModelBase):
             mm.mission.do_task(kwargs)
 
     def do_task(self, kwargs):
-        for k, value in self.daily_data:
+        for k, value in self.daily_data.iteritems():
             sort = game_config.liveness[k]['sort']
             if sort in kwargs:
                 self.daily.add_count(k, kwargs[sort])
 
-        for k, value in self.guide_data:
+        for k, value in self.guide_data.iteritems():
             sort = game_config.guide_mission[k]['sort']
             if sort in kwargs:
                 self.guide.add_count(k, kwargs[sort])
 
-        for k, value in self.random_data:
+        for k, value in self.random_data.iteritems():
             if 'refresh_ts' in k:
                 continue
             sort = game_config.random_mission[k]['sort']
             if sort in kwargs:
                 self.randmission.add_count(k, kwargs[sort])
 
-        for k, value in self.box_office_data:
+        for k, value in self.box_office_data.iteritems():
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == 5:
                 self.randmission.add_count(k, kwargs[sort])

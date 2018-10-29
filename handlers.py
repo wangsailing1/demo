@@ -414,7 +414,11 @@ class APIRequestHandler(BaseRequestHandler):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         old_data[k] = getattr(obj, '_old_data', {})
             from models.mission import Mission
-            Mission.do_task_api(self.hm.mm, method, self.hm, rc, data)
+            try:
+                Mission.do_task_api(self.hm.mm, method_param, self.hm, rc, data)
+            except:
+                import traceback
+                print_log(traceback.print_exc())
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
