@@ -1,7 +1,7 @@
 # -*- coding: utf-8 –*-
 
 
-#街区配置
+# 街区配置
 dan_grading_list = {
     'uk': ('id', 'int'),
     'name': ('name', 'int'),
@@ -11,16 +11,18 @@ dan_grading_list = {
     'people_num': ('people_num', 'int'),
     'standard_box': ('standard_box', 'float'),
     'privilage': ('privilage', 'int_list'),
+    'icon': ('icon', 'str'),
+
 }
 
-#票房排行奖励
+# 票房排行奖励
 rank_reward_list = {
     'uk': ('id', 'int'),
     'rank': ('rank', 'int_list'),
     'daily_reward': ('daily_reward', 'int_list'),
 }
 
-#奖杯设置
+# 奖杯设置
 cup_num = {
     'uk': ('id', 'int'),
     'award_name': ('award_name', 'int'),
@@ -43,7 +45,7 @@ cup_num = {
 # }
 
 
-#颁奖设置
+# 颁奖设置
 dan_grading_privilage = {
     'uk': ('id', 'int'),
     'disc': ('disc', 'int'),
