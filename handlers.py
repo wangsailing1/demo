@@ -405,6 +405,13 @@ class APIRequestHandler(BaseRequestHandler):
                     # data['mission_task'] = self.hm.mm.mission_main.get_main_tasks()
                     # data['side_task'] = self.hm.mm.mission_side.get_side_tasks(filter=True)
 
+                from models.mission import Mission
+                try:
+                    Mission.do_task_api( method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
                 # 执行成功保存数据
                 self.hm.mm.do_save()
 
@@ -413,6 +420,7 @@ class APIRequestHandler(BaseRequestHandler):
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         old_data[k] = getattr(obj, '_old_data', {})
+
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
