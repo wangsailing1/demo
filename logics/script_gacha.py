@@ -59,16 +59,21 @@ class ScriptGachaLogics(object):
 
         if sort == 1:
             cost_type = 'coin'
-            script_id = self.get_coin_gacha()
+            gacha_config = self.get_coin_gacha()
             self.gacha.coin_times += 1
             self.gacha.coin_time = int(time.time())
         else:
             cost_type = 'diamond'
-            script_id = self.get_diamond_gacha()
+            gacha_config = self.get_diamond_gacha()
             self.gacha.diamond_times += 1
             self.gacha.diamond_time = int(time.time())
 
-        new_script = self.mm.script.add_own_script(script_id)
+        if gacha_config['gifts_id']:
+            reward = add_mult_gift(self.mm, gacha_config['gifts_id'])
+        else:
+            script_id = gacha_config['script_id']
+            self.mm.script.add_own_script(script_id)
+            reward = {'own_script': [script_id]}
 
         self.mm.script.save()
         self.gacha.save()
@@ -77,8 +82,10 @@ class ScriptGachaLogics(object):
         result = {
             '_bdc_event_info': {'cost': cost, 'cost_type': cost_type},
 
-            'script_id': script_id,
-            'new_script': new_script,
+            # 'script_id': script_id,
+            # 'new_script': new_script,
+
+            'reward': reward,
         }
         result.update(self.gacha_index())
 
@@ -90,18 +97,21 @@ class ScriptGachaLogics(object):
         :param count: 次数
         :return:
         """
+        script = self.mm.script
         gacha_config = game_config.script_gacha
 
-        special_mapping = {v['weight_special']: v for v in gacha_config.itervalues() if v['weight_special']}
+        special_mapping = {v['weight_special']: k for k, v in gacha_config.iteritems()
+                           if v['weight_special'] and v['script_id'] not in script.own_script}
         next_times = self.gacha.coin_times + 1
 
         if next_times in special_mapping:
-            script_id = special_mapping[next_times]['script_id']
+            gacha_id = special_mapping[next_times]
         else:
-            id_weights = [(v['script_id'], v['weight']) for k, v in gacha_config.iteritems()]
-            script_id = weight_choice(id_weights)[0]
+            id_weights = [(k, v['weight']) for k, v in gacha_config.iteritems()
+                          if v['script_id'] not in script.own_script]
+            gacha_id = weight_choice(id_weights)[0]
 
-        return script_id
+        return gacha_config[gacha_id]
 
     def get_diamond_gacha(self):
         """
@@ -109,16 +119,20 @@ class ScriptGachaLogics(object):
         :param count: 次数
         :return:
         """
+        script = self.mm.script
         gacha_config = game_config.diamond_script_gacha
 
-        special_mapping = {v['weight_special']: v for v in gacha_config.itervalues() if v['weight_special']}
+        special_mapping = {v['weight_special']: k for k, v in gacha_config.iteritems()
+                           if v['weight_special'] and v['script_id'] not in script.own_script}
+
         next_times = self.gacha.diamond_times + 1
 
         if next_times in special_mapping:
-            script_id = special_mapping[next_times]['script_id']
+            gacha_id = special_mapping[next_times]
         else:
-            id_weights = [(v['script_id'], v['weight']) for k, v in gacha_config.iteritems()]
-            script_id = weight_choice(id_weights)[0]
+            id_weights = [(k, v['weight']) for k, v in gacha_config.iteritems()
+                          if v['script_id'] not in script.own_script]
+            gacha_id = weight_choice(id_weights)[0]
 
-        return script_id
+        return gacha_config[gacha_id]
 

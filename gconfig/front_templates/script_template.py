@@ -148,6 +148,7 @@ script_license = ({
 script_gacha = {
     'uk': ('id', 'int'),  #
     'script_id': ('script_id', 'int'),  #
+    'gifts_id': ('gifts_id', 'int_list'),  #
     'weight': ('weight', 'int'),  #
     'weight_special': ('weight_special', 'int'),  #
 
@@ -158,6 +159,7 @@ script_gacha = {
 diamond_script_gacha = {
     'uk': ('id', 'int'),  #
     'script_id': ('script_id', 'int'),  #
+    'gifts_id': ('gifts_id', 'int_list'),  #
     'weight': ('weight', 'int'),  #
     'weight_special': ('weight_special', 'int'),  #
 
