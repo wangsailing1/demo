@@ -97,12 +97,12 @@ class Mission(object):
         config = game_config.liveness_reward
         data = {}
         done = self.mm.mission.live_done
-        for id, value in config.iteritems():
-            if self.mm.mission.liveness >= value['need_liveness'] and id not in done:
-                data[id] = [self.mm.mission.liveness,value['need_liveness'],1]
-            elif self.mm.mission.liveness < value['need_liveness']:
-                data[id] = [self.mm.mission.liveness,value['need_liveness'],0]
-        return {'result':data,
+        # for id, value in config.iteritems():
+        #     if self.mm.mission.liveness >= value['need_liveness'] and id not in done:
+        #         data[id] = [self.mm.mission.liveness,value['need_liveness'],1]
+        #     elif self.mm.mission.liveness < value['need_liveness']:
+        #         data[id] = [self.mm.mission.liveness,value['need_liveness'],0]
+        return {'liveness':self.mm.mission.liveness,
                 'done':done}
 
 
