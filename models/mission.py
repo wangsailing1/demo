@@ -171,6 +171,8 @@ class Mission(ModelBase):
         'shop.shop': shop_args,
 
     }
+    # mission_mapping
+    MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission'}
 
     # 配置target_sort映射
 
@@ -211,19 +213,20 @@ class Mission(ModelBase):
             'liveness': 0,
             'box_office_done': [],
             'box_office_data': {},
+            'refresh_times':0,
         }
         super(Mission, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
         if self.date != today:
-
             self.daily_done = []
             self.daily_data = self.get_daily_mission()
             self.live_done = []
             self.liveness = 0
             self.box_office_done = []
             self.box_office_data = {self.get_box_office(): 0} if self.get_box_office() else {}
+            self.refresh_times = 0
             self.save()
 
     def get_daily_mission(self):
@@ -289,6 +292,17 @@ class Mission(ModelBase):
                     self.random_data.pop(del_key)
                     self.random_data[add_key] = 0
 
+    def refresh_random_misstion(self,mission_id,is_save=False):
+        new_mission_id = mission_id
+        while new_mission_id == mission_id:
+            new_mission_id = self.get_random_mission()
+        self.random_data.pop(mission_id)
+        self.random_data[new_mission_id] = 0
+        self.refresh_times += 1
+        if is_save:
+            self.save()
+
+
     def get_random_mission(self):
         config = game_config.random_mission
         pool = [[k, config[k]['weight']] for k in config.keys()]
@@ -315,6 +329,7 @@ class Mission(ModelBase):
 
     @classmethod
     def do_task_api(cls, mm, method, hm, rc, data):
+        print 111111111111,'do--------'
         """做任务, 从 RequestHandler中调用
         args:
             method: 接口名字
@@ -385,10 +400,6 @@ class BoxOffice(object):
         next_id = self.config[mission_id]['next_id']
         self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
         self.data.pop(mission_id)
-
-    def get_box_office_status(self, mission_id):
-        return self.data[mission_id] >= self.config[mission_id]['target1'], self.data[mission_id], \
-               self.config[mission_id]['target1']
 
 
 class MissionDaily(ModelBase):

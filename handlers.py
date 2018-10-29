@@ -413,6 +413,8 @@ class APIRequestHandler(BaseRequestHandler):
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         old_data[k] = getattr(obj, '_old_data', {})
+            from models.mission import Mission
+            Mission.do_task_api(self.hm.mm, method, self.hm, rc, data)
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
