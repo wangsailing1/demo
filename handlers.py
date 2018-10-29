@@ -406,7 +406,11 @@ class APIRequestHandler(BaseRequestHandler):
                     # data['side_task'] = self.hm.mm.mission_side.get_side_tasks(filter=True)
 
                 from models.mission import Mission
-                Mission.do_task_api( method_param, self.hm, rc, data)
+                try:
+                    Mission.do_task_api( method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
 
                 # 执行成功保存数据
                 self.hm.mm.do_save()
