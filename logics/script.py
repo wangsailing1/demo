@@ -407,6 +407,9 @@ class ScriptLogic(object):
 
         attention = (init_attention + L + N + style_suit_effect - M) * attention_rate
 
+        # 保底关注度
+        if attention < game_config.common[40] / 10000.0:
+            attention = game_config.common[40]
         return {
             'attention': int(attention),         # 关注度
             'card_effect': card_popularity / standard_popularity,     # 艺人人气对关注度影响
@@ -465,6 +468,9 @@ class ScriptLogic(object):
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
         score = part_a / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        # 保底值
+        if score < game_config.common[38] / 10.0:
+            score = game_config.common[38]
         score = round(score, 2)
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
@@ -484,6 +490,9 @@ class ScriptLogic(object):
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
         score = part_b / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        # 保底值
+        if score < game_config.common[39] / 10.0:
+            score = game_config.common[39]
         score = round(score, 1)
         audi_grade = score * 100
 
@@ -783,7 +792,7 @@ class ScriptLogic(object):
         finished_summary = script_info['finished_summary']
         all_income = finished_summary['income']
 
-        continued_income = continued_lv_config['parm'] * all_income
+        continued_income = continued_lv_config['parm'] * all_income / 100
         continued_time = game_config.common[19]
         continued_income_unit = continued_income / (continued_time * 60)
 
