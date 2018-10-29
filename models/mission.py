@@ -114,7 +114,6 @@ def scrip_get(hm, data, mission):
 def shop_args(hm, data, mission):
     return {mission._SHOP: {'target1': 0, 'value': 1}}
 
-
 # 剧本重写
 def script_rewrite(hm, data, mission):
     return {mission._SCRIPT_REWRITE: {'target1': 0, 'value': 1}}
@@ -159,8 +158,8 @@ class Mission(ModelBase):
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
         'script.finished_analyse': script_make,
         'chapter_stage.auto_sweep': chapter_stage_auto_args,
-        'script_gacha.get_gacha': script_gacha,
-        'gacha.get_gacha': card_gacha,
+        'script_gacha.receive': script_gacha,
+        'gacha.receive': card_gacha,
         'card.card_level_up': card_lv,
         'friend.sent_gift': send_gift,
         'friend.sent_gift_all': send_gift,
@@ -220,6 +219,7 @@ class Mission(ModelBase):
     def pre_use(self):
         today = time.strftime('%F')
         if self.date != today:
+            self.date = today
             self.daily_done = []
             self.daily_data = self.get_daily_mission()
             self.live_done = []
@@ -227,6 +227,8 @@ class Mission(ModelBase):
             self.box_office_done = []
             self.box_office_data = {self.get_box_office(): 0} if self.get_box_office() else {}
             self.refresh_times = 0
+            if not self.guide_done and not self.guide_data:
+                self.get_guide_mission()
             self.save()
 
     def get_daily_mission(self):
@@ -280,7 +282,7 @@ class Mission(ModelBase):
             now = int(time.time())
             del_dict = {}
             for k, v in self.random_data.iteritems():
-                if isinstance(k, str) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
+                if isinstance(k, (str,unicode)) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
                     while True:
                         mission_id = self.get_random_mission()
                         if mission_id in self.random_data or mission_id in del_dict:
@@ -328,7 +330,7 @@ class Mission(ModelBase):
         return len(self.guide_done) == len(game_config.guide_mission.keys())
 
     @classmethod
-    def do_task_api(cls, mm, method, hm, rc, data):
+    def do_task_api(cls, method, hm, rc, data):
         """做任务, 从 RequestHandler中调用
         args:
             method: 接口名字
@@ -336,12 +338,14 @@ class Mission(ModelBase):
             rc: 返回标识
             data: 返回数据
         """
+
         if rc != 0 or method not in cls._METHOD_FUNC_MAP:
             return
 
-        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, mm.mission)
+        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, hm.mm.mission)
         if kwargs:
-            mm.mission.do_task(kwargs)
+            mission = hm.mm.mission
+            mission.do_task(kwargs)
 
     def do_task(self, kwargs):
         for k, value in self.daily_data.iteritems():
@@ -365,6 +369,7 @@ class Mission(ModelBase):
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == 5:
                 self.randmission.add_count(k, kwargs[sort])
+        self.save()
 
 
 class BoxOffice(object):

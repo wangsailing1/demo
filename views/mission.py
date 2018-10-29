@@ -14,28 +14,29 @@ def mission_index(hm):
 
 
 def get_reward(hm):
-    mm = hm
+    mm = hm.mm
     mission = Mission(mm)
     tp_id = hm.get_argument('tp_id', 0, is_int=True)
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
-    m_type = mm.mission.MISSIONMAPPING[tp_id]
+
     if tp_id == 5:
         if mission_id in mm.mission.live_done:
             return 3, {}  #已领
         if not mission.get_status_liveness()['result'][mission_id][2]:
             return 4, {}  #未完成
         gift = game_config.liveness_reward[mission_id]['reward']
-        reward = add_mult_gift(gift)
+        reward = add_mult_gift(mm,gift)
         mm.mission.live_done.append(mission_id)
         mm.mission.save()
         data = mission.mission_index()
         data['reward'] = reward
         return 0,data
-    if not tp_id or mission_id:
+    m_type = mm.mission.MISSIONMAPPING[tp_id]
+    if not tp_id or not mission_id:
         return 1, {}  # 参数错误
     if not mission.has_reward_by_type(m_type, mission_id):
         return 2, {}  # 未完成
-    if mission_id in mission.get_done_mission(m_type, mission_id):
+    if mission.get_done_mission(m_type, mission_id):
         return 3, {}  # 已领
     mm_obj = getattr(mm.mission, m_type)
     mm_obj.done_task(mission_id)
@@ -47,7 +48,7 @@ def get_reward(hm):
             mm.mission.get_all_random_mission()
         else:
             mm.mission.get_guide_mission()
-    reward = add_mult_gift(gift)
+    reward = add_mult_gift(mm,gift)
     mm.mission.save()
     data = mission.mission_index()
     data['reward'] = reward

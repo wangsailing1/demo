@@ -19,7 +19,7 @@ def target_sort1(mm, reward_obj, target_data, mission_id, target_data1):
 # 任意卡牌达到等级
 def target_sort2(mm, reward_obj, target_data, mission_id, target_data1):
     target_value = target_data
-    num = len(reward_obj.get_count(mission_id))
+    num = len(reward_obj.get_count(mission_id)) if isinstance(reward_obj.get_count(mission_id),list) else 0
     return num >= target_value[1], num, target_value[1]
 
 
@@ -40,17 +40,17 @@ def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
 class Mission(object):
     def __init__(self, mm):
         self.mm = mm
-        self.mission = mm.mission
+        self.mission = self.mm.mission
 
     def has_reward_by_type(self, type='daily', mission_id=''):
         mission_obj = getattr(self.mission, type)
         if mission_id:
-            stats = self.get_status(mission_obj, mission_id, mission_obj.config)
+            stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             if stats['status'] == 1:
                 return 1
             return 0
         for mission_id, value in mission_obj.data.iteritems():
-            stats = self.get_status(mission_obj, mission_id, mission_obj.config)
+            stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             if stats['status'] == 1:
                 return 1
         return 0
@@ -111,6 +111,9 @@ class Mission(object):
         result = {}
         done = mission_obj.done
         for mission_id in mission_obj.data:
+            if isinstance(mission_id, (str,unicode)) and 'refresh_ts' in mission_id:
+                result[mission_id] = [mission_obj.data[mission_id],int(time.time()),0]
+                continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             result[stats['id']] = [stats['value'], stats['need_value'], stats['status']]
 
