@@ -11,7 +11,7 @@ GETNUMSORT = [3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
 # 1 玩家等级
 def target_sort1(mm, reward_obj, target_data, mission_id, target_data1):
-    target_value = target_data[0]
+    target_value = target_data[1]
     value = mm.user.level
     return value >= target_value, value, target_value
 
