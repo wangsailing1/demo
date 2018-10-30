@@ -542,7 +542,7 @@ class ScriptLogic(object):
         first_income = finished_first_income['first_income']
 
         rate = game_config.common[18]
-        curve = [first_income * i / 100.0 / rate for i in curve_config['curve_rate']]
+        curve = [first_income * i / rate for i in curve_config['curve_rate']]
         curve = [int(i) for i in curve]
         return {
             'curve_id': curve_id,

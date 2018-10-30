@@ -431,7 +431,6 @@ class Script(ModelBase):
             group_info = {i: j for i, j in group_list}
             return group_info
 
-
     #统计
     def count_info(self):
         # 剧本大卖统计 {script_id: {end_lv: times}}
@@ -451,7 +450,6 @@ class Script(ModelBase):
             'style_log':style_log,
             'type_log':type_log
         }
-
 
 
 ModelManager.register_model('script', Script)
