@@ -206,7 +206,7 @@ def new_user(hm):
     test_init(mm)
 
     #todo 初定默认发卡牌，是否根据配置发其他东西再定
-    new_account_init(mm)
+    new_account_init(mm,role)
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -311,9 +311,8 @@ def test_init(mm):
         mm.card.save()
 
 
-def new_account_init(mm):
+def new_account_init(mm,role=1):
     mp = {1: 13, 2: 15}
-    role = mm.user.role
     sex = game_config.main_hero[role]['sex']
     cid = mp[sex]
     mm.card.add_card(cid)
