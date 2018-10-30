@@ -348,7 +348,7 @@ class ScriptLogic(object):
 
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
-
+        market_enough = True
         # todo 当前初始关注度
         init_attention = 0
 
@@ -364,10 +364,16 @@ class ScriptLogic(object):
             # 剧本人口预估
             script_market = list(script_config['market'])
             for market, (need, cur) in enumerate(itertools.izip(script_market, script.cur_market), start=1):
+                # 各类型市场人口都>=剧本需要，关注度额外+L，L读表id 8
+                market_enough = market_enough & (cur >= need)
+
                 # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
                 if style_config and script_config['market'] == market:
                     need += style_config['market_num']
                 N += min(cur, need)
+
+            if market_enough:
+                L = game_config.common[8]
 
             # 4.题材与类型
             suit = film_info['suit']
