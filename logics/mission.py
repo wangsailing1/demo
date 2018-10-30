@@ -64,6 +64,9 @@ class Mission(object):
     def mission_index(self, tp_id=0):
         data = {}
         if not tp_id:
+            if self.mission.check_guide_over():
+                self.mission.get_all_random_mission()
+                self.mission.save()
             for tp_id, type in self.mm.mission.MISSIONMAPPING.iteritems():
                 if tp_id == 2:
                     continue
