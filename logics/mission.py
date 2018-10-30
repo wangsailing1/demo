@@ -112,7 +112,10 @@ class Mission(object):
         done = mission_obj.done
         for mission_id in mission_obj.data:
             if isinstance(mission_id, (str,unicode)) and 'refresh_ts' in mission_id:
-                result[mission_id] = [mission_obj.data[mission_id],int(time.time()),0]
+                now = int(time.time())
+                end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME
+                refresh_time = end_time - now if end_time - now > 0 else 0
+                result[mission_id] = [refresh_time,now,0]
                 continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             result[stats['id']] = [stats['value'], stats['need_value'], stats['status']]
