@@ -502,7 +502,7 @@ class ScriptLogic(object):
         min_score = game_config.common[39] / 10.0
         if score < min_score:
             score = min_score
-        score = round(score, 2)
+        score = round(score, 1)
         audi_grade = score * 100
 
         star = 0
