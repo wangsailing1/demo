@@ -338,8 +338,16 @@ def register_name(hm):
     rc, data = ul.register_name(name, role)
     if rc != 0:
         return rc, {}
-
+    # todo 初定默认发卡牌，是否根据配置发其他东西再定
+    new_account_init(mm, role)
     return 0, data
+
+def new_account_init(mm,role=1):
+    mp = {1: 13, 2: 15}
+    sex = game_config.main_hero[role]['sex']
+    cid = mp[sex]
+    mm.card.add_card(cid)
+    mm.card.save()
 
 
 def charge_name(hm):

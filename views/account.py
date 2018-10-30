@@ -205,8 +205,7 @@ def new_user(hm):
     # 测试服，创建指定账号
     test_init(mm)
 
-    #todo 初定默认发卡牌，是否根据配置发其他东西再定
-    new_account_init(mm,role)
+
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -311,12 +310,6 @@ def test_init(mm):
         mm.card.save()
 
 
-def new_account_init(mm,role=1):
-    mp = {1: 13, 2: 15}
-    sex = game_config.main_hero[role]['sex']
-    cid = mp[sex]
-    mm.card.add_card(cid)
-    mm.card.save()
 
 def mark_user_login(hm):
     """mark_user_login: 标记用户最近登录，防多设备登录
