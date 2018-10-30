@@ -126,7 +126,7 @@ class Chapter_stage(object):
                     rewards[k] = add_mult_gift(self.mm, v)
                 if not auto:
                     next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-                    if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                    if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 reward = add_mult_gift(self.mm, all_gift)
                 if is_first:
