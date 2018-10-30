@@ -656,10 +656,19 @@ class UserLogic(object):
         #     return 4, {}    # 角色ID错误
         # self.mm.role_info.init_role(role)
         self.user.reg_name = True
-
+        # todo 初定默认发卡牌，是否根据配置发其他东西再定
+        self.new_account_init()
         self.user.save()
 
         return 0, {}
+
+    def new_account_init(self):
+        mp = {1: 13, 2: 15}
+        role = self.mm.user.role
+        sex = game_config.main_hero[role]['sex']
+        cid = mp[sex]
+        self.mm.card.add_card(cid)
+        self.mm.card.save()
 
     def buy_point(self):
         """

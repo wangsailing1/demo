@@ -338,8 +338,8 @@ def register_name(hm):
     rc, data = ul.register_name(name, role)
     if rc != 0:
         return rc, {}
-
     return 0, data
+
 
 
 def charge_name(hm):
