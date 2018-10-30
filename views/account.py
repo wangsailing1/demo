@@ -126,11 +126,11 @@ def new_user(hm):
         return 'error_100', {}
 
     if is_sensitive(name):
-        return 2, {}    # 名字不合法
+        return 2, {}  # 名字不合法
 
     acc = Account.get(account)
     if server in acc.servers:
-        return 3, {}    # 该服已有角色
+        return 3, {}  # 该服已有角色
 
     # 创建uid
     now = int(time.time())
@@ -174,9 +174,10 @@ def new_user(hm):
     mm.user.set_tpid(tpid)
 
     mm.user.role = 0
-    mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(mm.user.language_sort)
+    mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(
+        mm.user.language_sort)
     mm.user.register_ip = remote_ip
-    if appid == '2':    # 和前端协定1:android,2:iOS
+    if appid == '2':  # 和前端协定1:android,2:iOS
         mm.user.appid = 'ios'
     else:
         mm.user.appid = 'android'
@@ -203,6 +204,9 @@ def new_user(hm):
 
     # 测试服，创建指定账号
     test_init(mm)
+
+    #todo 初定默认发卡牌，是否根据配置发其他东西再定
+    new_account_init(mm)
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -307,6 +311,14 @@ def test_init(mm):
         mm.card.save()
 
 
+def new_account_init(mm):
+    mp = {1: 13, 2: 15}
+    role = mm.user.role
+    sex = game_config.main_hero[role]['sex']
+    cid = mp[sex]
+    mm.card.add_card(cid)
+    mm.card.save()
+
 def mark_user_login(hm):
     """mark_user_login: 标记用户最近登录，防多设备登录
     args:
@@ -379,7 +391,7 @@ def get_user_server_list(hm, account=None):
         }
 
     if not Account.check_exist(account):
-        return 0, {    # 查无此人
+        return 0, {  # 查无此人
             'server_list': server_list,
             'current_server': '',
             'ks': sid,
