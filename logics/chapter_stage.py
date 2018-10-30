@@ -256,7 +256,7 @@ class Chapter_stage(object):
             if level == 1 and all_score < score:
                 return level
             elif level == len(score_config) and all_score >= score:
-                return level + 1
+                return level
             elif score <= all_score < score_config[level]:
                 return level + 1
 
