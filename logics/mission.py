@@ -11,7 +11,7 @@ GETNUMSORT = [3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
 # 1 玩家等级
 def target_sort1(mm, reward_obj, target_data, mission_id, target_data1):
-    target_value = target_data[0]
+    target_value = target_data[1]
     value = mm.user.level
     return value >= target_value, value, target_value
 
@@ -79,7 +79,7 @@ class Mission(object):
         target_data = config.get('target', [])
         target_data1 = config.get('target1', [])
         if mission_id in mission_obj.done:
-            status, value, need = 2, 1, 1
+            status, value, need = -1, 1, 1
         else:
             if target_sort not in [1, 2, 5]:
                 target_sort = '_num'
@@ -94,8 +94,8 @@ class Mission(object):
         }
 
     def get_status_liveness(self):
-        config = game_config.liveness_reward
-        data = {}
+        # config = game_config.liveness_reward
+        # data = {}
         done = self.mm.mission.live_done
         # for id, value in config.iteritems():
         #     if self.mm.mission.liveness >= value['need_liveness'] and id not in done:

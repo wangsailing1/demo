@@ -59,7 +59,7 @@ def rank_index(hm):
             name = umm.user.name
             if umm.script.top_all:
                 script_id = umm.script.top_all['id']
-            script_name = mm.script.top_all.get('name', '')
+            script_name = umm.script.top_all.get('name', '')
             if not script_name:
                 script_name = game_config.script[script_id]['name']
                 script_name = get_str_words(mm.user.language_sort, script_name)

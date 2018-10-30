@@ -62,7 +62,7 @@ def script_gacha(hm, data, mission):
 # 等级
 def user_lv(hm, data, mission):
     lv = hm.mm.user.level
-    return {mission._PLAYER_LV: {'target1': lv, 'value': 1}}
+    return {mission._PLAYER_LV: {'target1': lv, 'value': lv}}
 
 
 # 卡牌等级
@@ -439,7 +439,10 @@ class MissionDaily(ModelBase):
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
-                self.data[mission_id] = value['stage_id']
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
@@ -451,9 +454,7 @@ class MissionDaily(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
         elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            target_data = self.config[mission_id]['target']
-            if value['target1'] > target_data[0]:
-                self.data[mission_id] = 1
+            self.data[mission_id] = value['value']
 
         else:
             if mission_id in self.data:
@@ -501,7 +502,10 @@ class MissionGuide(ModelBase):
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
-                self.data[mission_id] = value['stage_id']
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
@@ -513,15 +517,13 @@ class MissionGuide(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
         elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            if value['value'] > self.data.get(mission_id):
-                self.data[mission_id] = value['value']
+            self.data[mission_id] = value['value']
 
         else:
             if mission_id in self.data:
                 self.data[mission_id] += value['value']
             else:
                 self.data[mission_id] = value['value']
-
     def done_task(self, mission_id):
         """完成任务
         """
@@ -562,7 +564,10 @@ class MissionRandom(ModelBase):
         elif self.config[mission_id]['sort'] == 7:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
-                self.data[mission_id] = value['stage_id']
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
@@ -574,8 +579,7 @@ class MissionRandom(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
         elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            if value['value'] > self.data.get(mission_id):
-                self.data[mission_id] = value['value']
+            self.data[mission_id] = value['value']
 
         else:
             if mission_id in self.data:

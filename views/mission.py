@@ -20,11 +20,12 @@ def get_reward(hm):
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
 
     if tp_id == 5:
+        config = game_config.liveness_reward[mission_id]
         if mission_id in mm.mission.live_done:
             return 3, {}  #已领
-        if not mission.get_status_liveness()['result'][mission_id][2]:
+        if  mission.get_status_liveness()['liveness'] < config['need_liveness']:
             return 4, {}  #未完成
-        gift = game_config.liveness_reward[mission_id]['reward']
+        gift = config['reward']
         reward = add_mult_gift(mm,gift)
         mm.mission.live_done.append(mission_id)
         mm.mission.save()
