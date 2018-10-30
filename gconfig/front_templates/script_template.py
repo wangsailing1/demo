@@ -169,7 +169,7 @@ diamond_script_gacha = {
 script_gacha_cd = ({
                     'uk': ('time', 'int'),  #
                     'cd': ('cd', 'int_list'),  #
-                    }, 'script_gacha_cd_config')
+                    }, 'gacha_cd_config')
 
 
 # 抽剧本cost
