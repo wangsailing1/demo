@@ -41,13 +41,17 @@ class CardLogic(object):
         if user.coin <= 0:
             return 'error_coin', {}
 
+        card_config = game_config.card_basis[card_dict['id']]
+        if card_dict['lv'] >= card_config['lvmin']:
+            return 2, {}        # 请升级格调等级
+
         level_config = game_config.card_level[card_dict['lv']]
         add_exp = min(user.coin, level_config['level_gold'])
         if user.coin < add_exp:
             return 'error_coin', {}
 
         if not card.add_card_exp(card_oid, add_exp, card_dict):
-            return 2, {}
+            return 3, {}
 
         card.save()
         user.deduct_coin(add_exp)
@@ -155,7 +159,7 @@ class CardLogic(object):
         return 0, {}
 
     def card_quality_up(self, card_oid):
-        """卡牌进阶
+        """卡牌进阶/格调
 
         :param card_oid:
         :return:
@@ -176,6 +180,9 @@ class CardLogic(object):
 
         if set(card_dict['equips']) != set(card_config['quality_cost']):
             return 3, {}    # 卡牌装备不足
+
+        if card_dict['lv'] < card_config['lvmin']:
+            return 4, {}    # 卡牌等级不足
 
         card_dict['equips'] = []
         card_dict['id'] = next_id

@@ -177,6 +177,13 @@ user_msg = {
 }
 
 card_msg = {
+    'card.card_level_up': {
+        2: u'请升级格调等级',
+    },
+    'card.card_quality_up': {
+        3: u'卡牌装备不足',
+        4: u'卡牌等级不足',
+    },
     'card.card_add_love_exp': {
         2: u'道具类型不符',
         3: u'超出送礼上限',
