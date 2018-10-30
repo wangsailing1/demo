@@ -59,6 +59,9 @@ def refresh_mission(hm):
     mm = hm.mm
     mission = Mission(mm)
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
+    #todo 次数上限取配置
+    if mm.mission.refresh_times >= 2:
+        return 1, {}  #刷新次数不足
     mm.mission.refresh_random_misstion(mission_id)
     mm.mission.save()
     data = mission.mission_index()
