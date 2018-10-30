@@ -863,5 +863,6 @@ mapping = {
     'buy_silver': specail_pop_uk('id'),
     'common_config': common_pop_key('value'),
     'script_licence_config': common_pop_key('cd'),
+    'script_gacha_cd_config': specail_pop_uk('time'),
 }
 

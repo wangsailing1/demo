@@ -201,7 +201,7 @@ card_msg = {
 
 script_msg = {
     'script_gacha.get_gacha': {
-        1: u'cd未结束'
+        1: u'可抽取次数不足'
     }
 }
 

@@ -30,8 +30,13 @@ class ScriptGachaLogics(object):
         """
 
         data = {
-            'coin_cd_expire': self.gacha.cd_expire(),                   # 普通抽cd倒计时
-            'diamond_cd_expire': self.gacha.cd_expire(gacha_type=2),    # 钻石抽cd倒计时
+            'coin_left_times': self.gacha.coin_left_times,                # 剩余普通抽取次数
+            'coin_update_time': self.gacha.coin_update_time,              # 上次恢复时间
+            'coin_recover_times': self.gacha.coin_recover_times,          # 今日已恢复次数
+            'coin_times_limit': self.gacha.coin_gacha_times_limit(),          # 普通抽取可恢复次数上线
+
+            'coin_cd_expire': self.gacha.recover_expire(),                   # 普通抽cd倒计时
+            'diamond_cd_expire': 0,    # 钻石抽cd倒计时
             'coin_time': self.gacha.coin_time,                  # 探寻时间
             'coin_times': self.gacha.coin_times,                # 探寻次数
             'diamond_time': self.gacha.diamond_time,            # 探寻时间
@@ -48,9 +53,9 @@ class ScriptGachaLogics(object):
         :return:
         """
         # 钻石抽不判断cd
-        cd_expire = self.gacha.cd_expire(sort)
-        if cd_expire:
-            return 1, {}    # cd未结束
+        enough = self.gacha.gacha_times_enough(sort)
+        if not enough:
+            return 1, {}    # 可抽取次数不足
 
         cost = game_config.script_gacha_cost[sort]['cost']
         rc, _ = del_mult_goods(self.mm, cost)
@@ -61,6 +66,7 @@ class ScriptGachaLogics(object):
             cost_type = 'coin'
             gacha_config = self.get_coin_gacha()
             self.gacha.coin_times += 1
+            self.gacha.coin_left_times -= 1
             self.gacha.coin_time = int(time.time())
         else:
             cost_type = 'diamond'

@@ -166,11 +166,10 @@ diamond_script_gacha = {
 }
 
 # 抽剧本cd
-script_gacha_cd = {
-    'uk': ('time', 'int'),  #
-    'cd': ('cd', 'int'),  #
-
-}
+script_gacha_cd = ({
+                    'uk': ('time', 'int'),  #
+                    'cd': ('cd', 'int_list'),  #
+                    }, 'script_gacha_cd_config')
 
 
 # 抽剧本cost
