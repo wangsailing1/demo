@@ -175,10 +175,7 @@ class Script(ModelBase):
             last_script = self.top_end_lv_card[script_id]
             if cur_script['end_lv'] > last_script['end_lv']:
                 last_script['end_lv'] = cur_script['end_lv']
-                last_script['card'] = {
-                    'end_lv': cur_script['end_lv'],
-                    'card': dict(cur_script['card'])
-                }
+                last_script['card'] = dict(cur_script['card'])
 
     def get_group_id_all_income(self, cur_script):
         '''
