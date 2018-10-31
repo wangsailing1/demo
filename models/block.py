@@ -41,7 +41,6 @@ class Block(ModelBase):
         if self.last_date != get_date():
             self.last_date = get_date()
 
-            # todo 计算奖杯
             self.big_sale = 0
             self.award_ceremony = 0
             self.has_ceremony = 1

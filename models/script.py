@@ -478,7 +478,7 @@ class Script(ModelBase):
         }
         return data
 
-    def get_top_group(self):
+    def get_top_group_sequel(self):
 
         top_group = {}
         for group_id, info in self.top_sequal.iteritems():
@@ -491,10 +491,10 @@ class Script(ModelBase):
             top_group[group_id]['max_script'] = sequel_count
         return top_group
 
-    def get_top_group_id(self):
+    def get_top_group_id_sequel(self):
         group_id = 0
         income = 0
-        for k, v in self.get_top_group().iteritems():
+        for k, v in self.get_top_group_sequel().iteritems():
             if v['top_income'] > income:
                 income = v['top_income']
                 group_id = k
@@ -516,7 +516,7 @@ class Script(ModelBase):
 
     # 获取系列票房最大单片
     def get_max_script_by_group(self, group_id):
-        group_info = self.get_top_group().get(group_id, {})
+        group_info = self.get_top_group_sequel().get(group_id, {})
         if not group_info:
             return 0
         return group_info['script_info']['id']
@@ -531,7 +531,7 @@ class Script(ModelBase):
             script_info = {i: j for i, j in script_list}
             return script_info
         elif is_type == 2:
-            group_infos = self.get_top_group()
+            group_infos = self.get_top_group_sequel()
             group_list = sorted(group_infos.items(), key=lambda x: x[1]['top_income'], reverse=True)
             if len(group_list) > num:
                 group_list = group_list[:num]
