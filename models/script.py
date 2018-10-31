@@ -107,7 +107,7 @@ class Script(ModelBase):
             continued_lv = end_lv_config['continued_level']
             continued_lv_config = game_config.script_continued_level[continued_lv]
 
-            continued_income = continued_lv_config['parm'] * all_income
+            continued_income = continued_lv_config['parm'] * all_income / 100
             continued_time = game_config.common[19]
             continued_income_unit = continued_income / (continued_time * 60)
 
