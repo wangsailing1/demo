@@ -58,7 +58,7 @@ class FansActivity(object):
                                                                                activity_id=effect_activity_id,
                                                                                is_save=False)
                     gift.extend(effect_activity_gift)
-                if effect_activity_id != activity_id:
+                if effect_activity_id != activity_id and effect_activity_id:
                     self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
                         self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
             reward = add_mult_gift(self.mm, gift)
@@ -66,7 +66,7 @@ class FansActivity(object):
             effect_id = self.mm.fans_activity.get_card_effect(cards)
             self.mm.fans_activity.activity_log[activity_id]['cards'] = cards
             self.mm.fans_activity.activity_log[activity_id]['effect_id'] = effect_id
-            self.mm.fans_activity.add_card_mapping(cards)
+            self.mm.fans_activity.add_card_mapping(cards,activity_id)
             self.mm.fans_activity.save()
             _, data = self.fans_index()
             data['reward'] = reward
@@ -105,6 +105,7 @@ class FansActivity(object):
             'reward': {}
         }
         self.mm.user.dollar -= cost
+        self.mm.fans_activity.add_card_mapping(cards, activity_id)
         self.mm.fans_activity.save()
         self.mm.user.save()
         _, data = self.fans_index()
