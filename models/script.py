@@ -64,9 +64,8 @@ class Script(ModelBase):
 
 
             # 各种最高收入排行
-            'top_script': {},               # 按剧本id
-            'top_group': {},                # 按剧本系列 {gruop_id: film_info}
-            'top_all': {},                  # 单片票房最高
+            'top_script': {},               # 按剧本id {script_id: file_info}
+            'top_all': {},                # 单片票房最高的一部片，不区分id file_info
             'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
 
             # 最高系列票房总和
@@ -139,6 +138,18 @@ class Script(ModelBase):
 
         if save:
             self.save()
+
+    @property
+    def top_group(self):
+        """按剧本系列 {gruop_id: film_info}
+        :return:
+        """
+        data = {}
+        for script_id, info in self.top_script.iteritems():
+            script_config = game_config.script[info['id']]
+            group_id = script_config['group']
+            data.setdefault(group_id, []).append(info)
+        return {k: max(v, key=lambda x: x['finished_summary']['income']) for k, v in data.iteritems()}
 
     def check_top_end_lv_card(self, cur_script):
         """判断影片最大结算等级对应的演员表
@@ -227,10 +238,8 @@ class Script(ModelBase):
     def check_top_income(self, film_info):
         script_id = film_info['id']
         script_config = game_config.script[script_id]
-        group_id = script_config['group']
 
         cur_top_script = self.top_script.get(script_id, {})
-        cur_top_group = self.top_group.get(group_id, {})
         income = film_info['finished_summary']['income']
 
         save = False
@@ -238,12 +247,6 @@ class Script(ModelBase):
         top_script_income = cur_top_script.get('finished_summary', {'income': 0})['income']
         if top_script_income < income:
             self.top_script[script_id] = dict(film_info)
-            save = True
-
-        # 按剧本系列记录
-        top_group_income = cur_top_group.get('finished_summary', {'income': 0})['income']
-        if top_group_income < income:
-            self.top_group[group_id] = dict(film_info)
             save = True
 
         # 单片记录
