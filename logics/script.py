@@ -43,11 +43,14 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def get_recommend_card(self, script_id):
+        return self.mm.script.top_end_lv_card.get(script_id, {})
+
     def index(self):
         script = self.mm.script
 
         return 0, {
-            'top_end_lv_card': script.top_end_lv_card,
+            'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
 
             # 'own_script': script.own_script,
             # 'sequel_script': script.group_sequel.values(),
