@@ -359,7 +359,7 @@ class Mission(ModelBase):
                 self.guide.add_count(k, kwargs[sort])
 
         for k, value in self.random_data.iteritems():
-            if 'refresh_ts' in k:
+            if isinstance(k,(str,unicode)) and 'refresh_ts' in k:
                 continue
             sort = game_config.random_mission[k]['sort']
             if sort in kwargs:
@@ -367,7 +367,7 @@ class Mission(ModelBase):
 
         for k, value in self.box_office_data.iteritems():
             sort = game_config.box_office[k]['sort']
-            if sort in kwargs and sort == 5:
+            if sort in kwargs and sort == self._INCOME:
                 self.randmission.add_count(k, kwargs[sort])
         self.save()
 
