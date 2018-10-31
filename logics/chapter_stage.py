@@ -331,11 +331,13 @@ class Chapter_stage(object):
         gift = {}
 
         for times_ in xrange(1, times + 1):
+            gift[times_] = copy.deepcopy(stage_config['fight_reward'])
+            print gift
             for i in range(1, 4):
                 random_num = 'random_num%s' % i
                 random_reward = 'random_reward%s' % i
                 for _ in xrange(stage_config[random_num]):
-                    gift[times_] = [(weight_choice(stage_config[random_reward])[:-1])]
+                    gift[times_].extend([(weight_choice(stage_config[random_reward])[:-1])])
 
         if is_first:
             gift['first_reward'] = (stage_config['first_reward'])
