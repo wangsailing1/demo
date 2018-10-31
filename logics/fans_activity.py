@@ -105,6 +105,7 @@ class FansActivity(object):
             'reward': {}
         }
         self.mm.user.dollar -= cost
+        self.mm.fans_activity.add_card_mapping(cards, activity_id)
         self.mm.fans_activity.save()
         self.mm.user.save()
         _, data = self.fans_index()
