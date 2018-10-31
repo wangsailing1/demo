@@ -39,7 +39,7 @@ class Script(ModelBase):
                 },
             top_end_lv_card: {
                 script_id: {
-                    'env_lv: 1,
+                    'end_lv: 1,
                     'card': {
                         role_id: card_oid
                     }
@@ -67,7 +67,7 @@ class Script(ModelBase):
             # 各种最高收入排行
             'top_script': {},               # 按剧本id {script_id: file_info}
             'top_all': {},                # 单片票房最高的一部片，不区分id file_info
-            'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
+            'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'end_lv': 1, 'card': {roleid: cardid}}}
 
             # 最高系列票房总和
             'top_sequal': {},
@@ -87,6 +87,10 @@ class Script(ModelBase):
         #               'finished_first_income', 'finished_summary']:
         #         if k not in self.cur_script:
         #             self.cur_script[k] = {}
+
+        for k, v in self.top_end_lv_card.items():
+            if 'env_lv' in v:
+                v['end_lv'] = v.pop('env_lv')
 
         save = False
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
@@ -164,15 +168,15 @@ class Script(ModelBase):
         script_id = cur_script['id']
         if script_id not in self.top_end_lv_card:
             self.top_end_lv_card[script_id] = {
-                'env_lv': cur_script['end_lv'],
+                'end_lv': cur_script['end_lv'],
                 'card': dict(cur_script['card'])
             }
         else:
             last_script = self.top_end_lv_card[script_id]
-            if cur_script['env_lv'] > last_script['env_lv']:
-                last_script['env_lv'] = cur_script['env_lv']
+            if cur_script['end_lv'] > last_script['end_lv']:
+                last_script['end_lv'] = cur_script['end_lv']
                 last_script['card'] = {
-                    'env_lv': cur_script['end_lv'],
+                    'end_lv': cur_script['end_lv'],
                     'card': dict(cur_script['card'])
                 }
 
