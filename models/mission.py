@@ -296,7 +296,7 @@ class Mission(ModelBase):
 
     def refresh_random_misstion(self,mission_id,is_save=False):
         new_mission_id = mission_id
-        while new_mission_id == mission_id:
+        while new_mission_id == mission_id or new_mission_id in self.random_data:
             new_mission_id = self.get_random_mission()
         self.random_data.pop(mission_id)
         self.random_data[new_mission_id] = 0
