@@ -19,7 +19,7 @@ def target_sort1(mm, reward_obj, target_data, mission_id, target_data1):
 # 任意卡牌达到等级
 def target_sort2(mm, reward_obj, target_data, mission_id, target_data1):
     target_value = target_data
-    num = len(reward_obj.get_count(mission_id)) if isinstance(reward_obj.get_count(mission_id),list) else 0
+    num = len(reward_obj.get_count(mission_id)) if isinstance(reward_obj.get_count(mission_id), list) else 0
     return num >= target_value[1], num, target_value[1]
 
 
@@ -63,6 +63,7 @@ class Mission(object):
 
     def mission_index(self, tp_id=0):
         data = {}
+        data['remain_refresh_times'] = 2 - self.mission.refresh_times
         if not tp_id:
             if self.mission.check_guide_over():
                 self.mission.get_all_random_mission()
@@ -105,20 +106,19 @@ class Mission(object):
         #         data[id] = [self.mm.mission.liveness,value['need_liveness'],1]
         #     elif self.mm.mission.liveness < value['need_liveness']:
         #         data[id] = [self.mm.mission.liveness,value['need_liveness'],0]
-        return {'liveness':self.mm.mission.liveness,
-                'done':done}
-
+        return {'liveness': self.mm.mission.liveness,
+                'done': done}
 
     def get_status_by_type(self, type='daily'):
         mission_obj = getattr(self.mission, type)
         result = {}
         done = mission_obj.done
         for mission_id in mission_obj.data:
-            if isinstance(mission_id, (str,unicode)) and 'refresh_ts' in mission_id:
+            if isinstance(mission_id, (str, unicode)) and 'refresh_ts' in mission_id:
                 now = int(time.time())
                 end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME
                 refresh_time = end_time - now if end_time - now > 0 else 0
-                result[mission_id] = [refresh_time,now,0]
+                result[mission_id] = [refresh_time, now, 0]
                 continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             result[stats['id']] = [stats['value'], stats['need_value'], stats['status']]
