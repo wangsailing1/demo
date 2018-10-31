@@ -47,8 +47,10 @@ class ScriptLogic(object):
         script = self.mm.script
 
         return 0, {
+            'top_end_lv_card': script.top_end_lv_card,
+
             'own_script': script.own_script,
-            'sequel_script': script.sequel_script,
+            'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,

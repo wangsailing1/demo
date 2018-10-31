@@ -27,10 +27,10 @@ coin_gacha_lv = {
 
 
 # 金币抽卡
-coin_gacha_cd = {
+coin_gacha_cd = ({
     'uk': ('time', 'int'),                    # cd 出现次数
-    'cd': ('cd', 'int'),         # cd时长（分钟）
-}
+    'cd': ('cd', 'int_list'),         # cd时长（分钟）
+    }, 'gacha_cd_config')
 
 
 

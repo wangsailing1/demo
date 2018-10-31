@@ -87,16 +87,19 @@ def rank_index(hm):
             umm = ModelManager(uid)
             name = umm.user.name
             group_id = umm.script.get_top_group_id()
+            script_id = umm.script.top_sequal[group_id]['top_script']['id']
             if mm.uid == uid:
                 alloutput_rank_own_list.append({'uid': uid,
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
+                                                'script_id':script_id,
                                                 'rank_own': ar.get_rank(uid),
                                                 'group_name': game_config.script_group_object.get(group_id, {}).get(
                                                     'name', '')})
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
+                                        'script_id': script_id,
                                         'group_id': group_id,
                                         'score': score,
                                         'group_name': game_config.script_group_object.get(group_id, {}).get('name',
