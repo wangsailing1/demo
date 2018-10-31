@@ -168,7 +168,7 @@ class Script(ModelBase):
                 'card': dict(cur_script['card'])
             }
         else:
-            last_script = self.top_env_lv_card[script_id]
+            last_script = self.top_end_lv_cardd[script_id]
             if cur_script['env_lv'] > last_script['env_lv']:
                 last_script['env_lv'] = cur_script['env_lv']
                 last_script['card'] = {
