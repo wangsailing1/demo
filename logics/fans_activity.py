@@ -58,7 +58,7 @@ class FansActivity(object):
                                                                                activity_id=effect_activity_id,
                                                                                is_save=False)
                     gift.extend(effect_activity_gift)
-                if effect_activity_id != activity_id:
+                if effect_activity_id != activity_id and effect_activity_id:
                     self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
                         self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
             reward = add_mult_gift(self.mm, gift)
