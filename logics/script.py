@@ -48,7 +48,7 @@ class ScriptLogic(object):
 
         return 0, {
             'own_script': script.own_script,
-            # 'sequel_script': script.group_sequel.values(),
+            'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
