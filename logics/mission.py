@@ -82,7 +82,7 @@ class Mission(object):
         target_sort = config['sort']
         target_data = config.get('target', [])
         target_data1 = config.get('target1', [])
-        if mission_id in mission_obj.done:
+        if mission_id in mission_obj.done and mission_id not in mission_obj.data:
             status, value, need = -1, 1, 1
         else:
             if target_sort not in [1, 2, 5]:
