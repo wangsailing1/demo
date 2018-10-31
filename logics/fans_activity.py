@@ -66,7 +66,7 @@ class FansActivity(object):
             effect_id = self.mm.fans_activity.get_card_effect(cards)
             self.mm.fans_activity.activity_log[activity_id]['cards'] = cards
             self.mm.fans_activity.activity_log[activity_id]['effect_id'] = effect_id
-            self.mm.fans_activity.add_card_mapping(cards)
+            self.mm.fans_activity.add_card_mapping(cards,activity_id)
             self.mm.fans_activity.save()
             _, data = self.fans_index()
             data['reward'] = reward
