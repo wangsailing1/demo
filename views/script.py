@@ -43,9 +43,10 @@ def filming(hm):
     mm = hm.mm
     name = hm.get_argument('name')  # 名字
     script_id = hm.get_argument('script_id', is_int=True)  # 剧本id
+    is_sequel = hm.get_argument('is_sequel', is_int=True)  # 是否续集 0 否 1 是
 
     sl = ScriptLogic(mm)
-    rc, data = sl.filming(script_id, name)
+    rc, data = sl.filming(script_id, name, is_sequel)
     return rc, data
 
 
@@ -130,16 +131,16 @@ def finished_medium_judge(hm):
     return rc, data
 
 
-def finished_continue_income(hm):
-    """持续上映"""
+def finished_audience_judge(hm):
+    """观众评价"""
     mm = hm.mm
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(6)
     return rc, data
 
 
-def finished_audience_judge(hm):
-    """观众评价"""
+def finished_continue_income(hm):
+    """持续上映"""
     mm = hm.mm
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(7)
@@ -159,4 +160,37 @@ def finished_analyse(hm):
     mm = hm.mm
     sl = ScriptLogic(mm)
     rc, data = sl.check_finished_step(9)
+    return rc, data
+
+
+def continued_script(hm):
+    """查看持续收入阶段的电影
+
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    return 0, {'continued_script': mm.script.continued_script}
+
+
+def upgrade_continued_level(hm):
+    """
+
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    script_id = hm.get_argument('script_id')
+    sl = ScriptLogic(mm)
+    rc, data = sl.upgrade_continued_level(script_id)
+    return rc, data
+
+
+def get_continued_reward(hm):
+    """领取持续奖励
+    """
+    mm = hm.mm
+    script_id = hm.get_argument('script_id')
+    sl = ScriptLogic(mm)
+    rc, data = sl.get_continued_reward(script_id)
     return rc, data

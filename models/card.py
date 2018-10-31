@@ -18,6 +18,7 @@ from lib.utils import add_dict
 from lib.core.environ import ModelManager
 
 from gconfig import game_config
+from gconfig import get_str_words
 
 
 class Card(ModelBase):
@@ -39,11 +40,15 @@ class Card(ModelBase):
     attr:{group_id:{attr1:1,attr2:2}}
     """
 
-    CHAR_PRO_MAPPING = ['演技', '歌艺', '娱乐', '艺术', '气质', '动感']
+    # CHAR_PRO_NAME = ['演技', '歌艺', '气质', '动感', '艺术', '娱乐']
+    CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
+
     LOVE_GIFT_MAPPING = ['酸', '甜', '苦', '辣', '冰', '饮']
     ADD_VALUE_MAPPING = {1: 'like'}  # 策划添加新属性的时候添加
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
-    PRO_IDX_MAPPING = {i: i - 1 for i in xrange(1, 7)}
+    PRO_IDX_MAPPING = {pro_id: pro_id - 1 for pro_id in xrange(1, len(CHAR_PRO_NAME) + 1)}
+    CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
+
 
     _need_diff = ('cards', 'pieces')
 
@@ -75,14 +80,14 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, evo=0, star=0, mm=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
             'popularity': 0,  # 人气
 
-            'name': '',  # 卡牌名字
+            'name': get_str_words('1', card_config['name']),  # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
             'is_cold': False,  # 是否雪藏
@@ -90,7 +95,7 @@ class Card(ModelBase):
             'exp': 0,  # 经验
             'lv': lv,  # 等级
 
-            'love_exp': 0,  # 羁绊经验
+            'love_exp': love_exp,  # 羁绊经验、好感度
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
@@ -102,12 +107,17 @@ class Card(ModelBase):
             'train_times': 0,  # 培训次数
             'train_ext_pro': [0] * len(cls.PRO_IDX_MAPPING),  # 训练属性加成
 
-            'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': )}}
-            'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': )}}
+            'love_gift_pro': {},  # 味觉   {pro_id: {'exp': 0, 'lv': }}
+            'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': 0}}
             'style_income': {},  # 拍片类型票房
-            'style_film_num': {}  # 拍片类型数量
+            'style_film_num': {},  # 拍片类型数量
+            'type_income':{}, #拍片种类票房
+            'type_film_num':{} #拍片种类次数
 
         }
+        for style_id in game_config.script_style.keys():
+            card_dict['style_pro'][style_id] = {'exp': 0, 'lv': 0}
+
         return card_oid, card_dict
 
     @property
@@ -151,7 +161,10 @@ class Card(ModelBase):
             self.init_card()
 
         for k, v in self.cards.iteritems():
-            v.setdefault('name', '')
+            if not v.get('name'):
+                card_config = game_config.card_basis[v['id']]
+                v['name'] = get_str_words('1', card_config['name'])
+
             v.setdefault('popularity', 0)
 
             if 'train_times' not in v:
@@ -171,17 +184,26 @@ class Card(ModelBase):
             if 'equips' not in v:
                 v['equips'] = []
 
-            if 'style_pro' not in v:
+            if 'style_pro' not in v or not v['style_pro']:
                 v['style_pro'] = {}
+                for style_id in game_config.script_style.keys():
+                    v['style_pro'][style_id] = {'exp': 0, 'lv': 0}
 
             if 'style_income' not in v:
                 v['style_income'] = {}
             if 'style_film_num' not in v:
                 v['style_film_num'] = {}
 
+            if 'type_income' not in v:
+                v['type_income'] = {}
+            if 'type_film_num' not in v:
+                v['type_film_num'] = {}
+
             v.setdefault('is_cold', False)
 
     def init_card(self):
+        return
+
         # TODO 暂时没配置，先随便给几张写死的卡牌
         if not self.cards:
             for i in self.INIT_CARDS:
@@ -223,7 +245,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, star=None):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -235,8 +257,11 @@ class Card(ModelBase):
         init_lv = lv or 1
         init_evo = evo or 0
         init_star = star or 0
+        init_love_lv = love_lv or 0
+        init_love_exp = love_exp or 0
 
         card_config = game_config.card_basis[card_id]
+        group_id = card_config['group']
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
@@ -246,9 +271,12 @@ class Card(ModelBase):
                                                  lv=init_lv,
                                                  evo=init_evo,
                                                  star=init_star,
+                                                 love_lv=init_love_lv,
+                                                 love_exp=init_love_exp,
                                                  mm=self.mm
                                                  )
-        self.mm.card_book.add_book(card_id)
+        self.mm.card_book.add_book(group_id)
+        self.mm.friend.new_actor(group_id,is_save=True)
         self.cards[card_oid] = card_dict
         return card_oid
 
@@ -296,17 +324,21 @@ class Card(ModelBase):
         grow_id = card_config['lv_growid']
         grow_config = game_config.card_level_grow[grow_id]
 
-        if cur_lv % 2:
-            pro_grow_add = grow_config['pro_grow_odd']
-        else:
-            pro_grow_add = grow_config['pro_grow_even']
-
         # 格调加成
         char_pro = []
-        for base_pro, grow_add_pro in itertools.izip(base_char_pro, pro_grow_add):
+        for idx, base_pro in enumerate(base_char_pro):
             # 只计算卡牌拥有的属性
             if base_pro > 0:
-                char_pro.append(base_pro + grow_add_pro / 10000)
+                lv_grow_add = 0
+                # 公式确定后可以优化，只是奇偶数取不同列的话 复杂度可以做成常量的
+                for lv in xrange(2, cur_lv + 1):
+                    if lv % 2:
+                        pro_grow_add = grow_config['pro_grow_odd'][idx]
+                    else:
+                        pro_grow_add = grow_config['pro_grow_even'][idx]
+
+                    lv_grow_add += pro_grow_add / 10000.0
+                char_pro.append(base_pro * (1 + lv_grow_add))
             else:
                 char_pro.append(base_pro)
 
@@ -324,7 +356,7 @@ class Card(ModelBase):
             gift_config = game_config.card_love_gift.get(info['lv'])
             if not gift_config:
                 continue
-            attr_id = game_config.card_love_gift_taste[gift_id]
+            attr_id = game_config.card_love_gift_taste[gift_id]['attr']
             if base_char_pro[self.PRO_IDX_MAPPING[attr_id]] > 0:
                 gift_attr = game_config.common.get(2, 10)
                 char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
@@ -334,9 +366,14 @@ class Card(ModelBase):
         card_info['tag_script'] = card_config['tag_script']
         card_info['tag_role'] = card_config['tag_role']
 
+        all_char_pro = [char_pro[i] + card_info['train_ext_pro'][i] for i in range(6)]
+
         char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
+        all_char_pro = [x * add_percent / 100 if x > 0 else x for x in all_char_pro]
         char_pro = [math.ceil(i) for i in char_pro]
+        all_char_pro = [math.ceil(i) for i in all_char_pro]
         card_info['char_pro'] = char_pro
+        card_info['all_char_pro'] = all_char_pro
         return card_info
 
     def card_tag(self, card_info):

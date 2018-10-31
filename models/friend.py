@@ -75,6 +75,8 @@ class Friend(ModelBase):
             'phone_daily_times': 0,
             'phone_daily_log': {},
             'nickname': {},
+            'newest_friend':[],
+            'got_point_daily':0
 
         }
         super(Friend, self).__init__(self.uid)
@@ -93,6 +95,7 @@ class Friend(ModelBase):
             self.received_gift = []
             self.last_refresh_date = now
             self.phone_daily_times = 0
+            self.got_point_daily = 0
             self.phone_daily_log = {}
             self.save()
 
@@ -205,7 +208,7 @@ class Friend(ModelBase):
             message['id'] = self.messages[-1]['id'] + 1
 
         self.messages.append(message)
-
+        self.add_newest_uid(message['send_uid'])
         if save:
             self.save()
 
@@ -442,8 +445,16 @@ class Friend(ModelBase):
         if is_save:
             self.save()
 
+    def new_actor(self,group_id,is_save=False):
+        if group_id not in self.actors:
+            self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
+            if is_save:
+                self.save()
+
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
+        if self.phone_daily_times >= chat_config[group_id]['daily_times']:
+            return 0
         chat_list = chat_config.get(group_id, {}).get('daily_dialogue', [])
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         chat_choice = []
@@ -457,6 +468,15 @@ class Friend(ModelBase):
         self.phone_daily_log[self.phone_daily_times] = [choice_id]
         self.save()
         return choice_id
+
+    def add_newest_uid(self,uid,is_save=False):
+        if uid in self.newest_friend:
+            self.newest_friend.remove(uid)
+        self.newest_friend.append(uid)
+        self.newest_friend = self.newest_friend[-10:]
+        if is_save:
+            self.save()
+
 
 
 ModelManager.register_model('friend', Friend)

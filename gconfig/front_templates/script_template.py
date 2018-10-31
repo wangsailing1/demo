@@ -59,6 +59,8 @@ script_style_suit = {
     'attention': ('attention', 'int'),  # 市场关注度影响
     'desc1': ('desc1', 'int'),  # desc
     'desc2': ('desc2', 'int'),  # desc
+    'icon': ('icon', 'str'),  # icon
+    'icon2': ('icon2', 'str'),  # icon
 
 }
 
@@ -68,6 +70,7 @@ script_style = {
     'name': ('name', 'int'),  #
     'market': ('market', 'int'),  # 市场偏好2男1女3童
     'market_num': ('market_num', 'int'),  # 市场偏好2男1女3童
+    'icon': ('icon', 'str'),
 
 }
 
@@ -101,9 +104,11 @@ script_role = {
 script_end_level = {
     'uk': ('level', 'int'),  #
     'name': ('name', 'int'),  # name
+    'icon': ('icon', 'str'),  # name
     'line': ('line', 'int'),  # 占结算线比重（万分之)
     'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
+    'icon': ('icon', 'str'),
 
 }
 
@@ -129,6 +134,7 @@ script_curve = {
     'name': ('name', 'int'),  # 曲线名
     'weeks': ('weeks', 'int'),  # 上映周数
     'curve_rate': ('curve_rate', 'int_list'),  # 曲线变化
+    'icon': ('icon', 'str'),  # 曲线变化
 }
 
 # 许可证恢复
@@ -136,4 +142,97 @@ script_license = ({
     'uk': ('num', 'int'),  # 今日恢复数量
     'cd': ('cd', 'int'),  # 冷却时间（分钟）
 }, 'script_licence_config')
+
+
+# 抽剧本
+script_gacha = {
+    'uk': ('id', 'int'),  #
+    'script_id': ('script_id', 'int'),  #
+    'gifts_id': ('gifts_id', 'int_list'),  #
+    'weight': ('weight', 'int'),  #
+    'weight_special': ('weight_special', 'int'),  #
+
+}
+
+
+# 抽剧本
+diamond_script_gacha = {
+    'uk': ('id', 'int'),  #
+    'script_id': ('script_id', 'int'),  #
+    'gifts_id': ('gifts_id', 'int_list'),  #
+    'weight': ('weight', 'int'),  #
+    'weight_special': ('weight_special', 'int'),  #
+
+}
+
+# 抽剧本cd
+script_gacha_cd = ({
+                    'uk': ('time', 'int'),  #
+                    'cd': ('cd', 'int_list'),  #
+                    }, 'gacha_cd_config')
+
+
+# 抽剧本cost
+script_gacha_cost = {
+    'uk': ('type', 'int'),  #
+    'cost': ('cost', 'int_list'),  #
+
+}
+
+
+# 关注度等级
+attention_level = {
+    'uk': ('level', 'int'),  #
+    'name': ('name', 'int'),  #
+    'min_attention': ('min_attention', 'int'),  #
+    'max_attention': ('max_attention', 'int'),  #
+
+}
+
+
+# 难度等级
+difficulty_level = {
+    'uk': ('level', 'int'),  #
+    'name': ('name', 'int'),  #
+    'min_completely': ('min_completely', 'int'),  #
+    'max_completely': ('max_completely', 'int'),  #
+
+}
+
+
+# 随机观众评价选择
+audi_comment_choice = {
+    'uk': ('id', 'int'),
+    'audi_grade_range': ('audi_grade_range', 'int_list'),   # 观众评价区间
+    'grade_weight': ('grade_weight', 'int_list'),           # 评分权重[观众评论星级，权重]
+    'barrage_weight': ('barrage_weight', 'int_list'),       # 弹幕区间[弹幕星级，区间下限，区间上限]
+}
+
+
+# 媒体评价
+media_comment = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int'),   # 媒体评论
+    'pos_id': ('pos_id', 'int'),           # 出现位置
+    'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+    'grade_wave_range': ('grade_wave_range', 'int_list'),       # 显示评分波动范围(已放大100倍）
+}
+
+
+# 观众评价
+audi_comment = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int'),   # 观众评论
+    'star': ('star', 'int'),           # 评论星级
+    'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+}
+
+
+# 弹幕
+barrage = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'int'),   # 观众评论
+    'star': ('star', 'int'),           # 评论星级
+}
+
 

@@ -107,6 +107,7 @@ card_love_gift_taste = {
     'name': ('name', 'unicode'),  # 味道名称
     'attr': ('attr', 'int'),  # 对应属性
     'item_id': ('item_id', 'int_list'),  # 对应食物
+    'icon': ('icon', 'str'),  # 图标
 }
 
 # 卡牌培养消耗

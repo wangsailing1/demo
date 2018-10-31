@@ -50,6 +50,7 @@ def user_status(mm):
         'coin': user.coin,
         'like': user.like,
         'dollar': user.dollar,
+        'script_income': user.script_income,
         'silver': user.silver,
         'vip': user.vip,
         'vip_exp': user.vip_exp,
@@ -75,6 +76,8 @@ def user_status(mm):
         'guild_coin': mm.user.guild_coin,       # 公会币
         'config_type': mm.user.config_type,
         'chat_times': mm.user.chat_times,       # 聊天次数
+        'got_icon':mm.user.got_icon,
+        'attention': mm.user.attention,
     }
     return data
 

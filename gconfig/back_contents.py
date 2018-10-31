@@ -40,8 +40,6 @@ mapping_config = {
 
 user_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
-    'initial_account': ('initial_account', True),
-
 }
 
 

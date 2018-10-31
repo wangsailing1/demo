@@ -12,8 +12,8 @@ from lib.utils.sensitive import is_sensitive
 def check_unlock(func):
     def wrapper(hm):
         mm = hm.mm
-        if not mm.user.check_build(FRIEND_SORT):
-            return 'error_unlock', {}
+        # if not mm.user.check_build(FRIEND_SORT):
+        #     return 'error_unlock', {}
 
         return func(hm)
 
@@ -30,8 +30,10 @@ def friends(hm):
     mm = hm.mm
 
     fl = FriendLogic(mm)
-
+    _, actor_data = fl.actor_chat_index()
     data = fl.friends_info()
+    data['actor'] = actor_data
+    data['newest_friend'] = mm.friend.newest_friend
 
     return 0, data
 
@@ -468,11 +470,13 @@ def actor_chat(hm):
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
-        return 0, {'choice_id': mm.friend.get_chat_choice(group_id)}
+        return 0, {'choice_id': mm.friend.get_chat_choice(group_id),
+                   'phone_daily_times':mm.friend.phone_daily_times}
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
+    data['phone_daily_times'] = mm.friend.phone_daily_times
     return rc, data
 
 
@@ -481,7 +485,8 @@ def actor_chat_index(hm):
     mm = hm.mm
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat_index()
-    return rc, {'actor': data}
+    return rc, {'actor': data,
+                'phone_daily_times':mm.friend.phone_daily_times}
 
 
 @check_unlock

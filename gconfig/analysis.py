@@ -621,7 +621,7 @@ def special_battle_item_limit(config, data):
 
 
 def specail_pop_uk(replace_key):
-
+    """处理只有一行的配置"""
     def decorator(config, data):
         value = data.pop('uk')
         data[replace_key] = value
@@ -643,7 +643,10 @@ def common_pop_key(replace_key):
 def last_random_name(config, data):
 
     last_name = data.get('uk')
-    add_dict_list(config, 'last_name', last_name)
+    sex = data.get('gender')
+    if sex not in config:
+        config[sex] = {}
+    add_dict_list(config[sex], 'last_name', last_name)
 
     return config
 
@@ -860,5 +863,6 @@ mapping = {
     'buy_silver': specail_pop_uk('id'),
     'common_config': common_pop_key('value'),
     'script_licence_config': common_pop_key('cd'),
+    'gacha_cd_config': specail_pop_uk('time'),
 }
 

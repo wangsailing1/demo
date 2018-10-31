@@ -4,6 +4,7 @@
 chapter_stage = {
     'uk':               ('stage_id',        'int'),  # id
     'script_id':        ('script_id',       'int'),  # 关卡剧本id
+    'fans_activity':    ('fans_activity',   'int'),  # 解锁的粉丝活动id
     'show_reward':      ('show_reward',     'int_list'),  # 显示用奖励
     'player_exp':       ('player_exp',      'int'),  # 公司经验
     'fight_exp':        ('fight_exp',       'int'),  # 类型经验
@@ -35,13 +36,14 @@ chapter = {
     'stage_id': (('stage_id1', 'stage_id2', 'stage_id3','stage_id4','stage_id5',
               'stage_id6','stage_id7','stage_id8','stage_id9','stage_id10'), ('int', 'mult_force_num_list')), #关卡
     'dialogue_id': (('dialogue_id1', 'dialogue_id2', 'dialogue_id3','dialogue_id4','dialogue_id5',
-              'dialogue_id6','dialogue_id7','dialogue_id8','dialogue_id9','stage_id10'), ('int', 'mult_force_num_list')), #剧情关卡
+              'dialogue_id6','dialogue_id7','dialogue_id8','dialogue_id9','dialogue_id10'), ('int', 'mult_force_num_list')), #剧情关卡
     'fight_reward1':    ('fight_reward1',   'int_list'),  # 星级奖励1
     'star_num1':        ('star_num1',       'int'),  # 奖励1需求星数
     'fight_reward2':    ('fight_reward2',   'int_list'),  # 星级奖励2
     'star_num2':        ('star_num2',       'int'),  # 奖励2需求星数
     'fight_reward3':    ('fight_reward3',   'int_list'),  # 星级奖励3
     'star_num3':        ('star_num3',       'int'),  # 奖励3需求星数
+    'chapter_icon':        ('chapter_icon',       'str'),  # 章节图标
 
 }
 
@@ -51,8 +53,8 @@ chapter_enemy = {
     'charpro': (('charpro1', 'charpro2', 'charpro3','charpro4','charpro5',
                 'charpro6'), ('int', 'mult_force_num_list')),  #演技，歌艺，气质，动感，娱乐，艺术
     'dps_rate':         ('dps_rate',         'int_list'),  #伤害输出系数区间值（万分之）
-    'special_rate1':    ('special_rate1',    'int'),  #艺术触发概率（万分之）
-    'special_rate2':    ('special_rate2',    'int'),  #娱乐触发概率（万分之）
+    'ex_special_rate':    ('ex_special_rate',    'int'),  #额外触发概率( 万分比）
+    'special_quality':    ('special_quality',    'int_list'),  #艺术/娱乐触发权重
     'crit_rate_base':   ('crit_rate_base',   'int'),  #基础暴击率(万分之)
 
 }

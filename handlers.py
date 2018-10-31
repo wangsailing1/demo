@@ -75,11 +75,11 @@ def lock(func):
                         if module_name in retry_module and retry_times > 0:
                             time.sleep(0.05)
                         else:
-                            error(handler, i18n_msg.get(19, handler.hm.req.get_argument('lan', '0')))
+                            error(handler, i18n_msg.get(19, handler.hm.req.get_argument('lan', '1')))
                             return
                 except:
                     print_log(traceback.print_exc())
-                    error(handler, i18n_msg.get(20, handler.hm.req.get_argument('lan', '0')))
+                    error(handler, i18n_msg.get(20, handler.hm.req.get_argument('lan', '1')))
                     return
 
                 retry_times -= 1
@@ -128,10 +128,10 @@ class LoginHandler(BaseRequestHandler):
             if data:
                 msg = data.get('custom_msg')
             if not msg:
-                msg = get_msg_str(self.get_argument('lan', '0')).get(rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = 'account.%s' % self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '0')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
 
         return rc, data, msg, None
 
@@ -262,10 +262,10 @@ class APIRequestHandler(BaseRequestHandler):
             if data:
                 msg = data.get('custom_msg')
             if not msg:
-                msg = get_msg_str(self.get_argument('lan', '0')).get(rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '0')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
 
         return rc, data, msg, self.hm.mm
 
@@ -405,6 +405,13 @@ class APIRequestHandler(BaseRequestHandler):
                     # data['mission_task'] = self.hm.mm.mission_main.get_main_tasks()
                     # data['side_task'] = self.hm.mm.mission_side.get_side_tasks(filter=True)
 
+                from models.mission import Mission
+                try:
+                    Mission.do_task_api( method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
                 # 执行成功保存数据
                 self.hm.mm.do_save()
 
@@ -413,6 +420,7 @@ class APIRequestHandler(BaseRequestHandler):
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         old_data[k] = getattr(obj, '_old_data', {})
+
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
@@ -533,10 +541,10 @@ class ConfigHandler(BaseRequestHandler):
             if data:
                 msg = data.get('custom_msg')
             if not msg:
-                msg = get_msg_str(self.get_argument('lan', '0')).get(rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '0')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
 
         if data is None:
             data = {}

@@ -113,7 +113,7 @@ def new_user(hm):
     """
     name = hm.get_argument('name')
     tpid = hm.get_argument('tpid', 0, is_int=True)
-    role = hm.get_argument('role', 100, is_int=True)
+    role = hm.get_argument('role', 1, is_int=True)
     server = hm.get_argument('server')
     account = hm.get_argument('account')
     device_mark = hm.get_argument('device_mark')
@@ -126,11 +126,11 @@ def new_user(hm):
         return 'error_100', {}
 
     if is_sensitive(name):
-        return 2, {}    # 名字不合法
+        return 2, {}  # 名字不合法
 
     acc = Account.get(account)
     if server in acc.servers:
-        return 3, {}    # 该服已有角色
+        return 3, {}  # 该服已有角色
 
     # 创建uid
     now = int(time.time())
@@ -174,9 +174,10 @@ def new_user(hm):
     mm.user.set_tpid(tpid)
 
     mm.user.role = 0
-    mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(mm.user.language_sort)
+    mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(
+        mm.user.language_sort)
     mm.user.register_ip = remote_ip
-    if appid == '2':    # 和前端协定1:android,2:iOS
+    if appid == '2':  # 和前端协定1:android,2:iOS
         mm.user.appid = 'ios'
     else:
         mm.user.appid = 'android'
@@ -203,6 +204,8 @@ def new_user(hm):
 
     # 测试服，创建指定账号
     test_init(mm)
+
+
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -288,19 +291,24 @@ def test_init(mm):
     # 邮件
     good = game_config.initial_account.get('good')
     if good:
-        mail_dict = mm.mail.generate_mail(
-            u'测试道具',
-            title=u'测试道具',
-            gift=good,
-        )
-        mm.mail.add_mail(mail_dict)
+        # 直接给送东西
+        add_mult_gift(mm, good)
+
+        # mail_dict = mm.mail.generate_mail(
+        #     u'测试道具',
+        #     title=u'测试道具',
+        #     gift=good,
+        # )
+        # mm.mail.add_mail(mail_dict)
 
     # 英雄
-    hero_config = game_config.initial_account.get('card')
-    if hero_config:
-        for i in hero_config:
-            mm.card.add_card(i[0], lv=i[1], evo=i[2], star=i[3])
-        mm.hero.save()
+    card_config = game_config.initial_account.get('card')
+    if card_config:
+        # id, 等级，好感，羁绊
+        for cid, lv, love_exp, love_lv in card_config:
+            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp)
+        mm.card.save()
+
 
 
 def mark_user_login(hm):
@@ -375,7 +383,7 @@ def get_user_server_list(hm, account=None):
         }
 
     if not Account.check_exist(account):
-        return 0, {    # 查无此人
+        return 0, {  # 查无此人
             'server_list': server_list,
             'current_server': '',
             'ks': sid,

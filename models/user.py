@@ -74,7 +74,8 @@ class User(ModelBase):
     :var coin: 金币
     :var silver: 银币
     :var total_silver: 累积银币
-    :var role: 角色id, 主英雄的icon
+    :var role: 角色id, 主英雄的性别
+    :var icon: 主英雄的头像
     :var vip: vip等级
     :var vip_exp: vip经验
     :var active_time: 最后活跃时间
@@ -85,7 +86,8 @@ class User(ModelBase):
     :var exit_guild_time: 退工会时间
     :var guild_guard: 公会护卫列表
     :var utime: 更新时间 '2015-12-15'
-    :var sid: session_id
+    :var sid: session_id attention
+    :var attention: 关注度
     :var expired: session过期时间
     :var mk: 登录+1, 用于验证多点登录
     :var unlock_build: [], 解锁建筑物id
@@ -103,6 +105,7 @@ class User(ModelBase):
     :var guild_exp_times: {    # 公会经验副本挑战次数
         coin_id: 0                   # 据点id:使用的次数
     },
+    :var got_icon: [],   # 已解锁icon
     :var opera_awards: [],   # 剧情奖励领取记录
     :var level_mail_done: [],   # 已领取的等级奖励邮件id
     :var coin_log: [],          # 钻石获取记录
@@ -174,6 +177,7 @@ class User(ModelBase):
             'update_exp_pot': 0,
             'privileges': {},
             'update_privilege': 0,
+            'got_icon':[],
             # 'diamond': 0,
             'consume_diamond': 0,   # 历史消费钻石
             'consume_silver': 0,    # 历史消费钻石
@@ -182,9 +186,10 @@ class User(ModelBase):
             'coin': 0,
             'silver': 0,
             'dollar': 0,            # 美元
+            'script_income': 0,            # 拍片总票房
             'script_license': 0,    # 拍片许可证
             'used_license_times': 0,  # 许可证当日使用次数
-
+            'attention':{},
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,
@@ -1059,6 +1064,32 @@ class User(ModelBase):
         """
         self.dollar += int(num)
 
+    def is_script_income_enough(self, num):
+        """ 是否拍片票房足够
+
+        :param num:
+        :return:
+        """
+        return self.script_income >= int(num)
+
+    def deduct_script_income(self, num):
+        """ 扣除拍片票房
+
+        :param num:
+        :return:
+        """
+        num = int(num)
+        if self.is_script_income_enough(num):
+            self.script_income -= num
+
+    def add_script_income(self, num):
+        """ 增加拍片票房
+
+        :param num:
+        :return:
+        """
+        self.script_income += int(num)
+
     def is_like_enough(self, like):
         """ 是否点赞足够
 
@@ -1084,6 +1115,9 @@ class User(ModelBase):
         :return:
         """
         self.like += int(like)
+
+    def add_attention(self,type,attention):
+        self.attention[type] = self.attention.get(type,0) + int(attention)
 
     def is_silver_enough(self, silver):
         """ 是否银币足够
@@ -1723,7 +1757,7 @@ class User(ModelBase):
         :return:
         """
         return
-        
+
         server_id = settings.get_server_num(self._server_name)
         if server_id not in [1, 2, 3]:
             return
