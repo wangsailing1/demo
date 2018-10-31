@@ -156,6 +156,7 @@ class Script(ModelBase):
         })
 
         if end_lv_config['if_next_script']:
+            # 大卖
             # 判断是否拍的续集,累计票房
             if sequel_count:
                 group_info['cur_top_income'] += finished_summary['income']
@@ -164,7 +165,6 @@ class Script(ModelBase):
                 if group_id in self.group_sequel:
                     if group_info['cur_top_income'] > group_info['last_top_income']:
                         group_info['last_top_income'] = group_info['cur_top_income']
-                        pass
 
                 group_info['cur_top_income'] = finished_summary['income']
 
@@ -172,7 +172,6 @@ class Script(ModelBase):
                 group_info['last_top_income'] = group_info['cur_top_income']
                 group_info['top_script'] = cur_script
 
-            replay = False      # 是否开启新一轮拍摄
             if next_id:
                 if group_id not in self.group_sequel:
                     self.group_sequel[group_id] = next_id
@@ -183,35 +182,25 @@ class Script(ModelBase):
             else:
                 # 没有next_id，sequel_count不为0，当前系列最后一部
                 if sequel_count:
-                    # todo 结算系列票房
-                    replay = True
-
-            # 重开一轮，清除续集信息
-            if replay:
-                self.reset_sequal(group_id)
-
-            # todo 系列票房结算
-            # 更新最高系列票房
+                    # 结算系列票房
+                    self.group_sequel.pop(group_id, '')
         else:
-            group_info['cur_top_income'] += finished_summary['income']
-
-
-    def reset_sequal(self, group_id):
-        self.group_sequel.pop(group_id, '')
-
-    def clear_sequal(self, cur_script):
-        script_id = cur_script['id']
-        script_config = game_config.script[script_id]
-        sequel_count = script_config['sequel_count']
-
-        # 每个系列只保留最近可拍的一部续集，其余的都清空
-        if script_id in self.sequel_script:
-            self.sequal_script.remove(script_id)
-
-            # 系列票房结算
+            # 未大卖
+            # 判断是否拍的续集,累计票房
             if sequel_count:
-                pass
+                self.group_sequel.pop(group_id, '')
+                group_info['cur_top_income'] += finished_summary['income']
+            else:
+                # 重新拍的第一部,先检查下已拍的总票房是否大于上一次系列
+                if group_id in self.group_sequel:
+                    if group_info['cur_top_income'] > group_info['last_top_income']:
+                        group_info['last_top_income'] = group_info['cur_top_income']
 
+                group_info['cur_top_income'] = finished_summary['income']
+
+            if group_info['cur_top_income'] > group_info['last_top_income']:
+                group_info['last_top_income'] = group_info['cur_top_income']
+                group_info['top_script'] = cur_script
 
     def check_top_income(self, film_info):
         script_id = film_info['id']
@@ -382,7 +371,7 @@ class Script(ModelBase):
             self.script_pool[id_weight[0]] = 0
 
         # 续集
-        can_use_sequel_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.sequel_script]
+        can_use_sequel_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.group_sequel.values()]
         for i in xrange(self.POOL_SIZE):
             if not can_use_sequel_ids:
                 break
