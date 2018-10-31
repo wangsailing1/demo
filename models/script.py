@@ -43,7 +43,6 @@ class Script(ModelBase):
             'continued_script': {},         # 持续收益的片子
             'style_log': [],                # 连续拍片类型，保留最近10个
             'own_script': [],               # 已获得的可拍摄的片子
-            'sequel_script': [],            # 已获得的可拍摄的续集片子
 
             'group_sequel': {},             # 每个系列的可拍续集
 
@@ -130,13 +129,6 @@ class Script(ModelBase):
 
         if save:
             self.save()
-
-    def get_group_sequel(self):
-        data = {}
-        for script_id in self.sequel_script:
-            script_config = game_config.script[script_id]
-            data[script_config['group']] = script_id
-        return data
 
     def check_next_sequel(self, cur_script):
         """根据大卖与否开启续作"""
