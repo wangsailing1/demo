@@ -378,6 +378,7 @@ class Script(ModelBase):
                 top_group[group_id]['max_script'] = sequel_count
         return top_group
 
+    #todo 等添加了最大系列票房后 ，直接取数据
     def get_top_group_id(self):
         group_id = 0
         income = 0
