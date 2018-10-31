@@ -63,8 +63,8 @@ def refresh_mission(hm):
     if mm.mission.refresh_times >= game_config.common.get(42,2):
         return 1, {}  #刷新次数不足
     mm.mission.refresh_random_misstion(mission_id)
+    data = mission.mission_index(is_save=False)
     mm.mission.save()
-    data = mission.mission_index()
     return 0, data
 
 
