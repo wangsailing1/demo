@@ -48,16 +48,10 @@ class Script(ModelBase):
         """
         self.uid = uid
         self._attrs = {
-<<<<<<< HEAD
-            'continued_script': {},  # 持续收益的片子
-            'style_log': [],  # 连续拍片类型，保留最近10个
-            'own_script': [],  # 已获得的可拍摄的片子
             'sequel_script': [],  # 已获得的可拍摄的续集片子
-=======
             'continued_script': {},         # 持续收益的片子
             'style_log': [],                # 连续拍片类型，保留最近10个
             'own_script': [],               # 已获得的可拍摄的片子
->>>>>>> b10aab6966e6a8c6ea7a17ef7c680890c50c34ff
 
             'group_sequel': {},  # 每个系列的可拍续集
 
@@ -71,16 +65,10 @@ class Script(ModelBase):
 
 
             # 各种最高收入排行
-<<<<<<< HEAD
-            'top_script': {},  # 按剧本id
-            'top_group': {},  # 按剧本系列 {gruop_id: film_info}
-            'top_all': {},  # 单片票房最高
-=======
             'top_script': {},               # 按剧本id
             'top_group': {},                # 按剧本系列 {gruop_id: film_info}
             'top_all': {},                  # 单片票房最高
             'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
->>>>>>> b10aab6966e6a8c6ea7a17ef7c680890c50c34ff
 
             # 最高系列票房总和
             'top_sequal': {},
