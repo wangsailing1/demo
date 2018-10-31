@@ -349,19 +349,21 @@ class Script(ModelBase):
         # 艺人拍片票房及次数记录
         for role_id, card_id in film_info['card'].iteritems():
             # 按类型记录
-            self.mm.card.cards[card_id]['style_income'][style_id] = self.mm.card.cards[card_id]['style_income'].get(
+            card_info = self.mm.card.cards[card_id]
+            card_info['style_income'][style_id] = card_info['style_income'].get(
                 style_id, 0) + income
-            self.mm.card.cards[card_id]['style_film_num'][style_id] = self.mm.card.cards[card_id]['style_film_num'].get(
+            card_info['style_film_num'][style_id] = card_info['style_film_num'].get(
                 style_id, 0) + 1
             # 按种类记录
-            self.mm.card.cards[card_id]['type_income'][type_id] = self.mm.card.cards[card_id]['type_income'].get(
+            card_info['type_income'][type_id] = card_info['type_income'].get(
                 type_id, 0) + income
-            self.mm.card.cards[card_id]['type_film_num'][type_id] = self.mm.card.cards[card_id]['type_film_num'].get(
+            card_info['type_film_num'][type_id] = card_info['type_film_num'].get(
                 type_id, 0) + 1
 
-            group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
+            card_config = game_config.card_basis[card_info['id']]
+            group_id = card_config['group']
             # 记录主角总票房排行
-            sex = game_config.card_basis[self.mm.card.cards[card_id]['id']]['sex_type']
+            sex = card_config['sex_type']
             block_sex_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                               self.SEXMAPPING[sex])
             bsr = BlockRank(block_sex_rank_uid, self._server_name)
