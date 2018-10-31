@@ -63,7 +63,7 @@ class Mission(object):
 
     def mission_index(self, tp_id=0):
         data = {}
-        data['remain_refresh_times'] = 2 - self.mission.refresh_times
+        data['remain_refresh_times'] = game_config.common.get(42,2) - self.mission.refresh_times
         if not tp_id:
             if self.mission.check_guide_over():
                 self.mission.get_all_random_mission()

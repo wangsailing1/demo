@@ -60,7 +60,7 @@ def refresh_mission(hm):
     mission = Mission(mm)
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
     #todo 次数上限取配置
-    if mm.mission.refresh_times >= 2:
+    if mm.mission.refresh_times >= game_config.common.get(42,2):
         return 1, {}  #刷新次数不足
     mm.mission.refresh_random_misstion(mission_id)
     mm.mission.save()
