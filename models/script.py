@@ -36,7 +36,15 @@ class Script(ModelBase):
                         'cur_top_income': 0,
                         'top_script': {}
                     }
+                },
+            top_end_lv_card: {
+                script_id: {
+                    'env_lv: 1,
+                    'card': {
+                        role_id: card_oid
+                    }
                 }
+            }
         """
         self.uid = uid
         self._attrs = {
@@ -59,6 +67,7 @@ class Script(ModelBase):
             'top_script': {},               # 按剧本id
             'top_group': {},                # 按剧本系列 {gruop_id: film_info}
             'top_all': {},                  # 单片票房最高
+            'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
 
             # 最高系列票房总和
             'top_sequal': {},
@@ -109,6 +118,7 @@ class Script(ModelBase):
             # todo 是否有续作需要激活
             self.check_next_sequel(cur_script)
 
+            self.check_top_end_lv_card(cur_script)
             self.check_top_income(cur_script)
             self.cur_script = {}
             self.script_pool = {}
@@ -129,6 +139,26 @@ class Script(ModelBase):
 
         if save:
             self.save()
+
+    def check_top_end_lv_card(self, cur_script):
+        """判断影片最大结算等级对应的演员表
+        :param cur_script:
+        :return:
+        """
+        script_id = cur_script['id']
+        if script_id not in self.top_end_lv_card:
+            self.top_end_lv_card[script_id] = {
+                'env_lv': cur_script['end_lv'],
+                'card': dict(cur_script['card'])
+            }
+        else:
+            last_script = self.top_env_lv_card[script_id]
+            if cur_script['env_lv'] > last_script['env_lv']:
+                last_script['env_lv'] = cur_script['env_lv']
+                last_script['card'] = {
+                    'env_lv': cur_script['end_lv'],
+                    'card': dict(cur_script['card'])
+                }
 
     def check_next_sequel(self, cur_script):
         """根据大卖与否开启续作"""
