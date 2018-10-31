@@ -80,13 +80,13 @@ class Script(ModelBase):
     def pre_use(self):
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
-        if self.cur_script:
-            if 'finished_step' not in self.cur_script:
-                self.cur_script['finished_step'] = 0
-            for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
-                      'finished_first_income', 'finished_summary']:
-                if k not in self.cur_script:
-                    self.cur_script[k] = {}
+        # if self.cur_script:
+        #     if 'finished_step' not in self.cur_script:
+        #         self.cur_script['finished_step'] = 0
+        #     for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
+        #               'finished_first_income', 'finished_summary']:
+        #         if k not in self.cur_script:
+        #             self.cur_script[k] = {}
 
         save = False
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
@@ -455,8 +455,6 @@ class Script(ModelBase):
             'result_step': 0,  # 结算阶段，前端修改，前端使用
             'result': {},  # 拍片结算结果 {'reward': {}, }
 
-            'summary': {'income': 100, 'cost': 50},  # 票房总结
-
             # 结算的几个阶段奖励
             'finished_common_reward': {},
             'finished_attr': {},
@@ -527,7 +525,7 @@ class Script(ModelBase):
     def get_scrip_info_by_num(self, num=5, is_type=1):
         if is_type == 1:
             script_infos = self.mm.script.top_script
-            script_list = sorted(script_infos.items(), key=lambda x: x[1]['summary']['income'], reverse=True)
+            script_list = sorted(script_infos.items(), key=lambda x: x[1]['finished_summary']['income'], reverse=True)
             if len(script_list) > num:
                 script_list = script_list[:num]
             script_info = {i: j for i, j in script_list}
