@@ -445,7 +445,7 @@ class MissionDaily(ModelBase):
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
-            star = value['star']
+            star = value.get('star',0)
             type_hard = value['target1']
             if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
                 if mission_id in self.data:
