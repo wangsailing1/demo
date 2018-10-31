@@ -36,14 +36,28 @@ class Script(ModelBase):
                         'cur_top_income': 0,
                         'top_script': {}
                     }
+                },
+            top_end_lv_card: {
+                script_id: {
+                    'env_lv: 1,
+                    'card': {
+                        role_id: card_oid
+                    }
                 }
+            }
         """
         self.uid = uid
         self._attrs = {
+<<<<<<< HEAD
             'continued_script': {},  # 持续收益的片子
             'style_log': [],  # 连续拍片类型，保留最近10个
             'own_script': [],  # 已获得的可拍摄的片子
             'sequel_script': [],  # 已获得的可拍摄的续集片子
+=======
+            'continued_script': {},         # 持续收益的片子
+            'style_log': [],                # 连续拍片类型，保留最近10个
+            'own_script': [],               # 已获得的可拍摄的片子
+>>>>>>> b10aab6966e6a8c6ea7a17ef7c680890c50c34ff
 
             'group_sequel': {},  # 每个系列的可拍续集
 
@@ -57,9 +71,16 @@ class Script(ModelBase):
 
 
             # 各种最高收入排行
+<<<<<<< HEAD
             'top_script': {},  # 按剧本id
             'top_group': {},  # 按剧本系列 {gruop_id: film_info}
             'top_all': {},  # 单片票房最高
+=======
+            'top_script': {},               # 按剧本id
+            'top_group': {},                # 按剧本系列 {gruop_id: film_info}
+            'top_all': {},                  # 单片票房最高
+            'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
+>>>>>>> b10aab6966e6a8c6ea7a17ef7c680890c50c34ff
 
             # 最高系列票房总和
             'top_sequal': {},
@@ -114,6 +135,7 @@ class Script(ModelBase):
             if all_income > aoutput.get_score(uid=auid):
                 aoutput.add_rank(auid, all_income)
 
+            self.check_top_end_lv_card(cur_script)
             self.check_top_income(cur_script)
             self.cur_script = {}
             self.script_pool = {}
@@ -135,12 +157,25 @@ class Script(ModelBase):
         if save:
             self.save()
 
-    def get_group_sequel(self):
-        data = {}
-        for script_id in self.sequel_script:
-            script_config = game_config.script[script_id]
-            data[script_config['group']] = script_id
-        return data
+    def check_top_end_lv_card(self, cur_script):
+        """判断影片最大结算等级对应的演员表
+        :param cur_script:
+        :return:
+        """
+        script_id = cur_script['id']
+        if script_id not in self.top_end_lv_card:
+            self.top_end_lv_card[script_id] = {
+                'env_lv': cur_script['end_lv'],
+                'card': dict(cur_script['card'])
+            }
+        else:
+            last_script = self.top_env_lv_card[script_id]
+            if cur_script['env_lv'] > last_script['env_lv']:
+                last_script['env_lv'] = cur_script['env_lv']
+                last_script['card'] = {
+                    'env_lv': cur_script['end_lv'],
+                    'card': dict(cur_script['card'])
+                }
 
     def get_group_id_all_income(self, cur_script):
         '''
