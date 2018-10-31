@@ -86,7 +86,7 @@ def rank_index(hm):
         for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            group_id = umm.script.get_top_group_id()
+            group_id = umm.script.get_top_group_id_sequel()
             script_id = umm.script.top_sequal[group_id]['top_script']['id']
             if mm.uid == uid:
                 alloutput_rank_own_list.append({'uid': uid,
@@ -139,7 +139,7 @@ def get_group_info(hm):
         return 1, {}
     m_script = mm.script.get_max_script_by_group(int(group_id))
     return 0, {'group_info': mm.script.get_script_info(int(m_script)),
-               'group_id': mm.script.get_top_group_id(),
+               'group_id': mm.script.get_top_group_id_sequel(),
                'name': mm.user.name,
                'vip': mm.user.vip,
                'guild_name': mm.user.guild_name,
