@@ -12,13 +12,13 @@ from lib.utils import weight_choice
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
-    stage_id = data.get('stage_id',0)
-    star = data.get('star',0)
+    stage_id = data.get('stage_id', 0)
+    star = data.get('star', 0)
     target_sort_first = mission._CHAPTER_FIRST
     target_sort_num = mission._CHAPTER_NUM
-    return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
+    return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
                                 'star': star},
-            target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win',0) else 0, 'stage_id': stage_id,
+            target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
                               'star': star}, }
 
 
@@ -114,6 +114,7 @@ def scrip_get(hm, data, mission):
 # 购物
 def shop_args(hm, data, mission):
     return {mission._SHOP: {'target1': 0, 'value': 1}}
+
 
 # 剧本重写
 def script_rewrite(hm, data, mission):
@@ -212,7 +213,7 @@ class Mission(ModelBase):
             'liveness': 0,
             'box_office_done': [],
             'box_office_data': {},
-            'refresh_times':0,
+            'refresh_times': 0,
         }
         super(Mission, self).__init__(self.uid)
 
@@ -282,7 +283,7 @@ class Mission(ModelBase):
             now = int(time.time())
             del_dict = {}
             for k, v in self.random_data.iteritems():
-                if isinstance(k, (str,unicode)) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
+                if isinstance(k, (str, unicode)) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
                     while True:
                         mission_id = self.get_random_mission()
                         if mission_id in self.random_data or mission_id in del_dict:
@@ -294,7 +295,7 @@ class Mission(ModelBase):
                     self.random_data.pop(del_key)
                     self.random_data[add_key] = 0
 
-    def refresh_random_misstion(self,mission_id,is_save=False):
+    def refresh_random_misstion(self, mission_id, is_save=False):
         new_mission_id = mission_id
         while new_mission_id == mission_id or new_mission_id in self.random_data:
             new_mission_id = self.get_random_mission()
@@ -303,7 +304,6 @@ class Mission(ModelBase):
         self.refresh_times += 1
         if is_save:
             self.save()
-
 
     def get_random_mission(self):
         config = game_config.random_mission
@@ -359,7 +359,7 @@ class Mission(ModelBase):
                 self.guide.add_count(k, kwargs[sort])
 
         for k, value in self.random_data.iteritems():
-            if isinstance(k,(str,unicode)) and 'refresh_ts' in k:
+            if isinstance(k, (str, unicode)) and 'refresh_ts' in k:
                 continue
             sort = game_config.random_mission[k]['sort']
             if sort in kwargs:
@@ -424,9 +424,9 @@ class MissionDaily(ModelBase):
             script_type = game_config.script[value['target1']][type]
             if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
-                    self.data[mission_id] += value
+                    self.data[mission_id] += value['value']
                 else:
-                    self.data[mission_id] = value
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 2:
             target_data = self.config[mission_id]['target']
@@ -446,7 +446,7 @@ class MissionDaily(ModelBase):
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
-            star = value.get('star',0)
+            star = value.get('star', 0)
             type_hard = value['target1']
             if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
                 if mission_id in self.data:
@@ -485,11 +485,11 @@ class MissionGuide(ModelBase):
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
-                    self.data[mission_id] += value
+                    self.data[mission_id] += value['value']
                 else:
-                    self.data[mission_id] = value
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 2:
             target_data = self.config[mission_id]['target']
@@ -509,7 +509,7 @@ class MissionGuide(ModelBase):
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
-            star = value['star']
+            star = value.get('star', 0)
             type_hard = value['target1']
             if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
                 if mission_id in self.data:
@@ -524,6 +524,7 @@ class MissionGuide(ModelBase):
                 self.data[mission_id] += value['value']
             else:
                 self.data[mission_id] = value['value']
+
     def done_task(self, mission_id):
         """完成任务
         """
@@ -547,11 +548,11 @@ class MissionRandom(ModelBase):
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
-                    self.data[mission_id] += value
+                    self.data[mission_id] += value['value']
                 else:
-                    self.data[mission_id] = value
+                    self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == 2:
             target_data = self.config[mission_id]['target']
@@ -571,7 +572,7 @@ class MissionRandom(ModelBase):
 
         elif self.config[mission_id]['sort'] == 8:
             target_data = self.config[mission_id]['target']
-            star = value['star']
+            star = value.get('star', 0)
             type_hard = value['target1']
             if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
                 if mission_id in self.data:
