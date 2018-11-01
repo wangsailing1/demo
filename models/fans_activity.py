@@ -91,6 +91,7 @@ class FansActivity(ModelBase):
         item_produce['items'] = item_produce_new
         if get_reward:
             if now == all_time + value['start_time']:
+                self.delete_card_mapping(self.activity_log[activity_id]['cards'])
                 self.activity_log[activity_id] = {}
             else:
                 gold_produce['last_time'] = now - gold_remain_time
