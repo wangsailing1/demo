@@ -422,7 +422,7 @@ class MissionDaily(ModelBase):
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[1] and value['end_lv'] >= target_data[2]:
+            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value
                 else:
