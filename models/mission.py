@@ -157,7 +157,7 @@ class Mission(ModelBase):
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
         'script.finished_analyse': script_make,
         'chapter_stage.auto_sweep': chapter_stage_auto_args,
-        'script_gacha.receive': script_gacha,
+        'script_gacha.get_gacha': script_gacha,
         'gacha.receive': card_gacha,
         'card.card_level_up': card_lv,
         'friend.sent_gift': send_gift,
