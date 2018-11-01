@@ -31,6 +31,8 @@ def rank_index(hm):
             uid, group_id = uid_group_id.split('|')
             umm = ModelManager(uid)
             group_id = int(group_id)
+            if group_id not in umm.card.group_ids:
+                continue
             card_id = umm.card.group_ids[group_id]
             cid = int(card_id.split('-')[0])
             card_name = game_config.card_basis[cid]['name']
