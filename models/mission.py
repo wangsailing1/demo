@@ -156,7 +156,7 @@ class Mission(ModelBase):
     # 接口名到内置函数的映射
     _METHOD_FUNC_MAP = {
         'chapter_stage.chapter_stage_fight': chapter_stage_args,
-        'script.finished_analyse': script_make,
+        'script.finished_summary': script_make,
         'chapter_stage.auto_sweep': chapter_stage_auto_args,
         'script_gacha.get_gacha': script_gacha,
         'gacha.receive': card_gacha,
