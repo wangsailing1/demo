@@ -40,7 +40,8 @@ def chapter_stage_auto_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
     stage_id = data['stage_id']
     target_sort_num = mission._CHAPTER_NUM
-    return {target_sort_num: {'target1': type_hard, 'value': times, 'stage_id': stage_id}, }
+    return {target_sort_num: {'target1': type_hard, 'value': times, 'stage_id': stage_id,
+                              'star': 1}, }
 
 
 # 抽卡
