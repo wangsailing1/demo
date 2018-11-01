@@ -324,7 +324,7 @@ class Card(ModelBase):
         count_lv = cur_lv - card_config['last_lv']
 
         base_char_pro = card_config['char_pro']
-        grow_id = card_config['lv_growid']
+        grow_id = card_config['lovegrowid']
         grow_config = game_config.card_level_grow[grow_id]
 
         # 格调加成
@@ -347,7 +347,7 @@ class Card(ModelBase):
             else:
                 char_pro.append(base_pro)
 
-        # 羁绊属性加成, 所有属性加成百分比
+        # 羁绊属性加成, 所有属性加成万分比
         love_grow_config = game_config.card_love_grow[grow_id]
         grow_love = love_grow_config['grow_love']
 
@@ -373,8 +373,8 @@ class Card(ModelBase):
 
         all_char_pro = [char_pro[i] + card_info['train_ext_pro'][i] for i in range(6)]
 
-        char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
-        all_char_pro = [x * add_percent / 100 if x > 0 else x for x in all_char_pro]
+        char_pro = [x * (1 + add_percent / 10000.0) if x > 0 else x for x in char_pro]
+        all_char_pro = [x * (1 + add_percent / 10000.0) if x > 0 else x for x in all_char_pro]
         char_pro = [math.ceil(i) for i in char_pro]
         all_char_pro = [math.ceil(i) for i in all_char_pro]
         card_info['char_pro'] = char_pro
