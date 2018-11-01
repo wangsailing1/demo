@@ -324,7 +324,7 @@ class Card(ModelBase):
         count_lv = cur_lv - card_config['last_lv']
 
         base_char_pro = card_config['char_pro']
-        grow_id = card_config['lovegrowid']
+        grow_id = card_config['love_growid']
         grow_config = game_config.card_level_grow[grow_id]
 
         # 格调加成
