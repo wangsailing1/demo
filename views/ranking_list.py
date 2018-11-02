@@ -75,20 +75,25 @@ def rank_index(hm):
                 script_name = game_config.script[script_id]['name']
                 script_name = get_str_words(mm.user.language_sort, script_name)
 
-            if mm.uid == uid:
-                output_rank_own_list.append({'uid': uid,
-                                             'name': name,
-                                             'script_id': script_id,
-                                             'score': score,
-                                             'rank_own': ar.get_rank(uid),
-                                             'script_name': script_name})
             output_rank_list.append({'uid': uid,
                                      'name': name,
                                      'script_id': script_id,
                                      'score': score,
                                      'script_name': script_name})
+        if mm.script.top_all:
+            script_id = mm.script.top_all['id']
+            script_name = mm.script.top_all.get('name', '')
+            if not script_name:
+                script_name = game_config.script[script_id]['name']
+                script_name = get_str_words(mm.user.language_sort, script_name)
+            output_rank_own_list.append({'uid': mm.uid,
+                                         'name': mm.user.name,
+                                         'script_id': script_id,
+                                         'score': ar.get_score(mm.uid),
+                                         'rank_own': ar.get_rank(mm.uid),
+                                         'script_name': script_name})
         return 0, {
-            'rank_list': output_rank_list[start - 1:end],
+            'rank_list': output_rank_list,
             'rank_own': output_rank_own_list,
         }
 
@@ -101,15 +106,7 @@ def rank_index(hm):
             if not group_id:
                 continue
             script_id = umm.script.top_sequal[group_id]['top_script']['id']
-            if mm.uid == uid:
-                alloutput_rank_own_list.append({'uid': uid,
-                                                'name': name,
-                                                'group_id': group_id,
-                                                'score': score,
-                                                'script_id': script_id,
-                                                'rank_own': ar.get_rank(uid),
-                                                'group_name': game_config.script_group_object.get(group_id, {}).get(
-                                                    'name', '')})
+
             alloutput_rank_list.append({'uid': uid,
                                         'name': name,
                                         'script_id': script_id,
@@ -117,9 +114,20 @@ def rank_index(hm):
                                         'score': score,
                                         'group_name': game_config.script_group_object.get(group_id, {}).get('name',
                                                                                                             '')})
+        group_id = mm.script.get_top_group_id_sequel()
+        script_id = mm.script.top_sequal.get(group_id,{}).get('top_script',{}).get('id',0)
+        if script_id:
+            alloutput_rank_own_list.append({'uid': mm.uid,
+                                            'name': mm.user.name,
+                                            'group_id': group_id,
+                                            'score': ar.get_score(mm.uid),
+                                            'script_id': script_id,
+                                            'rank_own': ar.get_rank(mm.uid),
+                                            'group_name': game_config.script_group_object.get(group_id, {}).get(
+                                                'name', '')})
 
         return 0, {
-            'rank_list': alloutput_rank_list[start - 1:end],
+            'rank_list': alloutput_rank_list,
             'rank_own': alloutput_rank_own_list
         }
 
