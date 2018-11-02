@@ -151,6 +151,7 @@ card_quality = {
     'uk': ('level', 'int'),  #
     'name': ('name', 'int'),  # 名字
     'color': ('color', 'str'),
+    'train_count': ('train_count', 'int'),
 }
 
 # 卡牌取消雪藏消耗
