@@ -307,8 +307,8 @@ class Card(ModelBase):
         :param card_oid:
         :return:
         """
-        if not self.has_hero(card_oid):
-            return False
+        # if not self.has_hero(card_oid):
+        #     return False
 
         self.cards.pop(card_oid)
 
