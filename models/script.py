@@ -66,7 +66,6 @@ class Script(ModelBase):
 
             # 各种最高收入排行
             'top_script': {},               # 按剧本id
-            'top_group': {},                # 按剧本系列 {gruop_id: film_info}
             'top_all': {},                  # 单片票房最高
             'top_end_lv_card': {},          # 剧本最高结算等级对应的演员列表 {script_id: {'env_lv': 1, 'card': {roleid: cardid}}}
 
