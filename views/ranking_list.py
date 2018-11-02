@@ -208,7 +208,7 @@ def block_index(hm):
     br = BlockRank(block_rank_uid, mm.block._server_name)
     date = get_date()
 
-    rank_list = br.get_all_user(withscores=True)
+    rank_list = br.get_all_user(withscores=True,start=start,end=end)
 
     script_list = []
     income_list = []
@@ -226,22 +226,25 @@ def block_index(hm):
             script_id = int(script_id)
             name = umm.user.name
             script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
-            if mm.uid in uid_script_id:
-                rank_own_list.append({'uid': uid,
-                                      'name': name,
-                                      'script_id': script_id,
-                                      'score': score,
-                                      'role': umm.user.role,
-                                      'rank_own': br.get_rank(uid_script_id),
-                                      'script_name': script_name})
+
             script_list.append({'uid': uid,
                                 'name': name,
                                 'script_id': script_id,
                                 'score': score,
                                 'role': umm.user.role,
                                 'script_name': script_name})
+        for script_id,value in mm.block.top_script.get(date, {}).iteritems():
+            uid_script_id = '%s_%s'%(mm.uid,script_id)
+            script_name = mm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+            rank_own_list.append({'uid': mm.uid,
+                                  'name': mm.user.name,
+                                  'script_id': script_id,
+                                  'score': br.get_score(uid_script_id),
+                                  'role': mm.user.role,
+                                  'rank_own': br.get_rank(uid_script_id),
+                                  'script_name': script_name})
         return 0, {
-            'rank_list': script_list[start - 1:end],
+            'rank_list': script_list,
             'rank_own': rank_own_list,
             'own_info': own_info
         }
@@ -250,19 +253,19 @@ def block_index(hm):
         for uid, score in rank_list:
             umm = ModelManager(uid)
             name = umm.user.name
-            if mm.uid == uid:
-                income_rank_own_list.append({'uid': uid,
-                                             'role': umm.user.role,
-                                             'name': name,
-                                             'score': score,
-                                             'rank_own': br.get_rank(uid), })
+
             income_list.append({'uid': uid,
                                 'role': umm.user.role,
                                 'name': name,
                                 'score': score, })
+        income_rank_own_list.append({'uid': mm.uid,
+                                     'role': mm.user.role,
+                                     'name': mm.user.name,
+                                     'score': br.get_score(mm.uid),
+                                     'rank_own': br.get_rank(mm.uid), })
 
         return 0, {
-            'rank_list': income_list[start - 1:end],
+            'rank_list': income_list,
             'rank_own': income_rank_own_list,
             'own_info': own_info
         }
