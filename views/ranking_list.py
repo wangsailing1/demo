@@ -58,7 +58,7 @@ def rank_index(hm):
                                   'card_name': card_name})
         return 0, {
             'rank_list': appeal_rank_list,
-            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'])
+            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'],reverse=True)
         }
 
     elif rank_id == 2:
