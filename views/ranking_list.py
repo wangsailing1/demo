@@ -19,7 +19,7 @@ def rank_index(hm):
         end = 100
     ar = mm.get_obj_tools(rank_mapping[rank_id])
 
-    rank_list = ar.get_all_user(withscores=True,start=start,end=end)
+    rank_list = ar.get_all_user(withscores=True, start=start, end=end)
 
     appeal_rank_list = []
     output_rank_list = []
@@ -42,8 +42,8 @@ def rank_index(hm):
                                      'group_id': group_id,
                                      'score': score,
                                      'card_name': card_name})
-        for group_id ,card_id in mm.card.group_ids.iteritems():
-            uid_group_id = mm.uid + '|' + group_id
+        for group_id, card_id in mm.card.group_ids.iteritems():
+            uid_group_id = '%s|%s' % (mm.uid, group_id)
             rank = ar.get_rank(uid_group_id)
             if rank == -1:
                 continue
@@ -106,7 +106,7 @@ def rank_index(hm):
                                                 'name': name,
                                                 'group_id': group_id,
                                                 'score': score,
-                                                'script_id':script_id,
+                                                'script_id': script_id,
                                                 'rank_own': ar.get_rank(uid),
                                                 'group_name': game_config.script_group_object.get(group_id, {}).get(
                                                     'name', '')})
