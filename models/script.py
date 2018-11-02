@@ -171,10 +171,14 @@ class Script(ModelBase):
         min_expire = 0
         has_reward = False
         for oid, info in self.continued_script.iteritems():
-            expire = info['continued_expire'] - info['continued_start']
+            has_reward = has_reward or (now - info['continued_start']) >= 60    # 按分钟恢复
+
+            expire = info['continued_expire'] - now
+            if expire < 0:
+                continue
+            # expire = info['continued_expire'] - info['continued_start']
             if not min_expire or expire < min_expire:
                 min_expire = expire
-            has_reward = has_reward or (now - info['continued_start']) >= 60    # 按分钟恢复
 
         return {
             'count': len(self.continued_script),
