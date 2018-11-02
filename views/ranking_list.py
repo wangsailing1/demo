@@ -19,7 +19,7 @@ def rank_index(hm):
         end = 100
     ar = mm.get_obj_tools(rank_mapping[rank_id])
 
-    rank_list = ar.get_all_user(withscores=True, start=start, end=end)
+    rank_list = ar.get_all_user(withscores=True, start=start - 1, end=end - 1)
 
     appeal_rank_list = []
     output_rank_list = []
@@ -35,7 +35,7 @@ def rank_index(hm):
                 continue
             card_id = umm.card.group_ids[group_id]
             cid = int(card_id.split('-')[0])
-            card_name = game_config.card_basis[cid]['name']
+            card_name = umm.card.cards[card_id]['name'] or game_config.card_basis[cid]['name']
             name = umm.user.name
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
@@ -48,7 +48,7 @@ def rank_index(hm):
             if not rank:
                 continue
             cid = int(card_id.split('-')[0])
-            card_name = game_config.card_basis[cid]['name']
+            card_name = mm.card.cards[card_id]['name'] or game_config.card_basis[cid]['name']
             score = ar.get_score(uid_group_id)
             rank_own_list.append({'uid': mm.uid,
                                   'name': mm.user.name,
@@ -58,7 +58,7 @@ def rank_index(hm):
                                   'card_name': card_name})
         return 0, {
             'rank_list': appeal_rank_list,
-            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'],reverse=True)
+            'rank_own': sorted(rank_own_list, key=lambda x: x['rank_own'])
         }
 
     elif rank_id == 2:
@@ -115,7 +115,7 @@ def rank_index(hm):
                                         'group_name': game_config.script_group_object.get(group_id, {}).get('name',
                                                                                                             '')})
         group_id = mm.script.get_top_group_id_sequel()
-        script_id = mm.script.top_sequal.get(group_id,{}).get('top_script',{}).get('id',0)
+        script_id = mm.script.top_sequal.get(group_id, {}).get('top_script', {}).get('id', 0)
         if script_id:
             alloutput_rank_own_list.append({'uid': mm.uid,
                                             'name': mm.user.name,
@@ -191,7 +191,6 @@ def get_user_info(hm):
         'role': mm.user.role}
 
 
-
 def block_index(hm):
     """
     rank_id:1单片票房，2总排行
@@ -209,7 +208,7 @@ def block_index(hm):
     br = BlockRank(block_rank_uid, mm.block._server_name)
     date = get_date()
 
-    rank_list = br.get_all_user(withscores=True,start=start,end=end)
+    rank_list = br.get_all_user(withscores=True, start=start - 1, end=end - 1)
 
     script_list = []
     income_list = []
@@ -234,8 +233,8 @@ def block_index(hm):
                                 'score': score,
                                 'role': umm.user.role,
                                 'script_name': script_name})
-        for script_id,value in mm.block.top_script.get(date, {}).iteritems():
-            uid_script_id = '%s_%s'%(mm.uid,script_id)
+        for script_id, value in mm.block.top_script.get(date, {}).iteritems():
+            uid_script_id = '%s_%s' % (mm.uid, script_id)
             script_name = mm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
             rank_own_list.append({'uid': mm.uid,
                                   'name': mm.user.name,
@@ -246,7 +245,7 @@ def block_index(hm):
                                   'script_name': script_name})
         return 0, {
             'rank_list': script_list,
-            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'],reverse=True),
+            'rank_own': sorted(rank_own_list, key=lambda x: x['rank_own']),
             'own_info': own_info
         }
     elif rank_id == 2:
