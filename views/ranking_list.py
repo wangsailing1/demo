@@ -35,7 +35,7 @@ def rank_index(hm):
                 continue
             card_id = umm.card.group_ids[group_id]
             cid = int(card_id.split('-')[0])
-            card_name = game_config.card_basis[cid]['name']
+            card_name = umm.card.cards[card_id]['name'] or game_config.card_basis[cid]['name']
             name = umm.user.name
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
@@ -48,7 +48,7 @@ def rank_index(hm):
             if not rank:
                 continue
             cid = int(card_id.split('-')[0])
-            card_name = game_config.card_basis[cid]['name']
+            card_name = mm.card.cards[card_id]['name'] or game_config.card_basis[cid]['name']
             score = ar.get_score(uid_group_id)
             rank_own_list.append({'uid': mm.uid,
                                   'name': mm.user.name,
