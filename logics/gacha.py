@@ -139,4 +139,5 @@ class GachaLogics(object):
 
         self.gacha.coin_gacha_time = 0
         self.gacha.save()
-        return self.gacha_index()
+        data = self.gacha_index()
+        return 0, data
