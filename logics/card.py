@@ -272,7 +272,7 @@ class CardLogic(object):
         cur_equips = card_dict.setdefault('equips', [])
         for equip_id in equip_ids:
             if equip_id not in cost:
-                return 1, {}        # 不是所需装备
+                return 4, {}        # 不是所需装备
             if equip_id in cur_equips:
                 return 2, {}    # 已有此类装备
             if len(cur_equips) >= len(cost):
