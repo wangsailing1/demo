@@ -410,6 +410,7 @@ mission_msg = {
     },
     'mission.refresh_mission': {
         1: u'刷新次数不足',
+        2: u'任务id未在任务中',
     },
 }
 
