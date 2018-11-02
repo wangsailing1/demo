@@ -89,6 +89,8 @@ def rank_index(hm):
             umm = ModelManager(uid)
             name = umm.user.name
             group_id = umm.script.get_top_group_id_sequel()
+            if not group_id:
+                continue
             script_id = umm.script.top_sequal[group_id]['top_script']['id']
             if mm.uid == uid:
                 alloutput_rank_own_list.append({'uid': uid,
