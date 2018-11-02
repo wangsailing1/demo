@@ -109,7 +109,7 @@ class Script(ModelBase):
 
             continued_income = continued_lv_config['parm'] * all_income / 100
             continued_time = game_config.common[19]
-            continued_income_unit = continued_income / (continued_time * 60)
+            continued_income_unit = continued_income / continued_time
 
             now = int(time.time())
             cur_script['continued_lv'] = continued_lv
@@ -474,7 +474,7 @@ class Script(ModelBase):
             'continued_start': 0,  # 持续收入开始时间
             'continued_expire': 0,  # 持续收入结束时间
             'continued_income': 0,  # 已领取持续收入
-            'continued_income_unit': 0,  # 持续收入 每秒收入数
+            'continued_income_unit': 0,  # 持续收入 每分钟收入数
 
             'attention': 0,  # 关注度
             'audience': 0,  # 观众

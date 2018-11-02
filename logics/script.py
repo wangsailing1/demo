@@ -818,7 +818,13 @@ class ScriptLogic(object):
             return rc, {}
 
         now = int(time.time())
-        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
 
@@ -827,11 +833,11 @@ class ScriptLogic(object):
 
         continued_income = continued_lv_config['parm'] * all_income / 100
         continued_time = game_config.common[19]
-        continued_income_unit = continued_income / (continued_time * 60)
+        continued_income_unit = continued_income / continued_time
 
         script_info['continued_lv'] = continued_lv + 1
         script_info['continued_income_unit'] = continued_income_unit
-        script_info['continued_start'] = now
+        script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)
@@ -852,10 +858,16 @@ class ScriptLogic(object):
         if now >= script_info['continued_expire']:
             now = script_info['continued_expire']
 
-        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
-        script_info['continued_start'] = now
+        script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)
