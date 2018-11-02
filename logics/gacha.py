@@ -64,6 +64,8 @@ class GachaLogics(object):
         sort = 0
 
         if sort == 0:
+            if self.gacha.coin_pool_expire():
+                return 2, {}
             cost_type = 'coin'
             gacha_pool, _ = self.get_coin_gacha()
             if not gacha_pool:
