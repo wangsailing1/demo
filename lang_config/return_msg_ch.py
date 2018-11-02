@@ -200,6 +200,11 @@ card_msg = {
 
 
 script_msg = {
+    'script.set_card': {
+        2: u'已选完角色',
+        3: u'演员与角色设置不可重复',
+        4: u'请选角色',
+    },
     'script_gacha.get_gacha': {
         1: u'可抽取次数不足'
     }

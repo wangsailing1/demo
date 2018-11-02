@@ -151,6 +151,8 @@ class ScriptLogic(object):
             used_role.add(role)
             cur_script['card'][role] = card_id
 
+        if not used_role:
+            return 4, {}
         if not user.is_dollar_enough(cost):
             return 'error_dollar', {}
 
