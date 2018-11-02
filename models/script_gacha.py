@@ -56,6 +56,8 @@ class ScriptGacha(ModelBase):
                 self.coin_update_time += recover_need_time
 
                 recover_need_time = self.recover_need_time()
+                if not recover_need_time:
+                    break
                 div, mod = divmod(now - self.coin_update_time, recover_need_time)
 
             if not self.can_recover_coin_times():
@@ -65,6 +67,10 @@ class ScriptGacha(ModelBase):
         return game_config.common[41]
 
     def can_recover_coin_times(self):
+        gacha_cd = game_config.script_gacha_cd.get('cd', [])
+        if self.coin_recover_times >= len(gacha_cd):
+            return False
+
         return self.coin_left_times < self.coin_gacha_times_limit()
 
     def recover_need_time(self):
@@ -72,10 +78,10 @@ class ScriptGacha(ModelBase):
         if not game_config.script_gacha_cd:
             return 0
         gacha_cd = game_config.script_gacha_cd['cd']
-        idx = self.coin_recover_times
-        if idx >= len(gacha_cd):
-            idx = -1
-        return gacha_cd[idx] * 60
+        times = self.coin_recover_times
+        if times >= len(gacha_cd):
+            times = -1
+        return gacha_cd[times] * 60
 
     def recover_expire(self):
         """恢复倒计时"""
@@ -86,11 +92,11 @@ class ScriptGacha(ModelBase):
             return 0
 
         gacha_cd = game_config.script_gacha_cd['cd']
-        idx = self.coin_recover_times
-        if idx >= len(gacha_cd):
+        times = self.coin_recover_times
+        if times >= len(gacha_cd):
             return 0
 
-        need_time = gacha_cd[idx] * 60
+        need_time = gacha_cd[times] * 60
         return need_time - (int(time.time()) - self.coin_update_time)
 
     def gacha_times_enough(self, gacha_type=1):
