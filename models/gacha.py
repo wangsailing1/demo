@@ -73,7 +73,7 @@ class Gacha(ModelBase):
         while 1:
             if next_lv + 1 not in game_config.coin_gacha_lv:
                 break
-            if next_times >= game_config.coin_gacha_lv[next_lv]['count']:
+            if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
                 next_lv += 1
         self.coin_times = next_times
         self.coin_lv = next_lv
