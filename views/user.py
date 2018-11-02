@@ -68,7 +68,7 @@ def main(hm):
     result['has_ceremony'] = mm.block.has_ceremony
     result['ceremony_remain_time'] = mm.block.get_remain_time()
     mission = Mission(mm)
-    result['box_office'] = mission.mission_index(2)
+    result['box_office'] = mission.mission_index(2)['box_office']
 
     return 0, result
 
