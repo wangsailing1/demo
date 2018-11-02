@@ -157,8 +157,30 @@ class Script(ModelBase):
         for script_id, info in self.top_script.iteritems():
             script_config = game_config.script[info['id']]
             group_id = script_config['group']
-            data.setdefault(group_id, []).append(info)
-        return {k: max(v, key=lambda x: x['finished_summary']['income']) for k, v in data.iteritems()}
+            if group_id not in data:
+                data[group_id] = info
+            elif info['finished_summary']['income'] > data[group_id]['finished_summary']['income']:
+                data[group_id] = info
+        return data
+
+    def script_continued_summary(self):
+        """持续收入片子信息统计
+        :return:
+        """
+        now = int(time.time())
+        min_expire = 0
+        has_reward = False
+        for oid, info in self.continued_script.iteritems():
+            expire = info['continued_expire'] - info['continued_start']
+            if not min_expire or expire < min_expire:
+                min_expire = expire
+            has_reward = has_reward or (now - info['continued_start']) >= 60    # 按分钟恢复
+
+        return {
+            'count': len(self.continued_script),
+            'min_expire': min_expire,
+            'has_reward': has_reward,
+        }
 
     def check_top_end_lv_card(self, cur_script):
         """判断影片最大结算等级对应的演员表

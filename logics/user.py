@@ -85,6 +85,8 @@ class UserLogic(object):
         result['server_open_time'] = serverM.get_server_config(self.mm.user._server_name)['open_time']
         result['question_done'] = self.user.question_done
 
+        result['script_continued_summary'] = self.mm.script.script_continued_summary()
+
         # 竞技场第一
         high_ladder_top_one_info = self.get_high_ladder_top_one()
         result.update(high_ladder_top_one_info)
