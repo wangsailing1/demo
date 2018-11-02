@@ -500,7 +500,7 @@ class ScriptLogic(object):
         min_score = game_config.common[38] / 10.0
         if score < min_score:
             score = min_score
-        score = round(score, 2)
+        score = min(round(score, 2), game_config.common[43])
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
         return {'score': score, 'like': int(score * like_rate)}
@@ -526,7 +526,7 @@ class ScriptLogic(object):
         min_score = game_config.common[39] / 10.0
         if score < min_score:
             score = min_score
-        score = round(score, 1)
+        score = min(round(score, 1), game_config.common[43])
         audi_grade = score * 100
 
         star = 0
