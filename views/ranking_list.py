@@ -58,7 +58,7 @@ def rank_index(hm):
                                   'card_name': card_name})
         return 0, {
             'rank_list': appeal_rank_list,
-            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'],reverse=True)
+            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'])
         }
 
     elif rank_id == 2:
@@ -246,7 +246,7 @@ def block_index(hm):
                                   'script_name': script_name})
         return 0, {
             'rank_list': script_list,
-            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'],reverse=True),
+            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own']),
             'own_info': own_info
         }
     elif rank_id == 2:
