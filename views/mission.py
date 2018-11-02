@@ -22,16 +22,16 @@ def get_reward(hm):
     if tp_id == 5:
         config = game_config.liveness_reward[mission_id]
         if mission_id in mm.mission.live_done:
-            return 3, {}  #已领
-        if  mission.get_status_liveness()['liveness'] < config['need_liveness']:
-            return 4, {}  #未完成
+            return 3, {}  # 已领
+        if mission.get_status_liveness()['liveness'] < config['need_liveness']:
+            return 4, {}  # 未完成
         gift = config['reward']
-        reward = add_mult_gift(mm,gift)
+        reward = add_mult_gift(mm, gift)
         mm.mission.live_done.append(mission_id)
         mm.mission.save()
         data = mission.mission_index()
         data['reward'] = reward
-        return 0,data
+        return 0, data
     m_type = mm.mission.MISSIONMAPPING[tp_id]
     if not tp_id or not mission_id:
         return 1, {}  # 参数错误
@@ -49,22 +49,23 @@ def get_reward(hm):
             mm.mission.get_all_random_mission()
         else:
             mm.mission.get_guide_mission()
-    reward = add_mult_gift(mm,gift)
+    reward = add_mult_gift(mm, gift)
     mm.mission.save()
-    data = mission.mission_index()
+    if tp_id == 2:
+        data = mission.mission_index(tp_id=2)
+    else:
+        data = mission.mission_index()
     data['reward'] = reward
     return 0, data
+
 
 def refresh_mission(hm):
     mm = hm.mm
     mission = Mission(mm)
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
-    if mm.mission.refresh_times >= game_config.common.get(42,2):
-        return 1, {}  #刷新次数不足
+    if mm.mission.refresh_times >= game_config.common.get(42, 2):
+        return 1, {}  # 刷新次数不足
     mm.mission.refresh_random_misstion(mission_id)
     data = mission.mission_index(is_save=False)
     mm.mission.save()
     return 0, data
-
-
-
