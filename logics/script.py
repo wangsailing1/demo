@@ -43,14 +43,17 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def get_recommend_card(self, script_id):
+        return self.mm.script.top_end_lv_card.get(script_id, {})
+
     def index(self):
         script = self.mm.script
 
         return 0, {
-            'top_end_lv_card': script.top_end_lv_card,
+            'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
 
-            'own_script': script.own_script,
-            'sequel_script': script.group_sequel.values(),
+            # 'own_script': script.own_script,
+            # 'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
@@ -313,33 +316,40 @@ class ScriptLogic(object):
         # partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数 +
         # （气质/含气质属性的角色数量/气质基准系数）^ 属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
         base_a = 0
+        pro_count = 0
         for pro_id in [art_pro_id, temperament_pro_id]:
             # 系数为 0 表示无此属性不生效
-            if not standard_attr[pro_id_mapping[pro_id]]:
+            if not standard_attr[pro_id_mapping[pro_id]] > 0:
                 continue
+            else:
+                pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
             base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
-        part_a = (base_a / len(role_count_by_attr)) * (1 + skilled_lv_addition)
+        part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
 
         # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
         # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
         # （歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+
         # （演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
         base_b = 0
+        pro_count = 0
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
             # 系数为 0 表示无此属性不生效
-            if not standard_attr[pro_id_mapping[pro_id]]:
+            if not standard_attr[pro_id_mapping[pro_id]] > 0:
                 continue
+            else:
+                pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
             base_b += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) ** attr_rate
-        part_b = (base_b / len(role_count_by_attr)) * (1 + skilled_lv_addition)
+        part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
 
+        min_part = game_config.common[37] / 10.0
         return {
             'add_attr': add_attr,
-            'part_a': part_a,
-            'part_b': part_b,
+            'part_a': max(min_part, part_a),
+            'part_b': max(min_part, part_b),
         }
 
     # 3.计算影片关注度
@@ -447,14 +457,20 @@ class ScriptLogic(object):
         part_b = finished_attr.get('part_b', 0)
 
         # first_income = random.randint(1000, 10000)
+        lv_attentions = [(lv, v['max_attention']) for lv, v in game_config.attention_level.items()]
+        lv_attentions.sort()
+        lv_idx = bisect.bisect_left([x[1] for x in lv_attentions], attention)
+        if lv_idx >= len(lv_attentions):
+            lv_idx = -1
+        attention_lv = lv_attentions[lv_idx][0]
 
         z = game_config.common[9]
-        first_income = script_config['output'] * (1 + attention/10.0) * (part_a + part_b) / z
+        first_income = script_config['output'] * (1 + attention_lv/10.0) * (part_a + part_b) / 2 / z
         first_income = int(first_income)
-        # 如果作品类型是电视剧、综艺节目
-        if script_config['type'] != 1:
-            first_income = 1.0 * first_income / game_config.common[11]
-            first_income = round(first_income, 4)
+        # 如果作品类型是电视剧、综艺节目, 让前端算 区分展示单位
+        # if script_config['type'] != 1:
+        #     first_income = 1.0 * first_income / game_config.common[11]
+        #     first_income = round(first_income, 4)
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
@@ -472,16 +488,19 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         finished_attr = cur_script['finished_attr']
-        part_a = float(max(1.0, finished_attr.get('part_a', 0)))
+        hard_rate = script_config['hard_rate']
+        part_a = finished_attr.get('part_a', 0)
+        if part_a < 1:
+            hard_rate = 1
         score_rate = game_config.common[12]
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
-        score = part_a / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        score = part_a / hard_rate * score_rate + suit_config['rate'] / 10.0
         # 保底值
         min_score = game_config.common[38] / 10.0
         if score < min_score:
             score = min_score
-        score = round(score, 2)
+        score = min(round(score, 2), game_config.common[43])
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
         return {'score': score, 'like': int(score * like_rate)}
@@ -495,16 +514,19 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         finished_attr = cur_script['finished_attr']
-        part_b = float(max(1.0, finished_attr.get('part_b', 0)))
+        hard_rate = script_config['hard_rate']
+        part_b = finished_attr.get('part_b', 0)
+        if part_b < 1:
+            hard_rate = 1
         score_rate = game_config.common[13]
         suit_config = game_config.script_style_suit[cur_script['suit']]
 
-        score = part_b / script_config['hard_rate'] * score_rate + suit_config['rate'] / 10.0
+        score = part_b / hard_rate * score_rate + suit_config['rate'] / 10.0
         # 保底值
         min_score = game_config.common[39] / 10.0
         if score < min_score:
             score = min_score
-        score = round(score, 1)
+        score = min(round(score, 1), game_config.common[43])
         audi_grade = score * 100
 
         star = 0
@@ -796,7 +818,13 @@ class ScriptLogic(object):
             return rc, {}
 
         now = int(time.time())
-        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
 
@@ -805,11 +833,11 @@ class ScriptLogic(object):
 
         continued_income = continued_lv_config['parm'] * all_income / 100
         continued_time = game_config.common[19]
-        continued_income_unit = continued_income / (continued_time * 60)
+        continued_income_unit = continued_income / continued_time
 
         script_info['continued_lv'] = continued_lv + 1
         script_info['continued_income_unit'] = continued_income_unit
-        script_info['continued_start'] = now
+        script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)
@@ -830,10 +858,16 @@ class ScriptLogic(object):
         if now >= script_info['continued_expire']:
             now = script_info['continued_expire']
 
-        last_dollar = (now - script_info['continued_start']) * script_info['continued_income_unit']
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
-        script_info['continued_start'] = now
+        script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
 
         self.mm.user.add_dollar(last_dollar)

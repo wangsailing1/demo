@@ -188,8 +188,11 @@ class User(ModelBase):
             'dollar': 0,            # 美元
             'script_income': 0,            # 拍片总票房
             'script_license': 0,    # 拍片许可证
-            'used_license_times': 0,  # 许可证当日使用次数
-            'attention':{},
+            'license_update_time': int(time.time()),    # 拍片许可证恢复时间
+            'license_recover_times': 0,          # 许可证当日恢复次数
+            'used_license_times': 0,             # 许可证当日使用次数
+
+            'attention': {},
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,
@@ -385,6 +388,7 @@ class User(ModelBase):
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
+            self.license_recover_times = 0
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -399,8 +403,55 @@ class User(ModelBase):
             self.donate_cooling_time = 0
             self.donate_times = 0
             is_save = True
+
+        # 许可证恢复
+        recover_need_time = self.license_recover_need_time()
+        if recover_need_time:
+            div, mod = divmod(now - self.license_update_time, recover_need_time)
+            while div and self.can_recover_license_times():
+                self.script_license += 1
+                self.license_recover_times += 1
+                self.license_update_time += recover_need_time
+
+                recover_need_time = self.license_recover_need_time()
+                if not recover_need_time:
+                    break
+                div, mod = divmod(now - self.license_update_time, recover_need_time)
+
+            if not self.can_recover_license_times():
+                self.license_update_time = now
+
         if is_save:
             self.save()
+
+    def license_recover_need_time(self):
+        cd = game_config.script_license.get('cd', [])
+        if not cd:
+            return 0
+        times = self.license_recover_times
+        if times >= len(cd):
+            times = -1
+        return cd[times] * 60
+
+    def can_recover_license_times(self):
+        gacha_cd = game_config.script_license.get('cd', [])
+        return self.license_recover_times < len(gacha_cd)
+
+    def license_recover_expire(self):
+        """恢复倒计时"""
+        if not game_config.script_license:
+            return 0
+
+        if not self.can_recover_license_times():
+            return 0
+
+        cd = game_config.script_license['cd']
+        times = self.license_recover_times
+        if times >= len(cd):
+            return 0
+
+        need_time = cd[times] * 60
+        return need_time - (int(time.time()) - self.license_update_time)
 
     def add_buy_silver_times(self, num=1):
         """

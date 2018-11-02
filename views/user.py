@@ -13,6 +13,7 @@ from models.user import GSMessage
 from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
+from logics.mission import Mission
 
 
 def main(hm):
@@ -66,6 +67,8 @@ def main(hm):
     result['get_award_ceremony'] = mm.block.get_award_ceremony
     result['has_ceremony'] = mm.block.has_ceremony
     result['ceremony_remain_time'] = mm.block.get_remain_time()
+    mission = Mission(mm)
+    result['box_office'] = mission.mission_index(2)['box_office']
 
     return 0, result
 

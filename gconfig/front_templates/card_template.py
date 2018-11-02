@@ -50,6 +50,7 @@ card_basis = {
     'crit_rate_base': ('crit_rate_base', 'int'),  # 基础暴击率
     'ex_special_rate': ('ex_special_rate', 'int'),  # 额外触发概率( 万分比）
     'special_quality': ('special_quality', 'int_list'),  # 艺术/娱乐触发权重
+    'last_lv': ('last_lv', 'int'),  # 艺术/娱乐触发权重
 
 }
 

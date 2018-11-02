@@ -320,8 +320,11 @@ class Card(ModelBase):
         cur_lv = card_info['lv']
 
         card_config = game_config.card_basis[card_info['id']]
+        #count_lv 用于计算格调成长等级
+        count_lv = cur_lv - card_config['last_lv']
+
         base_char_pro = card_config['char_pro']
-        grow_id = card_config['lv_growid']
+        grow_id = card_config['love_growid']
         grow_config = game_config.card_level_grow[grow_id]
 
         # 格调加成
@@ -331,7 +334,9 @@ class Card(ModelBase):
             if base_pro > 0:
                 lv_grow_add = 0
                 # 公式确定后可以优化，只是奇偶数取不同列的话 复杂度可以做成常量的
-                for lv in xrange(2, cur_lv + 1):
+                for lv in xrange(1, count_lv + 1):
+                    if cur_lv == 1:
+                        continue
                     if lv % 2:
                         pro_grow_add = grow_config['pro_grow_odd'][idx]
                     else:
@@ -342,7 +347,7 @@ class Card(ModelBase):
             else:
                 char_pro.append(base_pro)
 
-        # 羁绊属性加成, 所有属性加成百分比
+        # 羁绊属性加成, 所有属性加成万分比
         love_grow_config = game_config.card_love_grow[grow_id]
         grow_love = love_grow_config['grow_love']
 
@@ -368,8 +373,8 @@ class Card(ModelBase):
 
         all_char_pro = [char_pro[i] + card_info['train_ext_pro'][i] for i in range(6)]
 
-        char_pro = [x * add_percent / 100 if x > 0 else x for x in char_pro]
-        all_char_pro = [x * add_percent / 100 if x > 0 else x for x in all_char_pro]
+        char_pro = [x * (1 + add_percent / 10000.0) if x > 0 else x for x in char_pro]
+        all_char_pro = [x * (1 + add_percent / 10000.0) if x > 0 else x for x in all_char_pro]
         char_pro = [math.ceil(i) for i in char_pro]
         all_char_pro = [math.ceil(i) for i in all_char_pro]
         card_info['char_pro'] = char_pro

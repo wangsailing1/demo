@@ -23,7 +23,7 @@ script = {
     'group': ('group', 'int'),  # 组id
     'story': ('story', 'int'),  # 说明
     'icon': ('icon', 'str'),  # 图标
-    'background': ('background', 'int'),  # 拍摄场景
+    'background': ('background', 'str'),  # 拍摄场景
     'music': ('music', 'int'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
     'style_effect': ('style_effect', 'int_list'),  # 最佳类型

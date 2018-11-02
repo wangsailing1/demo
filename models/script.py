@@ -39,7 +39,7 @@ class Script(ModelBase):
                 },
             top_end_lv_card: {
                 script_id: {
-                    'env_lv: 1,
+                    'end_lv: 1,
                     'card': {
                         role_id: card_oid
                     }
@@ -81,13 +81,17 @@ class Script(ModelBase):
     def pre_use(self):
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
-        if self.cur_script:
-            if 'finished_step' not in self.cur_script:
-                self.cur_script['finished_step'] = 0
-            for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
-                      'finished_first_income', 'finished_summary']:
-                if k not in self.cur_script:
-                    self.cur_script[k] = {}
+        # if self.cur_script:
+        #     if 'finished_step' not in self.cur_script:
+        #         self.cur_script['finished_step'] = 0
+        #     for k in ['finished_common_reward', 'finished_attr', 'finished_attention',
+        #               'finished_first_income', 'finished_summary']:
+        #         if k not in self.cur_script:
+        #             self.cur_script[k] = {}
+
+        for k, v in self.top_end_lv_card.items():
+            if 'env_lv' in v:
+                v['end_lv'] = v.pop('env_lv')
 
         save = False
         # todo 拍摄完的片子结算 9 是票房分析，目前流程没有
@@ -104,9 +108,9 @@ class Script(ModelBase):
             continued_lv = end_lv_config['continued_level']
             continued_lv_config = game_config.script_continued_level[continued_lv]
 
-            continued_income = continued_lv_config['parm'] * all_income
+            continued_income = continued_lv_config['parm'] * all_income / 100
             continued_time = game_config.common[19]
-            continued_income_unit = continued_income / (continued_time * 60)
+            continued_income_unit = continued_income / continued_time
 
             now = int(time.time())
             cur_script['continued_lv'] = continued_lv
@@ -145,6 +149,40 @@ class Script(ModelBase):
         if save:
             self.save()
 
+    @property
+    def top_group(self):
+        """按剧本系列 {gruop_id: film_info}
+        :return:
+        """
+        data = {}
+        for script_id, info in self.top_script.iteritems():
+            script_config = game_config.script[info['id']]
+            group_id = script_config['group']
+            if group_id not in data:
+                data[group_id] = info
+            elif info['finished_summary']['income'] > data[group_id]['finished_summary']['income']:
+                data[group_id] = info
+        return data
+
+    def script_continued_summary(self):
+        """持续收入片子信息统计
+        :return:
+        """
+        now = int(time.time())
+        min_expire = 0
+        has_reward = False
+        for oid, info in self.continued_script.iteritems():
+            expire = info['continued_expire'] - info['continued_start']
+            if not min_expire or expire < min_expire:
+                min_expire = expire
+            has_reward = has_reward or (now - info['continued_start']) >= 60    # 按分钟恢复
+
+        return {
+            'count': len(self.continued_script),
+            'min_expire': min_expire,
+            'has_reward': has_reward,
+        }
+
     def check_top_end_lv_card(self, cur_script):
         """判断影片最大结算等级对应的演员表
         :param cur_script:
@@ -153,17 +191,14 @@ class Script(ModelBase):
         script_id = cur_script['id']
         if script_id not in self.top_end_lv_card:
             self.top_end_lv_card[script_id] = {
-                'env_lv': cur_script['end_lv'],
+                'end_lv': cur_script['end_lv'],
                 'card': dict(cur_script['card'])
             }
         else:
-            last_script = self.top_env_lv_card[script_id]
-            if cur_script['env_lv'] > last_script['env_lv']:
-                last_script['env_lv'] = cur_script['env_lv']
-                last_script['card'] = {
-                    'env_lv': cur_script['end_lv'],
-                    'card': dict(cur_script['card'])
-                }
+            last_script = self.top_end_lv_card[script_id]
+            if cur_script['end_lv'] > last_script['end_lv']:
+                last_script['end_lv'] = cur_script['end_lv']
+                last_script['card'] = dict(cur_script['card'])
 
     def get_group_id_all_income(self, cur_script):
         '''
@@ -244,10 +279,8 @@ class Script(ModelBase):
     def check_top_income(self, film_info):
         script_id = film_info['id']
         script_config = game_config.script[script_id]
-        group_id = script_config['group']
 
         cur_top_script = self.top_script.get(script_id, {})
-        cur_top_group = self.top_group.get(group_id, {})
         income = film_info['finished_summary']['income']
 
         save = False
@@ -255,12 +288,6 @@ class Script(ModelBase):
         top_script_income = cur_top_script.get('finished_summary', {'income': 0})['income']
         if top_script_income < income:
             self.top_script[script_id] = dict(film_info)
-            save = True
-
-        # 按剧本系列记录
-        top_group_income = cur_top_group.get('finished_summary', {'income': 0})['income']
-        if top_group_income < income:
-            self.top_group[group_id] = dict(film_info)
             save = True
 
         # 单片记录
@@ -346,19 +373,21 @@ class Script(ModelBase):
         # 艺人拍片票房及次数记录
         for role_id, card_id in film_info['card'].iteritems():
             # 按类型记录
-            self.mm.card.cards[card_id]['style_income'][style_id] = self.mm.card.cards[card_id]['style_income'].get(
+            card_info = self.mm.card.cards[card_id]
+            card_info['style_income'][style_id] = card_info['style_income'].get(
                 style_id, 0) + income
-            self.mm.card.cards[card_id]['style_film_num'][style_id] = self.mm.card.cards[card_id]['style_film_num'].get(
+            card_info['style_film_num'][style_id] = card_info['style_film_num'].get(
                 style_id, 0) + 1
             # 按种类记录
-            self.mm.card.cards[card_id]['type_income'][type_id] = self.mm.card.cards[card_id]['type_income'].get(
+            card_info['type_income'][type_id] = card_info['type_income'].get(
                 type_id, 0) + income
-            self.mm.card.cards[card_id]['type_film_num'][type_id] = self.mm.card.cards[card_id]['type_film_num'].get(
+            card_info['type_film_num'][type_id] = card_info['type_film_num'].get(
                 type_id, 0) + 1
 
-            group_id = game_config.card_basis[self.mm.card.cards[card_id]['id']]['group']
+            card_config = game_config.card_basis[card_info['id']]
+            group_id = card_config['group']
             # 记录主角总票房排行
-            sex = game_config.card_basis[self.mm.card.cards[card_id]['id']]['sex_type']
+            sex = card_config['sex_type']
             block_sex_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                               self.SEXMAPPING[sex])
             bsr = BlockRank(block_sex_rank_uid, self._server_name)
@@ -452,8 +481,6 @@ class Script(ModelBase):
             'result_step': 0,  # 结算阶段，前端修改，前端使用
             'result': {},  # 拍片结算结果 {'reward': {}, }
 
-            'summary': {'income': 100, 'cost': 50},  # 票房总结
-
             # 结算的几个阶段奖励
             'finished_common_reward': {},
             'finished_attr': {},
@@ -470,14 +497,14 @@ class Script(ModelBase):
             'continued_start': 0,  # 持续收入开始时间
             'continued_expire': 0,  # 持续收入结束时间
             'continued_income': 0,  # 已领取持续收入
-            'continued_income_unit': 0,  # 持续收入 每秒收入数
+            'continued_income_unit': 0,  # 持续收入 每分钟收入数
 
             'attention': 0,  # 关注度
             'audience': 0,  # 观众
         }
         return data
 
-    def get_top_group(self):
+    def get_top_group_sequel(self):
 
         top_group = {}
         for group_id, info in self.top_sequal.iteritems():
@@ -490,10 +517,10 @@ class Script(ModelBase):
             top_group[group_id]['max_script'] = sequel_count
         return top_group
 
-    def get_top_group_id(self):
+    def get_top_group_id_sequel(self):
         group_id = 0
         income = 0
-        for k, v in self.get_top_group().iteritems():
+        for k, v in self.get_top_group_sequel().iteritems():
             if v['top_income'] > income:
                 income = v['top_income']
                 group_id = k
@@ -515,7 +542,7 @@ class Script(ModelBase):
 
     # 获取系列票房最大单片
     def get_max_script_by_group(self, group_id):
-        group_info = self.get_top_group().get(group_id, {})
+        group_info = self.get_top_group_sequel().get(group_id, {})
         if not group_info:
             return 0
         return group_info['script_info']['id']
@@ -524,13 +551,13 @@ class Script(ModelBase):
     def get_scrip_info_by_num(self, num=5, is_type=1):
         if is_type == 1:
             script_infos = self.mm.script.top_script
-            script_list = sorted(script_infos.items(), key=lambda x: x[1]['summary']['income'], reverse=True)
+            script_list = sorted(script_infos.items(), key=lambda x: x[1]['finished_summary']['income'], reverse=True)
             if len(script_list) > num:
                 script_list = script_list[:num]
             script_info = {i: j for i, j in script_list}
             return script_info
         elif is_type == 2:
-            group_infos = self.get_top_group()
+            group_infos = self.get_top_group_sequel()
             group_list = sorted(group_infos.items(), key=lambda x: x[1]['top_income'], reverse=True)
             if len(group_list) > num:
                 group_list = group_list[:num]

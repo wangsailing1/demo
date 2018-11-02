@@ -61,13 +61,14 @@ class Mission(object):
             return 1
         return 0
 
-    def mission_index(self, tp_id=0):
+    def mission_index(self, tp_id=0,is_save=True):
         data = {}
         data['remain_refresh_times'] = game_config.common.get(42,2) - self.mission.refresh_times
         if not tp_id:
             if self.mission.check_guide_over():
                 self.mission.get_all_random_mission()
-                self.mission.save()
+                if is_save:
+                    self.mission.save()
             for tp_id, type in self.mm.mission.MISSIONMAPPING.iteritems():
                 if tp_id == 2:
                     continue
