@@ -401,6 +401,18 @@ fans_activity_msg = {
     },
 }
 
+mission_msg = {
+    'mission.get_reward': {
+        1: u'参数错误',
+        2: u'未完成',
+        3: u'已领',
+        4: u'未完成',
+    },
+    'mission.refresh_mission': {
+        1: u'刷新次数不足',
+    },
+}
+
 i18n = {
     'user_name': u'敢斗团',
     'dark_steet': u'黑街擂台',
