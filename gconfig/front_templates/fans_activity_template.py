@@ -11,6 +11,7 @@ fans_activity = {
     'unlock_cost': ('unlock_cost', 'int'),  # 解锁消耗美元
     'time': ('time', 'int'),  # 活动时长（分钟）
     'cost': ('cost', 'int'),  # 总消耗美元
+    'icon': ('icon', 'str'),  # 背景图
     'card_max': ('card_max', 'int'),  # 人数上限
     'gold_per_time': ('gold_per_time', 'int'),  # 金币产出间隔（秒）
     'gold_per_card': ('gold_per_card', 'int'),  # 每人总产出金币（5秒产一次）
