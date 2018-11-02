@@ -149,7 +149,8 @@ def get_group_info(hm):
                'guild_name': mm.user.guild_name,
                'actor_num': len(mm.card.cards),
                'level': mm.user.level,
-               'uid': uid}
+               'uid': uid,
+               'cup_log_script': mm.block.cup_log_script}
 
 
 def get_user_info(hm):
