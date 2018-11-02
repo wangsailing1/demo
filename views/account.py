@@ -286,7 +286,7 @@ def test_init(mm):
     # 战队等级
     level = game_config.initial_account.get('level')
     if level:
-        mm.user.level = level
+        mm.user.level = 90
 
     # 邮件
     good = game_config.initial_account.get('good')

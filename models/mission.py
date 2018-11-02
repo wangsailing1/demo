@@ -402,7 +402,8 @@ class BoxOffice(object):
 
     def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
-        self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
+        if next_id:
+            self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
         self.data.pop(mission_id)
 
 
