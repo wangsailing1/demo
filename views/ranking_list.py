@@ -19,7 +19,7 @@ def rank_index(hm):
         end = 100
     ar = mm.get_obj_tools(rank_mapping[rank_id])
 
-    rank_list = ar.get_all_user(withscores=True)
+    rank_list = ar.get_all_user(withscores=True,start=start,end=end)
 
     appeal_rank_list = []
     output_rank_list = []
@@ -37,18 +37,25 @@ def rank_index(hm):
             cid = int(card_id.split('-')[0])
             card_name = game_config.card_basis[cid]['name']
             name = umm.user.name
-            if mm.uid in uid_group_id:
-                rank_own_list.append({'uid': uid,
-                                      'name': name,
-                                      'group_id': group_id,
-                                      'score': score,
-                                      'rank_own': ar.get_rank(uid_group_id),
-                                      'card_name': card_name})
             appeal_rank_list.append({'uid': uid,
                                      'name': name,
                                      'group_id': group_id,
                                      'score': score,
                                      'card_name': card_name})
+        for group_id ,card_id in mm.card.group_ids.iteritems():
+            uid_group_id = mm.uid + '|' + group_id
+            rank = ar.get_rank(uid_group_id)
+            if rank == -1:
+                continue
+            cid = int(card_id.split('-')[0])
+            card_name = game_config.card_basis[cid]['name']
+            score = ar.get_score(uid_group_id)
+            rank_own_list.append({'uid': mm.uid,
+                                  'name': mm.user.name,
+                                  'group_id': group_id,
+                                  'score': score,
+                                  'rank_own': rank,
+                                  'card_name': card_name})
         return 0, {
             'rank_list': appeal_rank_list[start - 1:end],
             'rank_own': rank_own_list
