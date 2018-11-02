@@ -8,7 +8,7 @@ import random
 
 from gconfig import game_config
 from lib.utils import weight_choice
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift, del_mult_goods
 from lib.utils.debug import print_log
 from lib.utils import not_repeat_weight_choice
 
@@ -58,7 +58,6 @@ class GachaLogics(object):
         :param count: 1或10次
         :return:
         """
-        lucky_buy = False  # 钻石10连后有概率出现
         cost_type = ''
         cost_num = 0
 
@@ -69,21 +68,6 @@ class GachaLogics(object):
             gacha_pool, _ = self.get_coin_gacha()
             if not gacha_pool:
                 return 1, {}  # 没有普通补给的奖励配置
-        #
-        # # 触发抽卡任务
-        # if sort == 1:
-        #     gacha_sort = 1
-        # elif sort == 0:
-        #     gacha_sort = 3
-        # else:
-        #     gacha_sort = 0
-        #
-        # if gacha_sort:
-        #     self.gacha.total_gacha[0] += count
-        #     self.gacha.total_gacha[gacha_sort] += count
-
-        # task_event_dispatch = self.mm.get_event('task_event_dispatch')
-        # task_event_dispatch.call_method('gacha', gacha_sort, count=count)
 
         self.gacha.save()
         self.mm.user.save()
@@ -144,3 +128,13 @@ class GachaLogics(object):
         data = {'reward': reward}
         data.update(self.gacha_index())
         return 0, data
+
+    def clear_gacha_cd(self):
+        cost = game_config.coin_gacha_cd['cost']
+        rc, _ = del_mult_goods(self.mm, cost)
+        if rc:
+            return rc, {}
+
+        self.gacha.coin_gacha_time = 0
+        self.gacha.save()
+        return self.gacha_index()

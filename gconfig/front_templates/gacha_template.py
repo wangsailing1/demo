@@ -30,6 +30,7 @@ coin_gacha_lv = {
 coin_gacha_cd = ({
     'uk': ('time', 'int'),                    # cd 出现次数
     'cd': ('cd', 'int_list'),         # cd时长（分钟）
+    'cost': ('cost', 'int_list'),         # 清除当前cd消耗
     }, 'gacha_cd_config')
 
 

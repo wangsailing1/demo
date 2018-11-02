@@ -45,6 +45,13 @@ def get_gacha(hm):
     return 0, data
 
 
+def clear_gacha_cd(hm):
+    mm = hm.mm
+    gl = GachaLogics(mm, 0)
+    rc, data = gl.clear_gacha_cd()
+    return rc, data
+
+
 def receive(hm):
     """
     gacha接受卡牌
