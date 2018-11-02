@@ -61,6 +61,8 @@ def rank_index(hm):
             name = umm.user.name
             if umm.script.top_all:
                 script_id = umm.script.top_all['id']
+            else:
+                continue
             script_name = umm.script.top_all.get('name', '')
             if not script_name:
                 script_name = game_config.script[script_id]['name']
