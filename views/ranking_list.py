@@ -45,7 +45,7 @@ def rank_index(hm):
         for group_id, card_id in mm.card.group_ids.iteritems():
             uid_group_id = '%s|%s' % (mm.uid, group_id)
             rank = ar.get_rank(uid_group_id)
-            if rank == -1:
+            if not rank:
                 continue
             cid = int(card_id.split('-')[0])
             card_name = game_config.card_basis[cid]['name']
@@ -58,7 +58,7 @@ def rank_index(hm):
                                   'card_name': card_name})
         return 0, {
             'rank_list': appeal_rank_list,
-            'rank_own': rank_own_list
+            'rank_own': sorted(rank_own_list,key=lambda x:x['rank_own'])
         }
 
     elif rank_id == 2:
