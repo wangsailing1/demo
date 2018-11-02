@@ -57,7 +57,7 @@ def rank_index(hm):
                                   'rank_own': rank,
                                   'card_name': card_name})
         return 0, {
-            'rank_list': appeal_rank_list[start - 1:end],
+            'rank_list': appeal_rank_list,
             'rank_own': rank_own_list
         }
 
