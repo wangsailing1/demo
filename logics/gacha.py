@@ -41,6 +41,7 @@ class GachaLogics(object):
         self.refresh(1 if self.sort == 0 else 0)
 
         data = {
+            'today_coin_times': self.gacha.today_coin_times,    # 当日gacha次数
             'coin_pool': self.gacha.coin_pool,  # 探寻到的3个gacha_id
             'coin_time': self.gacha.coin_time,  # 探寻时间
             'coin_times': self.gacha.coin_times,           # 探寻次数
@@ -64,6 +65,8 @@ class GachaLogics(object):
         sort = 0
 
         if sort == 0:
+            if self.gacha.coin_pool_expire():
+                return 2, {}
             cost_type = 'coin'
             gacha_pool, _ = self.get_coin_gacha()
             if not gacha_pool:
@@ -99,7 +102,7 @@ class GachaLogics(object):
             can_use_ids.remove(id_weight)
             pool.append(id_weight[0])
 
-        self.gacha.coin_times += 1
+        self.gacha.add_coin_times()
         self.gacha.coin_time = int(time.time())
         self.gacha.coin_pool = pool
         self.gacha.coin_receive = []
@@ -137,4 +140,5 @@ class GachaLogics(object):
 
         self.gacha.coin_gacha_time = 0
         self.gacha.save()
-        return self.gacha_index()
+        data = self.gacha_index()
+        return 0, data

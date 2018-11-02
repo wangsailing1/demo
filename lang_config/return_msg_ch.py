@@ -199,6 +199,13 @@ card_msg = {
 }
 
 
+gacha_msg = {
+    'gacha.get_gacha': {
+        2: u'cd中'
+    }
+}
+
+
 script_msg = {
     'script.set_card': {
         2: u'已选完角色',
