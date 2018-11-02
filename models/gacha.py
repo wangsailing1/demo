@@ -75,6 +75,8 @@ class Gacha(ModelBase):
                 break
             if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
                 next_lv += 1
+                continue
+            break
         self.coin_times = next_times
         self.coin_lv = next_lv
 
