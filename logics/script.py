@@ -231,9 +231,10 @@ class ScriptLogic(object):
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
-        script_config = game_config.script(script.cur_script['id'])
+        script_config = game_config.script[script.cur_script['id']]
         min_attr = script_config['min_attr']
         attr_total = self.attr_total()
+        gift = []
         for attr_id,value in enumerate(min_attr,1):
             if value == -1:
                 continue
@@ -242,7 +243,7 @@ class ScriptLogic(object):
                 break
             gift = script_config['award']
 
-        reward = {'coin': 1}
+        reward = add_mult_gift(gift)
         if 'finished_reward' not in cur_script:
             cur_script['finished_reward'] = reward
         return reward
