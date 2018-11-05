@@ -82,7 +82,6 @@ class CardLogic(object):
 
         love_config = game_config.card_love_level[card_dict['love_lv']]
         gift_lv_max = love_config['gift_lv_max']
-        if
         for item_id, item_num in items:
             add_gift_count += item_num
             if item.get_item(item_id) < item_num:
