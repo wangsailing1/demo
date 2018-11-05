@@ -75,7 +75,7 @@ class ScriptLogic(object):
                 attr_total[attr_id] = attr_total.get(attr_total, 0) + value
         for k, v in card_effect.iteritems():
             for attr_id, value in v.iteritems():
-                attr_total[attr_id] = attr_total.get(attr_total, 0) + value
+                attr_total[attr_id] = attr_total.get(attr_id, 0) + value
         return attr_total
 
     def pre_filming(self, ):
