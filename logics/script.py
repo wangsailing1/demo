@@ -820,7 +820,7 @@ class ScriptLogic(object):
                 # 暴击效果
                 d = (role_score + script_score) / 100.0
                 for attr in role_effect:
-                    role_effect[attr][0] = role_effect[attr][0] * (1.1 + d)
+                    role_effect[attr][0] = math.ceil(role_effect[attr][0] * (1.1 + d))
                     role_effect[attr][1] = True
 
             for attr in more_attr:
