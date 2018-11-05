@@ -215,6 +215,7 @@ class ScriptLogic(object):
         script.style_log.append(style)
 
         effect = self.calc_film_card_effect()
+        cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
         rc, data = self.index()
@@ -222,7 +223,7 @@ class ScriptLogic(object):
         if finished_reward:
             data['finished_reward'] = finished_reward
 
-        cur_script['style_effect'] = effect
+
         script.save()
         return rc, data
 
