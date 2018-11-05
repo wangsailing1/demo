@@ -187,6 +187,7 @@ card_msg = {
     'card.card_add_love_exp': {
         2: u'道具类型不符',
         3: u'超出送礼上限',
+        4: u'赠送礼物已达上限，属性不再提升，请升级羁绊后再来',
     },
     'card.card_love_level_up': {
         2: u'经验不足，无法升级',

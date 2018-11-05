@@ -98,6 +98,12 @@ class CardLogic(object):
                 else:
                     # 味道类型
                     if tp in card_config['love_gift_type']:
+                        card_dict = card_dict or self.cards[card_oid]
+                        info = card_dict['love_gift_pro'].setdefault(tp, {'exp': 0, 'lv': 1})
+                        next_lv = info['lv']
+                        if next_lv >= gift_lv_max:
+                            return 4, {}  #赠送礼物已达上限，属性不再提升，请升级羁绊后再来
+
                         add_love_gift_pro.append((tp, num))
 
         gift_count = card_dict['gift_count'] + add_gift_count
