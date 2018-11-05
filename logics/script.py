@@ -72,12 +72,12 @@ class ScriptLogic(object):
         card_effect = self.mm.script.cur_script.get('card_effect', {}).get('effect', {})
         for k, v in style_effect.iteritems():
             for attr_id, value in v.iteritems():
-                if isinstance(value,list):
+                if isinstance(value, list):
                     value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         for k, v in card_effect.iteritems():
             for attr_id, value in v.iteritems():
-                if isinstance(value,list):
+                if isinstance(value, list):
                     value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         return attr_total
@@ -235,15 +235,15 @@ class ScriptLogic(object):
         min_attr = script_config['min_attr']
         attr_total = self.attr_total()
         gift = []
-        for attr_id,value in enumerate(min_attr,1):
+        for attr_id, value in enumerate(min_attr, 1):
             if value == -1:
                 continue
-            if attr_total.get(attr_id,0) < value:
+            if attr_total.get(attr_id, 0) < value:
                 gift = []
                 break
             gift = script_config['award']
 
-        reward = add_mult_gift(gift)
+        reward = add_mult_gift(self.mm, gift)
         if 'finished_reward' not in cur_script:
             cur_script['finished_reward'] = reward
         return reward
