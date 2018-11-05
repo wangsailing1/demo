@@ -72,12 +72,12 @@ class ScriptLogic(object):
         card_effect = self.mm.script.cur_script.get('card_effect', {}).get('effect', {})
         for k, v in style_effect.iteritems():
             for attr_id, value in v.iteritems():
-                if isinstance(value,list):
+                if isinstance(value, list):
                     value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         for k, v in card_effect.iteritems():
             for attr_id, value in v.iteritems():
-                if isinstance(value,list):
+                if isinstance(value, list):
                     value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         return attr_total
@@ -215,6 +215,7 @@ class ScriptLogic(object):
         script.style_log.append(style)
 
         effect = self.calc_film_card_effect()
+        cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
         rc, data = self.index()
@@ -222,7 +223,7 @@ class ScriptLogic(object):
         if finished_reward:
             data['finished_reward'] = finished_reward
 
-        cur_script['style_effect'] = effect
+
         script.save()
         return rc, data
 
@@ -231,18 +232,19 @@ class ScriptLogic(object):
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
-        script_config = game_config.script(script.cur_script['id'])
+        script_config = game_config.script[script.cur_script['id']]
         min_attr = script_config['min_attr']
         attr_total = self.attr_total()
-        for attr_id,value in enumerate(min_attr,1):
+        gift = []
+        for attr_id, value in enumerate(min_attr, 1):
             if value == -1:
                 continue
-            if attr_total.get(attr_id,0) < value:
+            if attr_total.get(attr_id, 0) < value:
                 gift = []
                 break
             gift = script_config['award']
 
-        reward = {'coin': 1}
+        reward = add_mult_gift(self.mm, gift)
         if 'finished_reward' not in cur_script:
             cur_script['finished_reward'] = reward
         return reward
@@ -449,6 +451,7 @@ class ScriptLogic(object):
         all_popularity_rate = game_config.common[34] / 100.0
         popularity_constant = game_config.common[35] / 100.0
         popularity_rate = game_config.common[36] / 100.0
+        population_rate = game_config.common[50]  #人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
         # 6、最后结算人气时
@@ -460,7 +463,7 @@ class ScriptLogic(object):
                               (
                                   all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
-        attention = (init_attention + L + N + style_suit_effect - M) * attention_rate
+        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
 
         # 保底关注度
         min_attection = game_config.common[40] / 10000.0
