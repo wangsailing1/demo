@@ -65,16 +65,20 @@ class ScriptLogic(object):
             'attr_total': self.attr_total(),
         }
 
-    #统计总的effect
+    # 统计总的effect
     def attr_total(self):
         attr_total = {}
         style_effect = self.mm.script.cur_script.get('style_effect', {}).get('effect', {})
         card_effect = self.mm.script.cur_script.get('card_effect', {}).get('effect', {})
         for k, v in style_effect.iteritems():
             for attr_id, value in v.iteritems():
+                if isinstance(value,list):
+                    value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         for k, v in card_effect.iteritems():
             for attr_id, value in v.iteritems():
+                if isinstance(value,list):
+                    value = value[0]
                 attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         return attr_total
 
@@ -297,6 +301,8 @@ class ScriptLogic(object):
         for per_effect in [card_effect, style_effect]:
             for _, info in per_effect['effect'].iteritems():
                 for attr, value in info.iteritems():
+                    if isinstance(value, list):
+                        value = value[0]
                     attrs[attr] = attrs.get(attr, 0) + value
 
         script_config = game_config.script[cur_script['id']]
@@ -441,7 +447,7 @@ class ScriptLogic(object):
 
         attention_rate = 1 + (all_popularity ** all_popularity_rate /
                               (
-                              all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
         attention = (init_attention + L + N + style_suit_effect - M) * attention_rate
 
@@ -789,9 +795,10 @@ class ScriptLogic(object):
             role_config = game_config.script_role[role_id]
             role_attr = list(role_config['role_attr'])
             # 随机属性
+            more_attr = []
             if random.randint(0, 10000) <= card_config['ex_special_rate']:
                 special_attr = weight_choice(card_config['special_quality'])[0]
-                role_attr.append(special_attr)
+                more_attr.append(special_attr)
 
             role_effect = effect[role_id] = {}
             # 计算属性
@@ -799,11 +806,11 @@ class ScriptLogic(object):
                 base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
                 if base_value < 0:
                     continue
-                value = base_value * dps_rate / 10000.0
+                value = math.ceil(base_value * dps_rate / 10000.0)
                 if attr in role_effect:
-                    role_effect[attr] += value
+                    role_effect[attr][0] += value
                 else:
-                    role_effect[attr] = value
+                    role_effect[attr] = [value, False]
 
             # 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
@@ -813,7 +820,19 @@ class ScriptLogic(object):
                 # 暴击效果
                 d = (role_score + script_score) / 100.0
                 for attr in role_effect:
-                    role_effect[attr] = role_effect[attr] * (1.1 + d)
+                    role_effect[attr][0] = role_effect[attr][0] * (1.1 + d)
+                    role_effect[attr][2] = True
+
+            for attr in more_attr:
+                base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
+                if base_value < 0:
+                    value = 1
+                else:
+                    value = math.ceil(base_value * dps_rate / 10000.0)
+                if attr in role_effect:
+                    role_effect[attr][0] += value
+                else:
+                    role_effect[attr] = [value, False]
 
         return {
             'effect': effect,
