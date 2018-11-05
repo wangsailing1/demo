@@ -821,7 +821,7 @@ class ScriptLogic(object):
                 d = (role_score + script_score) / 100.0
                 for attr in role_effect:
                     role_effect[attr][0] = role_effect[attr][0] * (1.1 + d)
-                    role_effect[attr][2] = True
+                    role_effect[attr][1] = True
 
             for attr in more_attr:
                 base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
