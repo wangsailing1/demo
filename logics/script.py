@@ -234,11 +234,11 @@ class ScriptLogic(object):
         script_config = game_config.script(script.cur_script['id'])
         min_attr = script_config['min_attr']
         attr_total = self.attr_total()
-        gift = []
         for attr_id,value in enumerate(min_attr,1):
             if value == -1:
                 continue
             if attr_total.get(attr_id,0) < value:
+                gift = []
                 break
             gift = script_config['award']
 
@@ -819,9 +819,9 @@ class ScriptLogic(object):
                     continue
                 value = math.ceil(base_value * dps_rate / 10000.0)
                 if attr in role_effect:
-                    role_effect[attr] += value
+                    role_effect[attr][0] += value
                 else:
-                    role_effect[attr] = value
+                    role_effect[attr] = [value, False]
 
             # 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
@@ -831,7 +831,8 @@ class ScriptLogic(object):
                 # 暴击效果
                 d = (role_score + script_score) / 100.0
                 for attr in role_effect:
-                    role_effect[attr] = math.ceil(role_effect[attr][0] * (1.1 + d))
+                    role_effect[attr][0] = math.ceil(role_effect[attr][0] * (1.1 + d))
+                    role_effect[attr][1] = True
 
             for attr in more_attr:
                 base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
@@ -840,9 +841,9 @@ class ScriptLogic(object):
                 else:
                     value = math.ceil(base_value * dps_rate / 10000.0)
                 if attr in role_effect:
-                    role_effect[attr] += value
+                    role_effect[attr][0] += value
                 else:
-                    role_effect[attr] = value
+                    role_effect[attr] = [value, False]
 
         return {
             'effect': effect,
