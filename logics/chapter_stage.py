@@ -194,7 +194,7 @@ class Chapter_stage(object):
                         for attr_id in attr:
                             hurt = self.get_hurt(attr_id, card_id, tag_score[card_id], is_enemy=True)
                             hurts['attr'][attr_id] = hurt
-                            all_score += hurt
+                            all_score += hurt[0]
                         fight_data[round_num][card_id] = hurts
                         # 概率触发属性伤害
                         hurts['more_attr'] = {}
@@ -206,7 +206,7 @@ class Chapter_stage(object):
                             more_attr = weight_choice(more_attr)
                             hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
                             hurts['more_attr'][more_attr[0]] = hurt
-                            all_score += hurt
+                            all_score += hurt[0]
                         fight_data[round_num][card_id] = hurts
                         continue
 
@@ -216,7 +216,7 @@ class Chapter_stage(object):
                              'attr': {}}
                     for attr_id in attr:
                         hurt = self.get_hurt(attr_id, card_id, tag_score[card_id])
-                        all_score += hurt
+                        all_score += hurt[0]
                         hurts['attr'][attr_id] = hurt
                     fight_data[round_num][card_id] = hurts
                     # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
@@ -229,7 +229,7 @@ class Chapter_stage(object):
                         more_attr = weight_choice(more_attr)
                         hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
                         hurts['more_attr'][more_attr[0]] = hurt
-                        all_score += hurt
+                        all_score += hurt[0]
                     else:
                         hurts['more_attr'] = {}
                     fight_data[round_num][card_id] = hurts
@@ -261,6 +261,7 @@ class Chapter_stage(object):
                 return level + 1
 
     def get_hurt(self, attr_id, card_id, score, is_enemy=False):
+        is_crit = False
         if is_enemy:
             card_info = game_config.chapter_enemy[int(card_id)]
             v = card_info['charpro'][attr_id - 1]
@@ -279,7 +280,8 @@ class Chapter_stage(object):
         if self.is_crit(card_id, score, is_enemy=is_enemy):
             # 暴击伤害
             hurt = self.crit_hurt(hurt, score)
-        return hurt
+            is_crit = True
+        return [hurt,is_crit]
 
     def crit_hurt(self, hurt, score):
         crit = 1.1 + score / 100.0
