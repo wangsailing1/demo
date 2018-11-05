@@ -103,6 +103,7 @@ class Chapter_stage(object):
                         style_info[v]['old'] = copy.deepcopy(self.mm.card.cards[v]['style_pro'][script_type])
                         self.mm.card.add_style_exp(v, script_type, add_fight_exp)
                         style_info[v]['new'] = self.mm.card.cards[v]['style_pro'][script_type]
+                    self.mm.card.save()
                 self.mm.user.action_point -= need_point
                 if chapter not in self.chapter_stage.chapter:
                     self.chapter_stage.chapter[chapter] = {}
