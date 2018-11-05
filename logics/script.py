@@ -451,6 +451,7 @@ class ScriptLogic(object):
         all_popularity_rate = game_config.common[34] / 100.0
         popularity_constant = game_config.common[35] / 100.0
         popularity_rate = game_config.common[36] / 100.0
+        population_rate = game_config.common[50]  #人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
         # 6、最后结算人气时
@@ -462,7 +463,7 @@ class ScriptLogic(object):
                               (
                                   all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
-        attention = (init_attention + L + N + style_suit_effect - M) * attention_rate
+        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
 
         # 保底关注度
         min_attection = game_config.common[40] / 10000.0
