@@ -72,10 +72,10 @@ class ScriptLogic(object):
         card_effect = self.mm.script.cur_script.get('card_effect', {}).get('effect', {})
         for k, v in style_effect.iteritems():
             for attr_id, value in v.iteritems():
-                attr_total[attr_id] = attr_total.get(attr_id, 0) + value
+                attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         for k, v in card_effect.iteritems():
             for attr_id, value in v.iteritems():
-                attr_total[attr_id] = attr_total.get(attr_id, 0) + value
+                attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
         return attr_total
 
     def pre_filming(self, ):
