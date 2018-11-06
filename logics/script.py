@@ -62,6 +62,7 @@ class ScriptLogic(object):
             'scripts': script.scripts,
             'style_log': script.style_log,
             'cur_market': script.cur_market,
+            'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
             'script_license': self.mm.user.script_license
