@@ -137,7 +137,7 @@ class GachaLogics(object):
         rc, _ = del_mult_goods(self.mm, cost)
         if rc:
             return rc, {}
-
+        gacha_pool, _ = self.get_coin_gacha()
         self.gacha.coin_gacha_time = 0
         self.gacha.save()
         data = self.gacha_index()
