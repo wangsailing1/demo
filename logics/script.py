@@ -433,10 +433,10 @@ class ScriptLogic(object):
                 min_attection = game_config.common[40] / 10000.0
                 if attention < min_attection:
                     attention = min_attection
-                script.cur_script['attention'] = attention
+                script.cur_script['attention'] = int(attention)
                 if is_save:
                     script.save()
-                return {'attention':attention}
+                return {'attention':int(attention)}
             card = self.mm.card
             standard_popularity = script_config['standard_popularity']
             for role_id, card_oid in film_info['card'].iteritems():
@@ -462,10 +462,10 @@ class ScriptLogic(object):
         min_attection = game_config.common[40] / 10000.0
         if attention < min_attection:
             attention = min_attection
-        script.cur_script['attention'] = attention
+        script.cur_script['attention'] = int(attention)
         if is_save:
             script.save()
-        return {'attention': attention,
+        return {'attention': int(attention),
                 'card_effect': card_popularity / standard_popularity,}
 
     # 3.计算影片关注度
@@ -496,7 +496,7 @@ class ScriptLogic(object):
                 market_enough = market_enough & (cur >= need)
 
                 # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
-                if style_config and script_config['market'] == market:
+                if style_config and style_config['market'] == market:
                     need += style_config['market_num']
                 N += min(cur, need)
 
