@@ -48,7 +48,7 @@ class ScriptLogic(object):
 
     def index(self):
         script = self.mm.script
-        self.calc_attention_by_step(script.cur_script['step'],is_save=True)
+        self.calc_attention_by_step(script.cur_script.get('step',0),is_save=True)
 
         return 0, {
             'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
