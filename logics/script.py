@@ -925,6 +925,9 @@ class ScriptLogic(object):
         last_dollar = max(last_dollar, 0)
         script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
+        if now <= continued_start:
+            script.continued_script.pop(script_id)
+            script.save()
 
         self.mm.user.add_dollar(last_dollar)
         self.mm.user.save()
