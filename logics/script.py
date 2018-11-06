@@ -404,6 +404,8 @@ class ScriptLogic(object):
     # 按step计算关注度
     def calc_attention_by_step(self, step, film_info=None,is_save=False):
         if not self.mm.script.cur_script:
+            return
+        if step > 3:
             return 
         if step == 3:
             resoult = self.calc_attention(film_info)
