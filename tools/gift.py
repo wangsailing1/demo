@@ -219,7 +219,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             if not item_num:
                 continue
             mm.equip.add_piece(item_id, item_num)
-            add_dict(data.setdefault('pieces', {}), item_id, item_num)
+            add_dict(data.setdefault('equip_pieces', {}), item_id, item_num)
         mm.equip.save()
     elif gift_sort == 11:  # 玩家经验
         for pkg in gift_config:
