@@ -452,7 +452,8 @@ class Script(ModelBase):
         all_market = [(v['market'], v['rate']) for k, v in game_config.script_market.iteritems()]
         if all_market:
             choiced_market = weight_choice(all_market)
-            cur_market = cur_market_show = list(choiced_market[0])
+            cur_market = list(choiced_market[0])
+            cur_market_show = copy.copy(list(choiced_market[0]))
             del_unit = game_config.common[7]
             # 随机三次减少关注度
             market_length = len(cur_market)
