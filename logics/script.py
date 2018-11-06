@@ -48,7 +48,7 @@ class ScriptLogic(object):
 
     def index(self):
         script = self.mm.script
-        self.calc_attention_by_step(self.get_step(),is_save=True)
+        self.calc_attention_by_step(script.cur_script['step'],is_save=True)
 
         return 0, {
             'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
@@ -406,7 +406,11 @@ class ScriptLogic(object):
         if not self.mm.script.cur_script:
             return 
         if step == 3:
-            return self.calc_attention(film_info)
+            resoult = self.calc_attention(film_info)
+            self.mm.script.cur_script['attention'] = resoult['attention']
+            if is_save:
+                self.mm.script.save()
+            return resoult
         script = self.mm.script
         film_info = film_info or script.cur_script
 
