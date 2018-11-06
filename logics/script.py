@@ -398,7 +398,7 @@ class ScriptLogic(object):
             'part_a': max(min_part, part_a),
             'part_b': max(min_part, part_b),
             'attention': result['attention'],
-            'card_effect': result['card_effect']
+            'card_effect': result.get('card_effect',0)
         }
 
     # 按step计算关注度
