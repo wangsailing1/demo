@@ -457,7 +457,10 @@ class Script(ModelBase):
             # 随机三次减少关注度
             market_length = len(cur_market)
             for i in range(3):
-                idx = random.randint(0, market_length - 1)
+                idx_list = [x for x,y in enumerate(cur_market_show) if y >= del_unit]
+                if not idx_list:
+                    break
+                idx = random.choice(idx_list)
                 if cur_market_show[idx] > del_unit:
                     cur_market_show[idx] = cur_market_show[idx] - del_unit
 
