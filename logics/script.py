@@ -63,6 +63,7 @@ class ScriptLogic(object):
             'cur_market': script.cur_market,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
+            'script_license':self.mm.user.script_license
         }
 
     # 统计总的effect
@@ -87,7 +88,9 @@ class ScriptLogic(object):
 
         script = self.mm.script
         script.pre_filming()
+        self.mm.user.script_license -= 1
         script.save()
+        self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
