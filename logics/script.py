@@ -88,9 +88,9 @@ class ScriptLogic(object):
 
         script = self.mm.script
         script.pre_filming()
-        self.mm.user.script_license -= 1
+        # self.mm.user.script_license -= 1
         script.save()
-        self.mm.user.save()
+        # self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
