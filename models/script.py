@@ -461,7 +461,7 @@ class Script(ModelBase):
                 if not idx_list:
                     break
                 idx = random.choice(idx_list)
-                if cur_market_show[idx] > del_unit:
+                if cur_market_show[idx] >= del_unit:
                     cur_market_show[idx] = cur_market_show[idx] - del_unit
 
             self.cur_market = cur_market
