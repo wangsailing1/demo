@@ -491,7 +491,9 @@ def actor_chat_index(hm):
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat_index()
     return rc, {'actor': data,
-                'phone_daily_times':mm.friend.phone_daily_times}
+                'phone_daily_times':mm.friend.phone_daily_times,
+                'appointment_times': mm.friend.appointment_times,
+                'tourism_times': mm.friend.tourism_times}
 
 
 @check_unlock
