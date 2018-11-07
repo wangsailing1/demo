@@ -189,8 +189,9 @@ class Block(object):
                         'cup':cup
 
                     }
-                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
-                    self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
+                    if rank == 1:
+                        self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
+                        self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
             else:
                 tp_num = tp
                 if tp in ['medium', 'audience']:
@@ -217,10 +218,11 @@ class Block(object):
                         'reward_type': reward_type,
                         'cup': cup
                     }
-                    self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
-                    if script_id not in self.block.cup_log_script:
-                        self.block.cup_log_script[script_id] = {}
-                    self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
+                    if rank == 1:
+                        self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
+                        if script_id not in self.block.cup_log_script:
+                            self.block.cup_log_script[script_id] = {}
+                        self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         self.block.is_count = 1
