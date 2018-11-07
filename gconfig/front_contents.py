@@ -40,12 +40,10 @@ mapping_config = {
 
 }
 
-
 hero_bdc_channel_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'hero_channel_config': ('hero_channel_config', True),
 }
-
 
 card_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -67,7 +65,6 @@ card_mapping = {
 
 }
 
-
 name_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'card_name': ('card_name', True),
@@ -75,13 +72,11 @@ name_mapping = {
     'nic_name': ('nic_name', True),
 }
 
-
 gacha_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'coin_gacha': ('coin_gacha', True),
     'coin_gacha_lv': ('coin_gacha_lv', True),
     'coin_gacha_cd': ('coin_gacha_cd', True),
-
 
     # 'gacha': ('gacha', True),
     # 'gacha_vip': ('gacha_vip', True),
@@ -94,7 +89,6 @@ gacha_mapping = {
     # 'diamond_gacha_score': ('diamond_gacha_score', True),
     # 'box_gacha_score': ('box_gacha_score', True),
 }
-
 
 plot_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -126,7 +120,6 @@ plot_mapping = {
     # 'avg_note': ('avg_note', True),
 }
 
-
 script_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'script': ('script', True),
@@ -139,8 +132,19 @@ script_mapping = {
     'script_market': ('script_market', True),
     'script_curve': ('script_curve', True),
     'script_license': ('script_license', False),
-}
+    'script_gacha': ('script_gacha', True),
+    'diamond_script_gacha': ('diamond_script_gacha', True),
+    'script_gacha_cd': ('script_gacha_cd', True),
+    'script_gacha_cost': ('script_gacha_cost', True),
+    'attention_level': ('attention_level', True),
+    'difficulty_level': ('difficulty_level', True),
 
+    'audi_comment_choice': ('audi_comment_choice', True),
+    'media_comment': ('media_comment', True),
+    'audi_comment': ('audi_comment', True),
+    'barrage': ('barrage', True),
+
+}
 
 equip_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -170,35 +174,12 @@ book_mapping = {
     'script_group_object': ('script_group_object', True),
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 danmu_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'danmu': ('danmu', True),
     'dan_word2': ('dan_word2', True),
     'danmu_pve': ('danmu_pve', True),
 }
-
 
 item_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -208,7 +189,6 @@ item_config_mapping = {
     # 'collection_resource': ('collection_resource', True),
     'special_use_item': ('special_use_item', True),
 }
-
 
 equip_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -221,7 +201,6 @@ equip_config_mapping = {
     # 'equip_refine': ('equip_refine', True),
 }
 
-
 user_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'server_type': ('server_type', True),
@@ -231,13 +210,6 @@ user_config_mapping = {
     'vip': ('vip', True),
     'initial_account': ('initial_account', False),
     'main_hero': ('main_hero', True),
-
-
-
-
-
-
-
     'action_exp': ('action_exp', True),
     'vip_pay': ('vip_pay', True),
     'city_inside': ('city_inside', True),
@@ -245,6 +217,7 @@ user_config_mapping = {
     'speed_up_cost': ('speed_up_cost', True),
     'building_unlock': ('building_unlock', True),
     'charge': ('charge', True),
+    'month_privilege': ('month_privilege', True),
     'charge_ios': ('charge_ios', True),
     'currency_exchange': ('currency_exchange', True),
     'value': ('value', True),
@@ -270,6 +243,7 @@ user_config_mapping = {
     # 'dirtyword_ch': ('dirtyword_ch', True),
     'homepage_button': ('homepage_button', True),
     'message': ('message', True),
+    'common_attention': ('common_attention', True),
     'play_help': ('play_help', True),
     'push_message': ('push_message', True),
     # 'level_mail': ('level_mail', True),
@@ -321,89 +295,86 @@ friend_mapping = {
     # 'friend_point': ('friend_point', True),
 }
 
-
 market_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     # 'market': ('market', True),
     # 'market_type': ('market_type', True),
 }
 
-
 active_mapping = {
-#     # key 为 config_name, value: 表名, 前端是否能看的
-#     'mission_main': ('mission_main', True),
-#     'mission_side': ('mission_side', True),
-#     'mission_record': ('mission_record', True),
-#     'slg_task_daily': ('slg_task_daily', True),
-#     'slg_rank_reward': ('slg_rank_reward', True),
-#     'log_reward': ('log_reward', True),
-#     'guild_task': ('guild_task', True),
-#     'person_task': ('person_task', True),
-#     'score_reward': ('score_reward', True),
-#     'rank_reward': ('rank_reward', True),
-#     # 'score_reward_pool': ('score_reward_pool', True),
-#     'task_main': ('task_main', True),
-#     'task_main_detail': ('task_main_detail', True),
-#     'shoot_plank': ('shoot_plank', True),
-#     'server_shoot_plank': ('server_shoot_plank', True),
-#     'super_all': ('super_all', True),
-#     'super_rich': ('super_rich', True),
-#     'task_random': ('task_random', True),
-#     'achievement': ('achievement', True),
-#     'achievement_collection': ('achievement_collection', True),
-#     'task_daily': ('task_daily', True),
-#     'task_daily_reward': ('task_daily_reward', True),
-#     'diamond_get': ('diamond_get', True),
-#     'server_diamond_get': ('server_diamond_get', True),
-#     'invest': ('invest', True),
-#     'invest_rate': ('invest_rate', True),
-#     'server_invest': ('server_invest', True),
-#     'server_invest_rate': ('server_invest_rate', True),
-#     'daily_reward': ('daily_reward', True),
-#     # 'active_show': ('active_show', True),
-#     'gift_show': ('gift_show', True),
-#     # 'buy_reward': ('buy_reward', True),
+    #     # key 为 config_name, value: 表名, 前端是否能看的
+    #     'mission_main': ('mission_main', True),
+    #     'mission_side': ('mission_side', True),
+    #     'mission_record': ('mission_record', True),
+    #     'slg_task_daily': ('slg_task_daily', True),
+    #     'slg_rank_reward': ('slg_rank_reward', True),
+    #     'log_reward': ('log_reward', True),
+    #     'guild_task': ('guild_task', True),
+    #     'person_task': ('person_task', True),
+    #     'score_reward': ('score_reward', True),
+    #     'rank_reward': ('rank_reward', True),
+    #     # 'score_reward_pool': ('score_reward_pool', True),
+    #     'task_main': ('task_main', True),
+    #     'task_main_detail': ('task_main_detail', True),
+    #     'shoot_plank': ('shoot_plank', True),
+    #     'server_shoot_plank': ('server_shoot_plank', True),
+    #     'super_all': ('super_all', True),
+    #     'super_rich': ('super_rich', True),
+    #     'task_random': ('task_random', True),
+    #     'achievement': ('achievement', True),
+    #     'achievement_collection': ('achievement_collection', True),
+    #     'task_daily': ('task_daily', True),
+    #     'task_daily_reward': ('task_daily_reward', True),
+    #     'diamond_get': ('diamond_get', True),
+    #     'server_diamond_get': ('server_diamond_get', True),
+    #     'invest': ('invest', True),
+    #     'invest_rate': ('invest_rate', True),
+    #     'server_invest': ('server_invest', True),
+    #     'server_invest_rate': ('server_invest_rate', True),
+    #     'daily_reward': ('daily_reward', True),
+    #     # 'active_show': ('active_show', True),
+    #     'gift_show': ('gift_show', True),
+    #     # 'buy_reward': ('buy_reward', True),
     'first_recharge': ('first_recharge', True),
-#     'daily_charge': ('daily_charge', True),
-#     'points_exchange': ('points_exchange', True),
-#     'star_task': ('star_task', True),
-#     'server_points_exchange': ('server_points_exchange', True),
-#     'server_star_task': ('server_star_task', True),
-#     'active_consume': ('active_consume', True),
-#     'active_daily_consume': ('active_daily_consume', True),
-#     'active_recharge': ('active_recharge', True),
-#     'active_daily_recharge': ('active_daily_recharge', True),
-#     'normal_exchange': ('normal_exchange', True),
-#     'omni_exchange': ('omni_exchange', True),
-#     'sign_daily_charge': ('sign_daily_charge', True),
-#     'active_show': ('active_show', True),
-#     'gacha_reward_hero': ('gacha_reward_hero', True),
-#     'gacha_reward': ('gacha_reward', True),
-#     'month_card': ('month_card', True),
-#     'active_inreview': ('active_inreview', True),
-#     'limit_weapon': ('limit_weapon', True),
-#     'limit_box_reward': ('limit_box_reward', True),
-#     'limit_box_shop': ('limit_box_shop', True),
-#     'limit_hero_score': ('limit_hero_score', True),
-#     'limit_hero_rank': ('limit_hero_rank', True),
-#     'limit_card_chip': ('limit_card_chip', True),
-#     'limit_diamond_gacha': ('limit_diamond_gacha', True),
-#     'limit_gacha': ('limit_gacha', True),
-#     'extra_hero': ('extra_hero', True),
-#     'hero_description': ('hero_description', True),
-#     'server_limit_weapon': ('server_limit_weapon', True),
-#     'server_limit_box_reward': ('server_limit_box_reward', True),
-#     'server_limit_box_shop': ('server_limit_box_shop', True),
-#     'server_limit_hero_score': ('server_limit_hero_score', True),
-#     'server_limit_hero_rank': ('server_limit_hero_rank', True),
-#     'server_limit_card_chip': ('server_limit_card_chip', True),
-#     'server_limit_diamond_gacha': ('server_limit_diamond_gacha', True),
-#     'server_limit_gacha': ('server_limit_gacha', True),
-#     'server_extra_hero': ('server_extra_hero', True),
-#     'server_hero_description': ('server_hero_description', True),
-#     'honor_shop_new': ('honor_shop_new', True)
+    #     'daily_charge': ('daily_charge', True),
+    #     'points_exchange': ('points_exchange', True),
+    #     'star_task': ('star_task', True),
+    #     'server_points_exchange': ('server_points_exchange', True),
+    #     'server_star_task': ('server_star_task', True),
+    #     'active_consume': ('active_consume', True),
+    #     'active_daily_consume': ('active_daily_consume', True),
+    #     'active_recharge': ('active_recharge', True),
+    #     'active_daily_recharge': ('active_daily_recharge', True),
+    #     'normal_exchange': ('normal_exchange', True),
+    #     'omni_exchange': ('omni_exchange', True),
+    #     'sign_daily_charge': ('sign_daily_charge', True),
+    #     'active_show': ('active_show', True),
+    #     'gacha_reward_hero': ('gacha_reward_hero', True),
+    #     'gacha_reward': ('gacha_reward', True),
+    #     'month_card': ('month_card', True),
+    #     'active_inreview': ('active_inreview', True),
+    #     'limit_weapon': ('limit_weapon', True),
+    #     'limit_box_reward': ('limit_box_reward', True),
+    #     'limit_box_shop': ('limit_box_shop', True),
+    #     'limit_hero_score': ('limit_hero_score', True),
+    #     'limit_hero_rank': ('limit_hero_rank', True),
+    #     'limit_card_chip': ('limit_card_chip', True),
+    #     'limit_diamond_gacha': ('limit_diamond_gacha', True),
+    #     'limit_gacha': ('limit_gacha', True),
+    #     'extra_hero': ('extra_hero', True),
+    #     'hero_description': ('hero_description', True),
+    #     'server_limit_weapon': ('server_limit_weapon', True),
+    #     'server_limit_box_reward': ('server_limit_box_reward', True),
+    #     'server_limit_box_shop': ('server_limit_box_shop', True),
+    #     'server_limit_hero_score': ('server_limit_hero_score', True),
+    #     'server_limit_hero_rank': ('server_limit_hero_rank', True),
+    #     'server_limit_card_chip': ('server_limit_card_chip', True),
+    #     'server_limit_diamond_gacha': ('server_limit_diamond_gacha', True),
+    #     'server_limit_gacha': ('server_limit_gacha', True),
+    #     'server_extra_hero': ('server_extra_hero', True),
+    #     'server_hero_description': ('server_hero_description', True),
+    #     'honor_shop_new': ('honor_shop_new', True)
 }
-
 
 daily_activity_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -423,11 +394,9 @@ daily_activity_mapping = {
     'growth_fund_water': ('growth_fund_water', True),
 }
 
-
 code_mapping = {
     'code': ('code', True),
 }
-
 
 home_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -438,7 +407,6 @@ home_mapping = {
     'home_flsend_reward': ('home_flsend_reward', True),
 }
 
-
 language_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'ZH_CN': ('ZH_CN', True),
@@ -448,7 +416,6 @@ language_mapping = {
     'ZH_TW_YUNYING': ('ZH_TW_YUNYING', True),
     'ZH_CN_YUNYING': ('ZH_CN_YUNYING', True),
 }
-
 
 server_active_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -465,7 +432,6 @@ server_active_mapping = {
     'server_gift_show': ('server_gift_show', True),
     'server_buy_reward': ('server_buy_reward', True),
 }
-
 
 leading_role_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
@@ -486,7 +452,6 @@ challenge_mapping = {
     'uc_rank_reward': ('uc_rank_reward', True),
 }
 
-
 server_celebrate_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'rank_reward_show': ('rank_reward_show', True),
@@ -501,7 +466,6 @@ server_celebrate_mapping = {
     'hero_star_recharge': ('hero_star_recharge', True),
 }
 
-
 limit_discount_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'limit_discount': ('limit_discount', True),
@@ -514,8 +478,23 @@ rank_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'rank_reward_list': ('rank_reward_list', True),
     'dan_grading_list': ('dan_grading_list', True),
+    'cup_num': ('cup_num', True),
+    'dan_grading_privilage': ('dan_grading_privilage', True),
 }
 
+fans_activity_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'fans_activity': ('fans_activity', True),
+}
+
+mission_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'liveness_reward': ('liveness_reward', True),
+    'liveness': ('liveness', True),
+    'box_office': ('box_office', True),
+    'guide_mission': ('guide_mission', True),
+    'random_mission': ('random_mission', True),
+}
 
 # 注册需要写到最下面
 register_handler()

@@ -50,6 +50,7 @@ card_basis = {
     'crit_rate_base': ('crit_rate_base', 'int'),  # 基础暴击率
     'ex_special_rate': ('ex_special_rate', 'int'),  # 额外触发概率( 万分比）
     'special_quality': ('special_quality', 'int_list'),  # 艺术/娱乐触发权重
+    'last_lv': ('last_lv', 'int'),  # 艺术/娱乐触发权重
 
 }
 
@@ -107,6 +108,7 @@ card_love_gift_taste = {
     'name': ('name', 'unicode'),  # 味道名称
     'attr': ('attr', 'int'),  # 对应属性
     'item_id': ('item_id', 'int_list'),  # 对应食物
+    'icon': ('icon', 'str'),  # 图标
 }
 
 # 卡牌培养消耗
@@ -149,6 +151,7 @@ card_quality = {
     'uk': ('level', 'int'),  #
     'name': ('name', 'int'),  # 名字
     'color': ('color', 'str'),
+    'train_count': ('train_count', 'int'),
 }
 
 # 卡牌取消雪藏消耗

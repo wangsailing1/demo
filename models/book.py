@@ -115,10 +115,10 @@ class ScriptBook(ModelBase):
         if output > ar.get_score(self.uid):
             ar.add_rank(self.uid, output)
 
-        auid = self.uid
-        aoutput = self.mm.get_obj_tools('alloutput_rank')  # uid 格式 uid
-        if self.group[group_id]['group_max_output'] > aoutput.get_score(uid=auid):
-            aoutput.add_rank(auid, self.group[group_id]['group_max_output'])
+        # auid = self.uid
+        # aoutput = self.mm.get_obj_tools('alloutput_rank')  # uid 格式 uid
+        # if self.group[group_id]['group_max_output'] > aoutput.get_score(uid=auid):
+        #     aoutput.add_rank(auid, self.group[group_id]['group_max_output'])
 
         g_config = group_config[group_id]
         for k, v in g_config['group_target']:

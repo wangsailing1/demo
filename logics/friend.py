@@ -94,11 +94,17 @@ class FriendLogic(object):
         if friend_id not in self.friend.received_gift:
             return 2, {}  # 没有该好友赠送的胶囊
 
-        item_id = self.mm.home.FLOWER_ITEM_ID  # 时间胶囊
+        # item_id = self.mm.home.FLOWER_ITEM_ID  # 时间胶囊
+        if self.friend.got_point_daily >= game_config.common[25]:
+            self.friend.receive_gift(friend_id)
+            self.friend.save()
+            return 3, {}  #体力领取已达上限
+        point = game_config.common[26]
         if reward is None:
             reward = {}
-        add_mult_gift(self.mm, [[3, item_id, 1]], reward)
+        add_mult_gift(self.mm, [[3, 0, point]], reward)
         self.friend.receive_gift(friend_id)
+        self.friend.got_point_daily += point
 
         self.friend.save()
 
@@ -226,7 +232,8 @@ class FriendLogic(object):
         else:
             send_guild_name = ''
             send_guild_id = 0
-
+        ar = self.mm.get_obj_tools('output_rank')
+        rank = ar.get_rank(self.mm.user.uid)
         mail_dict = self.mm.mail.generate_mail(content,
                                                title=i18n_msg.get('friend',
                                                                   self.mm.user.language_sort) % self.mm.user.name,
@@ -235,7 +242,9 @@ class FriendLogic(object):
                                                send_uid=self.mm.user.uid,
                                                send_name=self.mm.user.name,
                                                send_role=self.mm.user.role,
-                                               send_level=self.mm.user.level)
+                                               send_level=self.mm.user.level,
+                                               send_block=self.mm.block.block_num,
+                                               send_block_rank = rank)
         mail_dict['send_guild_name'] = send_guild_name
         mail_dict['send_guild_id'] = send_guild_id
         mail_dict.update(kwargs)
@@ -364,6 +373,10 @@ class FriendLogic(object):
         f_mm = self.mm.get_mm(uid)
         f_mm.friend.remove_friend(self.mm.uid)
         self.friend.remove_friend(uid)
+        if uid in self.friend.newest_friend:
+            self.friend.newest_friend.remove(uid)
+        if self.mm.uid in f_mm.friend.newest_friend:
+            f_mm.friend.newest_friend.remove(self.mm.uid)
         f_mm.friend.save()
         self.friend.save()
 
@@ -890,6 +903,7 @@ class FriendLogic(object):
             reward = add_mult_gift(self.mm, reward_config)
             # if config[choice_id]['is_end']:
             #     self.friend.phone_daily_times += 1
+            self.friend.add_newest_uid(group_id)
             self.friend.save()
             return 0, {'reward': reward,
                        'add_value': add_value}
@@ -916,9 +930,7 @@ class FriendLogic(object):
                 self.friend.chat_over[group_id] = [chapter_id]
             else:
                 self.friend.chat_over[group_id].append(chapter_id)
-        if group_id not in self.friend.newest_friend:
-            self.friend.newest_friend.append(group_id)
-            self.friend.newest_friend = self.friend.newest_friend[-10:]
+        self.friend.add_newest_uid(group_id)
         self.friend.save()
         return 0, {'reward': reward,
                    'add_value': add_value}

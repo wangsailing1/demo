@@ -8,13 +8,19 @@ Created on 2018-09-04
 
 import time
 import copy
+import math
+import bisect
 import random
 import itertools
+from collections import Counter
 from gconfig import game_config
+from tools.gift import add_mult_gift, del_mult_goods
 
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
+
+from models.card import Card
 
 
 class ScriptLogic(object):
@@ -37,12 +43,18 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def get_recommend_card(self, script_id):
+        return self.mm.script.top_end_lv_card.get(script_id, {})
+
     def index(self):
         script = self.mm.script
+        self.calc_attention_by_step(script.cur_script.get('step',0),is_save=True)
 
         return 0, {
-            'own_script': script.own_script,
-            'sequel_script': script.sequel_script,
+            'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
+
+            # 'own_script': script.own_script,
+            # 'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
@@ -50,15 +62,37 @@ class ScriptLogic(object):
             'scripts': script.scripts,
             'style_log': script.style_log,
             'cur_market': script.cur_market,
+            'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
+            'attr_total': self.attr_total(),
+            'script_license': self.mm.user.script_license
         }
+
+    # 统计总的effect
+    def attr_total(self):
+        attr_total = {}
+        style_effect = self.mm.script.cur_script.get('style_effect', {}).get('effect', {})
+        card_effect = self.mm.script.cur_script.get('card_effect', {}).get('effect', {})
+        for k, v in style_effect.iteritems():
+            for attr_id, value in v.iteritems():
+                if isinstance(value, list):
+                    value = value[0]
+                attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
+        for k, v in card_effect.iteritems():
+            for attr_id, value in v.iteritems():
+                if isinstance(value, list):
+                    value = value[0]
+                attr_total[attr_id] = attr_total.get(attr_id, 0) + math.ceil(value)
+        return attr_total
 
     def pre_filming(self, ):
         # todo 许可证判断 use_item
 
         script = self.mm.script
         script.pre_filming()
+        # self.mm.user.script_license -= 1
         script.save()
+        # self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
@@ -70,7 +104,12 @@ class ScriptLogic(object):
         :param is_sequel:   是否续集
         :return:
         """
+        user = self.mm.user
         script = self.mm.script
+        script_config = game_config.script[script_id]
+        cost = script_config['cost']
+        if not user.is_dollar_enough(cost):
+            return 'error_dollar', {}
 
         if is_sequel:
             pool = script.sequel_script_pool
@@ -88,10 +127,15 @@ class ScriptLogic(object):
 
         film = script.make_film(script_id, name)
         script.cur_script = film
+        film['cost'] = cost
 
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
+        user.deduct_dollar(cost)
+        self.calc_attention_by_step(1)
         script.save()
+        user.save()
+
         rc, data = self.index()
         return rc, data
 
@@ -102,7 +146,9 @@ class ScriptLogic(object):
         :param role_card:  [(role, card_id), (role, card_id)]
         :return:
         """
+        user = self.mm.user
         script = self.mm.script
+        card = self.mm.card
 
         cur_script = script.cur_script
         if not cur_script:
@@ -110,6 +156,7 @@ class ScriptLogic(object):
         if cur_script['card']:
             return 2, {}  # 已选完角色
 
+        cost = 0
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
@@ -121,15 +168,28 @@ class ScriptLogic(object):
             if role in used_role:
                 return 3, {}
 
+            card_info = card.cards[card_id]
+            card_config = game_config.card_basis[card_info['id']]
+            cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
+
             used_card.add(card_id)
             used_role.add(role)
             cur_script['card'][role] = card_id
 
+        if not used_role:
+            return 4, {}
+        if not user.is_dollar_enough(cost):
+            return 'error_dollar', {}
+
+        user.deduct_dollar(cost)
         cur_script['step'] = 2
+        cur_script['cost'] += cost
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
+        self.calc_attention_by_step(2)
 
         script.save()
+        user.save()
         rc, data = self.index()
         data.update(effect)
         return rc, data
@@ -163,15 +223,17 @@ class ScriptLogic(object):
         script.style_log.append(style)
 
         effect = self.calc_film_card_effect()
+        cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
+        self.calc_attention_by_step(3)
         rc, data = self.index()
         data.update(effect)
         if finished_reward:
             data['finished_reward'] = finished_reward
 
-        cur_script['style_effect'] = effect
         script.save()
+
         return rc, data
 
     def check_finished_reward(self):
@@ -179,7 +241,19 @@ class ScriptLogic(object):
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
-        reward = {'coin': 1}
+        script_config = game_config.script[script.cur_script['id']]
+        min_attr = script_config['min_attr']
+        attr_total = self.attr_total()
+        gift = []
+        for attr_id, value in enumerate(min_attr, 1):
+            if value == -1:
+                continue
+            if attr_total.get(attr_id, 0) < value:
+                gift = []
+                break
+            gift = script_config['award']
+
+        reward = add_mult_gift(self.mm, gift)
         if 'finished_reward' not in cur_script:
             cur_script['finished_reward'] = reward
         return reward
@@ -199,35 +273,207 @@ class ScriptLogic(object):
                 for _ in xrange(num):
                     d = weight_choice(random_reward)
                     reward.append(d)
-
+        result = self.calc_attention_by_step(1)
         result['reward'] = reward
         return result
 
     # 7.剧本属性计算
     def calc_script_attr(self):
-        # todo 剧本属性计算
+        """
+        总熟练度 = Σ【参演演员的熟练度等级】
+        每项属性值 = 拍摄结果属性值 × [1+总熟练度/熟练度系数m]
+        partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数+（气质/含气质属性的角色数量/气质基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
+        partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数+（动感/含动感属性的角色数量/动感基准系数）^属性作用指数+（歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+（演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
+        熟练度除以系数走common表数据id10，m=25
+        :return:
+        """
         card = self.mm.card
         script = self.mm.script
         cur_script = script.cur_script
 
-        skilled = 0     # 总熟练度
+        skilled = 0  # 总熟练度
+        role_num = 0
+
+        role_count_by_attr = Counter()
         for role_id, card_oid in cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
+            role_config = game_config.script_role[role_id]
+            role_count_by_attr.update(role_config['role_attr'])
+
+            role_num += 1
             for style, lv_info in card_info['style_pro'].iteritems():
                 skilled += lv_info['lv']
 
+        avg_skilled = skilled / role_num
+
+        if avg_skilled in game_config.card_script_exp:
+            skilled_lv_addition = game_config.card_script_exp[avg_skilled]['lv_addition'] / 10000.0
+        else:
+            skilled_lv_addition = 0
+
+        # 熟练度系数
         skilled_rate = game_config.common[10]
-        add_char_pro = [0] * len(card.CHAR_PRO_MAPPING)
+
+        # 选卡、设置类型两轮操作艺人发挥，累计得出拍摄结果属性
+        # {role_id: {attr: value}}
+        card_effect = cur_script['card_effect']
+        style_effect = cur_script['style_effect']
+
+        attrs = {}  # 拍摄结果
+        for per_effect in [card_effect, style_effect]:
+            for _, info in per_effect['effect'].iteritems():
+                for attr, value in info.iteritems():
+                    if isinstance(value, list):
+                        value = value[0]
+                    attrs[attr] = attrs.get(attr, 0) + value
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
         # pro_id: [add_value, limit_value]
-        for idx, (min_attr, good_attr) in enumerate(itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
+        # 战斗属性显示上限 = 最高的单项标准数值*系数1+系数2
+        # 系数1 common 27， 系数2 28
+        limit_value = max(script_config['good_attr']) * game_config.common[27] + game_config.common[28]
+        for pro_id, (min_attr, good_attr) in enumerate(
+                itertools.izip(script_config['min_attr'], script_config['good_attr']), start=1):
             if good_attr < 0:
+                attrs.pop(pro_id, '')
                 continue
-            add_attr[idx] = [random.randint(1, 100), random.randint(100, 150)]
+            add_attr[pro_id] = [attrs.get(pro_id, 0), limit_value]
 
-        return {'add_attr': add_attr}
+        # CHAR_PRO_NAME = ['演技',         '歌艺', '气质',         '动感',   '艺术', '娱乐']
+        # CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
+
+        name_pro_mapping = Card.CHAR_PRO_NAME_PRO_ID_MAPPING
+        pro_id_mapping = Card.PRO_IDX_MAPPING
+
+        standard_attr = script_config['standard_attr']
+
+        performance_pro_id = name_pro_mapping['performance']
+        song_pro_id = name_pro_mapping['song']
+        entertainment_pro_id = name_pro_mapping['entertainment']
+        art_pro_id = name_pro_mapping['art']
+        temperament_pro_id = name_pro_mapping['temperament']
+        sports_pro_id = name_pro_mapping['sports']
+
+        # 属性作用指数
+        attr_rate = game_config.common[33] / 100.0
+
+        # partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数 +
+        # （气质/含气质属性的角色数量/气质基准系数）^ 属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
+        base_a = 0
+        pro_count = 0
+        for pro_id in [art_pro_id, temperament_pro_id]:
+            # 系数为 0 表示无此属性不生效
+            if not standard_attr[pro_id_mapping[pro_id]] > 0:
+                continue
+            else:
+                pro_count += 1
+            if not role_count_by_attr[pro_id]:
+                continue
+            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
+                pro_id_mapping[pro_id]]) ** attr_rate
+        part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
+
+        # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
+        # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
+        # （歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+
+        # （演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
+        base_b = 0
+        pro_count = 0
+        for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
+            # 系数为 0 表示无此属性不生效
+            if not standard_attr[pro_id_mapping[pro_id]] > 0:
+                continue
+            else:
+                pro_count += 1
+            if not role_count_by_attr[pro_id]:
+                continue
+            base_b += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
+                pro_id_mapping[pro_id]]) ** attr_rate
+        part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
+
+        min_part = game_config.common[37] / 10.0
+        result = self.calc_attention_by_step(1)
+        return {
+            'add_attr': add_attr,
+            'part_a': max(min_part, part_a),
+            'part_b': max(min_part, part_b),
+            'attention': result['attention'],
+            'card_effect': result.get('card_effect',0)
+        }
+
+    # 按step计算关注度
+    def calc_attention_by_step(self, step, film_info=None,is_save=False):
+        if not self.mm.script.cur_script:
+            return
+        if step > 3:
+            return 
+        if step == 3:
+            resoult = self.calc_attention(film_info)
+            self.mm.script.cur_script['attention'] = resoult['attention']
+            if is_save:
+                self.mm.script.save()
+            return resoult
+        script = self.mm.script
+        film_info = film_info or script.cur_script
+
+        # 1.实际观众之和
+        L = N = M = style_suit_effect = 0
+        market_enough = True
+        # todo 当前初始关注度
+        init_attention = 0
+        card_popularity = 0
+        if film_info:
+            script_id = film_info['id']
+            script_config = game_config.script[script_id]
+            script_market = list(script_config['market'])
+            for market, (need, cur) in enumerate(itertools.izip(script_market, script.cur_market), start=1):
+                # 各类型市场人口都>=剧本需要，关注度额外+L，L读表id 8
+                market_enough = market_enough & (cur >= need)
+                N += min(cur, need)
+            if market_enough:
+                L = game_config.common[8]
+            population_rate = game_config.common[50]  # 人口关注度系数
+            if step == 1:
+                attention = init_attention + (L + N) * population_rate
+                # 保底关注度
+                min_attection = game_config.common[40] / 10000.0
+                if attention < min_attection:
+                    attention = min_attection
+                script.cur_script['attention'] = int(attention)
+                if is_save:
+                    script.save()
+                return {'attention':int(attention)}
+            card = self.mm.card
+            standard_popularity = script_config['standard_popularity']
+            for role_id, card_oid in film_info['card'].iteritems():
+                card_info = card.cards[card_oid]
+                card_popularity += card_info['popularity']
+        all_popularity = 0
+        for role_id, card_oid in script.cur_script['card'].iteritems():
+            card_info = card.cards[card_oid]
+            all_popularity += card_info['popularity']
+        all_popularity_rate = game_config.common[34] / 100.0
+        popularity_constant = game_config.common[35] / 100.0
+        popularity_rate = game_config.common[36] / 100.0
+        population_rate = game_config.common[50]  # 人口关注度系数
+
+        standard_popularity = script_config['standard_popularity']
+        attention_rate = 1 + (all_popularity ** all_popularity_rate /
+                              (
+                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+
+        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
+
+        # 保底关注度
+        min_attection = game_config.common[40] / 10000.0
+        if attention < min_attection:
+            attention = min_attection
+        script.cur_script['attention'] = int(attention)
+        if is_save:
+            script.save()
+        return {'attention': int(attention),
+                'card_effect': card_popularity / standard_popularity,}
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
@@ -236,41 +482,43 @@ class ScriptLogic(object):
         film_info = film_info or script.cur_script
 
         # 1.实际观众之和
-        N = attention = sum(script.cur_market)
+        L = N = M = style_suit_effect = 0
+        market_enough = True
+        # todo 当前初始关注度
+        init_attention = 0
 
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
             # 2.各个市场类型都符合剧本要求，增加额外关注度
             script_config = game_config.script[script_id]
-            script_market = list(script_config['market'])
-            for need, cur in itertools.izip(script_market, script.cur_market):
-                if need > cur:
-                    break
-            else:
-                attention += game_config.common[18]
 
-            # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
             style = film_info['style']
-            if style:
-                attention += game_config.script_style.get(int(style), {}).get('market_num', 0)
+            style_config = game_config.script_style.get(int(style), {})
 
-            # 3.类型人口增量
-            if film_info['style']:
-                script_need = sum(script_config['market'])
-                market_num = game_config.script_style.get(int(style), {}).get('market_num', 0)
-                if N - script_need >= market_num:
-                    attention += market_num
+            # 剧本人口预估
+            script_market = list(script_config['market'])
+            for market, (need, cur) in enumerate(itertools.izip(script_market, script.cur_market), start=1):
+                # 各类型市场人口都>=剧本需要，关注度额外+L，L读表id 8
+                market_enough = market_enough & (cur >= need)
+
+                # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
+                if style_config and style_config['market'] == market:
+                    need += style_config['market_num']
+                N += min(cur, need)
+
+            if market_enough:
+                L = game_config.common[8]
 
             # 4.题材与类型
             suit = film_info['suit']
-            attention += game_config.script_style_suit.get(suit, {}).get('attention', 0)
+            style_suit_effect = game_config.script_style_suit.get(suit, {}).get('attention', 0)
 
             # 5.连续拍摄类型
             recent_style = script.style_log[-3:]
             if film_info['style'] and len(recent_style) == 3:
                 if set(recent_style) == 1:
-                    attention -= game_config.common[17]
+                    M = game_config.common[17]
 
             card = self.mm.card
             standard_popularity = script_config['standard_popularity']
@@ -278,49 +526,183 @@ class ScriptLogic(object):
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
 
+        # 总人气
+        all_popularity = 0
+        for role_id, card_oid in script.cur_script['card'].iteritems():
+            card_info = card.cards[card_oid]
+            all_popularity += card_info['popularity']
+
+        # 总人气指数、人气计算常数、人气系数
+        all_popularity_rate = game_config.common[34] / 100.0
+        popularity_constant = game_config.common[35] / 100.0
+        popularity_rate = game_config.common[36] / 100.0
+        population_rate = game_config.common[50]  # 人口关注度系数
+
+        standard_popularity = script_config['standard_popularity']
+        # 6、最后结算人气时
+        # 读取剧本的人气要求属性，(1+(艺人总人气^总人气指数/(艺人总人气^总人气指数+剧本人气要求)- 人气计算常数)* 人气系数)
+        # 所得到的值就是关注度加成系数。
+        # 总人气指数，人气计算常数，人气系数读取common表/100，（common表34,35,36行，计算后结果值为1.5,0.49，0.2）
+
+        attention_rate = 1 + (all_popularity ** all_popularity_rate /
+                              (
+                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+
+        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
+
+        # 保底关注度
+        min_attection = game_config.common[40] / 10000.0
+        if attention < min_attection:
+            attention = min_attection
         return {
-            'attention': attention,         # 关注度
-            'card_effect': card_popularity / standard_popularity,     # 艺人人气对关注度影响
+            'attention': int(attention),  # 关注度
+            'card_effect': card_popularity / standard_popularity,  # 艺人人气对关注度影响
         }
 
     # 8.首映票房、收视计算
     def calc_first_income(self):
+        """
+        首映票房=票房基数×(1+关注度等级/10）×(PartA+PartB)/2/首播票房固定参数z
+        票房基数读取剧本表output字段
+        首播票房参数z走common数据id9
+        如果作品类型是电视剧、综艺节目，则
+        首映收视 = 首映票房/首播收视系数，小数点后保留4位，
+        首播收视系数走common表数据id11
+
+        :return:
+        """
         # 首映票房
         script = self.mm.script
         cur_script = script.cur_script
-
-        first_income = 100
         script_config = game_config.script[cur_script['id']]
 
+        attention = cur_script['finished_attention'].get('attention', 0)
+        finished_attr = cur_script['finished_attr']
+        part_a = finished_attr.get('part_a', 0)
+        part_b = finished_attr.get('part_b', 0)
+
+        # first_income = random.randint(1000, 10000)
+        lv_attentions = [(lv, v['max_attention']) for lv, v in game_config.attention_level.items()]
+        lv_attentions.sort()
+        lv_idx = bisect.bisect_left([x[1] for x in lv_attentions], attention)
+        if lv_idx >= len(lv_attentions):
+            lv_idx = -1
+        attention_lv = lv_attentions[lv_idx][0]
+
+        z = game_config.common[9]
+        first_income = script_config['output'] * (1 + attention_lv / 10.0) * (part_a + part_b) / 2 / z
+        first_income = int(first_income)
+        # 如果作品类型是电视剧、综艺节目, 让前端算 区分展示单位
+        # if script_config['type'] != 1:
+        #     first_income = 1.0 * first_income / game_config.common[11]
+        #     first_income = round(first_income, 4)
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
-        """专业评价"""
-        # todo 专业评价
+        """
+        专业评分 = PartA/剧本难度系数*专业评分系数A + 题材类型匹配度加成/10，（如果PartA<1,则难度系数为1）
+        观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
+        
+        剧本难度系数读取script表的字段hard_rate
+        题材类型匹配度加成读取script_style_suit表的rate字段
+        评分系数AB读取common表数据id12、13
+        """
+
         script = self.mm.script
         cur_script = script.cur_script
-        # todo 得到点赞数
-        return {'score': 100, 'like': 10}
+        script_config = game_config.script[cur_script['id']]
+
+        finished_attr = cur_script['finished_attr']
+        hard_rate = script_config['hard_rate']
+        part_a = finished_attr.get('part_a', 0)
+        if part_a < 1:
+            hard_rate = 1
+        score_rate = game_config.common[12]
+        suit_config = game_config.script_style_suit[cur_script['suit']]
+
+        score = part_a / hard_rate * score_rate + suit_config['rate'] / 10.0
+        # 保底值
+        min_score = game_config.common[38] / 10.0
+        if score < min_score:
+            score = min_score
+        score = min(round(score, 2), game_config.common[43])
+        # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
+        like_rate = game_config.common[14]
+        return {'score': score, 'like': int(score * like_rate)}
 
     def calc_audience_judge(self):
-        """观众评价"""
-        # todo 观众评价
+        """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
+        """
+
         script = self.mm.script
         cur_script = script.cur_script
-        return {'score': 200}
+        script_config = game_config.script[cur_script['id']]
+
+        finished_attr = cur_script['finished_attr']
+        hard_rate = script_config['hard_rate']
+        part_b = finished_attr.get('part_b', 0)
+        if part_b < 1:
+            hard_rate = 1
+        score_rate = game_config.common[13]
+        suit_config = game_config.script_style_suit[cur_script['suit']]
+
+        score = part_b / hard_rate * score_rate + suit_config['rate'] / 10.0
+        # 保底值
+        min_score = game_config.common[39] / 10.0
+        if score < min_score:
+            score = min_score
+        score = min(round(score, 1), game_config.common[43])
+        audi_grade = score * 100
+
+        star = 0
+        for k, v in game_config.audi_comment_choice.iteritems():
+            audi_grade_range = v['audi_grade_range']
+            if audi_grade_range[0] <= audi_grade <= audi_grade_range[1]:
+                star = k
+                break
+        return {'score': score, 'star': star}
 
     def calc_curve(self):
-        # todo 需要计算： 票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+        """
+        票房曲线参数 = 观众评分+(专业评分-专业评分影响线)/专业评分影响率
+
+        其中专业评分影响线、影响率走common表数据id15、16
+        根据计算出的票房曲线参数读取script_curve表
+        每日上映票房收益 =  首映票房 × 今日曲线参数/固定参数X
+        总票房=首映票房 + Σ（每日上映票房收益）
+        其中每日上映票房收益固定参数X走common表数据id18
+
+        """
 
         script = self.mm.script
         cur_script = script.cur_script
 
-        curve_id = 1
+        finished_medium_judge = cur_script['finished_medium_judge']
+        finished_audience_judge = cur_script['finished_audience_judge']
+
+        medium_score = finished_medium_judge['score']
+        audience_score = finished_audience_judge['score']
+
+        curve_id = audience_score + float(medium_score - game_config.common[15]) / game_config.common[16]
+        curve_id = math.ceil(curve_id)
+        max_config_id = max(game_config.script_curve)
+        min_config_id = min(game_config.script_curve)
+        if curve_id >= max_config_id:
+            curve_id = max_config_id
+        if curve_id < min_config_id:
+            curve_id = min_config_id
+
         curve_config = game_config.script_curve[curve_id]
         finished_first_income = cur_script['finished_first_income']
         first_income = finished_first_income['first_income']
 
-        return {'curve': [first_income * i / 100 for i in curve_config['curve_rate']]}
+        rate = game_config.common[18]
+        curve = [first_income * i / rate for i in curve_config['curve_rate']]
+        curve = [int(i) for i in curve]
+        return {
+            'curve_id': curve_id,
+            'curve': curve,
+        }
 
     def summary(self):
         """票房总结"""
@@ -333,7 +715,7 @@ class ScriptLogic(object):
         # script_config['fight_exp']
         # script_config['player_exp']
 
-        # .剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
+        # 剧本人气属性要求，艺人总人气除以人气要求，所得到的值就是关注度增量
         # "finished_attention": {
         #                           "card_effect": 14,  # 艺人人气对关注度影响
         #                           "attention": 50  # 关注度
@@ -345,17 +727,49 @@ class ScriptLogic(object):
         style = cur_script['style']
         script_config = game_config.script[cur_script['id']]
 
+        # 杀青步骤的 reward
+        finished_common_reward = cur_script['finished_common_reward']
+        reward = add_mult_gift(self.mm, finished_common_reward['reward'])
+
         # 卡牌类型经验fight_exp
         for role_id, card_oid in cur_script['card'].iteritems():
             if card_oid in card.cards:
                 card.add_style_exp(card_oid, style, script_config['fight_exp'])
 
-        #  玩家经验player_exp
+        # 玩家经验player_exp
         self.mm.user.add_player_exp(script_config['player_exp'])
 
+        # 总票房 给美金
+        finished_first_income = cur_script['finished_first_income']
+        finished_curve = cur_script['finished_curve']
+        all_income = int(finished_first_income['first_income'] + sum(finished_curve['curve']))
+        self.mm.user.add_dollar(all_income)
+
+        ticket_line = script_config['ticket_line']
+        ticket_rate = 10000.0 * all_income / ticket_line
+
+        # 票房评级
+        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()]
+        end_lv_rate.sort(key=lambda x: x[0])
+        idx = bisect.bisect_left([i[1] for i in end_lv_rate], ticket_rate)
+        if idx >= len(end_lv_rate):
+            idx = -1
+        end_lv = end_lv_rate[idx][0]
+
+        cur_script['end_lv'] = end_lv
+
+        card.save()
+        script.save()
+        self.mm.user.save()
+
         return {
-            'income': 123,          # 总票房
-            'user_rank_up': 3       # 用户排名上升
+            'user_rank_up': 3,  # 用户排名上升
+
+
+
+            'reward': reward,  # 获得的杀青奖励
+            'income': all_income,  # 总票房
+            'end_lv': end_lv,  # 票房评级
         }
 
     def finished_analyse(self):
@@ -364,22 +778,16 @@ class ScriptLogic(object):
 
         }
 
-    def get_func_mapping(self, finished_step):
-        if finished_step == 1:
-            return self.calc_curve
-
-
     def check_finished_step(self, finished_step):
         """
-
         :param finished_step:
             1： 经验、熟练度什么的通用奖励
             2： 拍摄属性结算
             3： 弹出新闻关注度
             4： 首日上映
             5： 专业评价
-            6： 持续上映
-            7： 观众评价
+            6： 观众评价
+            7： 持续上映
             8： 票房总结
             # 9： 票房分析
         :return:
@@ -411,12 +819,12 @@ class ScriptLogic(object):
             func = self.calc_medium_judge
 
         elif finished_step == 6:
-            key = 'finished_curve'
-            func = self.calc_curve
+            key = 'finished_audience_judge'
+            func = self.calc_audience_judge
 
         elif finished_step == 7:
-            key = 'finished_audience_judge'
-            func = self.calc_medium_judge
+            key = 'finished_curve'
+            func = self.calc_curve
 
         elif finished_step == 8:
             key = 'finished_summary'
@@ -443,24 +851,6 @@ class ScriptLogic(object):
         """选片时计算"""
         pass
 
-    # 艺人适配剧本总分
-    def calc_card_film_match_score(self, film_info):
-        """"""
-        all_score = 0
-        card = self.mm.card
-        script_config = game_config.script[film_info['id']]
-        for role_id, card_oid in film_info['card'].iteritems():
-            # role_config = game_config.script_role[role_id]
-            card_info = card.cards[card_oid]
-            quality = game_config.card_basis[card_info['id']]['qualityid']
-            if quality in game_config.tag_score:
-                score = game_config.tag_score[quality]['score']
-                all_score += score
-            else:
-                print 'quality "%s" not exists in game_config' % quality, card_oid
-
-        return all_score
-
     # 6.艺人的拍摄发挥,选卡算一次，选类型算一次
     def calc_film_card_effect(self, action='set_card'):
         card = self.mm.card
@@ -469,12 +859,10 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         pro = cur_script['pro']
-        # match_score = self.calc_card_film_match_score(cur_script)
 
         match_score = 0
-        # todo
-        match_script = {}       # 艺人对剧本发挥
-        match_role = {}         # 艺人对角色发挥
+        match_script = {}  # 艺人对剧本发挥
+        match_role = {}  # 艺人对角色发挥
         effect = {}
         # 计算攻击伤害
         for role_id, card_oid in cur_script['card'].iteritems():
@@ -501,14 +889,15 @@ class ScriptLogic(object):
             love_config = game_config.card_love_level[love_lv]
             card_config = game_config.card_basis[card_info['id']]
 
-            dps_rate = random.randint(*love_config['dps_rate'])      # 伤害系数 万分之
+            dps_rate = random.randint(*love_config['dps_rate'])  # 伤害系数 万分之
 
             role_config = game_config.script_role[role_id]
             role_attr = list(role_config['role_attr'])
             # 随机属性
+            more_attr = []
             if random.randint(0, 10000) <= card_config['ex_special_rate']:
                 special_attr = weight_choice(card_config['special_quality'])[0]
-                role_attr.append(special_attr)
+                more_attr.append(special_attr)
 
             role_effect = effect[role_id] = {}
             # 计算属性
@@ -516,11 +905,11 @@ class ScriptLogic(object):
                 base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
                 if base_value < 0:
                     continue
-                value = base_value * dps_rate / 10000.0
+                value = math.ceil(base_value * dps_rate / 10000.0)
                 if attr in role_effect:
-                    role_effect[attr] += value
+                    role_effect[attr][0] += value
                 else:
-                    role_effect[attr] = value
+                    role_effect[attr] = [value, False]
 
             # 判断是否暴击
             c1 = card_config['crit_rate_base'] / 10000.0
@@ -530,7 +919,19 @@ class ScriptLogic(object):
                 # 暴击效果
                 d = (role_score + script_score) / 100.0
                 for attr in role_effect:
-                    role_effect[attr] = role_effect[attr] * (1.1 + d)
+                    role_effect[attr][0] = math.ceil(role_effect[attr][0] * (1.1 + d))
+                    role_effect[attr][1] = True
+
+            for attr in more_attr:
+                base_value = card_info['char_pro'][card.PRO_IDX_MAPPING[attr]]
+                if base_value < 0:
+                    value = 1
+                else:
+                    value = math.ceil(base_value * dps_rate / 10000.0)
+                if attr in role_effect:
+                    role_effect[attr][0] += value
+                else:
+                    role_effect[attr] = [value, False]
 
         return {
             'effect': effect,
@@ -538,5 +939,83 @@ class ScriptLogic(object):
             'match_role': match_role
         }
 
+    def upgrade_continued_level(self, script_id):
+        script = self.mm.script
+        if script_id not in script.continued_script:
+            return 1, {}
 
+        script_info = script.continued_script[script_id]
+        continued_lv = script_info['continued_lv']
+        if continued_lv + 1 not in game_config.script_continued_level:
+            return 2, {}  # 已是最大等级
 
+        continued_lv_config = game_config.script_continued_level[continued_lv + 1]
+        upgrade_cost = continued_lv_config['upgrade_cost']
+        rc, _ = del_mult_goods(self.mm, upgrade_cost)
+        if rc:
+            return rc, {}
+
+        now = int(time.time())
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
+        # 开发环境改时间可能会出负数，处理下
+        last_dollar = max(last_dollar, 0)
+
+        finished_summary = script_info['finished_summary']
+        all_income = finished_summary['income']
+
+        continued_income = continued_lv_config['parm'] * all_income / 100
+        continued_time = game_config.common[19]
+        continued_income_unit = continued_income / continued_time
+
+        script_info['continued_lv'] = continued_lv + 1
+        script_info['continued_income_unit'] = continued_income_unit
+        script_info['continued_start'] = continued_start
+        script_info['continued_income'] += last_dollar
+
+        self.mm.user.add_dollar(last_dollar)
+        self.mm.user.save()
+        script.save()
+        return 0, {
+            'reward': {'dollar': last_dollar},
+            'continued_script': script.continued_script
+        }
+
+    def get_continued_reward(self, script_id):
+        script = self.mm.script
+        if script_id not in script.continued_script:
+            return 1, {}
+
+        script_info = script.continued_script[script_id]
+        now = int(time.time())
+        if now >= script_info['continued_expire']:
+            now = script_info['continued_expire']
+
+        continued_start = script_info['continued_start']
+        div, mod = divmod(now - continued_start, 60)
+        last_dollar = 0
+        if div:
+            last_dollar = div * script_info['continued_income_unit']
+            continued_start = now - mod
+
+        # 开发环境改时间可能会出负数，处理下
+        last_dollar = max(last_dollar, 0)
+        script_info['continued_start'] = continued_start
+        script_info['continued_income'] += last_dollar
+        if now <= continued_start:
+            script.continued_script.pop(script_id)
+            script.save()
+
+        self.mm.user.add_dollar(last_dollar)
+        self.mm.user.save()
+        script.save()
+
+        return 0, {
+            'reward': {'dollar': last_dollar},
+            'continued_script': script.continued_script
+        }

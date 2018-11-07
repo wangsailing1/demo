@@ -90,7 +90,6 @@ return_msg_config = {
     'error_guild_add_max': u'今日添加成员已达上限，无法添加成员',
 }
 
-
 account_msg = {
     'account.register': {
         1: u"账号只能为6-20位的字母数字组合",
@@ -109,13 +108,11 @@ account_msg = {
     },
 }
 
-
 config_msg = {
     'config.all_config': {
         1: u"配置无效",
     },
 }
-
 
 user_msg = {
     'user.new_user': {
@@ -172,22 +169,62 @@ user_msg = {
     'user.change_icon': {
         1: u'该头像未解锁',
     },
+    'user.unlock_icon': {
+        1: u'没有头像',
+        2: u'头像已解锁',
+        3: u'性别不符',
+    },
 }
 
 card_msg = {
+    'card.card_level_up': {
+        2: u'请升级格调等级',
+    },
+    'card.card_quality_up': {
+        3: u'卡牌装备不足',
+        4: u'卡牌等级不足',
+    },
     'card.card_add_love_exp': {
         2: u'道具类型不符',
         3: u'超出送礼上限',
+        4: u'赠送礼物已达上限，属性不再提升，请升级羁绊后再来',
     },
     'card.card_love_level_up': {
         2: u'经验不足，无法升级',
         3: u'已到最大等级',
     },
-
+    'card.card_train': {
+        2: u'已达到最大培养次数',
+    },
+    'card.set_equip': {
+        2: u'已穿此类装备',
+        3: u'装备超出所需上限',
+        4: u'装备与卡牌不匹配',
+    },
 }
 
+
+gacha_msg = {
+    'gacha.get_gacha': {
+        2: u'cd中'
+    }
+}
+
+
+script_msg = {
+    'script.set_card': {
+        2: u'已选完角色',
+        3: u'演员与角色设置不可重复',
+        4: u'请选角色',
+    },
+    'script_gacha.get_gacha': {
+        1: u'可抽取次数不足'
+    }
+}
+
+
 chapter_stage_msg = {
-    'chapter_stage.chapter_stage_fight':{
+    'chapter_stage.chapter_stage_fight': {
         1: u'关卡参数错误',
         11: u'章节错误',
         12: u'难度错误',
@@ -202,7 +239,7 @@ chapter_stage_msg = {
         23: u'有未拥有的艺人',
         24: u'等级不够',
     },
-    'chapter_stage.auto_sweep':{
+    'chapter_stage.auto_sweep': {
         11: u'章节错误',
         12: u'难度错误',
         13: u'关卡错误',
@@ -218,7 +255,7 @@ chapter_stage_msg = {
         23: u'有未拥有的艺人',
         24: u'等级不够',
     },
-    'chapter_stage.get_dialogue_reward':{
+    'chapter_stage.get_dialogue_reward': {
         11: u'剧情关配置错误',
         12: u'剧情选择错误',
         13: u'卡牌id错误',
@@ -226,14 +263,14 @@ chapter_stage_msg = {
 }
 
 book_msg = {
-    'book.get_card_reward':{
+    'book.get_card_reward': {
         1: u'组合未完成',
         2: u'组合未完成',
         3: u'奖励已领',
         4: u'没有相应组合',
         5: u'奖励错误',
     },
-    'book.get_script_reward':{
+    'book.get_script_reward': {
         1: u'组合未完成',
         2: u'组合未完成',
         3: u'奖励已领',
@@ -250,11 +287,11 @@ book_msg = {
 }
 
 shop_msg = {
-    'shop.index':{
+    'shop.index': {
         -1: u'未解锁',
         2: u'配置错误',
     },
-    'shop.buy':{
+    'shop.buy': {
         -1: u'未解锁',
         2: u'商品错误',
         3: u'配置错误',
@@ -262,16 +299,16 @@ shop_msg = {
         5: u'商品已下架',
         6: u'商品未上架',
     },
-    'shop.refresh_goods':{
+    'shop.refresh_goods': {
         -1: u'未解锁',
         1: u'我们正在准备进货，请耐心等待',
         2: u'刷新次数不足',
     },
-    'shop.gift_index':{
+    'shop.gift_index': {
         -1: u'未解锁',
         2: u'配置错误',
     },
-    'shop.gift_buy':{
+    'shop.gift_buy': {
         -1: u'未解锁',
         2: u'商品错误',
         3: u'配置错误',
@@ -279,11 +316,11 @@ shop_msg = {
         5: u'商品已下架',
         6: u'商品未上架',
     },
-    'shop.resource_index':{
+    'shop.resource_index': {
         -1: u'未解锁',
         2: u'配置错误',
     },
-    'shop.resource_buy':{
+    'shop.resource_buy': {
         -1: u'未解锁',
         2: u'商品错误',
         3: u'配置错误',
@@ -291,11 +328,11 @@ shop_msg = {
         5: u'商品已下架',
         6: u'商品未上架',
     },
-    'shop.mystical_index':{
+    'shop.mystical_index': {
         -1: u'未解锁',
         2: u'配置错误',
     },
-    'shop.mystical_buy':{
+    'shop.mystical_buy': {
         -1: u'未解锁',
         2: u'商品错误',
         3: u'配置错误',
@@ -303,7 +340,7 @@ shop_msg = {
         5: u'商品已下架',
         6: u'商品未上架',
     },
-    'shop.mystical_refresh':{
+    'shop.mystical_refresh': {
         -1: u'未解锁',
         1: u'刷新次数也达最大次数',
         2: u'配置错误',
@@ -311,6 +348,88 @@ shop_msg = {
     },
 }
 
+block_msg = {
+    'block.get_reward': {
+        1: u'已领奖',
+    },
+    'block.get_daily_reward': {
+        1: u'已领奖',
+        2: u'配置错误'
+    },
+    'block.congratulation': {
+        1: u'已祝贺',
+    }
+}
+
+friend_msg = {
+    'friend.actor_chat': {
+        1: u'未选择艺人',
+        11: u'当前对话id错误',
+        13: u'次数超出',
+        14: u'当前对话id错误',
+        15: u'对话配置错误',
+        16: u'对话选择错误',
+        17: u'已选择过对话',
+        18: u'对话已结束',
+        19: u'未选择对话',
+
+    },
+    'friend.rename': {
+        1: u'已领奖',
+        2: u'配置错误'
+    }
+}
+
+fans_activity_msg = {
+    'fans_activity.fans_index': {
+        11: u'未举办该活动',
+
+    },
+    'fans_activity.activity': {
+        1: u'没有艺人参加',
+        2: u'未选活动',
+        3: u'活动id错误',
+        11: u'卡牌错误',
+        12: u'没有艺人参加',
+        13: u'有卡牌属性值不够',
+        14: u'有卡牌性别不符',
+        15: u'有卡牌类型不符',
+        16: u'有卡牌人气不足',
+        17: u'美元不足',
+        18: u'活动已结束，请先领取奖励',
+    },
+    'fans_activity.unlock_activity': {
+        1: u'没有活动',
+        2: u'该活动尚不能解锁',
+        3: u'美元不足',
+        4: u'已解锁',
+        5: u'首次建筑的等级错误',
+    },
+    'fans_activity.up_activity': {
+        1: u'活动等级已经最大',
+        2: u'该活动尚不能解锁',
+        3: u'美元不足',
+        4: u'活动错误',
+        5: u'升级id错误',
+    },
+    'fans_activity.get_reward': {
+        1: u'请选择活动',
+        2: u'未参加活动',
+    },
+}
+
+mission_msg = {
+    'mission.get_reward': {
+        1: u'参数错误',
+        2: u'未完成',
+        3: u'已领',
+        4: u'未完成',
+    },
+    'mission.refresh_mission': {
+        1: u'刷新次数不足',
+        2: u'任务id未在任务中',
+    },
+}
 
 i18n = {
     'user_name': u'敢斗团',

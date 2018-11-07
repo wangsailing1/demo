@@ -91,6 +91,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
     12: "guild_coin"    # 公会资金
     13: ""              # 公会贡献
     14: "vip_exp"       # vip经验
+    19:关注度
     
 
 """
@@ -116,7 +117,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 13  公会贡献
                 14  VIP经验
                 15
-                16
+                16 点赞
                 17
                 18  艺人名片
                 996 艺人经验
@@ -212,8 +213,14 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('pieces', {}), item_id, item_num)
         mm.card.save()
     elif gift_sort == 10:
-        # todo
-        pass
+        for pkg in gift_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not item_num:
+                continue
+            mm.equip.add_piece(item_id, item_num)
+            add_dict(data.setdefault('equip_pieces', {}), item_id, item_num)
+        mm.equip.save()
     elif gift_sort == 11:  # 玩家经验
         for pkg in gift_config:
             num = pkg[1]
@@ -255,6 +262,15 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
         if save:
             mm.script.save()
 
+    if gift_sort == 16:  # 点赞
+        for pkg in gift_config:
+            add_like = pkg[1]
+            if not add_like:
+                continue
+            mm.user.add_like(add_like)
+            add_dict(data, 'like', add_like)
+        mm.user.save()
+
     elif gift_sort == 18:  # 增加艺人名片
         for pkg in gift_config:
             item_id = pkg[0]
@@ -263,6 +279,16 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 mm.friend.actors[item_id] = {'show': 1, 'chat_log': [], }
                 add_dict(data.setdefault('actors', {}), item_id, item_num)
         mm.friend.save()
+
+    elif gift_sort == 19:  # 关注度
+        for pkg in gift_config:
+            add_type = pkg[0]
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.user.add_attention(add_type,add_num)
+            add_dict(data.setdefault('attention', {}), add_type, add_num)
+        mm.user.save()
 
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
@@ -361,7 +387,12 @@ def del_goods(mm, goods_sort, goods_config):
                 return 'error_piece', 0
         mm.card.save()
     elif goods_sort == 10:  #
-        return 'error_goods_sort_10', 0
+        for pkg in goods_config:
+            item_id = pkg[0]
+            item_num = pkg[1]
+            if not mm.equip.del_piece(item_id, item_num):
+                return 'error_piece', 0
+        mm.equip.save()
     elif goods_sort == 11:  # 玩家经验
         return 'error_exp', 0
     elif goods_sort == 12:  # 公会币

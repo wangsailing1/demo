@@ -7,6 +7,7 @@ card_book = {
     'intro':            ('intro',       'int'),         # 组合描述
     'card':             ('card',        'int_list'),    # 角色
     'award':            ('award',       'int_list'),    # 奖励
+    'fans_ativity':     ('fans_ativity','int'),    # 粉丝活动加成
 
 }
 

@@ -643,7 +643,10 @@ def common_pop_key(replace_key):
 def last_random_name(config, data):
 
     last_name = data.get('uk')
-    add_dict_list(config, 'last_name', last_name)
+    sex = data.get('gender')
+    if sex not in config:
+        config[sex] = {}
+    add_dict_list(config[sex], 'last_name', last_name)
 
     return config
 
@@ -859,6 +862,7 @@ mapping = {
     'int_list_to_dict': int_list_to_dict,
     'buy_silver': specail_pop_uk('id'),
     'common_config': common_pop_key('value'),
-    'script_licence_config': common_pop_key('cd'),
+    'script_licence_config': specail_pop_uk('num'),
+    'gacha_cd_config': specail_pop_uk('time'),
 }
 

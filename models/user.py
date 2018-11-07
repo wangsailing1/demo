@@ -74,7 +74,8 @@ class User(ModelBase):
     :var coin: 金币
     :var silver: 银币
     :var total_silver: 累积银币
-    :var role: 角色id, 主英雄的icon
+    :var role: 角色id, 主英雄的性别
+    :var icon: 主英雄的头像
     :var vip: vip等级
     :var vip_exp: vip经验
     :var active_time: 最后活跃时间
@@ -85,7 +86,8 @@ class User(ModelBase):
     :var exit_guild_time: 退工会时间
     :var guild_guard: 公会护卫列表
     :var utime: 更新时间 '2015-12-15'
-    :var sid: session_id
+    :var sid: session_id attention
+    :var attention: 关注度
     :var expired: session过期时间
     :var mk: 登录+1, 用于验证多点登录
     :var unlock_build: [], 解锁建筑物id
@@ -103,6 +105,7 @@ class User(ModelBase):
     :var guild_exp_times: {    # 公会经验副本挑战次数
         coin_id: 0                   # 据点id:使用的次数
     },
+    :var got_icon: [],   # 已解锁icon
     :var opera_awards: [],   # 剧情奖励领取记录
     :var level_mail_done: [],   # 已领取的等级奖励邮件id
     :var coin_log: [],          # 钻石获取记录
@@ -174,6 +177,7 @@ class User(ModelBase):
             'update_exp_pot': 0,
             'privileges': {},
             'update_privilege': 0,
+            'got_icon':[],
             # 'diamond': 0,
             'consume_diamond': 0,   # 历史消费钻石
             'consume_silver': 0,    # 历史消费钻石
@@ -184,8 +188,11 @@ class User(ModelBase):
             'dollar': 0,            # 美元
             'script_income': 0,            # 拍片总票房
             'script_license': 0,    # 拍片许可证
-            'used_license_times': 0,  # 许可证当日使用次数
+            'license_update_time': int(time.time()),    # 拍片许可证恢复时间
+            'license_recover_times': 0,          # 许可证当日恢复次数
+            'used_license_times': 0,             # 许可证当日使用次数
 
+            'attention': {},
             'total_silver': 0,
             'like': 0,              # 点赞数
             'role': 0,
@@ -381,6 +388,7 @@ class User(ModelBase):
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
+            self.license_recover_times = 0
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -395,8 +403,55 @@ class User(ModelBase):
             self.donate_cooling_time = 0
             self.donate_times = 0
             is_save = True
+
+        # 许可证恢复
+        recover_need_time = self.license_recover_need_time()
+        if recover_need_time:
+            div, mod = divmod(now - self.license_update_time, recover_need_time)
+            while div and self.can_recover_license_times():
+                self.script_license += 1
+                self.license_recover_times += 1
+                self.license_update_time += recover_need_time
+
+                recover_need_time = self.license_recover_need_time()
+                if not recover_need_time:
+                    break
+                div, mod = divmod(now - self.license_update_time, recover_need_time)
+
+            if not self.can_recover_license_times():
+                self.license_update_time = now
+
         if is_save:
             self.save()
+
+    def license_recover_need_time(self):
+        cd = game_config.script_license.get('cd', [])
+        if not cd:
+            return 0
+        times = self.license_recover_times
+        if times >= len(cd):
+            times = -1
+        return cd[times] * 60
+
+    def can_recover_license_times(self):
+        gacha_cd = game_config.script_license.get('cd', [])
+        return self.license_recover_times < len(gacha_cd)
+
+    def license_recover_expire(self):
+        """恢复倒计时"""
+        if not game_config.script_license:
+            return 0
+
+        if not self.can_recover_license_times():
+            return 0
+
+        cd = game_config.script_license['cd']
+        times = self.license_recover_times
+        if times >= len(cd):
+            return 0
+
+        need_time = cd[times] * 60
+        return need_time - (int(time.time()) - self.license_update_time)
 
     def add_buy_silver_times(self, num=1):
         """
@@ -1111,6 +1166,9 @@ class User(ModelBase):
         :return:
         """
         self.like += int(like)
+
+    def add_attention(self,type,attention):
+        self.attention[type] = self.attention.get(type,0) + int(attention)
 
     def is_silver_enough(self, silver):
         """ 是否银币足够

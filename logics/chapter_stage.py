@@ -46,12 +46,12 @@ class Chapter_stage(object):
                 data['chapter'] = self.chapter_stage.chapter
                 return 0, data
             next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-            if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+            if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                 self.chapter_stage.next_chapter.extend(next_chapter)
             self.chapter_stage.chapter[chapter][type_hard][stage] = {}
             if not auto:
                 next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-                if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                     self.chapter_stage.next_chapter.extend(next_chapter)
             data['next_chapter'] = self.chapter_stage.next_chapter
             data['chapter'] = self.chapter_stage.chapter
@@ -68,7 +68,7 @@ class Chapter_stage(object):
             if chapter not in self.chapter_stage.chapter or type_hard not in self.chapter_stage.chapter[chapter] \
                     or stage not in self.chapter_stage.chapter[chapter][type_hard]:
                 return 21, {}  # 尚未通关
-            if config[chapter][type_hard]['script_end_level'] > self.chapter_stage.chapter[chapter][type_hard][
+            if config[chapter][type_hard]['script_end_level'] >= self.chapter_stage.chapter[chapter][type_hard][
                 stage].get('star', 0):
                 return 22, {}  # 未达到扫荡星级
         stage_config = config_s[stage_id]
@@ -93,12 +93,17 @@ class Chapter_stage(object):
                 add_fight_exp = stage_config['fight_exp'] * times
                 script_type = game_config.script[script_id]['style']
                 card_config = game_config.card_basis
+                style_info = {}
                 if not auto:
                     for k, v in align.iteritems():
                         if v not in self.mm.card.cards:
                             continue
-                        if script_type in [i[0] for i in card_config[self.mm.card.cards[v]['id']]['tag_script']]:
-                            self.mm.card.add_style_exp(v, script_type, add_fight_exp)
+                        if v not in style_info:
+                            style_info[v] = {}
+                        style_info[v]['old'] = copy.deepcopy(self.mm.card.cards[v]['style_pro'][script_type])
+                        self.mm.card.add_style_exp(v, script_type, add_fight_exp)
+                        style_info[v]['new'] = self.mm.card.cards[v]['style_pro'][script_type]
+                    self.mm.card.save()
                 self.mm.user.action_point -= need_point
                 if chapter not in self.chapter_stage.chapter:
                     self.chapter_stage.chapter[chapter] = {}
@@ -109,8 +114,9 @@ class Chapter_stage(object):
                 fight_time = self.chapter_stage.chapter[chapter][type_hard][stage].get('fight_times', 0)
                 self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
                 old_level = copy.copy(self.mm.user.level)
+                old_exp = copy.copy(self.mm.user.exp)
                 if not auto:
-                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star',0):
+                    if data['star'] > self.chapter_stage.chapter[chapter][type_hard][stage].get('star', 0):
                         self.chapter_stage.chapter[chapter][type_hard][stage]['star'] = data['star']
 
                 self.mm.user.add_player_exp(add_player_exp)
@@ -121,16 +127,23 @@ class Chapter_stage(object):
                     rewards[k] = add_mult_gift(self.mm, v)
                 if not auto:
                     next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-                    if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                    if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 reward = add_mult_gift(self.mm, all_gift)
+                if is_first:
+                    self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+                    self.mm.chapter_stage.done_chapter_log.append(stage_id)
                 self.mm.user.save()
                 self.chapter_stage.save()
                 data['old_level'] = old_level
+                data['old_exp'] = old_exp
                 data['new_level'] = self.mm.user.level
+                data['new_exp'] = self.mm.user.exp
                 data['reward'] = reward
                 data['rewards'] = rewards
                 data['next_chapter'] = self.chapter_stage.next_chapter
+                data['stage_id'] = stage_id
+                data['style_info'] = style_info
         return rc, data
 
     # 战斗（只计算战斗结果,星级过关）
@@ -182,16 +195,19 @@ class Chapter_stage(object):
                         for attr_id in attr:
                             hurt = self.get_hurt(attr_id, card_id, tag_score[card_id], is_enemy=True)
                             hurts['attr'][attr_id] = hurt
-                            all_score += hurt
+                            all_score += hurt[0]
                         fight_data[round_num][card_id] = hurts
                         # 概率触发属性伤害
-                        config = game_config.chapter_enemy[int(card_id)]
-                        more_attr = [[5, config[self.MAPPING[5]]], [6, config[self.MAPPING[6]]]]
-                        more_attr = weight_choice(more_attr)
-                        hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
                         hurts['more_attr'] = {}
-                        hurts['more_attr'][more_attr[0]] = hurt
-                        all_score += hurt
+                        config = game_config.chapter_enemy[int(card_id)]
+                        rate = config['ex_special_rate']
+                        rate_ = random.randint(1, 10001) <= rate
+                        if rate_:
+                            more_attr = config['special_quality']
+                            more_attr = weight_choice(more_attr)
+                            hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
+                            hurts['more_attr'][more_attr[0]] = hurt
+                            all_score += hurt[0]
                         fight_data[round_num][card_id] = hurts
                         continue
 
@@ -201,7 +217,7 @@ class Chapter_stage(object):
                              'attr': {}}
                     for attr_id in attr:
                         hurt = self.get_hurt(attr_id, card_id, tag_score[card_id])
-                        all_score += hurt
+                        all_score += hurt[0]
                         hurts['attr'][attr_id] = hurt
                     fight_data[round_num][card_id] = hurts
                     # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
@@ -214,7 +230,7 @@ class Chapter_stage(object):
                         more_attr = weight_choice(more_attr)
                         hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
                         hurts['more_attr'][more_attr[0]] = hurt
-                        all_score += hurt
+                        all_score += hurt[0]
                     else:
                         hurts['more_attr'] = {}
                     fight_data[round_num][card_id] = hurts
@@ -228,6 +244,7 @@ class Chapter_stage(object):
             data['fight_data'] = fight_data
             data['all_score'] = all_score
             data['star'] = star
+            data['tag_score'] = tag_score
             if not data['win']:
                 return 0, data
 
@@ -240,11 +257,12 @@ class Chapter_stage(object):
             if level == 1 and all_score < score:
                 return level
             elif level == len(score_config) and all_score >= score:
-                return level + 1
+                return level
             elif score <= all_score < score_config[level]:
                 return level + 1
 
     def get_hurt(self, attr_id, card_id, score, is_enemy=False):
+        is_crit = False
         if is_enemy:
             card_info = game_config.chapter_enemy[int(card_id)]
             v = card_info['charpro'][attr_id - 1]
@@ -263,7 +281,8 @@ class Chapter_stage(object):
         if self.is_crit(card_id, score, is_enemy=is_enemy):
             # 暴击伤害
             hurt = self.crit_hurt(hurt, score)
-        return hurt
+            is_crit = True
+        return [hurt,is_crit]
 
     def crit_hurt(self, hurt, score):
         crit = 1.1 + score / 100.0
@@ -315,11 +334,13 @@ class Chapter_stage(object):
         gift = {}
 
         for times_ in xrange(1, times + 1):
+            gift[times_] = copy.deepcopy(stage_config['fight_reward'])
+            print gift
             for i in range(1, 4):
                 random_num = 'random_num%s' % i
                 random_reward = 'random_reward%s' % i
                 for _ in xrange(stage_config[random_num]):
-                    gift[times_] = [(weight_choice(stage_config[random_reward])[:-1])]
+                    gift[times_].extend([(weight_choice(stage_config[random_reward])[:-1])])
 
         if is_first:
             gift['first_reward'] = (stage_config['first_reward'])
@@ -329,14 +350,24 @@ class Chapter_stage(object):
     def get_dialogue_reward(self, now_stage, choice_stage, card_id):
         config = game_config.avg_dialogue
         card_config = game_config.card_basis
+        card_id = config[choice_stage]['hero_id']
         if now_stage not in config:
             return 11, {}  # 剧情关配置错误
         if choice_stage not in config[now_stage]['option_team']:
             return 12, {}  # 剧情选择错误
+        if not card_id:
+            return 0, {
+                'add_value': {},
+                'reward': {},
+                'love_lv': 0,
+                'old_value': {}
+            }
+
         if card_id not in card_config:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
-        old_value = copy.deepcopy(self.mm.card.attr.get(group_id,{}))
+        old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+        old_value.setdefault('like', 0)
         reward = {}
         add_value = {}
         if now_stage not in self.chapter_stage.got_reward_dialogue:

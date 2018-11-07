@@ -6,10 +6,14 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 
+REWARD_TIME = '22:30:00'
+
 
 class Block(ModelBase):
     NUM = 'num'
-    REWORD_TIME = '22:30:00'
+    rank_list = [1, 2, 3, 'nv', 'nan', 'medium', 'audience']
+    RANKMAPPING = {'nv': 4, 'nan': 5, 'medium': 6, 'audience': 7}
+    RANK = {1: 1, 2: 2, 3: 3, 4: 'nv', 5: 'nan', 6: 'medium', 7: 'audience'}
 
     def __init__(self, uid):
         self.uid = uid
@@ -17,94 +21,80 @@ class Block(ModelBase):
             'block_num': 1,
             'cup': 0,
             'block_group': 1,
+            'top_script': {},
+            'big_sale': 0,
+            'last_date': '',  # 最进操作时间
+            'reward_data': {},  # 奖励
+            'award_ceremony': 0,  # 是否参加过颁奖典礼
+            'reward_daily': '',  # 日常奖励领取时间
+            'get_award_ceremony': 0,  # 典礼奖励是否领取
+            'has_ceremony': 0,
+            'cup_log': {},  # 奖杯获取
+            'is_count': 0,  # 是否计算奖杯
+            'cup_log_card':{},
+            'cup_log_script':{}
         }
 
         super(Block, self).__init__(self.uid)
 
-    def up_block(self, cup):
+    def pre_use(self):
+        if self.last_date != get_date():
+            self.last_date = get_date()
+
+            self.big_sale = 0
+            self.award_ceremony = 0
+            self.has_ceremony = 1
+            self.is_count = 0
+            self.reward_data = {}
+            self.save()
+
+    def up_block(self, cup, is_save=False):
         config = game_config.dan_grading_list
         self.cup += cup
         if self.cup >= config[self.block_num]['promotion_cup_num']:
             self.block_num += 1
             self.cup = 0
-        self.save()
+        if is_save:
+            self.save()
+
+    def get_key_profix(self, block=1, group='', type=''):
+        """
+        :param block: block(记录街区所有人)  block_num(取编码)
+        :param group: 
+        :param type:  剧本type ，nan=男，nv=女，medium=媒体评分，audience=观众评分,income=总票房,script=单片票房
+        :return: 
+        """
+        if not group and not type:
+            return 'block_%s_all' % (block)
+        if not type:
+            return 'block_%s||group_%s' % (block, group)
+        return 'block_%s||group_%s||type_%s' % (block, group, type)
+
+    def get_remain_time(self):
+        date = get_date()
+        reward_time = date + ' ' + REWARD_TIME
+        reward_time = int(time.mktime(time.strptime(reward_time, '%Y-%m-%d %H:%M:%S')))
+        now_time = int(time.time())
+        remain_time = reward_time - now_time
+        return remain_time
 
 
-    #获取玩家存储key
-    def get_block_key(self):
-        key = self.make_key(uid=self.block_num)
-        key_date = key + '|' + self.get_date()
-        return key_date
-
-    # 获取日期
-    def get_date(self):
-        now = time.strftime('%F')
-        now_time = time.strftime('%T')
-        if now_time >= self.REWORD_TIME:
-            now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
-        return now
-
-    # 把玩家添加到所属街区
-    def add_user_by_block(self, uid=None, score=0):
-        if not uid:
-            uid = self.uid
-        key_date = self.get_block_key()
-        self.fredis.zadd(key_date, uid, score)
-        self.fredis.expire(key_date, 7 * 24 * 3600)
-
-    # 从街区删除玩家（玩家升级街区后操作）
-    def delete_user_by_block(self, uid=None,date = None,num = None):
-        if not num:
-            num = self.block_num - 1
-        if not date:
-            date = self.get_date()
-        if not uid:
-            uid = self.uid
-        key = self.make_key(uid=num)
-        key_date = key + '|' + date
-        self.fredis.zrem(key_date, uid)
-
-    # 检查玩家是否在所属街区
-    def check_user_exist_by_block(self, uid=None):
-        if not uid:
-            uid = self.uid
-        key_date = self.get_block_key()
-        return self.fredis.zscore(key_date, uid)
-
-    # 获取编号
-    def get_num(self):
-        key_date = self.get_block_key()
-        key_date = '%s|%s' % (key_date, self.NUM)
-        return self.fredis.incr(key_date)
-
-    # 计算玩家所属组
-    def get_group(self, uid=None):
-        if not uid:
-            uid = self.uid
-        rank = self.fredis.zrank(self._key_date, uid)
-        if rank == 0:
-            return 1
-        if rank % 100 or not rank % 100 and rank / 100:
-            return rank / 100 + 1
-        return rank / 100
-
-    #记录最大的有人街区
-    def set_max_block(self):
-        key = self.make_key(uid='block')
-        max_block = int(self.fredis.get(key)) if self.fredis.get(key) else 0
-        if self.block_num > max_block:
-            self.fredis.set(key,self.block_num)
-
-    #获取最大的有人街区
-    def get_max_block(self):
-        key = self.make_key(uid='block')
-        return int(self.fredis.get(key)) if self.fredis.get(key) else 0
+# 获取日期
+def get_date():
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time >= REWARD_TIME:
+        now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+    return now
 
 
-
-
-
-
+# 获取前一天日期
+def get_date_before():
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time < REWARD_TIME:
+        now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
+    return now
 
 
 ModelManager.register_model('block', Block)

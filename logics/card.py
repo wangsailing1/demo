@@ -41,13 +41,17 @@ class CardLogic(object):
         if user.coin <= 0:
             return 'error_coin', {}
 
+        card_config = game_config.card_basis[card_dict['id']]
+        if card_dict['lv'] >= card_config['lvmin']:
+            return 2, {}        # 请升级格调等级
+
         level_config = game_config.card_level[card_dict['lv']]
         add_exp = min(user.coin, level_config['level_gold'])
         if user.coin < add_exp:
             return 'error_coin', {}
 
         if not card.add_card_exp(card_oid, add_exp, card_dict):
-            return 2, {}
+            return 3, {}
 
         card.save()
         user.deduct_coin(add_exp)
@@ -94,11 +98,17 @@ class CardLogic(object):
                 else:
                     # 味道类型
                     if tp in card_config['love_gift_type']:
+                        card_dict = card_dict or self.cards[card_oid]
+                        info = card_dict['love_gift_pro'].setdefault(tp, {'exp': 0, 'lv': 1})
+                        next_lv = info['lv']
+                        if next_lv >= gift_lv_max:
+                            return 4, {}  #赠送礼物已达上限，属性不再提升，请升级羁绊后再来
+
                         add_love_gift_pro.append((tp, num))
 
-        # gift_count = card_dict['gift_count'] + add_gift_count
-        # if gift_count > gift_lv_max:
-        #     return 3, {}            # 超出送礼上限
+        gift_count = card_dict['gift_count'] + add_gift_count
+        if gift_count > gift_lv_max:
+            return 3, {}            # 超出送礼上限
 
         for item_id, item_num in items:
             item.del_item(item_id, item_num)
@@ -155,7 +165,7 @@ class CardLogic(object):
         return 0, {}
 
     def card_quality_up(self, card_oid):
-        """卡牌进阶
+        """卡牌进阶/格调
 
         :param card_oid:
         :return:
@@ -176,6 +186,9 @@ class CardLogic(object):
 
         if set(card_dict['equips']) != set(card_config['quality_cost']):
             return 3, {}    # 卡牌装备不足
+
+        if card_dict['lv'] < card_config['lvmin']:
+            return 4, {}    # 卡牌等级不足
 
         card_dict['equips'] = []
         card_dict['id'] = next_id
@@ -265,7 +278,7 @@ class CardLogic(object):
         cur_equips = card_dict.setdefault('equips', [])
         for equip_id in equip_ids:
             if equip_id not in cost:
-                return 1, {}        # 不是所需装备
+                return 4, {}        # 不是所需装备
             if equip_id in cur_equips:
                 return 2, {}    # 已有此类装备
             if len(cur_equips) >= len(cost):

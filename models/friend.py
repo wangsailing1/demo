@@ -77,7 +77,8 @@ class Friend(ModelBase):
             'nickname': {},
             'newest_friend':[],
             'appointment_times':0,
-
+            'got_point_daily':0,
+            
 
         }
         super(Friend, self).__init__(self.uid)
@@ -88,6 +89,7 @@ class Friend(ModelBase):
         :return:
         """
         now = datetime.datetime.now().strftime('%Y-%m-%d')
+        week = datetime.datetime.now().strftime('%Y-%W')
         if now != self.last_refresh_date:
             self.battle_friend = []
             self.parised_friend = []
@@ -96,6 +98,7 @@ class Friend(ModelBase):
             self.received_gift = []
             self.last_refresh_date = now
             self.phone_daily_times = 0
+            self.got_point_daily = 0
             self.phone_daily_log = {}
             self.save()
 
@@ -208,9 +211,7 @@ class Friend(ModelBase):
             message['id'] = self.messages[-1]['id'] + 1
 
         self.messages.append(message)
-        self.newest_friend.append(message['send_uid'])
-        self.newest_friend = self.newest_friend[-10:]
-
+        self.add_newest_uid(message['send_uid'])
         if save:
             self.save()
 
@@ -455,6 +456,8 @@ class Friend(ModelBase):
 
     def get_chat_choice(self, group_id):
         chat_config = game_config.phone_daily_dialogue
+        if self.phone_daily_times >= chat_config.get(group_id,{}).get('daily_times',0):
+            return 0
         chat_list = chat_config.get(group_id, {}).get('daily_dialogue', [])
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         chat_choice = []
@@ -474,6 +477,14 @@ class Friend(ModelBase):
         end_id = info[-1] if len(info) > 0 else 0
         config = game_config.phone_dialogue
         return config.get(end_id,{}).get('is_end',1)
+
+    def add_newest_uid(self,uid,is_save=False):
+        if uid in self.newest_friend:
+            self.newest_friend.remove(uid)
+        self.newest_friend.append(uid)
+        self.newest_friend = self.newest_friend[-10:]
+        if is_save:
+            self.save()
 
 
 

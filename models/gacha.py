@@ -31,7 +31,9 @@ class Gacha(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'refresh_date': '',
             'coin_times': 0,
+            'today_coin_times': 0,
             'coin_lv': 0,
 
             'coin_pool': [],          # 探寻到的3个gacha_id
@@ -42,6 +44,11 @@ class Gacha(ModelBase):
         super(Gacha, self).__init__(self.uid)
 
     def pre_use(self):
+        today = time.strftime('%F')
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.today_coin_times = 0
+
         if self.coin_pool_expire() <= 0:
             self.clear_coin_pool()
 
@@ -51,17 +58,27 @@ class Gacha(ModelBase):
         self.coin_receive = []
 
     def coin_pool_expire(self):
-        expire = self.POOL_EXPIRE - (int(time.time()) - self.coin_time)
+        cd = game_config.coin_gacha_cd['cd']
+        times = self.today_coin_times
+        if times >= len(cd):
+            times = -1
+        expire = cd[times] * 60 - (int(time.time()) - self.coin_time)
         return max(expire, 0)
 
     def add_coin_times(self, times=1):
+        self.today_coin_times += times
         next_times = self.coin_times + times
+        next_lv = self.coin_lv
 
         while 1:
-            if self.coin_lv + 1 not in game_config.coin_gacha_lv:
+            if next_lv + 1 not in game_config.coin_gacha_lv:
                 break
+            if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
+                next_lv += 1
+                continue
             break
         self.coin_times = next_times
+        self.coin_lv = next_lv
 
 
 ModelManager.register_model('gacha', Gacha)

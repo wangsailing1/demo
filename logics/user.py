@@ -85,6 +85,8 @@ class UserLogic(object):
         result['server_open_time'] = serverM.get_server_config(self.mm.user._server_name)['open_time']
         result['question_done'] = self.user.question_done
 
+        result['script_continued_summary'] = self.mm.script.script_continued_summary()
+
         # 竞技场第一
         high_ladder_top_one_info = self.get_high_ladder_top_one()
         result.update(high_ladder_top_one_info)
@@ -616,11 +618,12 @@ class UserLogic(object):
         if is_sensitive(name):
             return 1, {}
 
-        cost_list = game_config.get_value(15, [200])
-        if self.user.change_name < len(cost_list):
-            cost = cost_list[self.user.change_name]
-        else:
-            cost = cost_list[-1]
+        # cost_list = game_config.get_value(15, [200])
+        # if self.user.change_name < len(cost_list):
+        #     cost = cost_list[self.user.change_name]
+        # else:
+        #     cost = cost_list[-1]
+        cost = game_config.common.get(29, 500)
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
 
@@ -650,14 +653,25 @@ class UserLogic(object):
 
         self.user.name = name
         self.user.role = role
+        self.user.got_icon.append(role)
         # if role not in game_config.main_hero:
         #     return 4, {}    # 角色ID错误
         # self.mm.role_info.init_role(role)
         self.user.reg_name = True
-
+        # todo 初定默认发卡牌，是否根据配置发其他东西再定
+        self.new_account_init()
         self.user.save()
 
         return 0, {}
+
+    def new_account_init(self):
+        mp = {1: 13, 2: 15}
+        role = self.mm.user.role
+        sex = game_config.main_hero[role]['sex']
+        cid = mp[sex]
+        self.mm.user.dollar = 50000
+        self.mm.card.add_card(cid)
+        self.mm.card.save()
 
     def buy_point(self):
         """
@@ -933,8 +947,25 @@ class UserLogic(object):
 
             if flag:
                 unlock_icon.add(i)
-
+        unlock_icon = unlock_icon | set(self.user.got_icon)
         return unlock_icon
+
+    def set_got_icon(self,icon):
+
+        config = game_config.main_hero.get(icon,{})
+        if not config:
+            return 1, {} #没有头像
+        if icon in self.user.got_icon:
+            return 2, {}  #头像已解锁
+        if config['sex'] != game_config.main_hero.get(self.user.role,{})['sex']:
+            return 3, {}  #性别不符
+        need_diamond = config['price']
+        if not self.user.is_diamond_enough(need_diamond):
+            return 'error_diamond', {}
+        self.user.deduct_diamond(need_diamond)
+        self.user.got_icon.append(icon)
+        self.user.save()
+        return 0, {'got_icon':self.user.got_icon}
 
     def change_icon(self, icon):
         """
@@ -946,7 +977,13 @@ class UserLogic(object):
 
         if icon not in unlock_icon:
             return 1, {}    # 该头像未解锁
-
+        # config = game_config.main_hero.get(icon,{})
+        # if not config:
+        #     return 1, {} #没有头像
+        # need_diamond = config['price']
+        # if not self.user.is_diamond_enough(need_diamond):
+        #     return 'error_diamond', {}
+        # self.user.deduct_diamond(need_diamond)
         self.user.role = icon
         self.user.save()
 
