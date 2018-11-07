@@ -274,7 +274,10 @@ class ScriptLogic(object):
                     d = weight_choice(random_reward)
                     reward.append(d)
         result = self.calc_attention_by_step(1)
+        attention = self.calc_attention()
         result['reward'] = reward
+        result['attention_initial'] = attention['attention_initial']
+        result['attention_end'] = attention['attention']
         return result
 
     # 7.剧本属性计算
@@ -548,7 +551,8 @@ class ScriptLogic(object):
                               (
                                   all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
-        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
+        attention_initial = init_attention + (L + N) * population_rate + style_suit_effect - M
+        attention = attention_initial * attention_rate
 
         # 保底关注度
         min_attection = game_config.common[40] / 10000.0
@@ -557,6 +561,7 @@ class ScriptLogic(object):
         return {
             'attention': int(attention),  # 关注度
             'card_effect': card_popularity / standard_popularity,  # 艺人人气对关注度影响
+            'attention_initial':int(attention_initial)
         }
 
     # 8.首映票房、收视计算
