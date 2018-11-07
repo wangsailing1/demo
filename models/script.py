@@ -62,6 +62,7 @@ class Script(ModelBase):
             'script_pool': {},
             'sequel_script_pool': {},
             'cur_market': [],  # 当前市场关注度
+            'cur_market_show': [],  # 当前市场关注度显示用
 
 
             # 各种最高收入排行
@@ -452,15 +453,20 @@ class Script(ModelBase):
         if all_market:
             choiced_market = weight_choice(all_market)
             cur_market = list(choiced_market[0])
+            cur_market_show = copy.copy(list(choiced_market[0]))
             del_unit = game_config.common[7]
             # 随机三次减少关注度
             market_length = len(cur_market)
             for i in range(3):
-                idx = random.randint(0, market_length - 1)
-                if cur_market[idx] > del_unit:
-                    cur_market[idx] = cur_market[idx] - del_unit
+                idx_list = [x for x,y in enumerate(cur_market_show) if y >= del_unit]
+                if not idx_list:
+                    break
+                idx = random.choice(idx_list)
+                if cur_market_show[idx] >= del_unit:
+                    cur_market_show[idx] = cur_market_show[idx] - del_unit
 
             self.cur_market = cur_market
+            self.cur_market_show = cur_market_show
 
     def make_film(self, script_id, name):
         script_config = game_config.script[script_id]

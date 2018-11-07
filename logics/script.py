@@ -48,6 +48,7 @@ class ScriptLogic(object):
 
     def index(self):
         script = self.mm.script
+        self.calc_attention_by_step(script.cur_script.get('step',0),is_save=True)
 
         return 0, {
             'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
@@ -61,8 +62,10 @@ class ScriptLogic(object):
             'scripts': script.scripts,
             'style_log': script.style_log,
             'cur_market': script.cur_market,
+            'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
+            'script_license': self.mm.user.script_license
         }
 
     # 统计总的effect
@@ -87,7 +90,9 @@ class ScriptLogic(object):
 
         script = self.mm.script
         script.pre_filming()
+        # self.mm.user.script_license -= 1
         script.save()
+        # self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
@@ -127,8 +132,10 @@ class ScriptLogic(object):
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
         user.deduct_dollar(cost)
+        self.calc_attention_by_step(1)
         script.save()
         user.save()
+
         rc, data = self.index()
         return rc, data
 
@@ -179,6 +186,7 @@ class ScriptLogic(object):
         cur_script['cost'] += cost
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
+        self.calc_attention_by_step(2)
 
         script.save()
         user.save()
@@ -218,13 +226,14 @@ class ScriptLogic(object):
         cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
+        self.calc_attention_by_step(3)
         rc, data = self.index()
         data.update(effect)
         if finished_reward:
             data['finished_reward'] = finished_reward
 
-
         script.save()
+
         return rc, data
 
     def check_finished_reward(self):
@@ -264,7 +273,7 @@ class ScriptLogic(object):
                 for _ in xrange(num):
                     d = weight_choice(random_reward)
                     reward.append(d)
-
+        result = self.calc_attention_by_step(1)
         result['reward'] = reward
         return result
 
@@ -384,11 +393,87 @@ class ScriptLogic(object):
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
 
         min_part = game_config.common[37] / 10.0
+        result = self.calc_attention_by_step(1)
         return {
             'add_attr': add_attr,
             'part_a': max(min_part, part_a),
             'part_b': max(min_part, part_b),
+            'attention': result['attention'],
+            'card_effect': result.get('card_effect',0)
         }
+
+    # 按step计算关注度
+    def calc_attention_by_step(self, step, film_info=None,is_save=False):
+        if not self.mm.script.cur_script:
+            return
+        if step > 3:
+            return 
+        if step == 3:
+            resoult = self.calc_attention(film_info)
+            self.mm.script.cur_script['attention'] = resoult['attention']
+            if is_save:
+                self.mm.script.save()
+            return resoult
+        script = self.mm.script
+        film_info = film_info or script.cur_script
+
+        # 1.实际观众之和
+        L = N = M = style_suit_effect = 0
+        market_enough = True
+        # todo 当前初始关注度
+        init_attention = 0
+        card_popularity = 0
+        if film_info:
+            script_id = film_info['id']
+            script_config = game_config.script[script_id]
+            script_market = list(script_config['market'])
+            for market, (need, cur) in enumerate(itertools.izip(script_market, script.cur_market), start=1):
+                # 各类型市场人口都>=剧本需要，关注度额外+L，L读表id 8
+                market_enough = market_enough & (cur >= need)
+                N += min(cur, need)
+            if market_enough:
+                L = game_config.common[8]
+            population_rate = game_config.common[50]  # 人口关注度系数
+            if step == 1:
+                attention = init_attention + (L + N) * population_rate
+                # 保底关注度
+                min_attection = game_config.common[40] / 10000.0
+                if attention < min_attection:
+                    attention = min_attection
+                script.cur_script['attention'] = int(attention)
+                if is_save:
+                    script.save()
+                return {'attention':int(attention)}
+            card = self.mm.card
+            standard_popularity = script_config['standard_popularity']
+            for role_id, card_oid in film_info['card'].iteritems():
+                card_info = card.cards[card_oid]
+                card_popularity += card_info['popularity']
+        all_popularity = 0
+        for role_id, card_oid in script.cur_script['card'].iteritems():
+            card_info = card.cards[card_oid]
+            all_popularity += card_info['popularity']
+        all_popularity_rate = game_config.common[34] / 100.0
+        popularity_constant = game_config.common[35] / 100.0
+        popularity_rate = game_config.common[36] / 100.0
+        population_rate = game_config.common[50]  # 人口关注度系数
+
+        standard_popularity = script_config['standard_popularity']
+        attention_rate = 1 + (all_popularity ** all_popularity_rate /
+                              (
+                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+
+        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
+
+        # 保底关注度
+        min_attection = game_config.common[40] / 10000.0
+        if attention < min_attection:
+            attention = min_attection
+        script.cur_script['attention'] = int(attention)
+        if is_save:
+            script.save()
+        return {'attention': int(attention),
+                'card_effect': card_popularity / standard_popularity,}
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
@@ -418,7 +503,7 @@ class ScriptLogic(object):
                 market_enough = market_enough & (cur >= need)
 
                 # 3.选择类型之后，类型带来观众需求增量x，读script_style的market_num
-                if style_config and script_config['market'] == market:
+                if style_config and style_config['market'] == market:
                     need += style_config['market_num']
                 N += min(cur, need)
 
@@ -451,7 +536,7 @@ class ScriptLogic(object):
         all_popularity_rate = game_config.common[34] / 100.0
         popularity_constant = game_config.common[35] / 100.0
         popularity_rate = game_config.common[36] / 100.0
-        population_rate = game_config.common[50]  #人口关注度系数
+        population_rate = game_config.common[50]  # 人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
         # 6、最后结算人气时
@@ -922,6 +1007,9 @@ class ScriptLogic(object):
         last_dollar = max(last_dollar, 0)
         script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
+        if now <= continued_start:
+            script.continued_script.pop(script_id)
+            script.save()
 
         self.mm.user.add_dollar(last_dollar)
         self.mm.user.save()
