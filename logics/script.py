@@ -463,7 +463,7 @@ class ScriptLogic(object):
                               (
                                   all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
-        attention = (init_attention + (L + N) * population_rate + style_suit_effect - M) * attention_rate
+        attention = init_attention + (L + N) * population_rate + style_suit_effect - M
 
         # 保底关注度
         min_attection = game_config.common[40] / 10000.0
