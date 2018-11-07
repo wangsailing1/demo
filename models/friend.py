@@ -75,7 +75,9 @@ class Friend(ModelBase):
             'phone_daily_times': 0,
             'phone_daily_log': {},
             'nickname': {},
-            'newest_friend':[]
+            'newest_friend':[],
+            'appointment_times':0,
+
 
         }
         super(Friend, self).__init__(self.uid)
@@ -466,6 +468,13 @@ class Friend(ModelBase):
         self.phone_daily_log[self.phone_daily_times] = [choice_id]
         self.save()
         return choice_id
+
+    def check_chat_end(self):
+        info = self.phone_daily_log.get(self.friend.phone_daily_times,[])
+        end_id = info[-1] if len(info) > 0 else 0
+        config = game_config.phone_dialogue
+        return config.get(end_id,{}).get('is_end',1)
+
 
 
 ModelManager.register_model('friend', Friend)

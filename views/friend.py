@@ -470,8 +470,13 @@ def actor_chat(hm):
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
-        return 0, {'choice_id': mm.friend.get_chat_choice(group_id),
+        if mm.friend.check_chat_end():
+            choice_id = mm.friend.get_chat_choice(group_id)
+        else:
+            choice_id = mm.friend.phone_daily_log[mm.friend.phone_daily_times][-1]
+        return 0, {'choice_id': choice_id,
                    'phone_daily_times':mm.friend.phone_daily_times}
+
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
     _, actor_data = fl.actor_chat_index()
