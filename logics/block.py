@@ -123,6 +123,8 @@ class Block(object):
     def get_reward(self):
         data = {}
         info = self.mm.block.reward_data
+        if not info:
+            return 11,{}  #没有奖励可领
         cup = 0
         for k, v in info.iteritems():
             if k == 'big_sale_cup':
