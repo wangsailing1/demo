@@ -202,8 +202,12 @@ avg_note = {
 # 手机互动日常
 phone_daily_dialogue = {
     'uk': ('group_id', 'int'),
-    'daily_dialogue': ('daily_dialogue', 'int_list'),
-    'daily_times': ('daily_times', 'int'),
+    'daily_dialogue1': ('daily_dialogue1', 'int_list'),
+    'daily_dialogue2': ('daily_dialogue2', 'int_list'),
+    'date_dialogue1': ('date_dialogue1', 'int_list'),
+    'date_dialogue2': ('date_dialogue2', 'int_list'),
+    'travel_dialogue1': ('travel_dialogue1', 'int_list'),
+    'travel_dialogue2': ('travel_dialogue2', 'int_list'),
 }
 
 # 手机互动剧情
@@ -228,4 +232,23 @@ phone_chapter_dialogue = {
     'chapter_id': ('chapter_id', 'int'),
     'dialogue_id': ('dialogue_id', 'int'),
     'dialogue_name': ('dialogue_name', 'int'),
+}
+
+tour_dialogue = {
+    'uk': ('id', 'int'),
+    'cost': ('cost', 'int_list'),
+    'is_option': ('is_option', 'int'),
+    'option_team': ('option_team', 'int_list'),
+    'next': ('next', 'int'),
+    'is_end': ('is_end', 'int'),
+    'hero_id': ('hero_id', 'int'),
+    'type': ('type', 'int'),
+    'is_turn': ('is_turn', 'int'),
+    'hero_figue': ('hero_figue', 'str'),
+    'background': ('background', 'str'),
+    'hero_expression': ('hero_expression', 'str'),
+    'reward': ('reward', 'int_list'),
+    'reward_num': ('reward_num', 'int'),
+    'add_value': ('add_value', 'int_list'),
+    'voice': ('voice', 'str'),
 }
