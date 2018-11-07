@@ -130,7 +130,7 @@ class Block(object):
             if k == 'big_sale_cup':
                 cup += v
             else:
-                cup += info['cup']  # 类型奖杯奖励读配置
+                cup += v['cup']  # 类型奖杯奖励读配置
         data['old_block_num'] = self.block.block_num
         data['old_block_group'] = self.block.block_group
         self.block.get_award_ceremony = 1
