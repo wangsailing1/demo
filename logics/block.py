@@ -221,6 +221,7 @@ class Block(object):
                     self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
             data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
+        self.block.is_count = 1
         if is_save:
             self.block.save()
 
