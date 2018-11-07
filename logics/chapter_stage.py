@@ -68,7 +68,7 @@ class Chapter_stage(object):
             if chapter not in self.chapter_stage.chapter or type_hard not in self.chapter_stage.chapter[chapter] \
                     or stage not in self.chapter_stage.chapter[chapter][type_hard]:
                 return 21, {}  # 尚未通关
-            if config[chapter][type_hard]['script_end_level'] >= self.chapter_stage.chapter[chapter][type_hard][
+            if config[chapter][type_hard]['script_end_level'] > self.chapter_stage.chapter[chapter][type_hard][
                 stage].get('star', 0):
                 return 22, {}  # 未达到扫荡星级
         stage_config = config_s[stage_id]
