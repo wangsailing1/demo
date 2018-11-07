@@ -881,7 +881,6 @@ class FriendLogic(object):
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
         config = game_config.phone_dialogue
         if not chapter_id:  # 日常对话
-            daily_config = game_config.phone_daily_dialogue[group_id]
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
             if now_stage and not choice_id:
@@ -895,7 +894,7 @@ class FriendLogic(object):
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
                 return 17, {}  # 已选择过对话
-            if self.friend.phone_daily_times >= daily_config['daily_times']:
+            if self.friend.phone_daily_times >= game_config.common[24]:
                 return 13, {}  # 次数超出
             self.friend.phone_daily_log[self.friend.phone_daily_times].append(choice_id)
             reward_config = config[choice_id]['reward']
