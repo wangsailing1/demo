@@ -89,10 +89,11 @@ class ScriptLogic(object):
         # todo 许可证判断 use_item
 
         script = self.mm.script
-        script.pre_filming()
-        # self.mm.user.script_license -= 1
-        script.save()
-        # self.mm.user.save()
+        if not self.mm.script.cur_market:
+            script.pre_filming()
+            # self.mm.user.script_license -= 1
+            script.save()
+            # self.mm.user.save()
         rc, data = self.index()
         return rc, data
 

@@ -32,8 +32,6 @@ def pre_filming(hm):
     sl = ScriptLogic(mm)
     # if mm.user.script_license <= 0:
     #     return 1, {}
-    if mm.script.cur_market:
-        return 1, {}
     rc, data = sl.pre_filming()
     return rc, data
 
