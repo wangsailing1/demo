@@ -71,6 +71,7 @@ def update(req, **kwargs):
     vip = int(req.get_argument('vip'))
     guild_coin = int(req.get_argument('guild_coin'))
     action_point = int(req.get_argument('action_point'))
+    script_license = int(req.get_argument('script_license'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -159,7 +160,7 @@ def update(req, **kwargs):
     #     mm.user.deduct_box_key(diff_box_key)
     # elif diff_box_key < 0:
     #     mm.user.add_box_key(-diff_box_key)
-
+    mm.user.script_license = script_license
     vip = min(max(game_config.vip), vip)
     if mm.user.vip != vip:
         mm.user.vip = vip

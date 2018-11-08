@@ -8,12 +8,13 @@ import math
 
 import settings
 from tools.user import user_friend_info
-from tools.gift import add_gift_by_weights, add_gift, add_mult_gift
+from tools.gift import add_gift_by_weights, add_gift, add_mult_gift, del_mult_goods
 from return_msg_config import i18n_msg
 from gconfig import game_config
 from lib.core.environ import ModelManager
 from logics.user import UserLogic
 from models.user import User as UserM
+from lib.utils import weight_choice
 
 
 class FriendLogic(object):
@@ -98,7 +99,7 @@ class FriendLogic(object):
         if self.friend.got_point_daily >= game_config.common[25]:
             self.friend.receive_gift(friend_id)
             self.friend.save()
-            return 3, {}  #体力领取已达上限
+            return 3, {}  # 体力领取已达上限
         point = game_config.common[26]
         if reward is None:
             reward = {}
@@ -244,7 +245,7 @@ class FriendLogic(object):
                                                send_role=self.mm.user.role,
                                                send_level=self.mm.user.level,
                                                send_block=self.mm.block.block_num,
-                                               send_block_rank = rank)
+                                               send_block_rank=rank)
         mail_dict['send_guild_name'] = send_guild_name
         mail_dict['send_guild_id'] = send_guild_id
         mail_dict.update(kwargs)
@@ -880,7 +881,6 @@ class FriendLogic(object):
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
         config = game_config.phone_dialogue
         if not chapter_id:  # 日常对话
-            daily_config = game_config.phone_daily_dialogue[group_id]
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
             if now_stage and not choice_id:
@@ -890,13 +890,14 @@ class FriendLogic(object):
             if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                         config[now_stage]['next'] and choice_id != config[now_stage]['next']):
                 return 16, {}  # 对话选择错误
-            chat_log = self.friend.phone_daily_log.get(self.friend.phone_daily_times)
+            times, x , y= self.friend.check_chat_end(group_id)
+            chat_log = self.friend.phone_daily_log.get(times, {}).get('log', [])
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
                 return 17, {}  # 已选择过对话
-            if self.friend.phone_daily_times >= daily_config['daily_times']:
+            if self.friend.phone_daily_times >= game_config.common[24] and config[now_stage]['is_end']:
                 return 13, {}  # 次数超出
-            self.friend.phone_daily_log[self.friend.phone_daily_times].append(choice_id)
+            self.friend.phone_daily_log[times]['log'].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
             add_value = self.mm.card.add_value(group_id, add_value_config)
@@ -920,10 +921,12 @@ class FriendLogic(object):
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
             return 17, {}  # 已选择过对话
+        num = max(config[choice_id].get('reward', 1), 1)
         reward_config = config[choice_id]['reward']
+        gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
         add_value = self.mm.card.add_value(group_id, add_value_config)
-        reward = add_mult_gift(self.mm, reward_config)
+        reward = add_mult_gift(self.mm, gift)
         self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
         if config[choice_id]['is_end']:
             if group_id not in self.friend.chat_over:
@@ -934,3 +937,59 @@ class FriendLogic(object):
         self.friend.save()
         return 0, {'reward': reward,
                    'add_value': add_value}
+
+    def rapport(self, group_id, choice_id, now_stage, type=2):
+        tp = self.friend.TYPEMAPPING[type]
+        config = getattr(game_config, tp)
+        if now_stage not in config:
+            return 11, {}  # 当前对话id错误
+        if now_stage and not choice_id:
+            return 19, {}  # 未选择对话
+        if config[now_stage]['is_end']:
+            return 18, {}  # 对话已结束
+        if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
+                    config[now_stage]['next'] and choice_id != config[now_stage]['next']):
+            return 16, {}  # 对话选择错误
+        times_, flag ,has_chat = self.friend.check_chat_end(group_id, type=type)
+        if type == 2:
+            chat_log = self.friend.appointment_log.get(times_,{}).get('log',{})
+            times = self.friend.appointment_times
+            max_times = game_config.common[44]
+        elif type == 3:
+            chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
+            times = self.friend.tourism_times
+            max_times = game_config.common[45]
+
+        if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
+                chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
+            return 17, {}  # 已选择过对话
+        if times >= max_times:
+            return 13, {}  # 次数超出
+        cost = config[now_stage]['cost']
+        rc, _ = del_mult_goods(self.mm, cost)
+        if rc != 0:
+            return rc, {}
+        if type == 2:
+            self.friend.appointment_log[times]['log'].append(choice_id)
+        elif type == 3:
+            self.friend.tourism_log[times]['log'].append(choice_id)
+        num = max(config[choice_id].get('reward_num', 1), 1)
+        reward_config = config[choice_id]['reward']
+        gift = self.choice_reward(reward_config, num)
+        add_value_config = config[choice_id]['add_value']
+        add_value = self.mm.card.add_value(group_id, add_value_config)
+        reward = add_mult_gift(self.mm, gift)
+        # if config[choice_id]['is_end']:
+        #     self.friend.phone_daily_times += 1
+        self.friend.save()
+        return 0, {'reward': reward,
+                   'add_value': add_value}
+
+    def choice_reward(self, config, num):
+        gift = []
+        if not config:
+            return gift
+        for _ in range(num):
+            gift_ = weight_choice(config)
+            gift.append(gift_[:-1])
+        return gift

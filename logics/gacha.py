@@ -47,7 +47,8 @@ class GachaLogics(object):
             'coin_times': self.gacha.coin_times,           # 探寻次数
             'coin_lv': self.gacha.coin_lv,           # 探寻等级
             'coin_receive': self.gacha.coin_receive,  # 接受的gacha id
-            'coin_pool_expire': self.gacha.coin_pool_expire()
+            'coin_pool_expire': self.gacha.coin_pool_expire(),
+            'clear_pool_time': self.gacha.clear_remain_time()   #艺人离开剩余时间
         }
 
         return data
@@ -104,6 +105,7 @@ class GachaLogics(object):
 
         self.gacha.add_coin_times()
         self.gacha.coin_time = int(time.time())
+        self.gacha.clear_pool_time = int(time.time())
         self.gacha.coin_pool = pool
         self.gacha.coin_receive = []
 

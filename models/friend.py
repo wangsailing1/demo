@@ -46,6 +46,7 @@ class Friend(ModelBase):
     GUILD_INVITE_SORT = 'guild_invite'
     MESSAGES_LEN = 100
     REFRESH_REDPACKET = 3600  # 更新红包时间1小时
+    TYPEMAPPING = {1: 'phone_dialogue', 2: 'tour_dialogue', 3: 'tour_dialogue'}
 
     def __init__(self, uid):
         self.uid = uid
@@ -75,8 +76,13 @@ class Friend(ModelBase):
             'phone_daily_times': 0,
             'phone_daily_log': {},
             'nickname': {},
-            'newest_friend':[],
-            'got_point_daily':0
+            'newest_friend': [],
+            'appointment_times': 0,  # 约会次数
+            'appointment_log': {},  # 约会记录
+            'tourism_times': 0,  # 旅游次数
+            'tourism_log': {},  # 旅游记录
+            'last_week': '',
+            'got_point_daily': 0,
 
         }
         super(Friend, self).__init__(self.uid)
@@ -87,6 +93,13 @@ class Friend(ModelBase):
         :return:
         """
         now = datetime.datetime.now().strftime('%Y-%m-%d')
+        week = datetime.datetime.now().strftime('%Y-%W')
+        is_save = False
+        if week != self.last_week:
+            self.last_week = week
+            self.tourism_times = 0
+            self.tourism_log = {}
+            is_save = True
         if now != self.last_refresh_date:
             self.battle_friend = []
             self.parised_friend = []
@@ -97,6 +110,10 @@ class Friend(ModelBase):
             self.phone_daily_times = 0
             self.got_point_daily = 0
             self.phone_daily_log = {}
+            self.appointment_times = 0
+            self.appointment_log = {}
+            is_save = True
+        if is_save:
             self.save()
 
     def set_send_gift(self, friend_id):
@@ -445,31 +462,88 @@ class Friend(ModelBase):
         if is_save:
             self.save()
 
-    def new_actor(self,group_id,is_save=False):
+    def new_actor(self, group_id, is_save=False):
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
             if is_save:
                 self.save()
 
-    def get_chat_choice(self, group_id):
+    def get_chat_choice(self, group_id, type=1):
         chat_config = game_config.phone_daily_dialogue
-        if self.phone_daily_times >= chat_config.get(group_id,{}).get('daily_times',0):
-            return 0
-        chat_list = chat_config.get(group_id, {}).get('daily_dialogue', [])
+        times = self.phone_daily_times
+        common_config = game_config.common
+        max_times = common_config[24]
+        like_need = 0
+        point_need = 0
+        pre_str = 'daily_dialogue'
+        if type == 2:
+            times = self.appointment_times
+            max_times = common_config[44]
+            like_need = common_config[45]
+            point_need = common_config[48]
+            pre_str = 'date_dialogue'
+        elif type == 3:
+            times = self.tourism_times
+            max_times = common_config[46]
+            like_need = common_config[47]
+            point_need = common_config[49]
+            pre_str = 'travel_dialogue'
+        if self.mm.user.action_point < point_need:
+            return -1
+        if times >= max_times:
+            return -3
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
+        if like < like_need:
+            return -2
+        sex = game_config.main_hero.get(self.mm.user.role, {}).get('sex', 1)
+        key_word = '%s%s' % (pre_str, sex)
+        chat_list = chat_config.get(group_id, {}).get(key_word, [])
         chat_choice = []
         for chat in chat_list:
             if chat[2] <= like < chat[3]:
                 chat_choice.append([chat[0], chat[1]])
         if not chat_choice:
             return 0
-        self.phone_daily_times += 1
         choice_id = weight_choice(chat_choice)[0]
-        self.phone_daily_log[self.phone_daily_times] = [choice_id]
+        if type == 1:
+            self.phone_daily_times += 1
+            self.phone_daily_log[self.phone_daily_times] = {'group_id': group_id,
+                                                            'log': [choice_id]}
+        elif type == 2:
+            self.appointment_times += 1
+            self.appointment_log[self.appointment_times] = {'group_id': group_id,
+                                                            'log': [choice_id]}
+        elif type == 3:
+            self.tourism_times += 1
+            if self.tourism_times not in self.tourism_log:
+                self.tourism_log[self.tourism_times] = {'group_id': group_id,
+                                                        'log': [choice_id]}
         self.save()
         return choice_id
 
-    def add_newest_uid(self,uid,is_save=False):
+    def check_chat_end(self, group_id=0, type=1):
+        tp = self.TYPEMAPPING[type]
+        config = getattr(game_config, tp)
+        info = self.phone_daily_log
+        if type == 2:
+            info = self.appointment_log
+        elif type == 3:
+            info = self.tourism_log
+        times = 0
+        has_chat = []
+        for key, value in info.iteritems():
+            if not group_id:
+                e_id = value['log'][-1] if len(value['log']) > 0 else 0
+                if not config.get(e_id, {}).get('is_end', 1):
+                    has_chat.append(value['group_id'])
+            elif value['group_id'] == group_id and key > times:
+                times = key
+        info_ = info.get(times, {}).get('log', [])
+
+        end_id = info_[-1] if len(info_) > 0 else 0
+        return times, config.get(end_id, {}).get('is_end', 1), has_chat
+
+    def add_newest_uid(self, uid, is_save=False):
         if uid in self.newest_friend:
             self.newest_friend.remove(uid)
         self.newest_friend.append(uid)
@@ -477,6 +551,15 @@ class Friend(ModelBase):
         if is_save:
             self.save()
 
+    def get_times(self):
+        data = {}
+        data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
+        data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
+        data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
+        data['phone_daily_remain'] = self.check_chat_end()[-1]
+        data['appointment_remain'] = self.check_chat_end(type=2)[-1]
+        data['tourism_remain'] = self.check_chat_end(type=3)[-1]
+        return data
 
 
 ModelManager.register_model('friend', Friend)

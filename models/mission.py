@@ -368,7 +368,7 @@ class Mission(ModelBase):
         for k, value in self.box_office_data.iteritems():
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == self._INCOME:
-                self.randmission.add_count(k, kwargs[sort])
+                self.box_office.add_count(k, kwargs[sort])
         self.save()
 
 

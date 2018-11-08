@@ -21,7 +21,7 @@ class Gacha(ModelBase):
     SERVER_BOX_SCORE = 'server_box_score'  # 宝箱全服积分
 
     MAX_POOL_NUM = 3
-    POOL_EXPIRE = 30 * 60       # gacha池子有效期 30分钟
+    POOL_EXPIRE = 30 * 60  # gacha池子有效期 30分钟
 
     def __init__(self, uid):
         """
@@ -36,9 +36,10 @@ class Gacha(ModelBase):
             'today_coin_times': 0,
             'coin_lv': 0,
 
-            'coin_pool': [],          # 探寻到的3个gacha_id
-            'coin_time': 0,           # 探寻时间
-            'coin_receive': [],       # 接受的gacha id
+            'coin_pool': [],  # 探寻到的3个gacha_id
+            'coin_time': 0,  # 探寻时间 按钮刷新
+            'coin_receive': [],  # 接受的gacha id
+            'clear_pool_time': 0,  # 清除pool的时间  艺人离开
 
         }
         super(Gacha, self).__init__(self.uid)
@@ -49,13 +50,19 @@ class Gacha(ModelBase):
             self.refresh_date = today
             self.today_coin_times = 0
 
-        if self.coin_pool_expire() <= 0:
+        if self.clear_remain_time() <= 0:
             self.clear_coin_pool()
 
     def clear_coin_pool(self):
         self.coin_gacha_time = 0
-        self.coin_gacha_pool = []
+        self.clear_pool_time = 0
+        self.coin_pool = []
         self.coin_receive = []
+
+    def clear_remain_time(self):
+        cd = game_config.common[52]
+        remain_time = cd - (int(time.time()) - self.clear_pool_time)
+        return max(remain_time, 0)
 
     def coin_pool_expire(self):
         cd = game_config.coin_gacha_cd['cd']

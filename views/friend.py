@@ -34,6 +34,10 @@ def friends(hm):
     data = fl.friends_info()
     data['actor'] = actor_data
     data['newest_friend'] = mm.friend.newest_friend
+    data['phone_daily_remain'] = mm.friend.check_chat_end(type=1)[-1]
+    data['appointment_remain'] = mm.friend.check_chat_end(type=2)[-1]
+    data['tourism_remain'] = mm.friend.check_chat_end(type=3)[-1]
+
 
     return 0, data
 
@@ -470,13 +474,60 @@ def actor_chat(hm):
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
-        return 0, {'choice_id': mm.friend.get_chat_choice(group_id),
-                   'phone_daily_times':mm.friend.phone_daily_times}
+        times, flag, has_chat = mm.friend.check_chat_end(group_id)
+        if flag:
+            choice_id = mm.friend.get_chat_choice(group_id)
+        else:
+            choice_id = mm.friend.phone_daily_log[times]['log'][-1]
+        if choice_id < 0:
+            return choice_id, {}
+        return 0, {'choice_id': choice_id,
+                   'phone_daily_times': mm.friend.phone_daily_times}
+
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times
+    return rc, data
+
+
+# 约会
+@check_unlock
+def rapport(hm):
+    mm = hm.mm
+    group_id = hm.get_argument('group_id', 0, is_int=True)
+    choice_id = hm.get_argument('choice_id', 0, is_int=True)
+    now_stage = hm.get_argument('now_stage', 0, is_int=True)
+    tp = hm.get_argument('tp', 0, is_int=True)
+
+    if not group_id:
+        return 1, {}  # 未选择艺人
+    if tp not in [2, 3]:
+        return 2, {}  # 活动类型错误
+    if not now_stage:
+        times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
+        if flag:
+            choice_id = mm.friend.get_chat_choice(group_id, type=tp)
+        else:
+            if tp == 2:
+                choice_id = mm.friend.appointment_log[times]['log'][-1]
+            elif tp == 3:
+                choice_id = mm.friend.tourism_log[times]['log'][-1]
+        if choice_id < 0:
+            return choice_id, {}
+        return 0, {'choice_id': choice_id,
+                   'appointment_times': mm.friend.appointment_times,
+                   'phone_daily_times': mm.friend.phone_daily_times,
+                   'tourism_times': mm.friend.tourism_times, }
+
+    fl = FriendLogic(mm)
+    rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
+    _, actor_data = fl.actor_chat_index()
+    data['actor'] = actor_data
+    data['phone_daily_times'] = mm.friend.phone_daily_times
+    data['appointment_times'] = mm.friend.appointment_times
+    data['tourism_times'] = mm.friend.tourism_times
     return rc, data
 
 
@@ -486,7 +537,12 @@ def actor_chat_index(hm):
     fl = FriendLogic(mm)
     rc, data = fl.actor_chat_index()
     return rc, {'actor': data,
-                'phone_daily_times':mm.friend.phone_daily_times}
+                'phone_daily_times': mm.friend.phone_daily_times,
+                'appointment_times': mm.friend.appointment_times,
+                'tourism_times': mm.friend.tourism_times,
+                'phone_daily_remain': mm.friend.check_chat_end(type=1)[-1],
+                'appointment_remain': mm.friend.check_chat_end(type=2)[-1],
+                'tourism_remain': mm.friend.check_chat_end(type=3)[-1], }
 
 
 @check_unlock

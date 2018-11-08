@@ -131,6 +131,7 @@ class Script(ModelBase):
             self.check_top_income(cur_script)
             self.cur_script = {}
             self.script_pool = {}
+            self.cur_market = []
             self.sequel_script_pool = {}
 
             save = True

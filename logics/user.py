@@ -239,6 +239,7 @@ class UserLogic(object):
             'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
             'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
+            'actor': ('friend', 'get_times'),  # 旅游聊天约会
         }
 
         # 特殊的几个红点,todo
@@ -261,6 +262,7 @@ class UserLogic(object):
         data = {}
         mm = self.mm
         for m in module_list:
+            print m
             args = red_dot_func.get(m, ())
             module = getattr(mm, args[0], None) if args else None
             func_name = args[1] if len(args) > 1 and args[1] else 'get_red_dot'
