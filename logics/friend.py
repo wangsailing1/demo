@@ -890,7 +890,7 @@ class FriendLogic(object):
             if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                         config[now_stage]['next'] and choice_id != config[now_stage]['next']):
                 return 16, {}  # 对话选择错误
-            times, _ = self.friend.check_chat_end(group_id)
+            times, x , y= self.friend.check_chat_end(group_id)
             chat_log = self.friend.phone_daily_log.get(times, {}).get('log', [])
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
@@ -950,7 +950,7 @@ class FriendLogic(object):
         if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                     config[now_stage]['next'] and choice_id != config[now_stage]['next']):
             return 16, {}  # 对话选择错误
-        times_, flag = self.friend.check_chat_end(group_id, type=type)
+        times_, flag ,has_chat = self.friend.check_chat_end(group_id, type=type)
         if type == 2:
             chat_log = self.friend.appointment_log.get(times_,{}).get('log',{})
             times = self.friend.appointment_times

@@ -470,7 +470,7 @@ def actor_chat(hm):
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
-        times,flag = mm.friend.check_chat_end(group_id)
+        times, flag, has_chat = mm.friend.check_chat_end(group_id)
         if flag:
             choice_id = mm.friend.get_chat_choice(group_id)
         else:
@@ -499,10 +499,10 @@ def rapport(hm):
 
     if not group_id:
         return 1, {}  # 未选择艺人
-    if tp not in [2,3]:
+    if tp not in [2, 3]:
         return 2, {}  # 活动类型错误
     if not now_stage:
-        times, flag = mm.friend.check_chat_end(group_id,type=tp)
+        times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
         if flag:
             choice_id = mm.friend.get_chat_choice(group_id, type=tp)
         else:
@@ -536,9 +536,9 @@ def actor_chat_index(hm):
                 'phone_daily_times': mm.friend.phone_daily_times,
                 'appointment_times': mm.friend.appointment_times,
                 'tourism_times': mm.friend.tourism_times,
-                'phone_daily_end': mm.friend.check_chat_end(type=1),
-                'appointment_end': mm.friend.check_chat_end(type=2),
-                'tourism_end': mm.friend.check_chat_end(type=3), }
+                'phone_daily_end': mm.friend.check_chat_end(type=1)[-1],
+                'appointment_end': mm.friend.check_chat_end(type=2)[-1],
+                'tourism_end': mm.friend.check_chat_end(type=3)[-1], }
 
 
 @check_unlock

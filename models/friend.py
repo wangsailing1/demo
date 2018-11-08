@@ -521,7 +521,7 @@ class Friend(ModelBase):
         self.save()
         return choice_id
 
-    def check_chat_end(self, group_id, type=1):
+    def check_chat_end(self, group_id=0, type=1):
         tp = self.TYPEMAPPING[type]
         config = getattr(game_config, tp)
         info = self.phone_daily_log
@@ -530,13 +530,18 @@ class Friend(ModelBase):
         elif type == 3:
             info = self.tourism_log
         times = 0
+        has_chat = []
         for key, value in info.iteritems():
-            if value['group_id'] == group_id and key > times:
+            if not group_id:
+                e_id = value['log'][-1] if len(value['log']) > 0 else 0
+                if not config.get(e_id, {}).get('is_end', 1):
+                    has_chat.append(value['group_id'])
+            elif value['group_id'] == group_id and key > times:
                 times = key
         info_ = info.get(times, {}).get('log', [])
 
         end_id = info_[-1] if len(info_) > 0 else 0
-        return times, config.get(end_id, {}).get('is_end', 1)
+        return times, config.get(end_id, {}).get('is_end', 1), has_chat
 
     def add_newest_uid(self, uid, is_save=False):
         if uid in self.newest_friend:
@@ -551,6 +556,9 @@ class Friend(ModelBase):
         data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
+        data['phone_daily_remain'] = self.check_chat_end()[-1]
+        data['appointment_remain'] = self.check_chat_end(type=2)[-1]
+        data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data
 
 
