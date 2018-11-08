@@ -91,9 +91,9 @@ class ScriptLogic(object):
         script = self.mm.script
         if not self.mm.script.cur_market or self.mm.script.cur_market and not self.mm.scrip.script_pool:
             script.pre_filming()
-            # self.mm.user.script_license -= 1
+            self.mm.user.script_license -= 1
             script.save()
-            # self.mm.user.save()
+            self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
