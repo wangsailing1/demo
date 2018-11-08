@@ -973,7 +973,7 @@ class FriendLogic(object):
             self.friend.appointment_log[times]['log'].append(choice_id)
         elif type == 3:
             self.friend.tourism_log[times]['log'].append(choice_id)
-        num = max(config[choice_id].get('reward', 1), 1)
+        num = max(config[choice_id].get('reward_num', 1), 1)
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
