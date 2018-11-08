@@ -491,12 +491,12 @@ class Friend(ModelBase):
         if self.mm.user.action_point < point_need:
             return -1
         if times >= max_times:
-            return 0
+            return -3
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         if like < like_need:
             return -2
-        sex = game_config.main_hero.get(self.mm.user.role,{}).get('sex',1)
-        key_word = '%s%s'%(pre_str,sex)
+        sex = game_config.main_hero.get(self.mm.user.role, {}).get('sex', 1)
+        key_word = '%s%s' % (pre_str, sex)
         chat_list = chat_config.get(group_id, {}).get(key_word, [])
         chat_choice = []
         for chat in chat_list:
@@ -507,24 +507,30 @@ class Friend(ModelBase):
         choice_id = weight_choice(chat_choice)[0]
         if type == 1:
             self.phone_daily_times += 1
-            self.phone_daily_log[self.phone_daily_times] = [choice_id]
+            if self.phone_daily_times not in self.phone_daily_log:
+                self.phone_daily_log[self.phone_daily_times] = {}
+            self.phone_daily_log[self.phone_daily_times][group_id] = [choice_id]
         elif type == 2:
             self.appointment_times += 1
-            self.appointment_log[self.appointment_times] = [choice_id]
+            if self.appointment_times not in self.appointment_log:
+                self.appointment_log[self.appointment_times] = {}
+            self.appointment_log[self.appointment_times][group_id] = [choice_id]
         elif type == 3:
             self.tourism_times += 1
-            self.tourism_log[self.tourism_times] = [choice_id]
+            if self.tourism_times not in self.tourism_log:
+                self.tourism_log[self.tourism_times] = {}
+            self.tourism_log[self.tourism_times][group_id] = [choice_id]
         self.save()
         return choice_id
 
-    def check_chat_end(self, type=1):
+    def check_chat_end(self, group_id, type=1):
         tp = self.TYPEMAPPING[type]
         config = getattr(game_config, tp)
-        info = self.phone_daily_log.get(self.phone_daily_times, [])
+        info = self.phone_daily_log.get(self.phone_daily_times, {}).get(group_id, [])
         if type == 2:
-            info = self.appointment_log.get(self.appointment_times, [])
+            info = self.appointment_log.get(self.appointment_times, {}).get(group_id, [])
         elif type == 3:
-            info = self.tourism_log.get(self.tourism_times, [])
+            info = self.tourism_log.get(self.tourism_times, {}).get(group_id, [])
         end_id = info[-1] if len(info) > 0 else 0
         return config.get(end_id, {}).get('is_end', 1)
 
