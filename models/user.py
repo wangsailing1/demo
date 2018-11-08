@@ -441,6 +441,8 @@ class User(ModelBase):
         return cd[times] * 60
 
     def can_recover_license_times(self):
+        if self.script_license >= game_config.common[20]:
+            return False
         gacha_cd = game_config.script_license.get('cd', [])
         return self.license_recover_times < len(gacha_cd)
 
