@@ -410,7 +410,6 @@ class User(ModelBase):
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
                 if self.script_license >= game_config.common[20]:
-                    self.license_update_time = int(time.time())
                     break
                 self.script_license += 1
                 self.license_recover_times += 1
@@ -423,6 +422,8 @@ class User(ModelBase):
                 if not recover_need_time:
                     break
                 div, mod = divmod(now - self.license_update_time, recover_need_time)
+                if self.script_license >= game_config.common[20]:
+                    self.license_update_time = int(time.time())
 
 
             if not self.can_recover_license_times():
