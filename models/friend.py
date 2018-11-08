@@ -536,5 +536,12 @@ class Friend(ModelBase):
         if is_save:
             self.save()
 
+    def get_times(self):
+        data = {}
+        data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
+        data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
+        data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
+        return data
+
 
 ModelManager.register_model('friend', Friend)
