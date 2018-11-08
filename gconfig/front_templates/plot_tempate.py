@@ -247,7 +247,7 @@ tour_dialogue = {
     'hero_figue': ('hero_figue', 'str'),
     'background': ('background', 'str'),
     'hero_expression': ('hero_expression', 'str'),
-    'word': ('word', 'int'),
+    'word': ('word', 'str'),
     'reward': ('reward', 'int_list'),
     'reward_num': ('reward_num', 'int'),
     'add_value': ('add_value', 'int_list'),
