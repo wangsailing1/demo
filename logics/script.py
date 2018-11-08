@@ -89,7 +89,7 @@ class ScriptLogic(object):
         # todo 许可证判断 use_item
 
         script = self.mm.script
-        if not self.mm.script.cur_market or self.mm.script.cur_market and not self.script_pool:
+        if not self.mm.script.cur_market or self.mm.script.cur_market and not self.mm.scrip.script_pool:
             script.pre_filming()
             # self.mm.user.script_license -= 1
             script.save()
