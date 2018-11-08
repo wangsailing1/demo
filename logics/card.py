@@ -311,7 +311,7 @@ class CardLogic(object):
             if self.mm.friend.check_actor(group_id):
                 self.mm.friend.actors[group_id]['show'] = 1
             else:
-                self.mm.friend.actors[group_id] = {'show':1,'chat_log':[]}
+                self.mm.friend.actors[group_id] = {'show':1,'chat_log':{}}
             star = game_config.card_basis[card_dict['id']]['star_level']
             cost_like = game_config.card_repick[star]['cost']
 
@@ -319,7 +319,7 @@ class CardLogic(object):
             if self.mm.friend.check_actor(group_id):
                 self.mm.friend.actors[group_id]['show'] = 0
             else:
-                self.mm.friend.actors[group_id] = {'show':0,'chat_log':[]}
+                self.mm.friend.actors[group_id] = {'show':0,'chat_log':{}}
 
         if cost_like:
             if not self.mm.user.is_like_enough(cost_like):
