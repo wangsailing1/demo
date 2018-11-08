@@ -252,3 +252,8 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
 }
+
+explain = {
+    'uk': ('id', 'int'),
+    'describe': ('describe', 'int'),
+}
