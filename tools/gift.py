@@ -276,7 +276,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             item_id = pkg[0]
             item_num = pkg[1]
             if not mm.friend.check_actor(item_id):
-                mm.friend.actors[item_id] = {'show': 1, 'chat_log': [], }
+                mm.friend.actors[item_id] = {'show': 1, 'chat_log': {}, }
                 add_dict(data.setdefault('actors', {}), item_id, item_num)
         mm.friend.save()
 
