@@ -55,6 +55,7 @@ class Gacha(ModelBase):
 
     def clear_coin_pool(self):
         self.coin_gacha_time = 0
+        self.clear_pool_time = 0
         self.coin_pool = []
         self.coin_receive = []
 
