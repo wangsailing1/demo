@@ -388,7 +388,6 @@ class User(ModelBase):
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
-            self.license_recover_times = 0
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -405,18 +404,25 @@ class User(ModelBase):
             is_save = True
 
         # 许可证恢复
+        data = int(time.mktime(time.strptime(time.strftime('%F') + ' ' + '00:00:00', '%Y-%m-%d %H:%M:%S')))
         recover_need_time = self.license_recover_need_time()
         if recover_need_time:
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
                 self.script_license += 1
                 self.license_recover_times += 1
+                check_time = self.license_update_time
                 self.license_update_time += recover_need_time
+                if check_time < data <= self.license_update_time:
+                    self.license_recover_times = 0
 
                 recover_need_time = self.license_recover_need_time()
                 if not recover_need_time:
                     break
                 div, mod = divmod(now - self.license_update_time, recover_need_time)
+                if self.script_license >= game_config.common[20]:
+                    self.license_update_time = int(time.time())
+                    break
 
             if not self.can_recover_license_times():
                 self.license_update_time = now
