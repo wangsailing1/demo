@@ -507,32 +507,36 @@ class Friend(ModelBase):
         choice_id = weight_choice(chat_choice)[0]
         if type == 1:
             self.phone_daily_times += 1
-            if self.phone_daily_times not in self.phone_daily_log:
-                self.phone_daily_log[self.phone_daily_times] = {}
-            self.phone_daily_log[self.phone_daily_times][group_id] = [choice_id]
+            self.phone_daily_log[self.phone_daily_times] = {'group_id': group_id,
+                                                            'log': [choice_id]}
         elif type == 2:
             self.appointment_times += 1
-            if self.appointment_times not in self.appointment_log:
-                self.appointment_log[self.appointment_times] = {}
-            self.appointment_log[self.appointment_times][group_id] = [choice_id]
+            self.appointment_log[self.appointment_times] = {'group_id': group_id,
+                                                            'log': [choice_id]}
         elif type == 3:
             self.tourism_times += 1
             if self.tourism_times not in self.tourism_log:
-                self.tourism_log[self.tourism_times] = {}
-            self.tourism_log[self.tourism_times][group_id] = [choice_id]
+                self.tourism_log[self.tourism_times] = {'group_id': group_id,
+                                                        'log': [choice_id]}
         self.save()
         return choice_id
 
     def check_chat_end(self, group_id, type=1):
         tp = self.TYPEMAPPING[type]
         config = getattr(game_config, tp)
-        info = self.phone_daily_log.get(self.phone_daily_times, {}).get(group_id, [])
+        info = self.phone_daily_log
         if type == 2:
-            info = self.appointment_log.get(self.appointment_times, {}).get(group_id, [])
+            info = self.appointment_log
         elif type == 3:
-            info = self.tourism_log.get(self.tourism_times, {}).get(group_id, [])
-        end_id = info[-1] if len(info) > 0 else 0
-        return config.get(end_id, {}).get('is_end', 1)
+            info = self.tourism_log
+        times = 0
+        for key, value in info.iteritems():
+            if value['group_id'] == group_id and key > times:
+                times = key
+        info_ = info.get(times, {}).get('log', [])
+
+        end_id = info_[-1] if len(info_) > 0 else 0
+        return times, config.get(end_id, {}).get('is_end', 1)
 
     def add_newest_uid(self, uid, is_save=False):
         if uid in self.newest_friend:

@@ -890,13 +890,14 @@ class FriendLogic(object):
             if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                         config[now_stage]['next'] and choice_id != config[now_stage]['next']):
                 return 16, {}  # 对话选择错误
-            chat_log = self.friend.phone_daily_log.get(self.friend.phone_daily_times, {}).get(group_id, [])
+            times, _ = self.friend.check_chat_end(group_id)
+            chat_log = self.friend.phone_daily_log.get(times, {}).get('log', [])
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
                 return 17, {}  # 已选择过对话
             if self.friend.phone_daily_times >= game_config.common[24] and config[now_stage]['is_end']:
                 return 13, {}  # 次数超出
-            self.friend.phone_daily_log[self.friend.phone_daily_times][group_id].append(choice_id)
+            self.friend.phone_daily_log[times]['log'].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
             add_value = self.mm.card.add_value(group_id, add_value_config)
@@ -949,13 +950,13 @@ class FriendLogic(object):
         if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                     config[now_stage]['next'] and choice_id != config[now_stage]['next']):
             return 16, {}  # 对话选择错误
-
+        times_, flag = self.friend.check_chat_end(group_id, type=type)
         if type == 2:
-            chat_log = self.friend.appointment_log.get(self.friend.appointment_times)
+            chat_log = self.friend.appointment_log.get(times_,{}).get('log',{})
             times = self.friend.appointment_times
             max_times = game_config.common[44]
         elif type == 3:
-            chat_log = self.friend.tourism_log.get(self.friend.tourism_times)
+            chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
             times = self.friend.tourism_times
             max_times = game_config.common[45]
 
@@ -969,9 +970,9 @@ class FriendLogic(object):
         if rc != 0:
             return rc, {}
         if type == 2:
-            self.friend.appointment_log[times][group_id].append(choice_id)
+            self.friend.appointment_log[times]['log'].append(choice_id)
         elif type == 3:
-            self.friend.tourism_log[times][group_id].append(choice_id)
+            self.friend.tourism_log[times]['log'].append(choice_id)
         num = max(config[choice_id].get('reward', 1), 1)
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)

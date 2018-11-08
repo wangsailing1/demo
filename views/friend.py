@@ -470,10 +470,11 @@ def actor_chat(hm):
     if not group_id:
         return 1, {}  # 未选择艺人
     if not chapter_id and not now_stage:
-        if mm.friend.check_chat_end(group_id):
+        times,flag = mm.friend.check_chat_end(group_id)
+        if flag:
             choice_id = mm.friend.get_chat_choice(group_id)
         else:
-            choice_id = mm.friend.phone_daily_log[mm.friend.phone_daily_times][group_id][-1]
+            choice_id = mm.friend.phone_daily_log[times]['log'][-1]
         if choice_id < 0:
             return choice_id, {}
         return 0, {'choice_id': choice_id,
@@ -498,11 +499,17 @@ def rapport(hm):
 
     if not group_id:
         return 1, {}  # 未选择艺人
+    if tp not in [2,3]:
+        return 2, {}  # 活动类型错误
     if not now_stage:
-        if mm.friend.check_chat_end(group_id, type=tp):
+        times, flag = mm.friend.check_chat_end(group_id,type=tp)
+        if flag:
             choice_id = mm.friend.get_chat_choice(group_id, type=tp)
         else:
-            choice_id = mm.friend.appointment_log[mm.friend.appointment_times][group_id][-1]
+            if tp == 2:
+                choice_id = mm.friend.appointment_log[times]['log'][-1]
+            elif tp == 3:
+                choice_id = mm.friend.tourism_log[times]['log'][-1]
         if choice_id < 0:
             return choice_id, {}
         return 0, {'choice_id': choice_id,
