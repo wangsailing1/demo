@@ -764,6 +764,18 @@ class ScriptLogic(object):
 
         cur_script['end_lv'] = end_lv
 
+        # 记录街区总排行（显示用,按票房）
+        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'income')
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        old_rank = bir.get_rank(self.mm.uid)
+        old_score = bir.get_score(self.mm.uid)
+        bir.incr_rank(self.mm.uid, all_income)
+        new_rank = bir.get_rank(self.mm.uid)
+        new_score = bir.get_score(self.mm.uid)
+        cur_script['old_rank'] = [old_rank, old_score]
+        cur_script['new_rank'] = [new_rank, new_score]
+
         card.save()
         script.save()
         self.mm.user.save()

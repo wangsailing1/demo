@@ -330,18 +330,18 @@ class Script(ModelBase):
         if income > br_score:
             br.add_rank(br_uid, income)
 
-        # 记录街区总排行（显示用,按票房）
-        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
-                                                             'income')
-        bir = BlockRank(block_income_rank_uid, self._server_name)
-        old_rank = bir.get_rank(self.uid)
-        old_score = bir.get_score(self.uid)
-        bir.incr_rank(self.uid, income)
-        new_rank = bir.get_rank(self.uid)
-        new_score = bir.get_score(self.uid)
+        # # 记录街区总排行（显示用,按票房）
+        # block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+        #                                                      'income')
+        # bir = BlockRank(block_income_rank_uid, self._server_name)
+        # old_rank = bir.get_rank(self.uid)
+        # old_score = bir.get_score(self.uid)
+        # bir.incr_rank(self.uid, income)
+        # new_rank = bir.get_rank(self.uid)
+        # new_score = bir.get_score(self.uid)
 
-        self.cur_script['old_rank'] = [old_rank,old_score]
-        self.cur_script['new_rank'] = [new_rank, new_score]
+        # self.cur_script['old_rank'] = [old_rank,old_score]
+        # self.cur_script['new_rank'] = [new_rank, new_score]
 
         # 按剧本类型记录排行（发奖用）
         script_type = script_config['type']
