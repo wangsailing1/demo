@@ -428,7 +428,7 @@ class User(ModelBase):
 
             if not self.can_recover_license_times() and data > self.license_update_time:
                 self.license_recover_times = 0
-                self.license_update_time = now
+                self.license_update_time = data
 
         if is_save:
             self.save()
