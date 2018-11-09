@@ -21,6 +21,7 @@ from lib.utils import salt_generator
 from lib.utils import weight_choice
 
 from models.card import Card
+from models.ranking_list import BlockRank
 
 
 class ScriptLogic(object):
