@@ -228,9 +228,10 @@ class ScriptLogic(object):
         cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
-        self.calc_attention_by_step(3)
+        result = self.calc_attention_by_step(3)
         rc, data = self.index()
         data.update(effect)
+        data['cur_script']['attention'] = result['attention_initial']
         if finished_reward:
             data['finished_reward'] = finished_reward
 
@@ -416,7 +417,6 @@ class ScriptLogic(object):
         if step == 3:
             resoult = self.calc_attention(film_info)
             self.mm.script.cur_script['attention'] = resoult['attention']
-            self.mm.script.cur_script['attention_initial'] = resoult['attention_initial']
             if is_save:
                 self.mm.script.save()
             return resoult
