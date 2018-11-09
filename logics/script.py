@@ -416,6 +416,7 @@ class ScriptLogic(object):
         if step == 3:
             resoult = self.calc_attention(film_info)
             self.mm.script.cur_script['attention'] = resoult['attention']
+            self.mm.script.cur_script['attention_initial'] = resoult['attention_initial']
             if is_save:
                 self.mm.script.save()
             return resoult
