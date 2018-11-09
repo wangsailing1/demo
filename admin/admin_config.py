@@ -277,6 +277,10 @@ menu_config = {
                     ('adminlog_search_by_name', '按名字搜索', 1),
                     ('adminlog_search_by_time', '按日期搜索', 1)],
         }],
+        'idea': [{
+            'name': u"玩家建议",
+            'sub': [('idea_index', '查询玩家建议', 1),]
+        }],
     },
     'see_data': {
         'server_overview': [{
