@@ -79,7 +79,8 @@ def user_status(mm):
         'got_icon':mm.user.got_icon,
         'attention': mm.user.attention,
         'script_license': mm.user.script_license,
-        'license_recover_expire':mm.user.license_recover_expire()
+        'license_recover_expire':mm.user.license_recover_expire(),
+        'card_attr':mm.card.attr
     }
     return data
 

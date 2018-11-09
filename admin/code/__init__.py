@@ -30,6 +30,7 @@ def code_index(req, codes=[], history=[]):
                                     'use_num': all_num - non_num,
                                     'one_num': one_num,
                                     'name': get_str_words('1', config['name'])}
+    print show_code_config
 
     kwargs = dict(show_code_config=show_code_config,
                   show_code_status=show_code_status,

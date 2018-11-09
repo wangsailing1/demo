@@ -21,6 +21,7 @@ from lib.utils import salt_generator
 from lib.utils import weight_choice
 
 from models.card import Card
+from models.ranking_list import BlockRank
 
 
 class ScriptLogic(object):
@@ -48,7 +49,7 @@ class ScriptLogic(object):
 
     def index(self):
         script = self.mm.script
-        self.calc_attention_by_step(script.cur_script.get('step',0),is_save=True)
+        self.calc_attention_by_step(script.cur_script.get('step', 0), is_save=True)
 
         return 0, {
             'recommend_card': self.get_recommend_card(script.cur_script.get('id')),
@@ -227,9 +228,10 @@ class ScriptLogic(object):
         cur_script['style_effect'] = effect
         finished_reward = self.check_finished_reward()
 
-        self.calc_attention_by_step(3)
+        result = self.calc_attention_by_step(3)
         rc, data = self.index()
         data.update(effect)
+        data['cur_script']['attention'] = result['attention_initial']
         if finished_reward:
             data['finished_reward'] = finished_reward
 
@@ -403,15 +405,15 @@ class ScriptLogic(object):
             'part_a': max(min_part, part_a),
             'part_b': max(min_part, part_b),
             'attention': result['attention'],
-            'card_effect': result.get('card_effect',0)
+            'card_effect': result.get('card_effect', 0)
         }
 
     # 按step计算关注度
-    def calc_attention_by_step(self, step, film_info=None,is_save=False):
+    def calc_attention_by_step(self, step, film_info=None, is_save=False):
         if not self.mm.script.cur_script:
             return
         if step > 3:
-            return 
+            return
         if step == 3:
             resoult = self.calc_attention(film_info)
             self.mm.script.cur_script['attention'] = resoult['attention']
@@ -447,7 +449,7 @@ class ScriptLogic(object):
                 script.cur_script['attention'] = int(attention)
                 if is_save:
                     script.save()
-                return {'attention':int(attention)}
+                return {'attention': int(attention)}
             card = self.mm.card
             standard_popularity = script_config['standard_popularity']
             for role_id, card_oid in film_info['card'].iteritems():
@@ -477,7 +479,7 @@ class ScriptLogic(object):
         if is_save:
             script.save()
         return {'attention': int(attention),
-                'card_effect': card_popularity / standard_popularity,}
+                'card_effect': card_popularity / standard_popularity, }
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
@@ -562,7 +564,7 @@ class ScriptLogic(object):
         return {
             'attention': int(attention),  # 关注度
             'card_effect': card_popularity / standard_popularity,  # 艺人人气对关注度影响
-            'attention_initial':int(attention_initial)
+            'attention_initial': int(attention_initial)
         }
 
     # 8.首映票房、收视计算
@@ -763,6 +765,25 @@ class ScriptLogic(object):
         end_lv = end_lv_rate[idx][0]
 
         cur_script['end_lv'] = end_lv
+
+        # 记录街区总排行（显示用,按票房）
+        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'income')
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        old_rank = bir.get_rank(self.mm.uid)
+        old_score = bir.get_score(self.mm.uid)
+        bir.incr_rank(self.mm.uid, all_income)
+        new_rank = bir.get_rank(self.mm.uid)
+        new_score = bir.get_score(self.mm.uid)
+        if new_rank > 0:
+            near_rank = new_rank - 1
+        if new_rank == 1:
+            near_rank = 2
+        near_score = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)[0][1]
+
+        cur_script['old_rank'] = [old_rank, old_score]
+        cur_script['new_rank'] = [new_rank, new_score]
+        cur_script['near_rank'] = [near_rank, near_score]
 
         card.save()
         script.save()

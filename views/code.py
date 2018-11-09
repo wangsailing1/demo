@@ -80,5 +80,5 @@ def use_code(hm):
 
     return 0, {
         'codes': mm.code.codes,
-        'award': award,
+        'reward': award,
     }

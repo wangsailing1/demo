@@ -1,0 +1,28 @@
+<body>
+<br/>
+
+<h3>玩家建议</h3>
+<table border="1">
+    <tr>
+        <th>玩家名</th>
+        <th>内容</th>
+        <th>uid</th>
+        <th>日期</th>
+    </tr>
+    {% for obj in all_data %}
+    <tr align="center">
+        <td>{{ obj['msg']['name'] }}</td>
+        <td>{{ obj['msg']['msg'] }}</td>
+        <td>{{ obj['msg']['uid'] }}</td>
+        <td>{{ obj['date'] }}</td>
+        <form action="/{{url_partition}}/admin/idea/del_msg/" method="get">
+            <input type="hidden" name='date' value="{{ obj['date'] }}">
+            <input type="hidden" name='key' value="{{ obj['key'] }}">
+            <td>
+            <input type="submit" name="del" title="删除" value="删除" /></td>
+        </form>
+    </tr>
+    {% end %}
+</table>
+<hr/>
+</body>
