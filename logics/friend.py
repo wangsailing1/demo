@@ -965,7 +965,7 @@ class FriendLogic(object):
             return 17, {}  # 已选择过对话
         if times >= max_times:
             return 13, {}  # 次数超出
-        cost = config[now_stage]['cost']
+        cost = config[choice_id]['cost']
         rc, _ = del_mult_goods(self.mm, cost)
         if rc != 0:
             return rc, {}
