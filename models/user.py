@@ -448,6 +448,10 @@ class User(ModelBase):
         gacha_cd = game_config.script_license.get('cd', [])
         return self.license_recover_times < len(gacha_cd)
 
+    def remain_recover_times(self):
+        gacha_cd = game_config.script_license.get('cd', [])
+        return max(len(gacha_cd) - self.license_recover_times,0)
+
     def license_recover_expire(self):
         """恢复倒计时"""
         if not game_config.script_license:
