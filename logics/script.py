@@ -986,6 +986,8 @@ class ScriptLogic(object):
         continued_start = script_info['continued_start']
         div, mod = divmod(now - continued_start, 60)
         last_dollar = 0
+        if not div:
+            return 3, {}
         if div:
             last_dollar = div * script_info['continued_income_unit']
             continued_start = now - mod
