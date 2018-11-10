@@ -976,18 +976,20 @@ class ScriptLogic(object):
         if continued_lv + 1 not in game_config.script_continued_level:
             return 2, {}  # 已是最大等级
 
-        continued_lv_config = game_config.script_continued_level[continued_lv + 1]
-        upgrade_cost = continued_lv_config['upgrade_cost']
-        rc, _ = del_mult_goods(self.mm, upgrade_cost)
-        if rc:
-            return rc, {}
-
         now = int(time.time())
         continued_start = script_info['continued_start']
         div, mod = divmod(now - continued_start, 60)
         last_dollar = 0
         if not div:
             return 3, {}
+
+        continued_lv_config = game_config.script_continued_level[continued_lv + 1]
+        upgrade_cost = continued_lv_config['upgrade_cost']
+        rc, _ = del_mult_goods(self.mm, upgrade_cost)
+        if rc:
+            return rc, {}
+
+
         if div:
             last_dollar = div * script_info['continued_income_unit']
             continued_start = now - mod
