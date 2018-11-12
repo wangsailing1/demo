@@ -21,6 +21,7 @@ class ActiveCard(object):
         if not month_card_config:
             return {}
         show_data = {}
+        show_data['double_pay_id'] = self.mm.user_payment.get_double_pay()
         if not self.active_card.reward_info:
             for k, v in month_card_config.iteritems():
                 show_data[k] = {'status': 0, 'remain_time': 0, 'had_receive': 0}
