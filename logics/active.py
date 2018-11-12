@@ -6,7 +6,6 @@ from gconfig import game_config
 from tools.gift import add_mult_gift
 
 
-
 class ActiveCard(object):
     """ 月卡至尊卡逻辑
     """
@@ -37,18 +36,18 @@ class ActiveCard(object):
     def receive(self, active_id):
         month_card_config = game_config.month_privilege
         if not month_card_config:
-            return 1, {}        # 无该配置
+            return 1, {}  # 无该配置
         status = self.active_card.reward_info.get(active_id, {}).get('status', 0)
         if status == 0:
-            return 2, {}        # 尚未激活
+            return 2, {}  # 尚未激活
         if status == 2:
-            return 3, {}        # 已领取
+            return 3, {}  # 已领取
         if status == 1:
             # 兑换
             reward = {}
             reward = add_mult_gift(self.mm, month_card_config[active_id]['daily_rebate'], reward)
             if not reward:
-                return 4, {}        # 配置错误
+                return 4, {}  # 配置错误
             _format = "%Y-%m-%d"
             today_time = time.strftime(_format)
             self.active_card.reward_info[active_id]['status'] = 2

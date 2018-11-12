@@ -6,23 +6,19 @@ import copy
 
 from lib.core.environ import ModelManager
 from gconfig import game_config
-from tools.gift import add_mult_gift, has_mult_goods
-from lib.utils.time_tools import strftimestamp
-from return_msg_config import i18n_msg
-from lib.db import ModelBase, ModelTools
-from models import server as serverM
-from gconfig import get_str_words
-import settings
+from lib.db import ModelBase
+
 
 class ActiveCard(ModelBase):
     """
     月卡至尊卡卡活动
     """
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
             'reward_info': {},
-            'his_record': [],   # 购买过的月卡
+            'his_record': [],  # 购买过的月卡
         }
         super(ActiveCard, self).__init__(self.uid)
 
@@ -45,7 +41,7 @@ class ActiveCard(ModelBase):
                     self.reward_info[k]['remain_time'] = remain_day
                 if self.reward_info[k]['last_receive'] != today_time:
                     self.reward_info[k]['status'] = 1
-                if remain_time <= 0 and k != 2:     # 结束删除数据
+                if remain_time <= 0 and k != 2:  # 结束删除数据
                     self.reward_info.pop(k)
             self.save()
 
@@ -54,12 +50,12 @@ class ActiveCard(ModelBase):
         time_0 = time.mktime(today.timetuple())
         month_card_config = game_config.month_privilege
         self.reward_info[charge_id] = {
-                        'status': 1,
-                        'remain_time': month_card_config[charge_id]['effective_days'],
-                        'last_receive': '',
-                        'had_receive': 0,
-                        'buy_time': time_0,
-                    }
+            'status': 1,
+            'remain_time': month_card_config[charge_id]['effective_days'],
+            'last_receive': '',
+            'had_receive': 0,
+            'buy_time': time_0,
+        }
 
         self.save()
 

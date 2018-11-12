@@ -1,7 +1,6 @@
 #! --*-- coding: utf-8 --*--
 
 from logics.active import ActiveCard
-from logics.user import UserLogic
 
 
 def active_card_index(hm):
