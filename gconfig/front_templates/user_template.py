@@ -160,9 +160,12 @@ charge = {
     'diamond':          ('diamond',         'int'),  # 给予钻石数量
     'gift_diamond':     ('gift_diamond',    'int'),  # 赠送钻石数
     'is_double':        ('is_double',       'int'),  # 是否首次双倍
-    'price':            ('price',           'int'),  # 所需RMB
+    'vip_exp':            ('vip_exp',           'int'),  # 所需RMB
+    'price_rmb':            ('price_rmb',           'int'),  # 所需RMB
+    'price_dollar':            ('price_dollar',           'float'),  # 所需美元
     'name':             ('name',            'int'),  # 名字
     'icon':             ('icon',            'str'),  # 图
+    'charge_condition':             ('charge_condition',            'str'),  # 图
 }
 
 
