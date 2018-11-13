@@ -498,5 +498,11 @@ mission_mapping = {
     'random_mission': ('random_mission', True),
 }
 
+build_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_building': ('card_building', True),
+    'building': ('building', True),
+}
+
 # 注册需要写到最下面
 register_handler()

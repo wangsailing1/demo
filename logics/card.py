@@ -346,6 +346,8 @@ class CardLogic(object):
         print piece_id, card.pieces
         if card.get_piece(piece_id) < cost:
             return 'error_card_piece', {}
+        if not self.mm.card.can_add_new_card():
+            return 2, {}   #活跃卡牌已达上限，请先雪藏艺人
 
         card_id = card.add_card(card_id)
         card.del_piece(piece_id, cost)
@@ -407,6 +409,23 @@ class CardLogic(object):
             return 1, {}
         card_dict['name'] = name
         card.save()
+        return 0, {}
+
+
+    def up_card_building(self):
+        config = game_config.card_building
+        next_lv = self.mm.card.card_building_level + 1
+        if next_lv not in config:
+            return 1, {}  #等级最大
+        if self.mm.user.level < config[next_lv]['player_lv']:
+            return 2, {}  #等级未达到
+        cost = config[next_lv]['cost']
+        rc, data = del_mult_goods(self.mm,cost)
+        if rc:
+            return rc, data
+        self.mm.card.card_building_level = next_lv
+        self.mm.build.up_build(config[next_lv]['build_id'],is_save=True)
+        self.mm.card.save()
         return 0, {}
 
 

@@ -70,3 +70,10 @@ def receive(hm):
 
     rc, data = gl.receive(gacha_id)
     return rc, data
+
+
+def up_gacha(hm):
+    mm = hm.mm
+    gl = GachaLogics(mm, 0)
+    rc, data = gl.up_gacha()
+    return rc, data
