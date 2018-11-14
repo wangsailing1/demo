@@ -137,5 +137,12 @@ class FansActivity(ModelBase):
         if is_save:
             self.save()
 
+    def change_card_mapping(self,old_id,new_id,is_save=False):
+        for card_id,value in self.card_mapping.iteritems():
+            if value[0] == old_id:
+                value[0] = new_id
+        if is_save:
+            self.save()
+
 
 ModelManager.register_model('fans_activity', FansActivity)

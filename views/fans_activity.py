@@ -91,6 +91,7 @@ def up_activity(hm):
     mm.fans_activity.activity_log[next_id] = old_data
     mm.fans_activity.unlocked_activity.append(next_id)
     build_id = game_config.fans_activity[next_id]['build_id']
+    mm.fans_activity.change_card_mapping(activity_id,next_id)
     mm.user.dollar -= cost
     mm.build.up_build(build_id,is_save=True)
     mm.fans_activity.save()
