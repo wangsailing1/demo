@@ -86,6 +86,7 @@ def up_activity(hm):
     mm.fans_activity.activity[group] = next_id
     mm.fans_activity.activity_log[next_id] = old_data
     mm.fans_activity.unlocked_activity.append(next_id)
+    mm.fans_activity.change_card_mapping(activity_id,next_id)
     mm.user.dollar -= cost
     mm.fans_activity.save()
     mm.user.save()
