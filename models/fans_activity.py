@@ -126,7 +126,7 @@ class FansActivity(ModelBase):
     def add_card_mapping(self, cards, activity_id, is_save=False):
         for card in cards:
             if card not in ['0']:
-                self.card_mapping[card] = activity_id
+                self.card_mapping[card] = [activity_id,cards.index(card) + 1]
         if is_save:
             self.save()
 
