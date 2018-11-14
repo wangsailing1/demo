@@ -109,7 +109,7 @@ class FansActivity(object):
 
     def check_and_remove_cards(self, card_id, activity_id):
         effect_activity = []
-        effect_activity_id = self.mm.fans_activity.card_mapping.get(card_id, 0)[0]
+        effect_activity_id = self.mm.fans_activity.card_mapping.get(card_id, [0])[0]
         gift = self.mm.fans_activity.count_produce(get_reward=True, activity_id=effect_activity_id, is_save=False)
         if effect_activity_id not in effect_activity:
             effect_activity.append(effect_activity_id)
