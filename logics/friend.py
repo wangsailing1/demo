@@ -103,7 +103,7 @@ class FriendLogic(object):
         point = game_config.common[26]
         if reward is None:
             reward = {}
-        add_mult_gift(self.mm, [[3, 0, point]], reward)
+        reward = add_mult_gift(self.mm, [[3, 0, point]], reward)
         self.friend.receive_gift(friend_id)
         self.friend.got_point_daily += point
 
