@@ -213,6 +213,9 @@ gacha_msg = {
 
 
 script_msg = {
+    'script.pre_filming': {
+        1: u'许可证不足',
+    },
     'script.set_card': {
         2: u'已选完角色',
         3: u'演员与角色设置不可重复',
