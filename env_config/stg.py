@@ -9,7 +9,7 @@ import inspect
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
-PLATFORM = 'test'    # 平台标示
+PLATFORM = 'stg'    # 平台标示
 URL_PARTITION = 'big_sale'
 MASTER_HOST = '219.142.26.114:116'
 IN_MASTER_HOST = '192.168.1.52'          # 内网地址 备份用
