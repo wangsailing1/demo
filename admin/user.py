@@ -717,3 +717,5 @@ def watch_ban_ips(req):
         'uid_infos': uid_infos,
     }
     return render(req, 'admin/gs/ip_ban_info.html', **data)
+
+
