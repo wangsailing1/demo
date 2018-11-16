@@ -13,7 +13,6 @@ from models.payment import Payment
 from gconfig import game_config
 import decimal
 
-
 CURRENCY_CNY = 'CNY'  # 人民币
 CURRENCY_USD = 'USD'  # 美元
 CURRENCY_HKD = 'HKD'  # 港币
@@ -32,21 +31,21 @@ CURRENCY_YB = 'YB'  # Y币
 
 # 币种对rmb
 currencys = {
-    CURRENCY_CNY: 1,         # 人民币
-    CURRENCY_USD: 6.4768,    # 美元
-    CURRENCY_HKD: 0.8357,    # 港币
-    CURRENCY_EUR: 7.107,     # 欧元
-    CURRENCY_GBP: 9.664,     # 英镑
-    CURRENCY_JPY: 0.0538,    # 日元
-    CURRENCY_VND: 0.0003,    # 越南盾
+    CURRENCY_CNY: 1,  # 人民币
+    CURRENCY_USD: 6.4768,  # 美元
+    CURRENCY_HKD: 0.8357,  # 港币
+    CURRENCY_EUR: 7.107,  # 欧元
+    CURRENCY_GBP: 9.664,  # 英镑
+    CURRENCY_JPY: 0.0538,  # 日元
+    CURRENCY_VND: 0.0003,  # 越南盾
     CURRENCY_KRW: 179.7307,  # 韩元
-    CURRENCY_AUD: 4.7099,    # 澳元
-    CURRENCY_CAD: 4.6815,    # 加元
-    CURRENCY_BUK: 0.005,     # 缅甸元
-    CURRENCY_THB: 0.1795,    # 泰铢
-    CURRENCY_TWD: 0.1979,    # 新台币
-    CURRENCY_SGD: 4.6071,    # 新加坡元
-    CURRENCY_YB: 1,          # Y币
+    CURRENCY_AUD: 4.7099,  # 澳元
+    CURRENCY_CAD: 4.6815,  # 加元
+    CURRENCY_BUK: 0.005,  # 缅甸元
+    CURRENCY_THB: 0.1795,  # 泰铢
+    CURRENCY_TWD: 0.1979,  # 新台币
+    CURRENCY_SGD: 4.6071,  # 新加坡元
+    CURRENCY_YB: 1,  # Y币
 }
 
 
@@ -84,9 +83,9 @@ def virtual_pay(req):
     times = int(req.get_argument('times', 1))
 
     if 'admin' in req.request.arguments:
-        tp = 'admin'    # 后台代充  算真实收入
+        tp = 'admin'  # 后台代充  算真实收入
     elif 'admin_test' in req.request.arguments:
-        tp = 'admin_test'   # 管理员测试用 不算真实收入
+        tp = 'admin_test'  # 管理员测试用 不算真实收入
     else:
         tp = ''
 
@@ -98,7 +97,7 @@ def virtual_pay(req):
     if not reason:
         data['msg'] = u'payment reason'
         return render(req, 'admin/payment/virtual_index.html', **data)
-    
+
     approval_payment = ApprovalPayment()
     key = approval_payment.add_payment(req.uname, uid, goods_id, reason, times, tp)
 
@@ -177,18 +176,26 @@ def select_pay(req, **kwargs):
                 pay_usd += round(float(item['order_rmb'] or 0) / currencys.get(CURRENCY_USD, 1), 2)
                 really_pay_rmbs = pay_usd
             all_google_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'google-kvgames' else 0
-            really_google_rmbs_CN += item['order_money'] if str(item.get('platform', '')) == 'google-kvgames' and item.get('currency') == 'CNY' else 0
+            really_google_rmbs_CN += item['order_money'] if str(
+                item.get('platform', '')) == 'google-kvgames' and item.get('currency') == 'CNY' else 0
             really_google_rmbs_TW += 0
             all_apple_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'apple' else 0
-            really_apple_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get('currency') == 'USD' else 0
-            none_currency_rmbs = item['order_rmb'] if str(item.get('platform', '')) == 'apple' and not item.get('currency') else 0
+            really_apple_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get(
+                'currency') == 'USD' else 0
+            none_currency_rmbs = item['order_rmb'] if str(item.get('platform', '')) == 'apple' and not item.get(
+                'currency') else 0
             really_apple_rmbs_EN += none_currency_rmbs / decimal.Decimal(currencys.get(CURRENCY_USD, 1))
-            really_apple_rmbs_CN += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get('currency') == 'CNY' else 0
-            really_apple_rmbs_TW += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get('currency') == 'TWD' else 0
+            really_apple_rmbs_CN += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get(
+                'currency') == 'CNY' else 0
+            really_apple_rmbs_TW += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get(
+                'currency') == 'TWD' else 0
             all_mycard_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'MyCard' else 0
-            really_mycard_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get('currency') == 'USD' else 0
-            really_mycard_rmbs_CN += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get('currency') == 'CNY' else 0
-            really_mycard_rmbs_TW += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get('currency') == 'TWD' else 0
+            really_mycard_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get(
+                'currency') == 'USD' else 0
+            really_mycard_rmbs_CN += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get(
+                'currency') == 'CNY' else 0
+            really_mycard_rmbs_TW += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get(
+                'currency') == 'TWD' else 0
 
         all_data['all_pay_times'] += len(item_list)
         all_data['all_person_times'] += len(user_ids)
@@ -204,7 +211,7 @@ def select_pay(req, **kwargs):
         st_list_0.append({'day': day,
                           'pay_diamonds': pay_diamonds,
                           'pay_times': len(item_list),
-                          'pay_rmbs' : pay_rmbs,
+                          'pay_rmbs': pay_rmbs,
                           'pay_usd': pay_usd,
                           'admin_pay_rmbs': admin_pay_rmbs,
                           'really_pay_rmbs': really_pay_rmbs,
@@ -221,7 +228,7 @@ def select_pay(req, **kwargs):
                           'really_mycard_rmbs_EN': really_mycard_rmbs_EN,
                           'really_mycard_rmbs_CN': really_mycard_rmbs_CN,
                           'really_mycard_rmbs_TW': really_mycard_rmbs_TW,
-                        })
+                          })
 
     st_list_0.sort(key=lambda x: x['day'], reverse=True)
 
@@ -268,14 +275,14 @@ def pay_day(req):
         rmb += x['rmb']
 
     return render(req, 'admin/payment/pay_day.html', **{
-            'start_day': day_dt,
-            'end_day': day_dt,
-            'st_list_0': st_list_0,
-            'add_diamond': add_diamond,
-            'rmb': rmb,
-            'usd': usd,
-            'environment': settings.ENV_NAME,
-        })
+        'start_day': day_dt,
+        'end_day': day_dt,
+        'st_list_0': st_list_0,
+        'add_diamond': add_diamond,
+        'rmb': rmb,
+        'usd': usd,
+        'environment': settings.ENV_NAME,
+    })
 
 
 @require_permission
@@ -300,11 +307,11 @@ def pay_person(req):
             really_pay += x['order_money']
 
     return render(req, 'admin/payment/pay_person.html', **{
-            'admin_pay': admin_pay,
-            'really_pay': really_pay,
-            'st_list_0': st_list_0,
-            'add_diamond': add_diamond,
-            'pay': pay,
-            'environment': settings.ENV_NAME,
-            'user_id': user_id,
-        })
+        'admin_pay': admin_pay,
+        'really_pay': really_pay,
+        'st_list_0': st_list_0,
+        'add_diamond': add_diamond,
+        'pay': pay,
+        'environment': settings.ENV_NAME,
+        'user_id': user_id,
+    })
