@@ -221,6 +221,11 @@ script_msg = {
         3: u'演员与角色设置不可重复',
         4: u'请选角色',
     },
+    'script.upgrade_continued_level': {
+        1: u'没有该剧本',
+        2: u'已是最大等级',
+        3: u'推广时间已过',
+    },
     'script_gacha.get_gacha': {
         1: u'可抽取次数不足'
     }
