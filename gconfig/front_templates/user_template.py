@@ -557,7 +557,7 @@ jump = {
     'uk': ('id', 'int'),
     'name': ('name', 'unicode'),
     'des': ('des', 'unicode'),
-    'target': ('target', 'int'),
+    'target': ('target', 'int_list'),
     'unlock': ('unlock', 'int'),
 }
 
