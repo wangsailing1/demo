@@ -43,3 +43,8 @@ def get_gacha(hm):
         return rc, {}
 
     return 0, data
+
+def up_build(hm):
+    cl = ScriptGachaLogics(hm.mm,0)
+    rc, data = cl.up_build_level()
+    return rc, data
