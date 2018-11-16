@@ -187,7 +187,7 @@ class User(ModelBase):
             'silver': 0,
             'dollar': 0,            # 美元
             'script_income': 0,            # 拍片总票房
-            'script_license': 0,    # 拍片许可证
+            'script_license': game_config.common[20],    # 拍片许可证
             'license_update_time': int(time.time()),    # 拍片许可证恢复时间
             'license_recover_times': 0,          # 许可证当日恢复次数
             'used_license_times': 0,             # 许可证当日使用次数
