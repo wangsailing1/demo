@@ -16,7 +16,7 @@ liveness = {
     'sort': ('sort', 'int'),  # 类型
     'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
-    'jump': ('jump', 'int'),  # 跳转
+    'jump': ('jump', 'int_list'),  # 跳转
     'unlock_level': ('unlock_level', 'int_list'),  # 解锁等级
 }
 
@@ -38,7 +38,7 @@ guide_mission = {
     'sort': ('sort', 'int'),  # 类型
     'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
-    'jump': ('jump', 'int'),  # 跳转
+    'jump': ('jump', 'int_list'),  # 跳转
 }
 
 # 随机任务
@@ -48,6 +48,6 @@ random_mission = {
     'sort': ('sort', 'int'),  # 类型
     'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
-    'jump': ('jump', 'int'),  # 跳转
+    'jump': ('jump', 'int_list'),  # 跳转
     'weight': ('weight', 'int'),  # 解锁等级
 }
