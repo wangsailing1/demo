@@ -183,7 +183,7 @@ script_gacha_cost = {
 # 关注度等级
 attention_level = {
     'uk': ('level', 'int'),  #
-    'name': ('name', 'int'),  #
+    'name': ('name', 'str'),  #
     'min_attention': ('min_attention', 'int'),  #
     'max_attention': ('max_attention', 'int'),  #
 
