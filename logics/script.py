@@ -363,9 +363,18 @@ class ScriptLogic(object):
 
         # 属性作用指数
         attr_rate = game_config.common[33] / 100.0
+        # 属性作用上升率
+        attr_up_rate = game_config.common[53] / 10000.0
+        # 属性作用上升指数
+        attr_up_index = game_config.common[54] / 10000.0
 
-        # partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数 +
-        # （气质/含气质属性的角色数量/气质基准系数）^ 属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
+        # partA = （part艺术 + part气质） / 生效属性数量） * （1 + 平均熟练度等级加成）
+        # 艺术、气质计算规则如下
+        # 【 当艺术 / 含艺术属性角色数量 < 艺术基准系数】
+        #       part艺术 =（艺术 / 含艺术属性的角色数量 / 艺术基准系数） ^ 属性作用指数
+        # else:
+        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+
         base_a = 0
         pro_count = 0
         for pro_id in [art_pro_id, temperament_pro_id]:
@@ -376,14 +385,25 @@ class ScriptLogic(object):
                 pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
-            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
-                pro_id_mapping[pro_id]]) ** attr_rate
+
+            standard_pro_rate = standard_attr[pro_id_mapping[pro_id]]
+            if 1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] < standard_pro_rate:
+                d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
+                    ** attr_rate
+            else:
+                d = ((1 + (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate) \
+                    / (1 + attr_up_rate * (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+            base_a += d
+
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
 
-        # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
-        # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
-        # （歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+
-        # （演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
+        # partB = （part娱乐+part动感+part歌艺+part演技）/生效属性数量）*（1+平均熟练度等级加成）
+        # 各属性计算规则如下
+        # 【 当娱乐 / 含娱乐属性角色数量 < 娱乐基准系数】
+        #       part娱乐 =（娱乐 / 含娱乐属性的角色数量 / 娱乐基准系数） ^ 属性作用指数
+        # else:
+        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
+
         base_b = 0
         pro_count = 0
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
@@ -394,8 +414,16 @@ class ScriptLogic(object):
                 pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
-            base_b += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
-                pro_id_mapping[pro_id]]) ** attr_rate
+
+            standard_pro_rate = standard_attr[pro_id_mapping[pro_id]]
+            if 1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] < standard_pro_rate:
+                d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
+                    ** attr_rate
+            else:
+                d = ((1 + (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate)
+                     / (1 + attr_up_rate * (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+            base_b += d
+
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
 
         min_part = game_config.common[37] / 10.0
@@ -972,6 +1000,9 @@ class ScriptLogic(object):
             return 1, {}
 
         script_info = script.continued_script[script_id]
+        now = int(time.time())
+        if script_info['continued_expire'] - now <= 60:
+            return 3, {}  #推广时间已过
         continued_lv = script_info['continued_lv']
         if continued_lv + 1 not in game_config.script_continued_level:
             return 2, {}  # 已是最大等级
@@ -982,7 +1013,7 @@ class ScriptLogic(object):
         if rc:
             return rc, {}
 
-        now = int(time.time())
+
         continued_start = script_info['continued_start']
         div, mod = divmod(now - continued_start, 60)
         last_dollar = 0

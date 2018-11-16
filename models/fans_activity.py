@@ -8,6 +8,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
 from tools.gift import calc_gift
+from models.build import Build
 
 
 class FansActivity(ModelBase):
@@ -28,10 +29,19 @@ class FansActivity(ModelBase):
         super(FansActivity, self).__init__(self.uid)
 
     def pre_use(self):
+        # 数据更正 开发环境用
+        save = False
+        for card_id, value in self.card_mapping.iteritems():
+            if isinstance(value, int):
+                self.card_mapping[card_id] = [value, 0]
+                save = True
+
         if not self.can_unlock_activity:
             all_id = game_config.fans_activity.keys()
             all_luck_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
             self.can_unlock_activity = list(set(all_id) - set(all_luck_id))
+            save = True
+        if save:
             self.save()
 
     def count_produce(self, get_reward=False, activity_id=0, is_save=True):
@@ -91,7 +101,7 @@ class FansActivity(ModelBase):
         item_produce['items'] = item_produce_new
         if get_reward:
             if now == all_time + value['start_time']:
-                self.delete_card_mapping(self.activity_log[activity_id]['cards'])
+                # self.delete_card_mapping(self.activity_log[activity_id]['cards'])
                 self.activity_log[activity_id] = {}
             else:
                 gold_produce['last_time'] = now - gold_remain_time
@@ -125,7 +135,7 @@ class FansActivity(ModelBase):
     def add_card_mapping(self, cards, activity_id, is_save=False):
         for card in cards:
             if card not in ['0']:
-                self.card_mapping[card] = activity_id
+                self.card_mapping[card] = [activity_id, cards.index(card) + 1]
         if is_save:
             self.save()
 
@@ -133,6 +143,13 @@ class FansActivity(ModelBase):
         for card in cards:
             if card not in ['0'] and card in self.card_mapping:
                 self.card_mapping.pop(card)
+        if is_save:
+            self.save()
+
+    def change_card_mapping(self, old_id, new_id, is_save=False):
+        for card_id, value in self.card_mapping.iteritems():
+            if value[0] == old_id:
+                value[0] = new_id
         if is_save:
             self.save()
 

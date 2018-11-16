@@ -33,6 +33,8 @@ class Block(object):
                     uid, card_id = uid_card_id.split('_')
                     umm = ModelManager(uid)
                     name = umm.user.name
+                    if card_id not in umm.card.cards:
+                        continue
                     card_cid = umm.card.cards[card_id]['id']
                     card_name = umm.card.cards[card_id]['name']
                     if not data[tp_num]['win']:

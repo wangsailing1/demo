@@ -179,7 +179,7 @@ class UserPayment(ModelBase):
                     self.mm.active_card.record(sort)
                 else:
                     return order_diamond
-            elif sort == 2:    # 季卡
+            elif sort == 2:    # 至尊卡卡
                 if not self.mm.active_card.get_status(sort):
                     self.mm.active_card.record(sort)
                 else:

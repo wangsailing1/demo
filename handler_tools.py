@@ -80,7 +80,9 @@ def user_status(mm):
         'attention': mm.user.attention,
         'script_license': mm.user.script_license,
         'license_recover_expire':mm.user.license_recover_expire(),
-        'card_attr':mm.card.attr
+        'remain_recover_times': mm.user.remain_recover_times(),
+        'card_attr':mm.card.attr,
+        'build_info':mm.build.group_ids
     }
     return data
 
