@@ -26,7 +26,7 @@ from lib.utils import get_last_refresh_time
 from tools.user import VipInfo
 from models import server as serverM
 from lib.utils.time_tools import relative_activity_remain_time
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift,calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 
 
@@ -1445,6 +1445,11 @@ class User(ModelBase):
             'cur_lv': self.level,
             'change_type': 'user',      # 级别经验类型 玩家经验、等级
         }
+        gift = []
+        for i in xrange(cur_level,self.level + 1):
+            level_gift = game_config.player_level.get(cur_level, {}).get('award')
+            gift.extend(level_gift)
+        add_mult_gift(self.mm,gift)
         special_bdc_log(self, sort='exp_change', **kwargs)
         special_bdc_log(self, sort='level_change', **kwargs)
         return True
