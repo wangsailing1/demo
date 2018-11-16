@@ -31,7 +31,6 @@ class ScriptGacha(ModelBase):
 
             'diamond_times': 0,         # 钻石抽取次数
             'diamond_time': 0,          # 钻石抽取时间
-            'build_level':1
 
 
         }
