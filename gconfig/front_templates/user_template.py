@@ -240,25 +240,25 @@ charge_privilege = {
                    'privilege19', 'value19', 'privilege20', 'value20'),
                   ('int_list_or_int', 'list_2_to_list')),  # 购买的ID
 }
-
-# 新手引导
-guide = {
-    'uk': ('id', 'int'),  # 引导id
-    'sort': ('sort', 'int'),  # 类型
-    'aim': ('aim', 'int'),  # 目标步骤
-    'level': ('level', 'int'),  # 关健步
-    'key': ('key', 'str'),  # 关键字
-    'action': ('action', 'int'),  # 动作
-    'trigger': ('trigger', 'int_list'),  # 条件
-    'delay': ('delay', 'float'),  # 延迟
-    'target': ('target', 'int_list'),  # 动作目标
-    'target_data': ('target_data', 'int_list'),  # 动作参数
-    'next': ('next', 'int'),  # 下一步
-    'drama': ('drama', 'int'),  # 剧情id
-    'skip': ('skip', 'int'),  # 跳过按钮的位置
-    'free': ('free', 'int'),
-    'des': ('des', 'unicode'),
-}
+#
+# # 新手引导
+# guide = {
+#     'uk': ('id', 'int'),  # 引导id
+#     'sort': ('sort', 'int'),  # 类型
+#     'aim': ('aim', 'int'),  # 目标步骤
+#     'level': ('level', 'int'),  # 关健步
+#     'key': ('key', 'str'),  # 关键字
+#     'action': ('action', 'int'),  # 动作
+#     'trigger': ('trigger', 'int_list'),  # 条件
+#     'delay': ('delay', 'float'),  # 延迟
+#     'target': ('target', 'int_list'),  # 动作目标
+#     'target_data': ('target_data', 'int_list'),  # 动作参数
+#     'next': ('next', 'int'),  # 下一步
+#     'drama': ('drama', 'int'),  # 剧情id
+#     'skip': ('skip', 'int'),  # 跳过按钮的位置
+#     'free': ('free', 'int'),
+#     'des': ('des', 'unicode'),
+# }
 
 mission_guide = {
     'uk': ('id', 'int'),  # id
@@ -270,15 +270,15 @@ mission_guide = {
 }
 
 # 引导组
-guide_team = {
-    'uk': ('id', 'int'),  # 引导组id
-    'start_id': ('start_id', 'int'),  # 起始id
-    'open_level': ('open_level', 'int'),  # 激活等级
-    'type': ('type', 'int'),  # 引导类型
-    'sort': ('sort', 'int'),  # 引导分组
-    'is_open': ('is_open', 'int'),  # 是否开启
-    'is_done': ('is_done', 'int_list'),  # 是否完成
-}
+# guide_team = {
+#     'uk': ('id', 'int'),  # 引导组id
+#     'start_id': ('start_id', 'int'),  # 起始id
+#     'open_level': ('open_level', 'int'),  # 激活等级
+#     'type': ('type', 'int'),  # 引导类型
+#     'sort': ('sort', 'int'),  # 引导分组
+#     'is_open': ('is_open', 'int'),  # 是否开启
+#     'is_done': ('is_done', 'int_list'),  # 是否完成
+# }
 
 # 初始数据
 # initial_data = {
