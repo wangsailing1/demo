@@ -848,4 +848,4 @@ class GiftCenter(ModelBase):
         return 0
 
 
-ModelManager.register_model('gift_center', GiftCenter)
+# ModelManager.register_model('gift_center', GiftCenter)

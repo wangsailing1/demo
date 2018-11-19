@@ -61,4 +61,3 @@ class Idea(object):
         h_key = '%s%s' % (self.pre_key, date)
         self.redis.hdel(h_key,k)
 
-# ModelManager.register_model('idea', Idea)
