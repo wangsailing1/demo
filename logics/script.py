@@ -807,7 +807,8 @@ class ScriptLogic(object):
             near_rank = new_rank - 1
         if new_rank == 1:
             near_rank = 2
-        near_score = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)[0][1]
+        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)
+        near_score = rank_list[0][1] if rank_list else 0
 
         cur_script['old_rank'] = [old_rank, old_score]
         cur_script['new_rank'] = [new_rank, new_score]
