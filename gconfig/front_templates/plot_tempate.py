@@ -136,14 +136,14 @@ chapter_words = {
     'wordsId': ('wordsId', 'unicode'),  # 文字
 }
 
-# 新手引导对话分组
-dialogue_guide_team = {
-    'uk': ('id', 'int'),  # 关卡id
-    'dialogueId': ('dialogueId', 'int_list'),  # 对话id
-    'playbackId': ('playbackId', 'int_list'),  # 剧情回放id
-    'type': ('type', 'int'),  # 触发类型
-    'condition': ('condition', 'int'),  # 触发条件
-}
+# # 新手引导对话分组
+# dialogue_guide_team = {
+#     'uk': ('id', 'int'),  # 关卡id
+#     'dialogueId': ('dialogueId', 'int_list'),  # 对话id
+#     'playbackId': ('playbackId', 'int_list'),  # 剧情回放id
+#     'type': ('type', 'int'),  # 触发类型
+#     'condition': ('condition', 'int'),  # 触发条件
+# }
 
 # 新手引导对话
 dialogue_guide = {

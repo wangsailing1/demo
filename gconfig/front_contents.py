@@ -225,12 +225,12 @@ user_config_mapping = {
     'value': ('value', True),
     'privilege': ('privilege', True),
     # 'charge_privilege': ('charge_privilege', True),
-    'guide': ('guide', True),
+    # 'guide': ('guide', True),
     'guide_unlock': ('guide_unlock', True),
     'jump': ('jump', True),
     'item_coin': ('item_coin', True),
     'mission_guide': ('mission_guide', True),
-    'guide_team': ('guide_team', True),
+    # 'guide_team': ('guide_team', True),
     # 'initial_data': ('initial_data', True),
     'first_random_name': ('first_random_name', True),
     'last_random_name': ('last_random_name', True),
@@ -505,5 +505,11 @@ build_mapping = {
     'building': ('building', True),
 }
 
+guide_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'guide': ('guide', True),
+    'guide_team': ('guide_team', True),
+    'dialogue_guide_team': ('dialogue_guide_team', True),
+}
 # 注册需要写到最下面
 register_handler()

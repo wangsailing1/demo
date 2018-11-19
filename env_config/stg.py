@@ -15,7 +15,7 @@ MASTER_HOST = '219.142.26.114:116'
 IN_MASTER_HOST = '192.168.1.52'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
-CHAT_IDS = [('219.142.26.114', 9079)]
+CHAT_IDS = [('219.142.26.114', 9996)]
 
 LANGUAGE = 'ch'
 CDN = 'cdncn.cjyx2.hi365.com'
