@@ -391,8 +391,9 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
-                d = ((1 + (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate) \
-                    / (1 + attr_up_rate * (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                attr_value = attrs.get(pro_id, 0)
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
+                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -420,8 +421,9 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
-                d = ((1 + (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate)
-                     / (1 + attr_up_rate * (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                attr_value = attrs.get(pro_id, 0)
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
+                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
             base_b += d
 
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
