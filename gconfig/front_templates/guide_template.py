@@ -24,7 +24,7 @@ guide_team = {
     'sort': ('sort', 'int'),  # 引导分组
     'type': ('type', 'int'),  # 引导类型
     'is_open': ('is_open', 'int'),  # 是否开启
-    'is_done': ('is_done', 'int'),  # 完成条件
+    'is_done': ('is_done', 'int_list'),  # 完成条件
 }
 
 
