@@ -370,6 +370,7 @@ def export(req, reset_msg=None, msgs=None):
     for model_name in mm._register_base:
         if model_name in ['friend', 'guild']:
             continue
+        print model_name
         cls_instance = getattr(mm, model_name)
         cls_key = cls_instance.make_key_cls(uid1, uid1[:-7])
         key_list.append(cls_key)
