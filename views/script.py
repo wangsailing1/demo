@@ -8,6 +8,7 @@ Created on 2018-09-04
 
 import time
 import copy
+import settings
 from gconfig import game_config
 
 from lib.db import ModelBase
@@ -196,3 +197,12 @@ def get_continued_reward(hm):
     sl = ScriptLogic(mm)
     rc, data = sl.get_continued_reward(script_id)
     return rc, data
+
+
+def test_calc_attr(hm):
+    if not settings.DEBUG:
+        return 1, {}
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+    d = sl.calc_script_attr()
+    return 0, {'data': d}
