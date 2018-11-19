@@ -19,6 +19,7 @@ from lib.utils import weight_choice
 from tools.hero import format_hero_info
 from lib.core.environ import ModelManager
 from lib.utils import fake_deepcopy
+from models.ranking_list import BlockRank
 
 
 def refresh_roulette_ranktime():
@@ -503,7 +504,11 @@ class UserLogic(object):
         user_dict['block'] = mm.block.block_num
         user_dict['script_info'] = mm.script.get_scrip_info_by_num()
         user_dict['top_cards'] = mm.card.get_better_card()
-        user_dict['block_rank'] = 1
+
+        block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                                 'income')
+        br = BlockRank(block_rank_uid, mm.block._server_name)
+        user_dict['block_rank'] = br.get_rank(self.mm.uid)
         # if not self.mm.high_ladder.is_robot(user_id):
         #     mm = self.mm.get_mm(user_id)
         #     user_dict = user_info(mm)
