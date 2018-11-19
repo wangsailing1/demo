@@ -10,7 +10,7 @@ guide = {
     'action': ('action', 'int'),  # 执行
     'trigger': ('trigger', 'int'),  # 触发
     'delay': ('delay', 'int'),  # 延迟
-    'target': ('target', 'int'),  # 显示
+    'target': ('target', 'int_list'),  # 显示
     'next': ('next', 'int'),  # 下一步
     'drama': ('drama', 'int'),  # 触发对话
     'des': ('des', 'unicode'),  # 说明文档
