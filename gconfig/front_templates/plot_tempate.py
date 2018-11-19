@@ -26,6 +26,7 @@ avg_dialogue = {
     'reward': ('reward', 'int_list'),
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
+    'special_effects': ('special_effects', 'int'),
 }
 
 # 战斗内广告栏
@@ -252,6 +253,7 @@ tour_dialogue = {
     'reward_num': ('reward_num', 'int'),
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
+    'special_effects': ('special_effects', 'int'),
 }
 
 explain = {
