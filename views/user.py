@@ -55,7 +55,7 @@ def main(hm):
     mm.user.send_vip_exclusive_notice()
 
     # 全服邮件
-    # mm.user.send_system_mail()
+    mm.user.send_system_mail()
 
     result = ul.main()
 

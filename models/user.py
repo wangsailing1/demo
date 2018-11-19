@@ -1385,7 +1385,7 @@ class User(ModelBase):
 
         if self.level > cur_level:
             # 发送等级奖励邮件
-            # self.send_level_mail(cur_level, self.level)
+            self.send_level_mail(cur_level, self.level)
             # 触发升级任务, 解锁建筑
             task_event_dispatch = self.mm.get_event('task_event_dispatch')
             task_event_dispatch.call_method('level_upgrade', self.level, add_value=self.level - cur_level)

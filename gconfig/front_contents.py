@@ -248,7 +248,7 @@ user_config_mapping = {
     'common_attention': ('common_attention', True),
     'play_help': ('play_help', True),
     'push_message': ('push_message', True),
-    # 'level_mail': ('level_mail', True),
+    'level_mail': ('level_mail', True),
     'level_gift': ('level_gift', True),
     'team_skill_mastery': ('team_skill_mastery', True),
     'team_skill_mastery_up': ('team_skill_mastery_up', True),
@@ -259,6 +259,7 @@ user_config_mapping = {
     'loading_des': ('loading_des', True),
     'loading_gif': ('loading_gif', True),
     'help': ('help', True),
+    'login_reward_id': ('login_reward_id', True),
 }
 
 #
