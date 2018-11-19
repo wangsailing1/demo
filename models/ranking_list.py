@@ -546,6 +546,77 @@ class BlockRank(AllRank):
         return int(self.fredis.get(self._key_date)) if self.fredis.get(self._key_date) else 0
 
 
+
+    def add_rank(self, uid, rank):
+        """
+        增加排名
+        :param uid:
+        :param rank:
+        :return:
+        """
+        self.fredis.zadd(self._key_date, uid, generate_rank_score(rank))
+
+    def incr_rank(self, uid, score):
+        """
+        增加排名
+        :param uid:
+        :param score:
+        :return:
+        """
+        self.fredis.zincrby(self._key_date, uid, int(score))
+
+    def del_rank(self, uid):
+        """
+        删除排名
+        :param uid:
+        :return:
+        """
+        self.fredis.zrem(self._key_date, uid)
+
+    def get_all_user(self, start=0, end=-1, withscores=False, score_cast_func=round_float_or_str):
+        """
+        获取排名所有玩家
+        :param start:
+        :param end:
+        :param withscores:
+        :return:
+        """
+        return self.fredis.zrevrange(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
+
+    def get_rank_user(self, start, end, withscores=False, score_cast_func=round_float_or_str):
+        """
+        获取指定rank值范围内的玩家
+        :param start:
+        :param end:
+        :param withscores:
+        :return:
+        """
+        return self.fredis.zrangebyscore(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
+
+    def get_score(self, uid, score_cast_func=round_float_or_str):
+        """
+        获取积分
+        :param uid:
+        :return:
+        """
+        score = self.fredis.zscore(self._key_date, uid) or 0
+        score = score_cast_func(score)
+
+        return score
+
+    def get_rank(self, uid):
+        """
+        获取排名
+        :param uid:
+        :return:
+        """
+        rank = self.fredis.zrevrank(self._key_date, uid)
+        if rank is None:
+            rank = -1
+
+        return rank + 1
+
+
 ModelManager.register_model_base_tools('level_rank', LevelRank)
 # ModelManager.register_model_base_tools('super_active_rank', SuperActiveRank)
 # ModelManager.register_model_base_tools('guild_task_rank', GuildTaskRank)
