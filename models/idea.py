@@ -22,7 +22,7 @@ class Idea(object):
             'name': name,
             'uid': uid,
             'msg': msg
-        })
+        }, pickle.HIGHEST_PROTOCOL)
         return value
 
     def get_num(self):
