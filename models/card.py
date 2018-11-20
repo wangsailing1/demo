@@ -100,6 +100,7 @@ class Card(ModelBase):
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
+            'equips_used':{}, #升格调消耗掉的装备
 
             'evo': evo,
             'star': card_config.get('star_level', 1),
@@ -184,6 +185,8 @@ class Card(ModelBase):
                 v['love_gift_pro'] = {}
             if 'equips' not in v:
                 v['equips'] = []
+            if 'equips_used' not in v:
+                v['equips_used'] = {}
 
             if 'style_pro' not in v or not v['style_pro']:
                 v['style_pro'] = {}
@@ -358,6 +361,19 @@ class Card(ModelBase):
         add_percent = grow_love[idx][1]
         if card_info['love_lv'] == 0:
             add_percent = 0
+
+        #武器加成
+        equip_config = game_config.equip
+        for equip_id in card_info['equips']:
+            equip_attr = equip_config[equip_id]
+            char_pro = [char_pro[i] + equip_attr[i] for i in range(6)]
+
+        for _, value in card_info['equips_used'].iteritems():
+            for equip_id in value:
+                equip_attr = equip_config[equip_id]
+                char_pro = [char_pro[i] + equip_attr[i] for i in range(6)]
+
+
 
         # 礼物属性加成
         for gift_id, info in card_info['love_gift_pro'].iteritems():

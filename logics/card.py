@@ -189,7 +189,7 @@ class CardLogic(object):
 
         if card_dict['lv'] < card_config['lvmin']:
             return 4, {}    # 卡牌等级不足
-
+        card_dict['equips_used'][card_config['qualityid']] = card_dict['equips']
         card_dict['equips'] = []
         card_dict['id'] = next_id
         card.save()
