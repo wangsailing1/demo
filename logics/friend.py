@@ -55,6 +55,7 @@ class FriendLogic(object):
         friend_mm = self.mm.get_mm(friend_id)
         friend_mm.friend.set_received_gift(self.mm.uid)
         self.friend.set_send_gift(friend_id)
+        self.friend.add_friend_like(friend_id)
         # 觉醒宝箱次数任务
         task_event_dispatch = self.mm.get_event('task_event_dispatch')
         task_event_dispatch.call_method('present_flower', count=1)
@@ -106,6 +107,7 @@ class FriendLogic(object):
         add_mult_gift(self.mm, [[3, 0, point]], reward)
         self.friend.receive_gift(friend_id)
         self.friend.got_point_daily += point
+        self.friend.add_friend_like(friend_id)
 
         self.friend.save()
 

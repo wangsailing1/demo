@@ -76,6 +76,7 @@ def user_friend_info(mm, uid):
         'nickname':target_mm.friend.nickname.get(uid,''),
         'block':target_mm.block.block_num,
         'block_rank':1,
+        'like':mm.friend.friend_info.get(uid,{}).get('like',0)
     }
     result = {
         'user': user_dict

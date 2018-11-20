@@ -53,6 +53,7 @@ class Friend(ModelBase):
         self._attrs = {
             'friends': [],
             'messages': [],
+            'friends_info':{},
 
             'last_refresh_date': '',
             'parised_friend': [],
@@ -548,6 +549,16 @@ class Friend(ModelBase):
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
         return data
+
+
+    def add_friend_like(self,uid,is_save=False):
+        if uid not in self.friends_info:
+            self.friends_info[uid] = {}
+        if self.friends_info[uid].get('like',0) >= game_config.common[55]:
+            return
+        self.friends_info[uid]['like'] = self.friends_info[uid].get('like',0) + game_config.common[56]
+        if is_save:
+            self.save()
 
 
 ModelManager.register_model('friend', Friend)
