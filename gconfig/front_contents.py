@@ -101,6 +101,8 @@ plot_mapping = {
     'phone_chapter_dialogue': ('phone_chapter_dialogue', True),
     'tour_dialogue': ('tour_dialogue', True),
     'explain': ('explain', True),
+    'dinner_begin': ('dinner_begin', True),
+    'dinner_in': ('dinner_in', True),
 
     # 'ad': ('ad', True),
     # 'ad_text': ('ad_text', True),

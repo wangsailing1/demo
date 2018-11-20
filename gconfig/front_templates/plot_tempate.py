@@ -260,3 +260,16 @@ explain = {
     'uk': ('id', 'int'),
     'describe': ('describe', 'int'),
 }
+
+
+dinner_begin = {
+    'uk': ('id', 'int'),
+    'love_exp': ('love_exp', 'int'),
+    'dialogue': ('dialogue', 'str'),
+}
+
+dinner_in = {
+    'uk': ('id', 'int'),
+    'love_exp': ('love_exp', 'int'),
+    'dialogue': ('dialogue', 'str'),
+}
