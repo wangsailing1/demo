@@ -16,7 +16,6 @@ guide = {
     'des': ('des', 'unicode'),  # 说明文档
 }
 
-
 guide_team = {
     'uk': ('id', 'int'),  # 引导组id
     'start_id': ('start_id', 'int'),  # 起始id
@@ -27,8 +26,15 @@ guide_team = {
     'is_done': ('is_done', 'int_list'),  # 完成条件
 }
 
-
 dialogue_guide_team = {
     'uk': ('id', 'int'),  # id
     'dialogueId': ('dialogueId', 'int_list'),  # 对话id
+}
+
+dialogue_guide = {
+    'uk': ('dialogueid', 'int'),  # id
+    'roleid': ('roleid', 'int'),  # 角色id
+    'dialogkind': ('dialogkind', 'int'),  # 对话框种类
+    'type': ('type', 'int'),  # 角色id
+    'words': ('words', 'str'),  # 角色id
 }

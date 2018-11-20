@@ -510,6 +510,7 @@ guide_mapping = {
     'guide': ('guide', True),
     'guide_team': ('guide_team', True),
     'dialogue_guide_team': ('dialogue_guide_team', True),
+    'dialogue_guide': ('dialogue_guide', True),
 }
 # 注册需要写到最下面
 register_handler()
