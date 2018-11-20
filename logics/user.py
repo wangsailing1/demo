@@ -509,7 +509,7 @@ class UserLogic(object):
                                                  'income')
         br = BlockRank(block_rank_uid, mm.block._server_name)
         user_dict['block_rank'] = br.get_rank(self.mm.uid)
-        user_dict['like'] = mm.user.like
+        user_dict['like'] = self.mm.friend.friend_info.get(user_id,{}).get('like',0)
         # if not self.mm.high_ladder.is_robot(user_id):
         #     mm = self.mm.get_mm(user_id)
         #     user_dict = user_info(mm)
