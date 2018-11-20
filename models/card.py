@@ -356,6 +356,8 @@ class Card(ModelBase):
         if idx == len(grow_love):
             idx = -1
         add_percent = grow_love[idx][1]
+        if card_info['love_lv'] == 0:
+            add_percent = 0
 
         # 礼物属性加成
         for gift_id, info in card_info['love_gift_pro'].iteritems():
