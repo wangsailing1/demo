@@ -114,6 +114,9 @@ class Friend(ModelBase):
             self.appointment_times = 0
             self.appointment_log = {}
             is_save = True
+        if not hasattr(self,'friend_info'):
+            self.friend_info = {}
+            is_save = True
         if is_save:
             self.save()
 
