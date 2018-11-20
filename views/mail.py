@@ -10,8 +10,8 @@ from tools.unlock_build import MAIL_SORT
 def check_unlock(func):
     def wrapper(hm):
         mm = hm.mm
-        if not mm.user.check_build(MAIL_SORT):
-            return 'error_unlock', {}
+        # if not mm.user.check_build(MAIL_SORT):
+        #     return 'error_unlock', {}
 
         return func(hm)
 
