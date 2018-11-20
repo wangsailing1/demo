@@ -13,6 +13,7 @@ from gconfig import game_config
 from models.server import ServerUid
 from lib.utils import generate_rank_time
 from models.server import get_server_config
+from models.ranking_list import BlockRank
 
 
 # 玩家信息
@@ -58,6 +59,9 @@ def user_friend_info(mm, uid):
         user_status = 1
     else:
         user_status = 0
+    block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                             'income')
+    br = BlockRank(block_rank_uid, mm.block._server_name)
 
     user_dict = {
         'uid': target_user.uid,
@@ -76,7 +80,7 @@ def user_friend_info(mm, uid):
         # 'combat': target_mm.hero.get_max_combat(),
         'nickname': target_mm.friend.nickname.get(uid, ''),
         'block': target_mm.block.block_num,
-        'block_rank': 1,
+        'block_rank': br.get_rank(target_user.uid),
         'like': mm.friend.friends_info.get(uid, {}).get('like', 0)
     }
     result = {
