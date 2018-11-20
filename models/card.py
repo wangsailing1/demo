@@ -365,12 +365,12 @@ class Card(ModelBase):
         #武器加成
         equip_config = game_config.equip
         for equip_id in card_info['equips']:
-            equip_attr = equip_config[equip_id]
+            equip_attr = equip_config[equip_id]['add_attr']
             char_pro = [char_pro[i] + equip_attr[i] for i in range(6)]
 
         for _, value in card_info['equips_used'].iteritems():
             for equip_id in value:
-                equip_attr = equip_config[equip_id]
+                equip_attr = equip_config[equip_id]['add_attr']
                 char_pro = [char_pro[i] + equip_attr[i] for i in range(6)]
 
 
