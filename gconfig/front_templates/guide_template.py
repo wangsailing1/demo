@@ -8,7 +8,7 @@ guide = {
     'level': ('level', 'int'),  # 跳过
     'key': ('key', 'str'),  # 页面名
     'action': ('action', 'int'),  # 执行
-    'trigger': ('trigger', 'int'),  # 触发
+    'trigger': ('trigger', 'int_list'),  # 触发
     'delay': ('delay', 'int'),  # 延迟
     'target': ('target', 'int_list'),  # 显示
     'next': ('next', 'int'),  # 下一步
