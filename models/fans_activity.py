@@ -38,9 +38,17 @@ class FansActivity(ModelBase):
 
         if not self.can_unlock_activity:
             all_id = game_config.fans_activity.keys()
-            all_luck_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
-            self.can_unlock_activity = list(set(all_id) - set(all_luck_id))
+            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+            self.can_unlock_activity = list(set(all_id) - set(all_lock_id))
             save = True
+        else:
+            all_id = game_config.fans_activity.keys()
+            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+            can_unlock_id = list(set(all_id) - set(all_lock_id))
+            new_can_unlock_id = list(set(can_unlock_id) - set(self.can_unlock_activity))
+            if new_can_unlock_id:
+                self.can_unlock_activity.extend(new_can_unlock_id)
+
         if save:
             self.save()
 
