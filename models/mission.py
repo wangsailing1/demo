@@ -8,7 +8,20 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
 
-
+"""
+任务对应个个接口的返回数据
+def func(hm, data, mission):
+    :param hm:      运行环境
+    :param data:    接口返回数据
+    :param mission: 任务类
+    :return: {target_sort:{'target1': type_hard, 'value': times, 'stage_id': stage_id,
+                              'star': 1},}} 
+    target_sort:任务类型
+    target1：任务目标
+    value： 任务完成值
+    stage_id，star：根据任务目标 返回的其他目标数据值
+    
+"""
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
@@ -127,8 +140,11 @@ def compamy_value(hm, data, mission):
     return {mission._COMPANY_VALUE: {'target1': v, 'value': 1}}
 
 
-TYPE_MAPPING = {12: 'type', 14: 'style'}
-CHANGE_NUM = [1, 19]
+TYPE_MAPPING = {12: 'type', 14: 'style'}   #剧本拍摄
+CHANGE_NUM = [1, 19]    #纯数值 玩家等级  公司市值
+CARD_LEVEL = 2  #艺人等级
+FIRST_CHAPTER = 7  #首次通关
+NUM_CHAPTER = 8  #通关次数
 
 
 class Mission(ModelBase):
@@ -156,19 +172,19 @@ class Mission(ModelBase):
         """
     # 接口名到内置函数的映射
     _METHOD_FUNC_MAP = {
-        'chapter_stage.chapter_stage_fight': chapter_stage_args,
-        'script.finished_summary': script_make,
-        'chapter_stage.auto_sweep': chapter_stage_auto_args,
-        'script_gacha.get_gacha': script_gacha,
-        'gacha.receive': card_gacha,
-        'card.card_level_up': card_lv,
-        'friend.sent_gift': send_gift,
-        'friend.sent_gift_all': send_gift,
-        'fans_activity.activity': fans_activity,
-        'card.card_train': card_train,
-        'card.equip_piece_exchange': equip_piece_exchange,
-        'card.card_quality_up': card_quality_up,
-        'shop.shop': shop_args,
+        'chapter_stage.chapter_stage_fight': chapter_stage_args,   #通关
+        'script.finished_summary': script_make,                    #剧本拍摄
+        'chapter_stage.auto_sweep': chapter_stage_auto_args,       #自动推图 增加通关次数
+        'script_gacha.get_gacha': script_gacha,                    #抽剧本
+        'gacha.receive': card_gacha,                               #抽卡
+        'card.card_level_up': card_lv,                             #艺人升级
+        'friend.sent_gift': send_gift,                             #好友送礼
+        'friend.sent_gift_all': send_gift,                         #一键送礼
+        'fans_activity.activity': fans_activity,                   #粉丝活动
+        'card.card_train': card_train,                             #卡牌训练
+        'card.equip_piece_exchange': equip_piece_exchange,         #装备碎片合成
+        'card.card_quality_up': card_quality_up,                   #艺人格调提升
+        'shop.shop': shop_args,                                    #商店购买
 
     }
     # mission_mapping
@@ -419,7 +435,7 @@ class MissionDaily(ModelBase):
 
     def add_count(self, mission_id, value):
 
-        if self.config[mission_id]['sort'] in [12, 14]:
+        if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
@@ -429,7 +445,7 @@ class MissionDaily(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 2:
+        elif self.config[mission_id]['sort'] == CARD_LEVEL:
             target_data = self.config[mission_id]['target']
             card_id = value['card_id']
             if isinstance(self.data[mission_id], int):
@@ -437,7 +453,7 @@ class MissionDaily(ModelBase):
             if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
                 self.data[mission_id].append(card_id)
 
-        elif self.config[mission_id]['sort'] == 7:
+        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
                 if mission_id in self.data:
@@ -445,7 +461,7 @@ class MissionDaily(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 8:
+        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
             target_data = self.config[mission_id]['target']
             star = value.get('star', 0)
             type_hard = value['target1']
@@ -482,7 +498,7 @@ class MissionGuide(ModelBase):
         return self.data.get(mission_id, 0)
 
     def add_count(self, mission_id, value):
-        if self.config[mission_id]['sort'] in [12, 14]:
+        if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
@@ -492,7 +508,7 @@ class MissionGuide(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 2:
+        elif self.config[mission_id]['sort'] in CARD_LEVEL:
             target_data = self.config[mission_id]['target']
             card_id = value['card_id']
             if isinstance(self.data[mission_id], int):
@@ -500,7 +516,7 @@ class MissionGuide(ModelBase):
             if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
                 self.data[mission_id].append(card_id)
 
-        elif self.config[mission_id]['sort'] == 7:
+        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
                 if mission_id in self.data:
@@ -508,7 +524,7 @@ class MissionGuide(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 8:
+        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
             target_data = self.config[mission_id]['target']
             star = value.get('star', 0)
             type_hard = value['target1']
@@ -545,7 +561,7 @@ class MissionRandom(ModelBase):
         return self.data.get(mission_id, 0)
 
     def add_count(self, mission_id, value):
-        if self.config[mission_id]['sort'] in [12, 14]:
+        if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             target_data = self.config[mission_id]['target']
             script_type = game_config.script[value['target1']][type]
@@ -555,7 +571,7 @@ class MissionRandom(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 2:
+        elif self.config[mission_id]['sort'] == CHANGE_NUM:
             target_data = self.config[mission_id]['target']
             card_id = value['card_id']
             if isinstance(self.data[mission_id], int):
@@ -563,7 +579,7 @@ class MissionRandom(ModelBase):
             if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
                 self.data[mission_id].append(card_id)
 
-        elif self.config[mission_id]['sort'] == 7:
+        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
             target_data = self.config[mission_id]['target']
             if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
                 if mission_id in self.data:
@@ -571,7 +587,7 @@ class MissionRandom(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == 8:
+        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
             target_data = self.config[mission_id]['target']
             star = value.get('star', 0)
             type_hard = value['target1']
