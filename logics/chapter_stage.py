@@ -8,6 +8,7 @@ from lib.utils import weight_choice
 import copy
 import random
 from logics.friend import FriendLogic
+from lib.utils import add_dict
 
 
 class Chapter_stage(object):
@@ -127,9 +128,15 @@ class Chapter_stage(object):
                     if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 reward = {}
-                for _,reward_value in rewards.iteritems():
-                    for key,value in reward_value.iteritems():
-                        reward[key] = reward.get(key,0) + value
+                for _, reward_value in rewards.iteritems():
+                    for key, value in reward_value.iteritems():
+                        if isinstance(value, int):
+                            reward[key] = reward.get(key, 0) + value
+                        elif isinstance(value, dict):
+                            for k_id, num in value.iteritems():
+                                add_dict(reward.setdefault(key, {}), k_id, num)
+                        elif isinstance(value, list):
+                            reward.setdefault(key, []).extend(value)
                 if is_first:
                     self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
                     self.mm.chapter_stage.done_chapter_log.append(stage_id)
@@ -282,7 +289,7 @@ class Chapter_stage(object):
             # 暴击伤害
             hurt = self.crit_hurt(hurt, score)
             is_crit = True
-        return [hurt,is_crit]
+        return [hurt, is_crit]
 
     def crit_hurt(self, hurt, score):
         crit = 1.1 + score / 100.0
