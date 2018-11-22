@@ -89,6 +89,8 @@ class SevenLoginLogic(object):
         :param day_id:
         :return:
         """
+        if not self.seven_login.is_open():
+            return 3, {}    # 活动已结束
         day_id = self.seven_login.days
         if not self.seven_login.can_receive(day_id):
             return 1, {}    # 条件不足，不能领取

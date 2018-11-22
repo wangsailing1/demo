@@ -465,6 +465,26 @@ mission_msg = {
     },
 }
 
+active_msg = {
+    'active.seven_login': {
+        1: u'活动已结束',
+    },
+    'active.seven_login_award': {
+        1: u'条件不足，不能领取',
+        2: u'已领取',
+        3: u'活动已结束',
+    },
+    'active.monthly_sign': {
+        1: u'已领取',
+    },
+    'active.active_card_award': {
+        1: u'无该配置',
+        2: u'尚未激活',
+        3: u'已领取',
+        4: u'配置错误',
+    },
+}
+
 i18n = {
     'user_name': u'敢斗团',
     'dark_steet': u'黑街擂台',
