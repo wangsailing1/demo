@@ -508,7 +508,7 @@ class MissionGuide(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] in CARD_LEVEL:
+        elif self.config[mission_id]['sort'] == CARD_LEVEL:
             target_data = self.config[mission_id]['target']
             card_id = value['card_id']
             if isinstance(self.data[mission_id], int):
@@ -571,7 +571,7 @@ class MissionRandom(ModelBase):
                 else:
                     self.data[mission_id] = value['value']
 
-        elif self.config[mission_id]['sort'] == CHANGE_NUM:
+        elif self.config[mission_id]['sort'] == CARD_LEVEL:
             target_data = self.config[mission_id]['target']
             card_id = value['card_id']
             if isinstance(self.data[mission_id], int):
