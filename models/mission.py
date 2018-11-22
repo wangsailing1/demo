@@ -405,9 +405,9 @@ class BoxOffice(object):
 
     def add_count(self, mission_id, value):
         if mission_id in self.data:
-            self.data[mission_id] += value
+            self.data[mission_id] += value['value']
         else:
-            self.data[mission_id] = value
+            self.data[mission_id] = value['value']
 
     def done_task(self, mission_id):
         """完成任务
