@@ -55,13 +55,13 @@ def seven_login_award(hm):
     """
     mm = hm.mm
 
-    day_id = hm.get_argument('day_id', is_int=True)
+    # day_id = hm.get_argument('day_id', is_int=True)
 
-    if day_id <= 0:
-        return 'error_100', {}
+    # if day_id <= 0:
+    #     return 'error_100', {}
 
     sll = SevenLoginLogic(mm)
-    rc, data = sll.seven_login_award(day_id)
+    rc, data = sll.seven_login_award()
 
     return rc, data
 

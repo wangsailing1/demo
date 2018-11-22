@@ -83,12 +83,13 @@ class SevenLoginLogic(object):
 
         return 0, data
 
-    def seven_login_award(self, day_id):
+    def seven_login_award(self):
         """
         领取七日登录奖励
         :param day_id:
         :return:
         """
+        day_id = self.seven_login.days
         if not self.seven_login.can_receive(day_id):
             return 1, {}    # 条件不足，不能领取
         now = time.strftime(self.seven_login.FORMAT)
