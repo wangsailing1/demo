@@ -767,6 +767,7 @@ class ScriptLogic(object):
 
         # 杀青步骤的 reward
         finished_common_reward = cur_script['finished_common_reward']
+        finished_medium_judge = cur_script['finished_medium_judge']
         reward = add_mult_gift(self.mm, finished_common_reward['reward'])
 
         # 卡牌类型经验fight_exp
@@ -776,6 +777,9 @@ class ScriptLogic(object):
 
         # 玩家经验player_exp
         self.mm.user.add_player_exp(script_config['player_exp'])
+
+        # 专业评级点赞数
+        self.mm.user.add_like(finished_medium_judge['like'])
 
         # 总票房 给美金
         finished_first_income = cur_script['finished_first_income']
