@@ -378,7 +378,9 @@ active_mapping = {
     #     'server_limit_gacha': ('server_limit_gacha', True),
     #     'server_extra_hero': ('server_extra_hero', True),
     #     'server_hero_description': ('server_hero_description', True),
-    #     'honor_shop_new': ('honor_shop_new', True)
+    #     'honor_shop_new': ('honor_shop_new', True),
+    'sign_first_week': ('sign_first_week', True),
+    'sign_daily_normal': ('sign_daily_normal', True),
 }
 
 daily_activity_mapping = {

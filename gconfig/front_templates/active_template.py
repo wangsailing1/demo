@@ -933,3 +933,18 @@ honor_shop_new = {
     'need_item': ('need_item', 'list_3'),    # 兑换道具
     'out_item': ('out_item', 'list_3'),      # 兑换得到的奖品
 }
+
+
+# 新人首周签到
+sign_first_week = {
+    'uk': ('day', 'int'),               # 日
+    'reward': ('reward', 'list_3'),     # 奖励
+    'des': ('des', 'unicode'),          # 描述
+}
+
+
+# 每月签到
+sign_daily_normal = {
+    'uk': ('day', 'int'),               # 每月签到日期
+    'reward': ('reward', 'list_3'),     # 每月签到奖励
+}
