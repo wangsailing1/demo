@@ -7,6 +7,7 @@ import copy
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.db import ModelBase
+from lib.utils.timelib import datetime_to_str
 
 
 class ActiveCard(ModelBase):
@@ -87,4 +88,169 @@ class ActiveCard(ModelBase):
             return 0
 
 
+class SevenLogin(ModelBase):
+    """
+    七日登录
+    """
+    FORMAT = '%F'
+
+    def __init__(self, uid):
+        self.uid = uid
+        self._attrs = {
+            'days': 1,  # 登录天数
+            'got': [],  # 已领取id
+            'refresh': '',  # 领取日期
+        }
+        super(SevenLogin, self).__init__(self.uid)
+
+    # def pre_use(self):
+    #     # days = self.mm.user.regist_days()
+    #     # if days <= 0:
+    #     #     days = 1
+    #     # self.days = days
+    #
+    #     if not self.is_open():
+    #         return
+    #
+    #     # today = time.strftime('%F')
+    #     # if not self.refresh or self.refresh != today:
+    #     #     # self.send_mail()
+    #     #     self.refresh = today
+    #     #     # self.days += 1
+    #     #     self.save()
+
+    def get_next_reward_day(self):
+        """获取下次可以领取的天数"""
+        day = 0
+        if self.is_open():
+            config = game_config.sign_first_week
+            if not self.got:
+                day = min(config.keys())
+            else:
+                days = set(config.keys()) - set(self.got)
+                if days:
+                    day = min(days)
+
+        return day
+
+    # def send_mail(self):
+    #     mail_save = False
+    #     is_save = False
+    #     for i, j in game_config.sign_first_week.iteritems():
+    #         if i in self.got or i >= self.days:
+    #             continue
+    #         title = get_str_words(self.mm.user.language_sort, j['mail'])
+    #         des = get_str_words(self.mm.user.language_sort, j['mail_des'])  # 活动内容
+    #         if des:
+    #             des = des % i
+    #         mail_dict = self.mm.mail.generate_mail(
+    #             des,
+    #             title=title,
+    #             gift=j['reward'],
+    #         )
+    #         self.mm.mail.add_mail(mail_dict, save=False)
+    #         self.add_got(i)
+    #         mail_save = True
+    #         is_save = True
+    #
+    #     if mail_save:
+    #         self.mm.mail.save()
+    #     if is_save:
+    #         self.save()
+
+    def is_open(self):
+        return not set(self.got) == set(game_config.sign_first_week)
+        # max_login_day = max(game_config.sign_first_week) if game_config.sign_first_week else 0
+        # if self.mm.user.regist_days() > max_login_day or set(self.got) == set(game_config.sign_first_week):
+        #     return False
+        #
+        # return True
+
+    def can_receive(self, day_id):
+        if not self.is_open() or day_id > self.days:
+            return False
+
+        return True
+
+    def can_get_reward(self):
+        return self.refresh != time.strftime(self.FORMAT)
+
+    def add_got(self, day_id):
+        if day_id not in self.got:
+            self.got.append(day_id)
+
+    def get_red_dot(self):
+        if not self.is_open():
+            return False
+
+        for i in game_config.sign_first_week:
+            if i in self.got:
+                continue
+            if self.days < i:
+                continue
+            return True
+        return False
+
+
+class MonthlySign(ModelBase):
+    '''每日登陆'''
+
+    def __init__(self, uid):
+        """
+
+        :param uid:
+        :return:
+        """
+        self.uid = uid
+        self.today = datetime.datetime.today()
+        self._attrs = {
+            'monthly_sign': {  # 每月签到
+                'month': 0,  # 月份
+                'login_date': '',  # 登录日期
+                'date': '',  # 签到日期
+                'days': 0,  # 签到次数
+                'usable_days': 0,  # 可用次数
+                'reward': [],  # 奖励
+            },
+        }
+        super(MonthlySign, self).__init__(self.uid)
+
+    def pre_use(self):
+        is_save = False
+        cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
+        if (not self.monthly_sign['reward']) or self.monthly_sign['month'] != self.today.month:
+            reward = []
+            for day, value in sorted(game_config.sign_daily_normal.iteritems(), key=lambda x: x[0]):
+                reward.append(value['reward'])
+
+            self.monthly_sign = {
+                'month': self.today.month,  # 那个月
+                'login_date': '',  # 登录日期
+                'date': '',  # 签到日期
+                'days': 0,  # 签到次数
+                'usable_days': 0,  # 可用次数
+                'reward': reward,  # 签到数据
+            }
+            is_save = True
+        if cur_time != self.monthly_sign['login_date'] and max(game_config.sign_daily_normal) > (
+                    self.monthly_sign['days'] + self.monthly_sign['usable_days']):
+            self.monthly_sign['login_date'] = cur_time
+            self.monthly_sign['usable_days'] += 1
+            is_save = True
+        if is_save:
+            self.save()
+
+    def today_can_sign(self):
+        """ 今天能否签
+
+        :return:
+        """
+        cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
+
+        monthly_sign = self.monthly_sign
+        return 1 if cur_time != monthly_sign['date'] else 0
+
+
 ModelManager.register_model('active_card', ActiveCard)
+ModelManager.register_model('seven_login', SevenLogin)
+ModelManager.register_model('monthly_sign', MonthlySign)
