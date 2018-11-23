@@ -145,16 +145,16 @@ chapter_words = {
 #     'condition': ('condition', 'int'),  # 触发条件
 # }
 
-# 新手引导对话
-dialogue_guide = {
-    'uk': ('dialogueId', 'int'),  # 对话id
-    'roleId': ('roleId', 'int'),  # 角色id
-    'type': ('type', 'int'),  # 左右
-    'words': ('words', 'unicode'),  # 内容
-    'eperssion': ('eperssion', 'str'),  # 控制对话框左侧表情显示
-    'dialogKind': ('dialogKind', 'int'),  # 对话框
-    'voice': ('voice', 'str'),
-}
+# # 新手引导对话
+# dialogue_guide = {
+#     'uk': ('dialogueId', 'int'),  # 对话id
+#     'roleId': ('roleId', 'int'),  # 角色id
+#     'type': ('type', 'int'),  # 左右
+#     'words': ('words', 'unicode'),  # 内容
+#     'eperssion': ('eperssion', 'str'),  # 控制对话框左侧表情显示
+#     'dialogKind': ('dialogKind', 'int'),  # 对话框
+#     'voice': ('voice', 'str'),
+# }
 
 # 对话及动画位置
 opera_location = {

@@ -1424,7 +1424,7 @@ class User(ModelBase):
                     guide_team_config = game_config.guide_team.get(cur_guide_sort)
                     if not guide_team_config:
                         break
-                    if guide_team_config['type'] != 1:
+                    if guide_team_config['type'] != 1:    #如果是弱引导，直接给玩家完成
                         open_level = guide_team_config['open_level']
                         if self.level > open_level + 1:
                             guide_ids = game_config.get_guide_mapping(cur_guide_sort)
