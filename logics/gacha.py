@@ -147,18 +147,17 @@ class GachaLogics(object):
         data = self.gacha_index()
         return 0, data
 
-
     def up_gacha(self):
         config = game_config.coin_gacha_lv
         lv = self.gacha.coin_lv
         next_lv = lv + 1
         if next_lv not in config:
-            return 1, {}  #已到最大等级
+            return 1, {}  # 已到最大等级
         need_count = config[next_lv]
         if self.gacha.coin_times < need_count:
-            return 2, {}  #招募次数不够
+            return 2, {}  # 招募次数不够
         cost = config[next_lv]['cost']
-        rc, data = del_mult_goods(self.mm,cost)
+        rc, data = del_mult_goods(self.mm, cost)
         if rc:
             return rc, data
         self.gacha.coin_lv = next_lv
@@ -167,4 +166,3 @@ class GachaLogics(object):
         self.gacha.save()
         self.mm.build.save()
         return 0, {}
-
