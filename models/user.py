@@ -1877,6 +1877,9 @@ class User(ModelBase):
         config = game_config.building
         for build_id,value in self._build.iteritems():
             group = config[build_id]['group']
+            if 'pos' in value:
+                self._build = {}
+                break
             _group_ids[group] = {'build_id':build_id,
                                       'field_id':value['field_id'],
                                       'lock_status':self.mm.user.level < config[build_id]['unlock_lv'],
