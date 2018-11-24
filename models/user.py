@@ -1864,10 +1864,10 @@ class User(ModelBase):
                     self.add_build(build_id,0)
             self.save()
 
-    def add_build(self, build_id, pos):
+    def add_build(self, build_id, field_id):
         if build_id in self._build:
             return
-        self._build[build_id] = {'pos': pos,
+        self._build[build_id] = {'field_id': field_id,
                                  'build_time': int(time.time())}
         self.save()
 
@@ -1878,7 +1878,7 @@ class User(ModelBase):
         for build_id,value in self._build.iteritems():
             group = config[build_id]['group']
             _group_ids[group] = {'build_id':build_id,
-                                      'pos':value['pos'],
+                                      'field_id':value['field_id'],
                                       'lock_status':self.mm.user.level < config[build_id]['unlock_lv'],
                                       'unlock_lv':config[build_id]['unlock_lv']
                                       }
@@ -1888,7 +1888,7 @@ class User(ModelBase):
     def get_pos_info(self):
         pos_info = {}
         for build_id,value in self._build.iteritems():
-            pos_info[value['pos']] = build_id
+            pos_info[value['field_id']] = build_id
         return pos_info
 
     #检查城建建筑
