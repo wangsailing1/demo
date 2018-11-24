@@ -50,7 +50,7 @@ class Card(ModelBase):
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
 
 
-    _need_diff = ('cards', 'pieces')
+    _need_diff = ('cards', 'pieces', 'attr')
 
     # 新用户给的卡牌
     INIT_CARDS = [1, 2, 3, 4, 5]
