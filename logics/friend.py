@@ -902,7 +902,7 @@ class FriendLogic(object):
             self.friend.phone_daily_log[times]['log'].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
-            add_value = self.mm.card.add_value(group_id, add_value_config)
+            add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
             reward = add_mult_gift(self.mm, reward_config)
             # if config[choice_id]['is_end']:
             #     self.friend.phone_daily_times += 1
@@ -927,7 +927,7 @@ class FriendLogic(object):
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
-        add_value = self.mm.card.add_value(group_id, add_value_config)
+        add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
         reward = add_mult_gift(self.mm, gift)
         self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
         if config[choice_id]['is_end']:
