@@ -44,7 +44,7 @@ class Card(ModelBase):
     CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
 
     LOVE_GIFT_MAPPING = ['酸', '甜', '苦', '辣', '冰', '饮']
-    ADD_VALUE_MAPPING = {1: 'like'}  # 策划添加新属性的时候添加
+    ADD_VALUE_MAPPING = {1: 'like', 2: 'popularity'}  # 策划添加新属性的时候添加
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
     PRO_IDX_MAPPING = {pro_id: pro_id - 1 for pro_id in xrange(1, len(CHAR_PRO_NAME) + 1)}
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
@@ -543,7 +543,10 @@ class Card(ModelBase):
             attr = self.ADD_VALUE_MAPPING[k]
             if group_id in self.group_ids:
                 card_dict = self.cards[self.group_ids[group_id]]
-                card_dict['love_exp'] += v
+                if k == 1:
+                    card_dict['love_exp'] += v
+                elif k == 2:
+                    card_dict[attr] += v
             self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
             add_value[attr] = add_value.get(attr, 0) + v
         if is_save:
