@@ -424,7 +424,7 @@ class CardLogic(object):
         if rc:
             return rc, data
         self.mm.card.card_building_level = next_lv
-        self.mm.build.up_build(config[next_lv]['build_id'],is_save=True)
+        self.mm.user.up_build(config[next_lv]['build_id'],is_save=True)
         self.mm.card.save()
         return 0, {}
 

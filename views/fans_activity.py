@@ -52,13 +52,13 @@ def unlock_activity(hm):
     group = config['groupid']
     if group in mm.fans_activity.activity:
         return 4, {}  # 已解锁
-    # if pos_id in mm.build.get_pos_info:
+    # if pos_id in mm.user.get_pos_info:
     #     return 5, {}  #此地已有建筑
     mm.fans_activity.activity[group] = activity_id
     mm.fans_activity.activity_log[activity_id] = {}
     mm.fans_activity.unlocked_activity.append(activity_id)
     mm.user.dollar -= cost
-    # mm.build.add_build(config['build_id'],pos_id)
+    # mm.user.add_build(config['build_id'],pos_id)
     mm.user.save()
     mm.fans_activity.save()
     fa = FansActivity(mm)
@@ -92,7 +92,7 @@ def up_activity(hm):
     mm.fans_activity.unlocked_activity.append(next_id)
     # build_id = game_config.fans_activity[next_id]['build_id']
     mm.user.dollar -= cost
-    # mm.build.up_build(build_id,is_save=True)
+    # mm.user.up_build(build_id,is_save=True)
     mm.fans_activity.save()
     mm.user.save()
     fa = FansActivity(mm)

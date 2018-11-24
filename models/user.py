@@ -256,6 +256,7 @@ class User(ModelBase):
             'tile_power': 0,    # 势力值
             'last_add_gs_msg': 0,   # gs客服消息时间
             'rebate_flag': False,   # 是否已返利
+            '_build':{},         #建筑信息
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -295,6 +296,7 @@ class User(ModelBase):
             o.refresh()
         o.father_server_name = settings.get_father_server(o._server_name)
         o.config_type = game_config.get_config_type(o.father_server_name)
+        o.init_build()
         return o
 
     def get_user_name_key(self):
@@ -1849,6 +1851,64 @@ class User(ModelBase):
         self.rebate_flag = True
 
         self.save()
+
+    def init_build(self):
+        if not self._build:
+            for build_id,value in game_config.building.iteritems():
+                if value['default']:
+                    self.add_build(build_id,0)
+            self.save()
+
+    def add_build(self, build_id, pos):
+        if build_id in self._build:
+            return
+        self._build[build_id] = {'pos': pos,
+                                 'build_time': int(time.time())}
+        self.save()
+
+    @property
+    def group_ids(self):
+        _group_ids = {}
+        config = game_config.building
+        for build_id,value in self._build.iteritems():
+            group = config[build_id]['group']
+            _group_ids[group] = {'build_id':build_id,
+                                      'pos':value['pos'],
+                                      'lock_status':self.mm.user.level < config[build_id]['unlock_lv'],
+                                      'unlock_lv':config[build_id]['unlock_lv']
+                                      }
+        return _group_ids
+
+    @property
+    def get_pos_info(self):
+        pos_info = {}
+        for build_id,value in self._build.iteritems():
+            pos_info[value['pos']] = build_id
+        return pos_info
+
+    #检查城建建筑
+    def check_build_id(self,build_id):
+        config = game_config.building
+        if build_id not in config:
+            return 1  #配置错误
+        group = config[build_id]['group']
+        if group not in self.group_ids:
+            return 2  #还未拥有建筑
+        if build_id in self._build:
+            return 3  #已拥有建筑
+        return 0
+
+    def up_build(self,build_id,is_save=False):
+        config = game_config.building
+        group_id = config[build_id]['group']
+        if group_id not in self.group_ids:
+            return 1  #请先建造建筑
+        old_build_id = self.group_ids[group_id]['build_id']
+        self._build[build_id] = self._build[old_build_id]
+        self._build[build_id]['build_time'] = int(time.time())
+        self._build.pop(old_build_id)
+        if is_save:
+            self.save()
 
 
 class OnlineUsers(ModelTools):

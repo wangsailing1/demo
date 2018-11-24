@@ -156,7 +156,7 @@ class ScriptGachaLogics(object):
         if rc:
             return rc, data
         self.gacha.building_level = next_lv
-        self.mm.build.up_build(config[next_lv]['build_id'], is_save=True)
+        self.mm.user.up_build(config[next_lv]['build_id'], is_save=True)
         self.gacha.save()
         return 0, {}
 
