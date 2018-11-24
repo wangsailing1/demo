@@ -541,6 +541,9 @@ class Card(ModelBase):
             if group_id not in self.attr:
                 self.attr[group_id] = {}
             attr = self.ADD_VALUE_MAPPING[k]
+            if group_id in self.group_ids:
+                card_dict = self.cards[self.group_ids[group_id]]
+                card_dict['love_exp'] += v
             self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
             add_value[attr] = add_value.get(attr, 0) + v
         if is_save:

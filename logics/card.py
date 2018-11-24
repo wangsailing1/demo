@@ -117,8 +117,7 @@ class CardLogic(object):
 
         # card_dict['gift_count'] = gift_count
         card.add_value(card_oid, [[1, add_exp]])
-        card_dict['love_exp'] += add_exp
-        card_dict['love_exp'] = min(card_dict['love_exp'], love_config['exp'])
+
         card.save()
         item.save()
 
