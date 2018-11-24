@@ -266,6 +266,7 @@ class Card(ModelBase):
 
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
+        init_love_exp = init_love_exp or self.attr.get(group_id,{}).get('like',0)
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
