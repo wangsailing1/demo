@@ -81,12 +81,12 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
-            'popularity': 0,  # 人气
+            'popularity': popularity,  # 人气
 
             'name': get_str_words('1', card_config['name']),  # 卡牌名字
             'id': card_id,  # 配置id
@@ -267,6 +267,7 @@ class Card(ModelBase):
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
         init_love_exp = init_love_exp or self.attr.get(group_id,{}).get('like',0)
+        popularity = self.attr.get(group_id,{}).get('popularity', 0)
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
@@ -278,7 +279,8 @@ class Card(ModelBase):
                                                  star=init_star,
                                                  love_lv=init_love_lv,
                                                  love_exp=init_love_exp,
-                                                 mm=self.mm
+                                                 mm=self.mm,
+                                                 popularity=popularity,
                                                  )
         self.mm.card_book.add_book(group_id)
         self.mm.friend.new_actor(group_id,is_save=True)
@@ -543,7 +545,10 @@ class Card(ModelBase):
             attr = self.ADD_VALUE_MAPPING[k]
             if group_id in self.group_ids:
                 card_dict = self.cards[self.group_ids[group_id]]
-                card_dict['love_exp'] += v
+                if k == 1:
+                    card_dict['love_exp'] += v
+                else :
+                    card_dict[attr] += v
             self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
             add_value[attr] = add_value.get(attr, 0) + v
         if is_save:
