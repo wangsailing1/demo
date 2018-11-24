@@ -531,11 +531,11 @@ class Card(ModelBase):
         :param is_save: 
         :return: 
         """
-        if isinstance(card_id, str) and '-' in card_id:
+        if isinstance(card_id, int):
+            group_id = card_id
+        else:
             card_config = game_config.card_basis
             group_id = card_config[int(card_id.split('-')[0])]['group']
-        else:
-            group_id = card_id
         add_value = {}
         for k, v in add_value_config:
             if group_id not in self.attr:
