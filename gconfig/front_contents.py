@@ -507,6 +507,7 @@ build_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'card_building': ('card_building', True),
     'building': ('building', True),
+    'field': ('field', True),
 }
 
 guide_mapping = {

@@ -1861,7 +1861,7 @@ class User(ModelBase):
         if not self._build:
             for build_id,value in game_config.building.iteritems():
                 if value['default']:
-                    self.add_build(build_id,0)
+                    self.add_build(build_id,value['field_id'])
             self.save()
 
     def add_build(self, build_id, field_id):
