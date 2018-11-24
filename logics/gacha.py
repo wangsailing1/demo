@@ -162,7 +162,7 @@ class GachaLogics(object):
             return rc, data
         self.gacha.coin_lv = next_lv
         build_id = config[next_lv]['build_id']
-        self.mm.build.up_build(build_id)
+        self.mm.user.up_build(build_id)
         self.gacha.save()
-        self.mm.build.save()
+        self.mm.user.save()
         return 0, {}

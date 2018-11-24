@@ -8,7 +8,6 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
 from tools.gift import calc_gift
-from models.build import Build
 
 
 class FansActivity(ModelBase):

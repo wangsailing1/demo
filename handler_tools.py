@@ -82,8 +82,8 @@ def user_status(mm):
         'license_recover_expire':mm.user.license_recover_expire(),
         'remain_recover_times': mm.user.remain_recover_times(),
         'card_attr':mm.card.attr,
-        'build_info':mm.build.group_ids,
-        'seven_login': mm.seven_login.is_open()
+        'seven_login': mm.seven_login.is_open(),
+        'build_info':mm.user.group_ids,
     }
     return data
 
