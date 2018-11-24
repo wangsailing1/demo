@@ -72,6 +72,7 @@ def main(hm):
     result['phone_daily_times'] = mm.friend.phone_daily_times
     result['appointment_times'] = mm.friend.appointment_times
     result['tourism_times'] = mm.friend.tourism_times
+    result['seven_login'] = mm.seven_login.is_open()
 
     return 0, result
 

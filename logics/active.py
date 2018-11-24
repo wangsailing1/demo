@@ -78,7 +78,8 @@ class SevenLoginLogic(object):
         data = {
             'days': self.seven_login.days,  # 登录天数
             'got': self.seven_login.got,    # 已领取id
-            'can_get_reward':self.seven_login.can_get_reward()
+            'can_get_reward':self.seven_login.can_get_reward(),
+            'seven_login' : self.seven_login.is_open()
         }
 
         return 0, data
