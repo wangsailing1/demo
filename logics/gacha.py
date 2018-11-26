@@ -98,7 +98,12 @@ class GachaLogics(object):
                 can_use_ids.extend(id_weights)
 
         pool = []
-        for i in xrange(self.gacha.MAX_POOL_NUM):
+        gacha_config = game_config.coin_gacha
+        special_mapping = {v['weight_special']: k for k, v in gacha_config.iteritems() if v['weight_special']}
+        times = self.gacha.coin_times + 1
+        if times in special_mapping:
+            pool.append(special_mapping[times])
+        for i in xrange(self.gacha.MAX_POOL_NUM - len(pool)):
             id_weight = weight_choice(can_use_ids)
             can_use_ids.remove(id_weight)
             pool.append(id_weight[0])
