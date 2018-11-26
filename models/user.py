@@ -1879,6 +1879,7 @@ class User(ModelBase):
             group = config[build_id]['group']
             if 'pos' in value:
                 self._build = {}
+                self.save()
                 break
             _group_ids[group] = {'build_id':build_id,
                                       'field_id':value['field_id'],
