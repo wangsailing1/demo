@@ -31,5 +31,5 @@ building = {
 field = {
     'uk': ('field_id', 'int'),  # 地块id
     'order': ('order', 'int'),  # 顺序
-    'type': ('type', 'int'),    # 类型
+    'can_build': ('can_build', 'int_list'),    # 可建建筑
 }
