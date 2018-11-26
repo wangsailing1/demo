@@ -115,6 +115,8 @@ class Mission(object):
         result = {}
         done = mission_obj.done
         for mission_id in mission_obj.data:
+            if isinstance(mission_id, (str, unicode)) and 'time' in mission_id:
+                continue
             if isinstance(mission_id, (str, unicode)) and 'refresh_ts' in mission_id:
                 now = int(time.time())
                 end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME

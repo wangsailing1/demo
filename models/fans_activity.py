@@ -160,5 +160,30 @@ class FansActivity(ModelBase):
         if is_save:
             self.save()
 
+    def fans_activity_info(self):
+        data = {'unlocked_activity': self.unlocked_activity,
+                'can_unlock_activity': self.can_unlock_activity,
+                'activity': self.activity}
+        return data
+
+    def activety_status(self):
+        """
+        0未开启 1开启没人 2开启有人
+        :return: 
+        """
+        info = {}
+        for id, value in self.activity_log.iteritems():
+            if not value:
+                info[id] = 0
+                continue
+            else:
+                info[id] = 1
+                for i in value['cards']:
+                    if i in self.mm.card.cards:
+                        info[id] = 2
+                        break
+        return info
+
+
 
 ModelManager.register_model('fans_activity', FansActivity)
