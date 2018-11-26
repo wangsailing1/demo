@@ -20,7 +20,7 @@ coin_gacha = {
 # 金币抽卡
 coin_gacha_lv = {
     'uk': ('lv', 'int'),                    # 星探等级
-    'pvp_area': ('pvp_area', 'int'),         # 升级需要街区档次
+    # 'pvp_area': ('pvp_area', 'int'),         # 升级需要街区档次
     'count': ('count', 'int'),    # 升级需要街区招募次数
     'award': ('award', 'int'),            # 升级获得的钻石
 }
