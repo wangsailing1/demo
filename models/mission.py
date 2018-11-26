@@ -189,6 +189,7 @@ class Mission(ModelBase):
     }
     # mission_mapping
     MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission'}
+    BOXOFFICEREFRESHTIME = '05:00:00'
 
     # 配置target_sort映射
 
@@ -229,28 +230,49 @@ class Mission(ModelBase):
             'liveness': 0,
             'box_office_done': [],
             'box_office_data': {},
+            'box_office_last_date': '',
             'refresh_times': 0,
         }
         super(Mission, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
+        box_office_time = time.strftime('%T')
+        is_save = False
         if self.date != today:
             self.date = today
             self.daily_done = []
             self.daily_data = self.get_daily_mission()
             self.live_done = []
             self.liveness = 0
-            self.box_office_done = []
-            self.box_office_data = {self.get_box_office(): 0} if self.get_box_office() else {}
             self.refresh_times = 0
             if not self.guide_done and not self.guide_data:
                 self.get_guide_mission()
+            is_save = True
+        if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME:
+            self.box_office_done = []
+            self.box_office_last_time = today
+            self.box_office_data = {self.get_box_office(): 0, 'time': int(time.time())} if self.get_box_office() else {}
+            is_save = True
+        if int(time.time()) > self.box_office_data.get('time', 0) + game_config.common[57]:
+            is_save = self.init_box_office()
+        if is_save:
             self.save()
 
     def get_daily_mission(self):
         config = game_config.liveness
         return {i: 1 if i == 1001 else 0 for i in config.keys()}
+
+    #到时间刷新任务目标
+    def init_box_office(self):
+        config = game_config.box_office
+        for m_id, value in self.box_office_data.iteritems():
+            if 'time' in m_id:
+                continue
+            if value < config[m_id]['target1']:
+                self.box_office_data[m_id] = 0
+                return True
+        return False
 
     def get_box_office(self):
         config = game_config.box_office
@@ -419,8 +441,7 @@ class BoxOffice(object):
     def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
         if next_id:
-            self.data[next_id] = self.data[mission_id] - self.config[mission_id]['target1']
-        self.data.pop(mission_id)
+            self.data = {next_id: 0, 'time':int(time.time())}
 
 
 class MissionDaily(ModelBase):
