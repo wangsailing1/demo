@@ -679,7 +679,7 @@ class UserLogic(object):
         role = self.mm.user.role
         sex = game_config.main_hero[role]['sex']
         cid = mp[sex]
-        self.mm.user.dollar += 50000
+        self.mm.user.add_dollar(50000)
         self.mm.card.add_card(cid)
         self.mm.card.save()
 
