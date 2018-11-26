@@ -121,7 +121,7 @@ class Script(ModelBase):
 
             # todo 是否有续作需要激活
             self.check_next_sequel(cur_script)
-            g_id,all_income = self.get_group_id_all_income(cur_script)
+            g_id, all_income = self.get_group_id_all_income(cur_script)
             auid = self.uid
             aoutput = self.mm.get_obj_tools('alloutput_rank')  # uid 格式 uid
             if all_income > aoutput.get_score(uid=auid):
@@ -256,7 +256,7 @@ class Script(ModelBase):
                     self.group_sequel[group_id] = next_id
                 else:
                     last_script_config = game_config.script[self.group_sequel[group_id]]
-                    if sequel_count > last_script_config['sequel_count']:
+                    if sequel_count >= last_script_config['sequel_count']:
                         self.group_sequel[group_id] = next_id
             else:
                 # 没有next_id，sequel_count不为0，当前系列最后一部

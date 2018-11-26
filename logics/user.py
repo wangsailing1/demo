@@ -19,6 +19,7 @@ from lib.utils import weight_choice
 from tools.hero import format_hero_info
 from lib.core.environ import ModelManager
 from lib.utils import fake_deepcopy
+from models.ranking_list import BlockRank
 
 
 def refresh_roulette_ranktime():
@@ -240,6 +241,7 @@ class UserLogic(object):
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
             'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
+            'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 旅游聊天约会
         }
 
         # 特殊的几个红点,todo
@@ -393,6 +395,7 @@ class UserLogic(object):
         :param skip:
         :return:
         """
+        print sort, guide_id, skip
         flag = self.do_guide(sort, guide_id, skip, save=False)
 
         data = {}
@@ -503,7 +506,12 @@ class UserLogic(object):
         user_dict['block'] = mm.block.block_num
         user_dict['script_info'] = mm.script.get_scrip_info_by_num()
         user_dict['top_cards'] = mm.card.get_better_card()
-        user_dict['block_rank'] = 1
+
+        block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                                 'income')
+        br = BlockRank(block_rank_uid, mm.block._server_name)
+        user_dict['block_rank'] = br.get_rank(self.mm.uid)
+        user_dict['like'] = self.mm.friend.friends_info.get(user_id,{}).get('like',0)
         # if not self.mm.high_ladder.is_robot(user_id):
         #     mm = self.mm.get_mm(user_id)
         #     user_dict = user_info(mm)
@@ -671,7 +679,7 @@ class UserLogic(object):
         role = self.mm.user.role
         sex = game_config.main_hero[role]['sex']
         cid = mp[sex]
-        self.mm.user.dollar = 50000
+        self.mm.user.add_dollar(50000)
         self.mm.card.add_card(cid)
         self.mm.card.save()
 

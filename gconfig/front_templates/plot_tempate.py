@@ -26,6 +26,7 @@ avg_dialogue = {
     'reward': ('reward', 'int_list'),
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
+    'special_effects': ('special_effects', 'int'),
 }
 
 # 战斗内广告栏
@@ -135,25 +136,25 @@ chapter_words = {
     'wordsId': ('wordsId', 'unicode'),  # 文字
 }
 
-# 新手引导对话分组
-dialogue_guide_team = {
-    'uk': ('id', 'int'),  # 关卡id
-    'dialogueId': ('dialogueId', 'int_list'),  # 对话id
-    'playbackId': ('playbackId', 'int_list'),  # 剧情回放id
-    'type': ('type', 'int'),  # 触发类型
-    'condition': ('condition', 'int'),  # 触发条件
-}
+# # 新手引导对话分组
+# dialogue_guide_team = {
+#     'uk': ('id', 'int'),  # 关卡id
+#     'dialogueId': ('dialogueId', 'int_list'),  # 对话id
+#     'playbackId': ('playbackId', 'int_list'),  # 剧情回放id
+#     'type': ('type', 'int'),  # 触发类型
+#     'condition': ('condition', 'int'),  # 触发条件
+# }
 
-# 新手引导对话
-dialogue_guide = {
-    'uk': ('dialogueId', 'int'),  # 对话id
-    'roleId': ('roleId', 'int'),  # 角色id
-    'type': ('type', 'int'),  # 左右
-    'words': ('words', 'unicode'),  # 内容
-    'eperssion': ('eperssion', 'str'),  # 控制对话框左侧表情显示
-    'dialogKind': ('dialogKind', 'int'),  # 对话框
-    'voice': ('voice', 'str'),
-}
+# # 新手引导对话
+# dialogue_guide = {
+#     'uk': ('dialogueId', 'int'),  # 对话id
+#     'roleId': ('roleId', 'int'),  # 角色id
+#     'type': ('type', 'int'),  # 左右
+#     'words': ('words', 'unicode'),  # 内容
+#     'eperssion': ('eperssion', 'str'),  # 控制对话框左侧表情显示
+#     'dialogKind': ('dialogKind', 'int'),  # 对话框
+#     'voice': ('voice', 'str'),
+# }
 
 # 对话及动画位置
 opera_location = {
@@ -252,9 +253,23 @@ tour_dialogue = {
     'reward_num': ('reward_num', 'int'),
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
+    'special_effects': ('special_effects', 'int'),
 }
 
 explain = {
     'uk': ('id', 'int'),
     'describe': ('describe', 'int'),
+}
+
+
+dinner_begin = {
+    'uk': ('id', 'int'),
+    'love_exp': ('love_exp', 'int'),
+    'dialogue': ('dialogue', 'str'),
+}
+
+dinner_in = {
+    'uk': ('id', 'int'),
+    'love_exp': ('love_exp', 'int'),
+    'dialogue': ('dialogue', 'str'),
 }

@@ -13,6 +13,8 @@ from gconfig import game_config
 from models.server import ServerUid
 from lib.utils import generate_rank_time
 from models.server import get_server_config
+from models.ranking_list import BlockRank
+
 
 # 玩家信息
 
@@ -30,7 +32,7 @@ def user_info(mm):
         'level': mm.user.level,
         'role': mm.user.role,
         'tile_power': mm.user.tile_power,
-        'combat': 0,    # mm.hero.get_max_combat(),
+        'combat': 0,  # mm.hero.get_max_combat(),
         'guild_id': mm.user.guild_id,
         'guild_name': mm.get_obj_by_id('guild', mm.user.guild_id).name if mm.user.guild_id else '',
         'server_name': get_server_config(mm.user._server_name).get('name', '')
@@ -57,6 +59,9 @@ def user_friend_info(mm, uid):
         user_status = 1
     else:
         user_status = 0
+    block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                             'income')
+    br = BlockRank(block_rank_uid, mm.block._server_name)
 
     user_dict = {
         'uid': target_user.uid,
@@ -66,16 +71,17 @@ def user_friend_info(mm, uid):
         # 'guild_name': guild.name,
         # 'guild_id': guild.guild_id,
         'user_status': user_status,  # 用户状态, 0: 离线, 1: 在线
-        'active_time': target_user.active_time,     # 活跃时间戳
+        'active_time': target_user.active_time,  # 活跃时间戳
         'role': target_user.role,
         # 'parise_count': friend.parise_count,  # 点赞数
         # 'has_redpacket': friend.red_packet['has_reward'],   # 有没有红包
         # 'high_ladder_rank': target_mm.get_obj_tools('high_ladder_rank').get_rank(uid),  # 竞技场排名
         # 'dark_street': target_mm.dark_street.milestone_id,  # 黑街段位
         # 'combat': target_mm.hero.get_max_combat(),
-        'nickname':target_mm.friend.nickname.get(uid,''),
-        'block':target_mm.block.block_num,
-        'block_rank':1,
+        'nickname': target_mm.friend.nickname.get(uid, ''),
+        'block': target_mm.block.block_num,
+        'block_rank': br.get_rank(target_user.uid),
+        'like': mm.friend.friends_info.get(uid, {}).get('like', 0)
     }
     result = {
         'user': user_dict
@@ -167,13 +173,13 @@ def guild_rank_info(mm, guild_id, rank, score):
         'rank': rank,
         'score': score,
     }
-    return  result
+    return result
 
 
 class VipInfo(ModelTools):
     """ VIP玩家及等级信息
     """
-    GLOBAL_VIP_KEY = 'VIP'        # 记录报名信息
+    GLOBAL_VIP_KEY = 'VIP'  # 记录报名信息
 
     def __init__(self, uid='', server='', *args, **kwargs):
         self.uid = uid
@@ -195,12 +201,12 @@ class VipInfo(ModelTools):
             vip_log = pickle.loads(zlib.decompress(vip_log))
         if not level_start and not level_start:
             return vip_log
-        if level_start and not level_end:                       # 取大于等于的vip_level的
+        if level_start and not level_end:  # 取大于等于的vip_level的
             for i in vip_log.keys():
                 if i >= level_start:
                     result += vip_log[i]
         if level_start and level_end:
-            for i in xrange(level_start, level_end+1):
+            for i in xrange(level_start, level_end + 1):
                 if i not in vip_log.keys():
                     continue
                 result += vip_log[i]

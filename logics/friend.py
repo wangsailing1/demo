@@ -55,6 +55,7 @@ class FriendLogic(object):
         friend_mm = self.mm.get_mm(friend_id)
         friend_mm.friend.set_received_gift(self.mm.uid)
         self.friend.set_send_gift(friend_id)
+        self.friend.add_friend_like(friend_id)
         # 觉醒宝箱次数任务
         task_event_dispatch = self.mm.get_event('task_event_dispatch')
         task_event_dispatch.call_method('present_flower', count=1)
@@ -103,9 +104,10 @@ class FriendLogic(object):
         point = game_config.common[26]
         if reward is None:
             reward = {}
-        add_mult_gift(self.mm, [[3, 0, point]], reward)
+        reward = add_mult_gift(self.mm, [[3, 0, point]], reward)
         self.friend.receive_gift(friend_id)
         self.friend.got_point_daily += point
+        self.friend.add_friend_like(friend_id)
 
         self.friend.save()
 
@@ -900,7 +902,7 @@ class FriendLogic(object):
             self.friend.phone_daily_log[times]['log'].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
-            add_value = self.mm.card.add_value(group_id, add_value_config)
+            add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
             reward = add_mult_gift(self.mm, reward_config)
             # if config[choice_id]['is_end']:
             #     self.friend.phone_daily_times += 1
@@ -925,7 +927,7 @@ class FriendLogic(object):
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
-        add_value = self.mm.card.add_value(group_id, add_value_config)
+        add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
         reward = add_mult_gift(self.mm, gift)
         self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
         if config[choice_id]['is_end']:

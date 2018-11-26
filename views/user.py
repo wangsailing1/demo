@@ -1,6 +1,6 @@
 #! --*-- coding: utf-8 --*--
 
-__author__ = 'kongliang'
+__author__ = 'kaiqigu'
 
 import time
 import datetime
@@ -55,7 +55,7 @@ def main(hm):
     mm.user.send_vip_exclusive_notice()
 
     # 全服邮件
-    # mm.user.send_system_mail()
+    mm.user.send_system_mail()
 
     result = ul.main()
 
@@ -72,6 +72,8 @@ def main(hm):
     result['phone_daily_times'] = mm.friend.phone_daily_times
     result['appointment_times'] = mm.friend.appointment_times
     result['tourism_times'] = mm.friend.tourism_times
+    result['seven_login'] = mm.seven_login.is_open()
+    result['fans_activity_info'] = mm.fans_activity.fans_activity_info()
 
     return 0, result
 
@@ -145,6 +147,7 @@ def game_info(hm):
     block = Block(mm)
     block.check_has_ceremony()
     info.update(**item_info)
+    info['card_attr'] = mm.card.attr
 
     return 0, info
 

@@ -44,13 +44,13 @@ class Card(ModelBase):
     CHAR_PRO_NAME = ['performance', 'song', 'temperament', 'sports', 'art', 'entertainment']
 
     LOVE_GIFT_MAPPING = ['酸', '甜', '苦', '辣', '冰', '饮']
-    ADD_VALUE_MAPPING = {1: 'like'}  # 策划添加新属性的时候添加
+    ADD_VALUE_MAPPING = {1: 'like', 2: 'popularity'}  # 策划添加新属性的时候添加
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
     PRO_IDX_MAPPING = {pro_id: pro_id - 1 for pro_id in xrange(1, len(CHAR_PRO_NAME) + 1)}
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
 
 
-    _need_diff = ('cards', 'pieces')
+    _need_diff = ('cards', 'pieces', 'attr')
 
     # 新用户给的卡牌
     INIT_CARDS = [1, 2, 3, 4, 5]
@@ -64,7 +64,8 @@ class Card(ModelBase):
             'pieces': {
 
             },
-            'attr': {}
+            'attr': {},
+            'card_building_level':1
 
         }
         self._group_ids = {}
@@ -80,12 +81,12 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
 
         card_dict = {
-            'popularity': 0,  # 人气
+            'popularity': popularity,  # 人气
 
             'name': get_str_words('1', card_config['name']),  # 卡牌名字
             'id': card_id,  # 配置id
@@ -99,6 +100,7 @@ class Card(ModelBase):
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
+            'equips_used':{}, #升格调消耗掉的装备
 
             'evo': evo,
             'star': card_config.get('star_level', 1),
@@ -183,6 +185,8 @@ class Card(ModelBase):
                 v['love_gift_pro'] = {}
             if 'equips' not in v:
                 v['equips'] = []
+            if 'equips_used' not in v:
+                v['equips_used'] = {}
 
             if 'style_pro' not in v or not v['style_pro']:
                 v['style_pro'] = {}
@@ -262,6 +266,8 @@ class Card(ModelBase):
 
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
+        init_love_exp = init_love_exp or self.attr.get(group_id,{}).get('like',0)
+        popularity = self.attr.get(group_id,{}).get('popularity', 0)
 
         if self.has_card_with_group_id(card_id):
             self.add_piece(card_config['piece_id'], card_config['star_giveback'])
@@ -273,7 +279,8 @@ class Card(ModelBase):
                                                  star=init_star,
                                                  love_lv=init_love_lv,
                                                  love_exp=init_love_exp,
-                                                 mm=self.mm
+                                                 mm=self.mm,
+                                                 popularity=popularity,
                                                  )
         self.mm.card_book.add_book(group_id)
         self.mm.friend.new_actor(group_id,is_save=True)
@@ -355,6 +362,21 @@ class Card(ModelBase):
         if idx == len(grow_love):
             idx = -1
         add_percent = grow_love[idx][1]
+        if card_info['love_lv'] == 0:
+            add_percent = 0
+
+        #武器加成
+        equip_config = game_config.equip
+        for equip_id in card_info['equips']:
+            equip_attr = equip_config[equip_id]['add_attr']
+            char_pro = [char_pro[i] + equip_attr[i] if char_pro[i] != -1 else -1 for i in range(6)]
+
+        for _, value in card_info['equips_used'].iteritems():
+            for equip_id in value:
+                equip_attr = equip_config[equip_id]['add_attr']
+                char_pro = [char_pro[i] + equip_attr[i] if char_pro[i] != -1 else -1 for i in range(6)]
+
+
 
         # 礼物属性加成
         for gift_id, info in card_info['love_gift_pro'].iteritems():
@@ -511,16 +533,22 @@ class Card(ModelBase):
         :param is_save: 
         :return: 
         """
-        if isinstance(card_id, str) and '-' in card_id:
+        if isinstance(card_id, int):
+            group_id = card_id
+        else:
             card_config = game_config.card_basis
             group_id = card_config[int(card_id.split('-')[0])]['group']
-        else:
-            group_id = card_id
         add_value = {}
         for k, v in add_value_config:
             if group_id not in self.attr:
                 self.attr[group_id] = {}
             attr = self.ADD_VALUE_MAPPING[k]
+            if group_id in self.group_ids:
+                card_dict = self.cards[self.group_ids[group_id]]
+                if k == 1:
+                    card_dict['love_exp'] += v
+                else :
+                    card_dict[attr] += v
             self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
             add_value[attr] = add_value.get(attr, 0) + v
         if is_save:
@@ -537,6 +565,20 @@ class Card(ModelBase):
             card_list = card_list[:num]
         card_info = {i: j for i, j in card_list}
         return card_info
+
+    def get_can_use_card(self):
+        can_use_card = []
+        for card_id,value in self.cards.iteritems():
+            if value['is_cold']:
+                continue
+            can_use_card.append(card_id)
+        return can_use_card
+
+    def can_add_new_card(self):
+        return True
+        config = game_config.card_building
+        max_num = config[self.card_building_level]['card_limit']
+        return max_num > len(self.get_can_use_card())
 
 
 ModelManager.register_model('card', Card)

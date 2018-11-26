@@ -38,6 +38,7 @@ def activity(hm):
 def unlock_activity(hm):
     mm = hm.mm
     activity_id = hm.get_argument('activity_id', 0, is_int=True)
+    # pos_id = hm.get_argument('pos_id', 0, is_int=True)
     config = game_config.fans_activity[activity_id]
     if not config['type']:
         return 5, {}  # 首次建筑的等级错误
@@ -51,10 +52,13 @@ def unlock_activity(hm):
     group = config['groupid']
     if group in mm.fans_activity.activity:
         return 4, {}  # 已解锁
+    # if pos_id in mm.user.get_pos_info:
+    #     return 5, {}  #此地已有建筑
     mm.fans_activity.activity[group] = activity_id
     mm.fans_activity.activity_log[activity_id] = {}
     mm.fans_activity.unlocked_activity.append(activity_id)
     mm.user.dollar -= cost
+    # mm.user.add_build(config['build_id'],pos_id)
     mm.user.save()
     mm.fans_activity.save()
     fa = FansActivity(mm)
@@ -86,7 +90,10 @@ def up_activity(hm):
     mm.fans_activity.activity[group] = next_id
     mm.fans_activity.activity_log[next_id] = old_data
     mm.fans_activity.unlocked_activity.append(next_id)
+    mm.fans_activity.change_card_mapping(activity_id,next_id)
+    # build_id = game_config.fans_activity[next_id]['build_id']
     mm.user.dollar -= cost
+    # mm.user.up_build(build_id,is_save=True)
     mm.fans_activity.save()
     mm.user.save()
     fa = FansActivity(mm)

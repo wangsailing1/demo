@@ -53,6 +53,7 @@ class Friend(ModelBase):
         self._attrs = {
             'friends': [],
             'messages': [],
+            'friends_info': {},
 
             'last_refresh_date': '',
             'parised_friend': [],
@@ -112,6 +113,9 @@ class Friend(ModelBase):
             self.phone_daily_log = {}
             self.appointment_times = 0
             self.appointment_log = {}
+            is_save = True
+        if not hasattr(self, 'friends_info'):
+            self.friends_info = {}
             is_save = True
         if is_save:
             self.save()
@@ -560,6 +564,15 @@ class Friend(ModelBase):
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
         data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data
+
+    def add_friend_like(self, uid, is_save=False):
+        if uid not in self.friends_info:
+            self.friends_info[uid] = {}
+        if self.friends_info[uid].get('like', 0) >= game_config.common[55]:
+            return
+        self.friends_info[uid]['like'] = self.friends_info[uid].get('like', 0) + game_config.common[56]
+        if is_save:
+            self.save()
 
 
 ModelManager.register_model('friend', Friend)

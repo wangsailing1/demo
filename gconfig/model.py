@@ -641,37 +641,37 @@ class GameConfigMixIn(object):
         :param level:
         :return: []
         """
-        if not self.shop_goods_mapping.get(shop_id, {}):
-            data = {}
-            for k, v in self.get_shop_config(shop_id).iteritems():
-                use_lv = v['show_lv']
-                pos_id = v['pos_id']
-                if use_lv not in data:
-                    data[use_lv] = {}
-                if pos_id not in data[use_lv]:
-                    data[use_lv][pos_id] = []
-                if not v['weight']:
-                    continue
-                data[use_lv][pos_id].append([k, v['weight']])
+        # if not self.shop_goods_mapping.get(shop_id, {}):
+        data = {}
+        for k, v in self.get_shop_config(shop_id).iteritems():
+            use_lv = v['show_lv']
+            pos_id = v['pos_id']
+            if use_lv not in data:
+                data[use_lv] = {}
+            if pos_id not in data[use_lv]:
+                data[use_lv][pos_id] = []
+            if not v['weight']:
+                continue
+            data[use_lv][pos_id].append([k, v['weight']])
 
-            result = {'index': [], 'data': {}}
-            data_sort = sorted(data.iteritems(), key=lambda x: x[0])
-            pre_data = {}
-            for use_lv, value in data_sort:
-                for pos_id, v in value.iteritems():
-                    if pos_id not in pre_data:
-                        pre_data[pos_id] = []
+        result = {'index': [], 'data': {}}
+        data_sort = sorted(data.iteritems(), key=lambda x: x[0])
+        pre_data = {}
+        for use_lv, value in data_sort:
+            for pos_id, v in value.iteritems():
+                if pos_id not in pre_data:
+                    pre_data[pos_id] = []
 
-                    pre_data[pos_id].extend(v)
-                for pos_id, v in pre_data.iteritems():
-                    if use_lv not in result['data']:
-                        result['data'][use_lv] = {}
-                    if pos_id not in result['data'][use_lv]:
-                        result['data'][use_lv][pos_id] = []
-                    result['data'][use_lv][pos_id].extend(copy.deepcopy(pre_data[pos_id]))
-                result['index'].append(use_lv)
+                pre_data[pos_id].extend(v)
+            for pos_id, v in pre_data.iteritems():
+                if use_lv not in result['data']:
+                    result['data'][use_lv] = {}
+                if pos_id not in result['data'][use_lv]:
+                    result['data'][use_lv][pos_id] = []
+                result['data'][use_lv][pos_id].extend(copy.deepcopy(pre_data[pos_id]))
+            result['index'].append(use_lv)
 
-            self.shop_goods_mapping[shop_id] = result
+        self.shop_goods_mapping[shop_id] = result
         pos = bisect.bisect(self.shop_goods_mapping[shop_id]['index'], level)
         if not pos:
             return {}

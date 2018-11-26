@@ -13,7 +13,8 @@ common = ({
 player_level = {
     'uk': ('lv_addition', 'int'),  # 等级
     'exp': ('exp', 'int'),  # 等级
-    'card_limit': ('card_limit', 'int')  # 艺人上线
+    'card_limit': ('card_limit', 'int'),  # 艺人上线
+    'award': ('award', 'int_list')  # 艺人上线
 
 }
 
@@ -155,23 +156,25 @@ vip_pay = {
 # }
 
 charge = {
-    'uk':               ('buy_id',          'int'),  # id
-    'sort':             ('sort',            'int'),  # 购买类型
-    'diamond':          ('diamond',         'int'),  # 给予钻石数量
-    'gift_diamond':     ('gift_diamond',    'int'),  # 赠送钻石数
-    'is_double':        ('is_double',       'int'),  # 是否首次双倍
-    'price':            ('price',           'int'),  # 所需RMB
-    'name':             ('name',            'int'),  # 名字
-    'icon':             ('icon',            'str'),  # 图
+    'uk': ('buy_id', 'int'),  # id
+    'sort': ('sort', 'int'),  # 购买类型
+    'diamond': ('diamond', 'int'),  # 给予钻石数量
+    'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
+    'is_double': ('is_double', 'int'),  # 是否首次双倍
+    'vip_exp': ('vip_exp', 'int'),  # 所需RMB
+    'price_rmb': ('price_rmb', 'int'),  # 所需RMB
+    'price_dollar': ('price_dollar', 'float'),  # 所需美元
+    'name': ('name', 'int'),  # 名字
+    'icon': ('icon', 'str'),  # 图
+    'charge_condition': ('charge_condition', 'str'),  # 图
 }
 
-
 month_privilege = {
-    'uk':               ('card_type',       'int'),  # id
-    'price':            ('price',           'int'),  # 所需RMB
-    'effective_days':   ('effective_days',  'int'),  # 持续天数
-    'daily_rebate':     ('daily_rebate',    'int_list'),  # 每日奖励
-    'des':              ('des',             'int'),  # 每日奖励
+    'uk': ('card_type', 'int'),  # id
+    'price': ('price', 'int'),  # 所需RMB
+    'effective_days': ('effective_days', 'int'),  # 持续天数
+    'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
+    'des': ('des', 'int'),  # 每日奖励
 }
 
 charge_ios = {
@@ -237,25 +240,25 @@ charge_privilege = {
                    'privilege19', 'value19', 'privilege20', 'value20'),
                   ('int_list_or_int', 'list_2_to_list')),  # 购买的ID
 }
-
-# 新手引导
-guide = {
-    'uk': ('id', 'int'),  # 引导id
-    'sort': ('sort', 'int'),  # 类型
-    'aim': ('aim', 'int'),  # 目标步骤
-    'level': ('level', 'int'),  # 关健步
-    'key': ('key', 'str'),  # 关键字
-    'action': ('action', 'int'),  # 动作
-    'trigger': ('trigger', 'int_list'),  # 条件
-    'delay': ('delay', 'float'),  # 延迟
-    'target': ('target', 'int_list'),  # 动作目标
-    'target_data': ('target_data', 'int_list'),  # 动作参数
-    'next': ('next', 'int'),  # 下一步
-    'drama': ('drama', 'int'),  # 剧情id
-    'skip': ('skip', 'int'),  # 跳过按钮的位置
-    'free': ('free', 'int'),
-    'des': ('des', 'unicode'),
-}
+#
+# # 新手引导
+# guide = {
+#     'uk': ('id', 'int'),  # 引导id
+#     'sort': ('sort', 'int'),  # 类型
+#     'aim': ('aim', 'int'),  # 目标步骤
+#     'level': ('level', 'int'),  # 关健步
+#     'key': ('key', 'str'),  # 关键字
+#     'action': ('action', 'int'),  # 动作
+#     'trigger': ('trigger', 'int_list'),  # 条件
+#     'delay': ('delay', 'float'),  # 延迟
+#     'target': ('target', 'int_list'),  # 动作目标
+#     'target_data': ('target_data', 'int_list'),  # 动作参数
+#     'next': ('next', 'int'),  # 下一步
+#     'drama': ('drama', 'int'),  # 剧情id
+#     'skip': ('skip', 'int'),  # 跳过按钮的位置
+#     'free': ('free', 'int'),
+#     'des': ('des', 'unicode'),
+# }
 
 mission_guide = {
     'uk': ('id', 'int'),  # id
@@ -267,15 +270,15 @@ mission_guide = {
 }
 
 # 引导组
-guide_team = {
-    'uk': ('id', 'int'),  # 引导组id
-    'start_id': ('start_id', 'int'),  # 起始id
-    'open_level': ('open_level', 'int'),  # 激活等级
-    'type': ('type', 'int'),  # 引导类型
-    'sort': ('sort', 'int'),  # 引导分组
-    'is_open': ('is_open', 'int'),  # 是否开启
-    'is_done': ('is_done', 'int_list'),  # 是否完成
-}
+# guide_team = {
+#     'uk': ('id', 'int'),  # 引导组id
+#     'start_id': ('start_id', 'int'),  # 起始id
+#     'open_level': ('open_level', 'int'),  # 激活等级
+#     'type': ('type', 'int'),  # 引导类型
+#     'sort': ('sort', 'int'),  # 引导分组
+#     'is_open': ('is_open', 'int'),  # 是否开启
+#     'is_done': ('is_done', 'int_list'),  # 是否完成
+# }
 
 # 初始数据
 # initial_data = {
@@ -294,7 +297,7 @@ first_random_name = ({
 last_random_name = ({
                         'uk': ('last_name', 'unicode'),  # 名字
                         'gender': ('gender', 'int'),  # 类型
-                    },'last_random_name')
+                    }, 'last_random_name')
 
 # 剧情对话
 drama = {
@@ -445,14 +448,13 @@ push_message = {
 }
 
 # # 等级邮件
-# level_mail = {
-#     'uk': ('id', 'int'),                # id
-#     'level': ('level', 'int'),          # 等级
-#     'name': ('name', 'unicode'),        # 标题
-#     'des': ('des', 'unicode'),          # 描述
-#     'reward': ('reward', 'list_3'),     # 奖励
-# }
-
+level_mail = {
+    'uk': ('id', 'int'),  # id
+    'level': ('level', 'int'),  # 等级
+    'name': ('name', 'unicode'),  # 标题
+    'des': ('des', 'unicode'),  # 描述
+    'reward': ('reward', 'list_3'),  # 奖励
+}
 
 # 等级限时礼包
 level_gift = {
@@ -554,7 +556,7 @@ jump = {
     'uk': ('id', 'int'),
     'name': ('name', 'unicode'),
     'des': ('des', 'unicode'),
-    'target': ('target', 'int'),
+    'target': ('target', 'int_list'),
     'unlock': ('unlock', 'int'),
 }
 
@@ -567,4 +569,17 @@ item_coin = {
     'guide': ('guide', '2int_list'),
 }
 
-
+login_reward_id = {
+    'uk': ('id', 'int'),
+    'title': ('title', 'unicode'),
+    'time_format': ('time_format', 'int'),
+    'open': ('open', 'str'),
+    'close': ('close', 'str'),
+    'reward': ('reward', 'int_list'),
+    'des': ('des', 'unicode'),
+    'level': ('level', 'int_list'),
+    'vip': ('vip', 'int_list'),
+    'server': ('server', 'str_list'),
+    'uid_list': ('uid_list', 'str_list'),
+    'url': ('url', 'str'),
+}

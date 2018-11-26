@@ -1,6 +1,6 @@
 #! --*-- coding: utf-8 --*--
 
-__author__ = 'kongliang'
+__author__ = 'kaiqigu'
 
 from logics.gift_center import (
     GiftCenterLogic,

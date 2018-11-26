@@ -1,6 +1,6 @@
 #! --*-- coding: utf-8 --*--
 
-__author__ = 'kongliang'
+__author__ = 'kaiqigu'
 
 from logics.user import UserLogic
 from logics.friend import FriendLogic

@@ -101,6 +101,8 @@ plot_mapping = {
     'phone_chapter_dialogue': ('phone_chapter_dialogue', True),
     'tour_dialogue': ('tour_dialogue', True),
     'explain': ('explain', True),
+    'dinner_begin': ('dinner_begin', True),
+    'dinner_in': ('dinner_in', True),
 
     # 'ad': ('ad', True),
     # 'ad_text': ('ad_text', True),
@@ -225,12 +227,12 @@ user_config_mapping = {
     'value': ('value', True),
     'privilege': ('privilege', True),
     # 'charge_privilege': ('charge_privilege', True),
-    'guide': ('guide', True),
+    # 'guide': ('guide', True),
     'guide_unlock': ('guide_unlock', True),
     'jump': ('jump', True),
     'item_coin': ('item_coin', True),
     'mission_guide': ('mission_guide', True),
-    'guide_team': ('guide_team', True),
+    # 'guide_team': ('guide_team', True),
     # 'initial_data': ('initial_data', True),
     'first_random_name': ('first_random_name', True),
     'last_random_name': ('last_random_name', True),
@@ -248,7 +250,7 @@ user_config_mapping = {
     'common_attention': ('common_attention', True),
     'play_help': ('play_help', True),
     'push_message': ('push_message', True),
-    # 'level_mail': ('level_mail', True),
+    'level_mail': ('level_mail', True),
     'level_gift': ('level_gift', True),
     'team_skill_mastery': ('team_skill_mastery', True),
     'team_skill_mastery_up': ('team_skill_mastery_up', True),
@@ -259,6 +261,7 @@ user_config_mapping = {
     'loading_des': ('loading_des', True),
     'loading_gif': ('loading_gif', True),
     'help': ('help', True),
+    'login_reward_id': ('login_reward_id', True),
 }
 
 #
@@ -375,7 +378,9 @@ active_mapping = {
     #     'server_limit_gacha': ('server_limit_gacha', True),
     #     'server_extra_hero': ('server_extra_hero', True),
     #     'server_hero_description': ('server_hero_description', True),
-    #     'honor_shop_new': ('honor_shop_new', True)
+    #     'honor_shop_new': ('honor_shop_new', True),
+    'sign_first_week': ('sign_first_week', True),
+    'sign_daily_normal': ('sign_daily_normal', True),
 }
 
 daily_activity_mapping = {
@@ -498,5 +503,19 @@ mission_mapping = {
     'random_mission': ('random_mission', True),
 }
 
+build_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_building': ('card_building', True),
+    'building': ('building', True),
+    'field': ('field', True),
+}
+
+guide_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'guide': ('guide', True),
+    'guide_team': ('guide_team', True),
+    'dialogue_guide_team': ('dialogue_guide_team', True),
+    'dialogue_guide': ('dialogue_guide', True),
+}
 # 注册需要写到最下面
 register_handler()

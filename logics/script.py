@@ -363,9 +363,18 @@ class ScriptLogic(object):
 
         # 属性作用指数
         attr_rate = game_config.common[33] / 100.0
+        # 属性作用上升率
+        attr_up_rate = game_config.common[53] / 10000.0
+        # 属性作用上升指数
+        attr_up_index = game_config.common[54] / 10000.0
 
-        # partA=（(（艺术/含艺术属性的角色数量/艺术基准系数）^属性作用指数 +
-        # （气质/含气质属性的角色数量/气质基准系数）^ 属性作用指数)/生效属性数量）*（1+平均熟练度等级加成）
+        # partA = （part艺术 + part气质） / 生效属性数量） * （1 + 平均熟练度等级加成）
+        # 艺术、气质计算规则如下
+        # 【 当艺术 / 含艺术属性角色数量 < 艺术基准系数】
+        #       part艺术 =（艺术 / 含艺术属性的角色数量 / 艺术基准系数） ^ 属性作用指数
+        # else:
+        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+
         base_a = 0
         pro_count = 0
         for pro_id in [art_pro_id, temperament_pro_id]:
@@ -376,14 +385,26 @@ class ScriptLogic(object):
                 pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
-            base_a += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
-                pro_id_mapping[pro_id]]) ** attr_rate
+
+            standard_pro_rate = standard_attr[pro_id_mapping[pro_id]]
+            if 1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] < standard_pro_rate:
+                d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
+                    ** attr_rate
+            else:
+                attr_value = attrs.get(pro_id, 0)
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
+                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+            base_a += d
+
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
 
-        # partB=（(（娱乐/含娱乐属性的角色数量/娱乐基准系数）^属性作用指数 +
-        # （动感/含动感属性的角色数量/动感基准系数）^属性作用指数+
-        # （歌艺/含歌艺属性的角色数量/歌艺基准系数）^属性作用指数+
-        # （演技/含演技属性的角色数量/演技基准系数）^属性作用指数)/生效属性数量）*（1+平均熟练度）
+        # partB = （part娱乐+part动感+part歌艺+part演技）/生效属性数量）*（1+平均熟练度等级加成）
+        # 各属性计算规则如下
+        # 【 当娱乐 / 含娱乐属性角色数量 < 娱乐基准系数】
+        #       part娱乐 =（娱乐 / 含娱乐属性的角色数量 / 娱乐基准系数） ^ 属性作用指数
+        # else:
+        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
+
         base_b = 0
         pro_count = 0
         for pro_id in [entertainment_pro_id, sports_pro_id, song_pro_id, performance_pro_id]:
@@ -394,8 +415,17 @@ class ScriptLogic(object):
                 pro_count += 1
             if not role_count_by_attr[pro_id]:
                 continue
-            base_b += (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[
-                pro_id_mapping[pro_id]]) ** attr_rate
+
+            standard_pro_rate = standard_attr[pro_id_mapping[pro_id]]
+            if 1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] < standard_pro_rate:
+                d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
+                    ** attr_rate
+            else:
+                attr_value = attrs.get(pro_id, 0)
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
+                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+            base_b += d
+
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
 
         min_part = game_config.common[37] / 10.0
@@ -737,6 +767,7 @@ class ScriptLogic(object):
 
         # 杀青步骤的 reward
         finished_common_reward = cur_script['finished_common_reward']
+        finished_medium_judge = cur_script['finished_medium_judge']
         reward = add_mult_gift(self.mm, finished_common_reward['reward'])
 
         # 卡牌类型经验fight_exp
@@ -746,6 +777,9 @@ class ScriptLogic(object):
 
         # 玩家经验player_exp
         self.mm.user.add_player_exp(script_config['player_exp'])
+
+        # 专业评级点赞数
+        self.mm.user.add_like(finished_medium_judge['like'])
 
         # 总票房 给美金
         finished_first_income = cur_script['finished_first_income']
@@ -779,7 +813,8 @@ class ScriptLogic(object):
             near_rank = new_rank - 1
         if new_rank == 1:
             near_rank = 2
-        near_score = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)[0][1]
+        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)
+        near_score = rank_list[0][1] if rank_list else 0
 
         cur_script['old_rank'] = [old_rank, old_score]
         cur_script['new_rank'] = [new_rank, new_score]

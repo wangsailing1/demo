@@ -174,6 +174,9 @@ user_msg = {
         2: u'头像已解锁',
         3: u'性别不符',
     },
+'user.blacklist_add': {
+        1: u'已经在屏蔽名单中',
+    },
 }
 
 card_msg = {
@@ -197,6 +200,7 @@ card_msg = {
         2: u'已达到最大培养次数',
     },
     'card.set_equip': {
+        1: u'艺人不存在',
         2: u'已穿此类装备',
         3: u'装备超出所需上限',
         4: u'装备与卡牌不匹配',
@@ -212,10 +216,18 @@ gacha_msg = {
 
 
 script_msg = {
+    'script.pre_filming': {
+        1: u'许可证不足',
+    },
     'script.set_card': {
         2: u'已选完角色',
         3: u'演员与角色设置不可重复',
         4: u'请选角色',
+    },
+    'script.upgrade_continued_level': {
+        1: u'没有该剧本',
+        2: u'已是最大等级',
+        3: u'推广时间已过',
     },
     'script_gacha.get_gacha': {
         1: u'可抽取次数不足'
@@ -391,6 +403,15 @@ friend_msg = {
         19: u'未选择对话',
 
     },
+    'friend.apply_friend': {
+        1: u'不能添加自己',
+        2: u'对方已是自己好友',
+        3: u'自己的好友列表是否已达到上限',
+        4: u'用户不存在',
+        5: u'好友的列表已经达到上限',
+        6: u'已申请过',
+
+    },
 }
 
 fans_activity_msg = {
@@ -441,6 +462,26 @@ mission_msg = {
     'mission.refresh_mission': {
         1: u'刷新次数不足',
         2: u'任务id未在任务中',
+    },
+}
+
+active_msg = {
+    'active.seven_login': {
+        1: u'活动已结束',
+    },
+    'active.seven_login_award': {
+        1: u'条件不足，不能领取',
+        2: u'已领取',
+        3: u'活动已结束',
+    },
+    'active.monthly_sign': {
+        1: u'已领取',
+    },
+    'active.active_card_award': {
+        1: u'无该配置',
+        2: u'尚未激活',
+        3: u'已领取',
+        4: u'配置错误',
     },
 }
 

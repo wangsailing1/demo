@@ -345,9 +345,9 @@ class GiftCenter(ModelBase):
         """
         is_save = False
         # 初始化每月签到
-        if (not self.monthly_sign['reward']) or self.monthly_sign['month'] != self.today.month:
-            self.init_monthly_sign()
-            is_save = True
+        # if (not self.monthly_sign['reward']) or self.monthly_sign['month'] != self.today.month:
+        #     self.init_monthly_sign()
+        #     is_save = True
 
         # 豪华签到
         # cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
@@ -379,29 +379,29 @@ class GiftCenter(ModelBase):
         #         is_save = True
 
         # 连续登陆(翻牌)
-        if self.is_open(self.WELFARE_CARD_LOGIN):
-            start_time, end_time = self.get_active_start_end_time(self.WELFARE_CARD_LOGIN)
-            card_login_version = '%s_%s' % (start_time, end_time)
-            if start_time <= self.today.strftime('%F %T') <= end_time and \
-                    self.card_login['version'] != card_login_version:
-                self.init_card_login(card_login_version)
-                is_save = True
+        # if self.is_open(self.WELFARE_CARD_LOGIN):
+        #     start_time, end_time = self.get_active_start_end_time(self.WELFARE_CARD_LOGIN)
+        #     card_login_version = '%s_%s' % (start_time, end_time)
+        #     if start_time <= self.today.strftime('%F %T') <= end_time and \
+        #             self.card_login['version'] != card_login_version:
+        #         self.init_card_login(card_login_version)
+        #         is_save = True
 
         # 三顾茅庐
-        if self.is_open(self.WELFARE_THREE_DAYS):
-            start_time, end_time = self.get_active_start_end_time(self.WELFARE_THREE_DAYS)
-            three_days_login_version = '%s_%s' % (start_time, end_time)
-            if start_time <= self.today.strftime('%F %T') <= end_time and \
-                    self.three_days_login['version'] != three_days_login_version:
-                reward = game_config.welfare_3days.get(1, {}).get('day_reward', {})
-                self.init_three_days_login(three_days_login_version, reward)
-                is_save = True
+        # if self.is_open(self.WELFARE_THREE_DAYS):
+        #     start_time, end_time = self.get_active_start_end_time(self.WELFARE_THREE_DAYS)
+        #     three_days_login_version = '%s_%s' % (start_time, end_time)
+        #     if start_time <= self.today.strftime('%F %T') <= end_time and \
+        #             self.three_days_login['version'] != three_days_login_version:
+        #         reward = game_config.welfare_3days.get(1, {}).get('day_reward', {})
+        #         self.init_three_days_login(three_days_login_version, reward)
+        #         is_save = True
 
         # 累计在线
-        if self.is_open(self.WELFARE_ONLINE):
-            if not self.online_duration['online_time']:
-                self.init_online_duration()
-                is_save = True
+        # if self.is_open(self.WELFARE_ONLINE):
+        #     if not self.online_duration['online_time']:
+        #         self.init_online_duration()
+        #         is_save = True
 
         # 领取体力
         if self.today.strftime('%F') != self.energy['refresh_date']:
@@ -848,4 +848,4 @@ class GiftCenter(ModelBase):
         return 0
 
 
-ModelManager.register_model('gift_center', GiftCenter)
+# ModelManager.register_model('gift_center', GiftCenter)

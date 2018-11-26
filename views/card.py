@@ -141,3 +141,11 @@ def set_name(hm):
     name = hm.get_argument('name')
     rc, data = cl.set_name(card_oid, name)
     return rc, data
+
+
+def up_card_building(hm):
+    cl = CardLogic(hm.mm)
+    rc, data = cl.up_card_building()
+    return rc, data
+
+
