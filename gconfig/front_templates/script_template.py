@@ -186,6 +186,7 @@ attention_level = {
     'name': ('name', 'str'),  #
     'min_attention': ('min_attention', 'int'),  #
     'max_attention': ('max_attention', 'int'),  #
+    'name_trans': ('name_trans', 'str'),  #
 
 }
 
