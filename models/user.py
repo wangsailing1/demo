@@ -1858,6 +1858,11 @@ class User(ModelBase):
         self.save()
 
     def init_build(self):
+        for k,v in self._build.iteritems():
+            if 'pos' in v:
+                self._build = {}
+                self.save()
+                break
         if not self._build:
             for build_id,value in game_config.building.iteritems():
                 if value['default']:
@@ -1877,10 +1882,6 @@ class User(ModelBase):
         config = game_config.building
         for build_id,value in self._build.iteritems():
             group = config[build_id]['group']
-            if 'pos' in value:
-                self._build = {}
-                self.save()
-                break
             _group_ids[group] = {'build_id':build_id,
                                       'field_id':value['field_id'],
                                       'lock_status':self.mm.user.level < config[build_id]['unlock_lv'],
