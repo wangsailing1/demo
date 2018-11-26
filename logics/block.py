@@ -161,81 +161,86 @@ class Block(object):
         data = {}
         if self.block.is_count:
             return
-        for tp in self.block.rank_list:
-            rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
-                                                 tp)
-            data = {}
-            date = get_date_before()
-            br = BlockRank(rank_uid, self.block._server_name, date)
-            nomination = br.get_all_user(0, 4, withscores=True)
-            if tp in ['nv', 'nan']:
-                tp_num = self.block.RANKMAPPING[tp]
-                for uid_card_id, score in nomination:
-                    uid, card_id = uid_card_id.split('_')
-                    if self.mm.uid != uid:
-                        continue
-                    rank = br.get_rank(uid)
-                    card_cid = self.card.cards[card_id]['id']
-                    card_name = self.card.cards[card_id]['name']
-                    reward_type = 'win_cup_num'
-                    if rank > 1:
-                        reward_type = 'nomi_cup_num'
-
-                    cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
-                    data[tp_num] = {
-                        'name': self.mm.user.name,
-                        'card_cid': card_cid,
-                        'card_name': card_name,
-                        'score': score,
-                        'reward_type':reward_type,
-                        'cup':cup
-
-                    }
-                    if rank == 1:
-                        self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
-                        self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
-            else:
-                tp_num = tp
-                if tp in ['medium', 'audience']:
+        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'income')
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        user_num = len(bir.get_all_user(0,4))
+        if user_num == 5:
+            for tp in self.block.rank_list:
+                rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
+                                                     tp)
+                data = {}
+                date = get_date_before()
+                br = BlockRank(rank_uid, self.block._server_name, date)
+                nomination = br.get_all_user(0, 4, withscores=True)
+                if tp in ['nv', 'nan']:
                     tp_num = self.block.RANKMAPPING[tp]
-                for uid_script_id, score in nomination:
-                    uid, script_id = uid_script_id.split('_')
-                    if self.mm.uid != uid:
-                        continue
-                    rank = br.get_rank(uid)
-                    script_id = int(script_id)
-                    script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
-                    if not script_name:
-                        script_name = game_config.script[script_id]['name']
-                        script_name = get_str_words(self.mm.user.language_sort, script_name)
-                    reward_type = 'win_cup_num'
-                    if rank > 1:
-                        reward_type = 'nomi_cup_num'
-                    cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
-                    data[tp_num] = {
-                        'name': self.mm.user.name,
-                        'script_id': script_id,
-                        'script_name': script_name,
-                        'score': score,
-                        'reward_type': reward_type,
-                        'cup': cup
-                    }
-                    if rank == 1:
-                        self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
-                        if script_id not in self.block.cup_log_script:
-                            self.block.cup_log_script[script_id] = {}
-                        self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
-            data['big_sale_cup'] = self.block.big_sale
+                    for uid_card_id, score in nomination:
+                        uid, card_id = uid_card_id.split('_')
+                        if self.mm.uid != uid:
+                            continue
+                        rank = br.get_rank(uid)
+                        card_cid = self.card.cards[card_id]['id']
+                        card_name = self.card.cards[card_id]['name']
+                        reward_type = 'win_cup_num'
+                        if rank > 1:
+                            reward_type = 'nomi_cup_num'
+
+                        cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
+                        data[tp_num] = {
+                            'name': self.mm.user.name,
+                            'card_cid': card_cid,
+                            'card_name': card_name,
+                            'score': score,
+                            'reward_type':reward_type,
+                            'cup':cup
+
+                        }
+                        if rank == 1:
+                            self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
+                            self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
+                else:
+                    tp_num = tp
+                    if tp in ['medium', 'audience']:
+                        tp_num = self.block.RANKMAPPING[tp]
+                    for uid_script_id, score in nomination:
+                        uid, script_id = uid_script_id.split('_')
+                        if self.mm.uid != uid:
+                            continue
+                        rank = br.get_rank(uid)
+                        script_id = int(script_id)
+                        script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                        if not script_name:
+                            script_name = game_config.script[script_id]['name']
+                            script_name = get_str_words(self.mm.user.language_sort, script_name)
+                        reward_type = 'win_cup_num'
+                        if rank > 1:
+                            reward_type = 'nomi_cup_num'
+                        cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
+                        data[tp_num] = {
+                            'name': self.mm.user.name,
+                            'script_id': script_id,
+                            'script_name': script_name,
+                            'score': score,
+                            'reward_type': reward_type,
+                            'cup': cup
+                        }
+                        if rank == 1:
+                            self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
+                            if script_id not in self.block.cup_log_script:
+                                self.block.cup_log_script[script_id] = {}
+                            self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
+                data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         self.block.is_count = 1
         if is_save:
             self.block.save()
 
     def check_has_ceremony(self):
-        date = get_date_before()
-        block_rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
-                                                   'script')
-        br = BlockRank(block_rank_uid, self.block._server_name, date)
-        if br.get_all_user():
+        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+                                                             'income')
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        user_num = len(bir.get_all_user(0,4))
+        if user_num == 5:
             self.block.has_ceremony = 1
             self.block.save()
