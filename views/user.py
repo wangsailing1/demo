@@ -74,7 +74,6 @@ def main(hm):
     result['tourism_times'] = mm.friend.tourism_times
     result['seven_login'] = mm.seven_login.is_open()
     result['fans_activity_info'] = mm.fans_activity.fans_activity_info()
-    result['fans_activety_status'] = mm.fans_activity.activety_status()
 
     return 0, result
 

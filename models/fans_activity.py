@@ -166,23 +166,20 @@ class FansActivity(ModelBase):
                 'activity': self.activity}
         return data
 
-    def activety_status(self):
+    def activety_status(self,activity_id):
         """
         0未开启 1开启没人 2开启有人
         :return: 
         """
-        info = {}
-        for id, value in self.activity_log.iteritems():
-            if not value:
-                info[id] = 0
-                continue
-            else:
-                info[id] = 1
-                for i in value['cards']:
-                    if i in self.mm.card.cards:
-                        info[id] = 2
-                        break
-        return info
+        data = self.activity_log.get(activity_id, {})
+        if not data:
+            return 0
+        else:
+            for i in data['cards']:
+                if i in self.mm.card.cards:
+                        return 2
+        return 1
+
 
 
 
