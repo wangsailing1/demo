@@ -61,6 +61,15 @@ class Mission(object):
             return 1
         return 0
 
+    def mission_red_dot(self,type = 'daily'):
+        mission_obj = getattr(self.mission, type)
+        for mission_id in mission_obj.data:
+            has_reward = self.has_reward_by_type(type=type, mission_id=mission_id)
+            done = self.get_done_mission(type=type, mission_id=mission_id)
+            if has_reward and not done:
+                return True
+        return False
+
     def mission_index(self, tp_id=0,is_save=True):
         data = {}
         data['remain_refresh_times'] = game_config.common.get(42,2) - self.mission.refresh_times

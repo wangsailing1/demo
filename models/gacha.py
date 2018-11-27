@@ -87,5 +87,19 @@ class Gacha(ModelBase):
         self.coin_times = next_times
         self.coin_lv = next_lv
 
+    def get_gacha_red_dot(self):
+        return not self.coin_pool_expire()
+
+    def get_can_up_red_hot(self):
+        config = game_config.coin_gacha_lv
+        lv = self.coin_lv
+        next_lv = lv + 1
+        if next_lv not in config:
+            return False
+        need_count = config[next_lv]
+        if self.coin_times < need_count:
+            return False
+        return True
+
 
 ModelManager.register_model('gacha', Gacha)

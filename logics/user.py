@@ -20,6 +20,7 @@ from tools.hero import format_hero_info
 from lib.core.environ import ModelManager
 from lib.utils import fake_deepcopy
 from models.ranking_list import BlockRank
+from logics.mission import Mission
 
 
 def refresh_roulette_ranktime():
@@ -185,7 +186,7 @@ class UserLogic(object):
             'task_main': ('task', 'get_task_main_red_dot'),
             'task_daily': ('daily_task', 'get_daily_task_red_dot'),
             'task_achievement': ('task', 'get_get_achievement_red_dot'),
-            'gacha': ('gacha', 'get_gacha_red_dot', ),
+            'gacha': ('gacha', 'get_gacha_red_dot', ),      #可抽艺人
             'hero_summon': ('hero', 'get_hero_summon_red_dot'),
             'adventure': ('private_city', 'get_chapter_red_dot'),
             'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
@@ -241,7 +242,11 @@ class UserLogic(object):
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
             'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
-            'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 旅游聊天约会
+            'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 签到
+            'has_ceremony': ('block', 'ceremony_red_dot'),  # 颁奖典礼
+            'script_gacha': ('script_gacha', 'gacha_times_enough'),  # 可抽剧本
+            'up_gacha': ('gacha', 'get_can_up_red_hot'),  # 星探升级
+            'block_reward': ('block', 'block_reward_red_hot'),  # 全服金榜奖励
         }
 
         # 特殊的几个红点,todo
@@ -283,6 +288,12 @@ class UserLogic(object):
                 data[m] = red_dot
 
         # 特殊的几个红点,todo
+        mission = Mission(mm)
+        if mission.mission_red_dot():
+            data['dailymission'] = True   #每日任务红点
+        if mission.mission_red_dot(type = 'box_office'):
+            data['boxofficemission'] = True  # 业绩目标红点
+
         # 英雄和装备的红点
         if not module_name or module_name in ['hero', 'gene']:
             pass
