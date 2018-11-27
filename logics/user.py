@@ -183,29 +183,29 @@ class UserLogic(object):
         """
         red_dot_func = {
             # 红点名: (model模块名, 方法名[可选，默认get_red_dot], 参数[可选])
-            'task_main': ('task', 'get_task_main_red_dot'),
-            'task_daily': ('daily_task', 'get_daily_task_red_dot'),
-            'task_achievement': ('task', 'get_get_achievement_red_dot'),
+            # 'task_main': ('task', 'get_task_main_red_dot'),
+            # 'task_daily': ('daily_task', 'get_daily_task_red_dot'),
+            # 'task_achievement': ('task', 'get_get_achievement_red_dot'),
             'gacha': ('gacha', 'get_gacha_red_dot', ),      #可抽艺人
-            'hero_summon': ('hero', 'get_hero_summon_red_dot'),
-            'adventure': ('private_city', 'get_chapter_red_dot'),
-            'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
-            'explore': ('private_city', 'get_exploaration_red_dot'),
-            'welfare': ('gift_center', 'get_gift_center_red_dot'),
-            'sevenday': ('seven_scripture', 'get_sevenday_red_dot'),
-            'stage_task': ('stage_task', 'get_red_dot'),
+            # 'hero_summon': ('hero', 'get_hero_summon_red_dot'),
+            # 'adventure': ('private_city', 'get_chapter_red_dot'),
+            # 'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
+            # 'explore': ('private_city', 'get_exploaration_red_dot'),
+            # 'welfare': ('gift_center', 'get_gift_center_red_dot'),
+            # 'sevenday': ('seven_scripture', 'get_sevenday_red_dot'),
+            # 'stage_task': ('stage_task', 'get_red_dot'),
             'mail': ('mail', 'get_mail_red_dot'),
             'friend': ('friend', 'get_friend_red_dot'),
-            'mercenary': ('mercenary', 'get_mercenary_red_dot'),
-            'active_center': ('active_hot_dot', 'hot_dot'),
-            'star_reward': ('star_reward', 'alert'),
-            'server_star_reward': ('server_star_reward', 'alert'),
+            # 'mercenary': ('mercenary', 'get_mercenary_red_dot'),
+            # 'active_center': ('active_hot_dot', 'hot_dot'),
+            # 'star_reward': ('star_reward', 'alert'),
+            # 'server_star_reward': ('server_star_reward', 'alert'),
             # 'prison': ('prison', 'get_red_dot'),
-            'box_gacha': ('gacha', 'box_gacha_red_dot'),
-            'daily_advance': ('daily_advance', 'is_alert'),
-            'biography': ('biography', 'alert'),
-            'guild': ('guild_hot_dot', 'is_alert_main'),
-            'home': ('home', 'home_dot'),
+            # 'box_gacha': ('gacha', 'box_gacha_red_dot'),
+            # 'daily_advance': ('daily_advance', 'is_alert'),
+            # 'biography': ('biography', 'alert'),
+            # 'guild': ('guild_hot_dot', 'is_alert_main'),
+            # 'home': ('home', 'home_dot'),
 
             # 'arena': {
             #     'high_ladder': ('high_ladder', ),
@@ -218,29 +218,29 @@ class UserLogic(object):
             #     'clone': ('clone',),
             # },
 
-            'high_ladder': ('high_ladder', ),
-            'dark_street': ('dark_street', 'is_alert'),
-            'rally': ('rally', ),
-            'decisive_battle': ('decisive_battle', 'is_alert'),
+            # 'high_ladder': ('high_ladder', ),
+            # 'dark_street': ('dark_street', 'is_alert'),
+            # 'rally': ('rally', ),
+            # 'decisive_battle': ('decisive_battle', 'is_alert'),
+            #
+            # 'doomsday_hunt': ('doomsday_hunt', ),
+            # 'clone': ('clone', ),
 
-            'doomsday_hunt': ('doomsday_hunt', ),
-            'clone': ('clone', ),
-
-            'first_charge': ('user_payment', 'first_charge_alert'),
-            'limit_hero': ('limit_hero', 'is_alert'),
-            'server_limit_hero': ('server_limit_hero', 'is_alert'),
-            'team_skill': ('team_skill', 'get_red_dot'),
-            'welfare_level': ('gift_center', 'get_level_gift_dot'),
+            # 'first_charge': ('user_payment', 'first_charge_alert'),
+            # 'limit_hero': ('limit_hero', 'is_alert'),
+            # 'server_limit_hero': ('server_limit_hero', 'is_alert'),
+            # 'team_skill': ('team_skill', 'get_red_dot'),
+            # 'welfare_level': ('gift_center', 'get_level_gift_dot'),
             # 'daily_active': ('daily_active', 'alert'),
             'seven_login': ('seven_login', 'get_red_dot'),
             # 'server_celebrate': ('rank_reward_show', 'alert'),  # 开服狂欢小红点
-            'star_array': ('star_array', 'main_page_dot'),      # 星图小红点
-            'leading_role': ('role_info', ),                 # 队长红点
-            'tech_tree': ('tech_tree',),                        # 科技树红点
+            # 'star_array': ('star_array', 'main_page_dot'),      # 星图小红点
+            # 'leading_role': ('role_info', ),                 # 队长红点
+            # 'tech_tree': ('tech_tree',),                        # 科技树红点
             # 'growth_fund': ('growth_fund', 'is_alert'),     # 福利基金
-            'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
+            # 'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
-            'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
+            # 'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
             'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 签到
             'has_ceremony': ('block', 'ceremony_red_dot'),  # 颁奖典礼
@@ -255,15 +255,15 @@ class UserLogic(object):
 
         # 特殊的几个红点,todo
         # 区分新老服
-        if self.mm.user.config_type == 1:
-            red_dot_func['soul_box'] = ('server_soul_box', 'get_remain_time')
-            red_dot_func['roulette'] = ('server_roulette', 'get_red_dot')
-            red_dot_func['charge_roulette'] = ('server_charge_roulette', 'get_red_dot')
-            red_dot_func['limit_discount'] = ('server_limit_discount', 'get_red_dot')
-        else:
-            red_dot_func['soul_box'] = ('soul_box', 'get_remain_time')
-            red_dot_func['roulette'] = ('roulette', 'get_red_dot')
-            red_dot_func['limit_discount'] = ('limit_discount', 'get_red_dot')
+        # if self.mm.user.config_type == 1:
+        #     red_dot_func['soul_box'] = ('server_soul_box', 'get_remain_time')
+        #     red_dot_func['roulette'] = ('server_roulette', 'get_red_dot')
+        #     red_dot_func['charge_roulette'] = ('server_charge_roulette', 'get_red_dot')
+        #     red_dot_func['limit_discount'] = ('server_limit_discount', 'get_red_dot')
+        # else:
+        #     red_dot_func['soul_box'] = ('soul_box', 'get_remain_time')
+        #     red_dot_func['roulette'] = ('roulette', 'get_red_dot')
+        #     red_dot_func['limit_discount'] = ('limit_discount', 'get_red_dot')
 
         if module_name:
             module_list = [module_name]
