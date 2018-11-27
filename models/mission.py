@@ -263,6 +263,14 @@ class Mission(ModelBase):
         config = game_config.liveness
         return {i: 1 if i == 1001 else 0 for i in config.keys()}
 
+    def get_liveness_red_dot(self):
+        config = game_config.liveness_reward
+        for k, v in config.iteritems():
+            need_liveness = v['need_liveness']
+            if self.liveness >= need_liveness and k not in self.live_done:
+                return True
+        return False
+
     #到时间刷新任务目标
     def init_box_office(self):
         config = game_config.box_office
