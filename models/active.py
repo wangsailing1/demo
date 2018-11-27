@@ -183,13 +183,7 @@ class SevenLogin(ModelBase):
         if not self.is_open():
             return False
 
-        for i in game_config.sign_first_week:
-            if i in self.got:
-                continue
-            if self.days < i:
-                continue
-            return True
-        return False
+        return self.can_get_reward()
 
 
 class MonthlySign(ModelBase):
