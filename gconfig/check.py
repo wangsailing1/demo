@@ -12,7 +12,7 @@ REWARD_CHECK_MAPPING = {
     1: {'num': 999999, 'msg': 'coin'},                  # 银币大于999999
     2: {'num': 2888, 'msg': 'diamond'},                  # 钻石大于500
     3: {'num': 100, 'msg': 'item'},                     # 道具大于100
-    4: {'num': 150, 'msg': 'soul stone'},               # 灵魂石大于150
+    # 4: {'num': 150, 'msg': 'soul stone'},               # 灵魂石大于150
     5: {'num': 50, 'msg': 'collection item'},           # 采集物大于50
     6: {'num': 50, 'msg': 'gene'},                      # 基因大于50
     7: {'num': 299, 'msg': 'evo item'},                 # 进阶材料大于299
