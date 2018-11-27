@@ -267,7 +267,7 @@ class Mission(ModelBase):
     def init_box_office(self):
         config = game_config.box_office
         for m_id, value in self.box_office_data.iteritems():
-            if 'time' in m_id:
+            if isinstance(m_id, basestring) and 'time' in m_id:
                 continue
             if value < config[m_id]['target1']:
                 self.box_office_data[m_id] = 0
