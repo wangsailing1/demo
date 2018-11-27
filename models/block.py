@@ -79,9 +79,15 @@ class Block(ModelBase):
         return remain_time
 
     def ceremony_red_dot(self):
-        if self.has_ceremony and self.reward_data:
+        cup = 0
+        for k, v in self.reward_data.iteritems():
+            if k == 'big_sale_cup':
+                cup += v
+            else:
+                cup += v['cup']
+        if self.has_ceremony and cup and self.is_count:
             return True
-        if self.award_ceremony == 1:
+        if self.award_ceremony <= 1 and self.is_count:
             return True
         return False
 
