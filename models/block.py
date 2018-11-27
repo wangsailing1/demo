@@ -78,6 +78,14 @@ class Block(ModelBase):
         remain_time = reward_time - now_time
         return remain_time
 
+    def ceremony_red_dot(self):
+        return self.has_ceremony
+
+
+    def block_reward_red_hot(self):
+        now = time.strftime('%F')
+        return now != self.reward_daily
+
 
 # 获取日期
 def get_date():

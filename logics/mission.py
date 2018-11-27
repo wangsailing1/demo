@@ -50,6 +50,8 @@ class Mission(object):
                 return 1
             return 0
         for mission_id, value in mission_obj.data.iteritems():
+            if isinstance(mission_id, basestring) and 'time' in mission_id:
+                continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             if stats['status'] == 1:
                 return 1
@@ -60,6 +62,17 @@ class Mission(object):
         if mission_id in mission_obj.done:
             return 1
         return 0
+
+    def mission_red_dot(self,type = 'daily'):
+        mission_obj = getattr(self.mission, type)
+        for mission_id in mission_obj.data:
+            if isinstance(mission_id, basestring) and 'time' in mission_id:
+                continue
+            has_reward = self.has_reward_by_type(type=type, mission_id=mission_id)
+            done = self.get_done_mission(type=type, mission_id=mission_id)
+            if has_reward and not done:
+                return True
+        return False
 
     def mission_index(self, tp_id=0,is_save=True):
         data = {}
