@@ -239,7 +239,8 @@ class Block(object):
     def check_has_ceremony(self):
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                              'income')
-        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        date = get_date_before()
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name, date)
         user_num = len(bir.get_all_user(0,4))
         if user_num == 5:
             self.block.has_ceremony = 1
