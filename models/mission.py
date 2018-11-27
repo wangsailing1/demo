@@ -404,6 +404,8 @@ class Mission(ModelBase):
                 self.randmission.add_count(k, kwargs[sort])
 
         for k, value in self.box_office_data.iteritems():
+            if isinstance(k, basestring) and 'time' in k:
+                continue
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == self._INCOME:
                 self.box_office.add_count(k, kwargs[sort])
