@@ -79,7 +79,11 @@ class Block(ModelBase):
         return remain_time
 
     def ceremony_red_dot(self):
-        return self.has_ceremony
+        if self.has_ceremony and self.reward_data:
+            return True
+        if self.award_ceremony == 1:
+            return True
+        return False
 
 
     def block_reward_red_hot(self):
