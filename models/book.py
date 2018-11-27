@@ -41,6 +41,12 @@ class CardBook(ModelBase):
                 self.book[book_id]['flag'] = 0
         self.save()
 
+    def get_book_card_red_dot(self):
+        for k,v in self.book.iteritems():
+            if v['flag'] == 0:
+                return True
+        return False
+
 
 class ScriptBook(ModelBase):
     TARGET = {1: 'shoot_num', 2: 'max_script', 3: 'big_sale', 4: 'output'}
@@ -75,6 +81,18 @@ class ScriptBook(ModelBase):
                 self.book[book_id]['flag'] = 0
 
         self.save()
+
+    def get_book_script_red_dot(self):
+        for k, v in self.book.iteritems():
+            if v['flag'] == 0:
+                return True
+        return False
+
+    def get_script_group_red_dot(self):
+        for k, v in self.group.iteritems():
+            if v['flag'] == 0:
+                return True
+        return False
 
     def add_script_group(self, script_id, big_sale, output):
         script_config = game_config.script[script_id]
