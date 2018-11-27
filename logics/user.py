@@ -288,15 +288,16 @@ class UserLogic(object):
                 #     red_dot = func()
             else:
                 red_dot = False
-            if red_dot is not False:
-                data[m] = red_dot
+            # if red_dot is not False:
+            data[m] = red_dot
 
         # 特殊的几个红点,todo
         mission = Mission(mm)
-        if mission.mission_red_dot():
-            data['dailymission'] = True   #每日任务红点
+        data['dailymission'] = mission.mission_red_dot()   #每日任务红点
         if mission.mission_red_dot(type = 'guide') or mission.mission_red_dot(type = 'randmission'):
             data['randomemission'] = True  # 业绩目标红点
+        else:
+            data['randomemission'] = False
 
         # 英雄和装备的红点
         if not module_name or module_name in ['hero', 'gene']:
