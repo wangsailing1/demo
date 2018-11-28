@@ -416,6 +416,7 @@ homepage_button = {
     'group': ('group', 'int'),
     'sort': ('sort', 'int'),
     'unlock_lvl': ('unlock_lvl', 'int'),
+    'unlock_guide_team': ('unlock_guide_team', 'int'),
     'icon': ('icon', 'str'),
     'jump': ('jump', 'int'),
     'button': (('button1', 'button2', 'button3', 'button4', 'button5'), ('int', 'mult_list')),
