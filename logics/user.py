@@ -251,6 +251,7 @@ class UserLogic(object):
             'book_script': ('block', 'get_book_script_red_dot'),  # 单个剧本
             'script_group': ('script_book', 'get_script_group_red_dot'),  # 剧本组合
             'continued_script': ('script', 'get_continued_script'),  # 持续收益
+            'license_recover_expire': ('user', 'license_recover_expire'),  # 拍摄许可证倒计时
         }
 
         # 特殊的几个红点,todo
