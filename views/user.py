@@ -146,6 +146,7 @@ def game_info(hm):
     item_info = dict(item=mm.item.items)
     block = Block(mm)
     block.check_has_ceremony()
+    block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
 
