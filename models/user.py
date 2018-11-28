@@ -466,6 +466,9 @@ class User(ModelBase):
         need_time = cd[times] * 60
         return need_time - (int(time.time()) - self.license_update_time)
 
+    def get_license_recover_red_dot(self):
+        return [self.script_license, self.license_recover_expire()]
+
     def add_buy_silver_times(self, num=1):
         """
         增加银币购买次数
