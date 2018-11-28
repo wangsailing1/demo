@@ -231,8 +231,9 @@ class UnlockBuild(TaskEventBase):
         unlock_type = unlock_build_type.get('LEVEL_SORT')
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            unlock_limit = unlock_config['unlock_limit']
-            if level >= unlock_limit and unlock_id not in self.mm.user.unlock_build:
+            unlock_limit = unlock_config['unlock_lvl']
+            guide_team = unlock_config['unlock_guide_team']
+            if level >= unlock_limit and unlock_id not in self.mm.user.unlock_build and guide_team in self.mm.user.check_guide_done():
                 self.mm.user.unlock_build.append(unlock_id)
                 self.mm.user.save()
 

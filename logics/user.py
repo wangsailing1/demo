@@ -452,6 +452,9 @@ class UserLogic(object):
 
         if save:
             self.user.save()
+        #新手引导解锁建筑
+        task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        task_event_dispatch.call_method('level_upgrade', self.user.level)
 
         return True
 
