@@ -1696,6 +1696,14 @@ class User(ModelBase):
 
         return True
 
+    def check_guide_done(self,guide_id):
+        guide_step = self.guide.get(guide_id, 0)
+        config = game_config.guide.get(guide_step, {})
+        if not config:
+            return 0
+        return config['aim']
+
+
     def send_vip_daily_reward(self):
         """
         vip每日礼包

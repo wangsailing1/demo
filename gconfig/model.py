@@ -1523,19 +1523,19 @@ class GameConfigMixIn(object):
         """
         if not self.building_unlock_mapping:
             result = {}
-            for unlock_id, unlock_config in self.building_unlock.iteritems():
-                unlock_type_config = unlock_config['unlock_type']
+            for unlock_id, unlock_config in self.homepage_button.iteritems():
+                unlock_type_config = unlock_config['sort']
                 if unlock_type_config not in result:
                     result[unlock_type_config] = {
                         unlock_id: {
-                            'unlock_limit': unlock_config['unlock_limit'],
-                            'unlock_look': unlock_config['unlock_look'],
+                            'unlock_lvl': unlock_config['unlock_lvl'],
+                            'unlock_guide_team': unlock_config['unlock_guide_team'],
                         },
                     }
                 else:
                     result[unlock_type_config][unlock_id] = {
-                        'unlock_limit': unlock_config['unlock_limit'],
-                        'unlock_look': unlock_config['unlock_look'],
+                        'unlock_lvl': unlock_config['unlock_lvl'],
+                        'unlock_guide_team': unlock_config['unlock_guide_team'],
                     }
             self.building_unlock_mapping = result
 
