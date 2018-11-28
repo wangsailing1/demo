@@ -196,7 +196,7 @@ def refresh_unlock_build(mm):
     for unlock_type in unlock_build_type.values():
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            unlock_limit = unlock_config['unlock_limit']
+            unlock_limit = unlock_config['unlock_lvl']
             if unlock_id not in mm.user.unlock_build:
                 if unlock_type == 5:        # 通关关卡
                     stage_id = unlock_limit
@@ -248,7 +248,7 @@ class UnlockBuild(TaskEventBase):
         unlock_type = unlock_build_type.get('VIP_SORT')
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            unlock_limit = unlock_config['unlock_limit']
+            unlock_limit = unlock_config['unlock_lvl']
             if vip_level >= unlock_limit and unlock_id not in self.mm.user.unlock_build:
                 self.mm.user.unlock_build.append(unlock_id)
                 self.mm.user.save()
@@ -264,7 +264,7 @@ class UnlockBuild(TaskEventBase):
         unlock_type = unlock_build_type.get('GUILD_LEVEL_SORT')
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            unlock_limit = unlock_config['unlock_limit']
+            unlock_limit = unlock_config['unlock_lvl']
             if guild_level >= unlock_limit and unlock_id not in self.mm.user.unlock_build:
                 self.mm.user.unlock_build.append(unlock_id)
                 self.mm.user.save()
@@ -281,7 +281,7 @@ class UnlockBuild(TaskEventBase):
         unlock_type = unlock_build_type.get('PRIVATE_CITY_SORT')
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            unlock_limit = unlock_config['unlock_limit']
+            unlock_limit = unlock_config['unlock_lvl']
             if stage_id == unlock_limit and unlock_id not in self.mm.user.unlock_build:
                 self.mm.user.unlock_build.append(unlock_id)
                 self.mm.user.save()
