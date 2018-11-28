@@ -10,7 +10,7 @@ from models.block import get_date_before
 def join_award_ceremony(hm):
     mm = hm.mm
     block = Block(mm)
-    block.count_cup(is_save=False)
+    # block.count_cup(is_save=False)
     # if mm.block.award_ceremony:
     #     return 0, {'award_ceremony': mm.block.award_ceremony,
     #                'get_award_ceremony': mm.block.get_award_ceremony,

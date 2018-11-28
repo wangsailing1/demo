@@ -161,11 +161,7 @@ class Block(object):
         data = {}
         if self.block.is_count:
             return
-        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
-                                                             'income')
-        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
-        user_num = len(bir.get_all_user(0,4))
-        if user_num == 5:
+        if self.block.has_ceremony:
             for tp in self.block.rank_list:
                 rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                      tp)
@@ -237,10 +233,15 @@ class Block(object):
             self.block.save()
 
     def check_has_ceremony(self):
+        if self.block.is_count:
+            return
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                              'income')
-        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name)
+        date = get_date_before()
+        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name, date)
         user_num = len(bir.get_all_user(0,4))
         if user_num == 5:
             self.block.has_ceremony = 1
             self.block.save()
+            return True
+        return False
