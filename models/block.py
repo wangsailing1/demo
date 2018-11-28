@@ -43,7 +43,7 @@ class Block(ModelBase):
 
             self.big_sale = 0
             self.award_ceremony = 0
-            self.has_ceremony = 1
+            self.has_ceremony = 0
             self.is_count = 0
             self.reward_data = {}
             self.save()
