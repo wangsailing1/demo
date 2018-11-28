@@ -52,6 +52,12 @@ class ItemLogic(object):
         #     reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
         elif is_use == 6:  # 装备
             reward = add_gift(self.mm, 6, use_effect * item_num, cur_data=reward)
+        elif is_use == 11: #碎片合成艺人
+            got_num = item_num / item_config['use_num']
+            if not got_num:
+                return 111, {}  #碎片不足
+            item_num = got_num * item_config['use_num']
+            reward = add_gift(self.mm, 5, use_effect * got_num, cur_data=reward)
         elif is_use == 15:  # 增加艺人
             reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
         elif is_use == 16:  # 点赞
