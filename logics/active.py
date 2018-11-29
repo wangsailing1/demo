@@ -181,7 +181,7 @@ class MonthlySignLogic(object):
         monthly_sign = self.monthly_sign.monthly_sign
         if 'box_got' not in monthly_sign:
             monthly_sign['box_got'] = {}
-        if days not in monthly_sign.get['box_got']:
+        if days not in monthly_sign['box_got']:
             return 1, {}   # 条件未达到
         if monthly_sign['box_got'][days] == 2:
             return 2, {}   # 已领取
