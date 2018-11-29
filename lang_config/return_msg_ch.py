@@ -438,6 +438,7 @@ fans_activity_msg = {
         3: u'美元不足',
         4: u'已解锁',
         5: u'首次建筑的等级错误',
+        6: u'此地已有建筑',
     },
     'fans_activity.up_activity': {
         1: u'活动等级已经最大',

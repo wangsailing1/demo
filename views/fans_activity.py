@@ -53,7 +53,7 @@ def unlock_activity(hm):
     if group in mm.fans_activity.activity:
         return 4, {}  # 已解锁
     if field_id in mm.user.get_pos_info:
-        return 5, {}  #此地已有建筑
+        return 6, {}  # 此地已有建筑
     mm.fans_activity.activity[group] = activity_id
     mm.fans_activity.activity_log[activity_id] = {}
     mm.fans_activity.unlocked_activity.append(activity_id)
