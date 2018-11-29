@@ -94,3 +94,17 @@ def monthly_sign(hm):
         return rc, {}
 
     return 0, data
+
+def box_get(hm):
+    """
+    宝箱领取
+    :param hm: 
+    :return: 
+    """
+    mm = hm.mm
+    days = hm.get_argument('days', 0, is_int=True)
+    msl = MonthlySignLogic(mm)
+    rc, data = msl.box_get(days)
+    return rc, data
+
+
