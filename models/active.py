@@ -242,7 +242,7 @@ class MonthlySign(ModelBase):
         if is_save:
             self.save()
 
-    def today_can_sign(self):
+    def today_can_sign(self,red_dot=True):
         """ 今天能否签
 
         :return:
@@ -250,9 +250,10 @@ class MonthlySign(ModelBase):
         cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
 
         monthly_sign = self.monthly_sign
-        for k, v in monthly_sign['box_got'].iteritems():
-            if v == 1:
-                return 1
+        if red_dot:
+            for k, v in monthly_sign['box_got'].iteritems():
+                if v == 1:
+                    return 1
         return 1 if cur_time != monthly_sign['date'] else 0
 
 

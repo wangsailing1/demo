@@ -137,7 +137,7 @@ class MonthlySignLogic(object):
 
         monthly_sign = self.monthly_sign.monthly_sign
         result = {
-            'today_can_sign': self.monthly_sign.today_can_sign(),
+            'today_can_sign': self.monthly_sign.today_can_sign(red_dot=False),
             'days': monthly_sign['days'],
             # 'usable_days': monthly_sign['usable_days'],
             'config': monthly_sign['reward'],
