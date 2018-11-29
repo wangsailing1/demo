@@ -141,7 +141,7 @@ class MonthlySignLogic(object):
             'days': monthly_sign['days'],
             # 'usable_days': monthly_sign['usable_days'],
             'config': monthly_sign['reward'],
-            'box_got': monthly_sign['box_got'],
+            'box_got': monthly_sign.get('box_got', {}),
         }
         return result
 
@@ -179,7 +179,9 @@ class MonthlySignLogic(object):
     def box_get(self,days):
         config = game_config.sign_daily_normal
         monthly_sign = self.monthly_sign.monthly_sign
-        if days not in monthly_sign['box_got']:
+        if 'box_got' not in monthly_sign:
+            monthly_sign['box_got'] = {}
+        if days not in monthly_sign.get['box_got']:
             return 1, {}   # 条件未达到
         if monthly_sign['box_got'][days] == 2:
             return 2, {}   # 已领取
