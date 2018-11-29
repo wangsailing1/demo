@@ -266,7 +266,10 @@ class Card(ModelBase):
 
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
-        init_love_exp = init_love_exp or self.attr.get(group_id,{}).get('like',0)
+        if group_id not in self.attr:
+            self.attr[group_id] = {}
+        self.attr[group_id]['like'] = self.attr.get(group_id,{}).get('like', 0) + init_love_exp
+        init_love_exp = self.attr.get(group_id, {})['like']
         popularity = self.attr.get(group_id,{}).get('popularity', 0)
 
         if self.has_card_with_group_id(card_id):
