@@ -150,6 +150,7 @@ user_msg = {
     },
     'user.charge_name': {
         1: u'名字不合法',
+        2: u'名字已使用',
     },
     'user.register_name': {
         1: u'名字不合法',
@@ -174,7 +175,7 @@ user_msg = {
         2: u'头像已解锁',
         3: u'性别不符',
     },
-'user.blacklist_add': {
+    'user.blacklist_add': {
         1: u'已经在屏蔽名单中',
     },
 }
