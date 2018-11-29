@@ -215,7 +215,10 @@ class MonthlySign(ModelBase):
         if (not self.monthly_sign['reward']) or self.monthly_sign['month'] != self.today.month:
             reward = []
             for day, value in sorted(game_config.sign_daily_normal.iteritems(), key=lambda x: x[0]):
-                reward.append(value['reward'])
+                reward_ = []
+                reward_.extend(value['reward'])
+                reward_.extend(value['extra_reward'])
+                reward.append(reward_)
 
             self.monthly_sign = {
                 'month': self.today.month,  # 那个月
