@@ -24,7 +24,7 @@ coin_gacha_lv = {
     'count': ('count', 'int'),    # 升级需要街区招募次数
     # 'cost': ('cost', 'int_list'),  # 升级消耗
     'build_id': ('build_id', 'int'),  # 建筑id
-    'introduce': ('introduce', 'str'),  # 建筑id
+    'introduce': ('introduce', 'str'),  # 星探等级简介
     # 'award': ('award', 'int'),            # 升级获得的钻石
 }
 
