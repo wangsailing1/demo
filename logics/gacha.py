@@ -122,7 +122,7 @@ class GachaLogics(object):
         if gacha_id in self.gacha.coin_receive:
             return 2, {}
         if not self.mm.card.can_add_new_card():
-            return 3, {}   #活跃卡牌已达上限，请先雪藏艺人
+            return 3, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         user = self.mm.user
         gacha_config = game_config.coin_gacha[gacha_id]

@@ -212,7 +212,12 @@ card_msg = {
 gacha_msg = {
     'gacha.get_gacha': {
         2: u'cd中'
-    }
+    },
+    'gacha.receive': {
+        2: u'已签约过',
+        3: u'活跃卡牌已达上限，请先雪藏艺人',
+    },
+
 }
 
 
