@@ -53,7 +53,7 @@ class ScriptGachaLogics(object):
         :return:
         """
         # 钻石抽不判断cd
-        enough = self.gacha.gacha_times_enough(sort)
+        enough = self.gacha.gacha_times_enough(sort)[0]
         if not enough:
             return 1, {}    # 可抽取次数不足
 
