@@ -15,9 +15,9 @@ REWARD_CHECK_MAPPING = {
     # 4: {'num': 150, 'msg': 'soul stone'},               # 灵魂石大于150
     5: {'num': 50, 'msg': 'collection item'},           # 采集物大于50
     6: {'num': 50, 'msg': 'gene'},                      # 基因大于50
-    7: {'num': 299, 'msg': 'evo item'},                 # 进阶材料大于299
+    # 7: {'num': 299, 'msg': 'evo item'},                 # 进阶材料大于299
     8: {'num': 999, 'msg': 'hero exp'},                 # 英雄经验大于999
-    9: {'num': 9, 'msg': 'hero'},                       # 英雄大于9
+    # 9: {'num': 9, 'msg': 'hero'},                       # 英雄大于9
     10: {'num': 99, 'msg': 'guild exp'},                # 公会经验大于99
     11: {'num': 99, 'msg': 'guild gift'},               # 公会礼物道具大于99
     12: {'num': 49, 'msg': 'awaken item'},              # 觉醒材料大于49
