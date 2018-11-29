@@ -244,6 +244,9 @@ class MonthlySign(ModelBase):
         cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
 
         monthly_sign = self.monthly_sign
+        for k, v in monthly_sign['box_got'].iteritems():
+            if v == 1:
+                return 1
         return 1 if cur_time != monthly_sign['date'] else 0
 
 
