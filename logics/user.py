@@ -627,6 +627,8 @@ class UserLogic(object):
         """
         if is_sensitive(name):
             return 1, {}
+        if name == self.user.name:
+            return 2, {}  #名字已使用
 
         # cost_list = game_config.get_value(15, [200])
         # if self.user.change_name < len(cost_list):
