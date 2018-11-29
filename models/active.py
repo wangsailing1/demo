@@ -205,6 +205,7 @@ class MonthlySign(ModelBase):
                 'days': 0,  # 签到次数
                 'usable_days': 0,  # 可用次数
                 'reward': [],  # 奖励
+                'box_got': {},  # 宝箱领取
             },
         }
         super(MonthlySign, self).__init__(self.uid)
@@ -215,10 +216,7 @@ class MonthlySign(ModelBase):
         if (not self.monthly_sign['reward']) or self.monthly_sign['month'] != self.today.month:
             reward = []
             for day, value in sorted(game_config.sign_daily_normal.iteritems(), key=lambda x: x[0]):
-                reward_ = []
-                reward_.extend(value['reward'])
-                reward_.extend(value['extra_reward'])
-                reward.append(reward_)
+                reward.append(value['reward'])
 
             self.monthly_sign = {
                 'month': self.today.month,  # 那个月
@@ -227,6 +225,7 @@ class MonthlySign(ModelBase):
                 'days': 0,  # 签到次数
                 'usable_days': 0,  # 可用次数
                 'reward': reward,  # 签到数据
+                'box_got': {},  # 宝箱领取
             }
             is_save = True
         if cur_time != self.monthly_sign['login_date'] and max(game_config.sign_daily_normal) > (
