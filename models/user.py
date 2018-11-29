@@ -1873,15 +1873,16 @@ class User(ModelBase):
         if not self._build:
             for build_id, value in game_config.building.iteritems():
                 if value['default']:
-                    self.add_build(build_id, value['field_id'])
+                    self.add_build(build_id, value['field_id'], save=False)
             self.save()
 
-    def add_build(self, build_id, field_id):
+    def add_build(self, build_id, field_id, save=True):
         if build_id in self._build:
             return
         self._build[build_id] = {'field_id': field_id,
                                  'build_time': int(time.time())}
-        self.save()
+        if save:
+            self.save()
 
     @property
     def group_ids(self):
