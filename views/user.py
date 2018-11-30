@@ -139,6 +139,8 @@ def game_info(hm):
     block = Block(mm)
     block.check_has_ceremony()
     info.update(**item_info)
+    info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
+                             'next_chapter': mm.chapter_stage.next_chapter}
 
     return 0, info
 
