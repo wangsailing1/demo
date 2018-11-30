@@ -322,6 +322,7 @@ class GameConfigMixIn(object):
         self.shop_goods_mapping = {}
         self.book_mapping = {}
         self.phone_chapter_dialogue_mapping = {}
+        self.achieve_mission_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -411,6 +412,7 @@ class GameConfigMixIn(object):
         self.chapter_mapping.clear()
         self.book_mapping.clear()
         self.phone_chapter_dialogue_mapping.clear()
+        self.achieve_mission_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2450,6 +2452,17 @@ class GameConfigMixIn(object):
                 self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']] = {'dialogue_id': j['dialogue_id']}
                 self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']]['id'] = i
         return self.phone_chapter_dialogue_mapping
+
+    def get_achieve_mission_mapping(self):
+        if not self.achieve_mission_mapping:
+            for k, v in self.achieve_mission.iteritems():
+                if v['unlock_lvl'] not in self.achieve_mission_mapping:
+                    self.achieve_mission_mapping[v['unlock_lvl']] = {}
+                if v['group'] not in self.achieve_mission_mapping[v['unlock_lvl']]:
+                    self.achieve_mission_mapping[v['unlock_lvl']][v['group']] = {}
+                self.achieve_mission_mapping[v['unlock_lvl']][v['group']][k] = v
+        return self.achieve_mission_mapping
+
 
 
 

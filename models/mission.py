@@ -252,6 +252,9 @@ class Mission(ModelBase):
             # if not self.guide_done and not self.guide_data:
             #     self.get_guide_mission()
             self.get_all_random_mission()
+            if not self.achieve_done and not self.achieve_data:
+                #todo 初始化成就任务
+                pass
             is_save = True
         if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME:
             self.box_office_done = []
@@ -262,6 +265,9 @@ class Mission(ModelBase):
             is_save = self.init_box_office()
         if is_save:
             self.save()
+
+    def get_achieve_mission(self):
+        pass
 
     def get_daily_mission(self):
         config = game_config.liveness
