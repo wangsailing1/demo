@@ -16,7 +16,8 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 from lib.core.environ import ModelManager
-from models.ranking_list import AppealRank, BlockRank, get_date
+from models.ranking_list import AppealRank, BlockRank
+from models.block import get_date
 
 
 class Script(ModelBase):
