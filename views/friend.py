@@ -488,6 +488,7 @@ def actor_chat(hm):
     rc, data = fl.actor_chat(group_id, chapter_id, choice_id, now_stage)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
+    data['newest_friend'] = mm.friend.newest_friend
     data['phone_daily_times'] = mm.friend.phone_daily_times
     return rc, data
 
