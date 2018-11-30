@@ -2456,11 +2456,10 @@ class GameConfigMixIn(object):
     def get_achieve_mission_mapping(self):
         if not self.achieve_mission_mapping:
             for k, v in self.achieve_mission.iteritems():
-                if v['unlock_lvl'] not in self.achieve_mission_mapping:
-                    self.achieve_mission_mapping[v['unlock_lvl']] = {}
-                if v['group'] not in self.achieve_mission_mapping[v['unlock_lvl']]:
-                    self.achieve_mission_mapping[v['unlock_lvl']][v['group']] = {}
-                self.achieve_mission_mapping[v['unlock_lvl']][v['group']][k] = v
+                if v['group'] not in self.achieve_mission_mapping:
+                    self.achieve_mission_mapping[v['group']] = {'unlock_lvl': v['unlock_lvl'],
+                                                                'sort': v['sort']}
+                self.achieve_mission_mapping[v['group']][k] = v
         return self.achieve_mission_mapping
 
 

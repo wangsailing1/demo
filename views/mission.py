@@ -44,11 +44,14 @@ def get_reward(hm):
     gift = mm_obj.config[mission_id]['reward']
     if tp_id == 1:
         mm.mission.liveness += mm_obj.config[mission_id]['liveness']
-    if tp_id == 3:
-        if mm.mission.check_guide_over():
-            mm.mission.get_all_random_mission()
-        else:
-            mm.mission.get_guide_mission()
+    # if tp_id == 3:
+    #     if mm.mission.check_guide_over():
+    #         mm.mission.get_all_random_mission()
+    #     else:
+    #         mm.mission.get_guide_mission()
+    if tp_id == 6:
+        achieve_point = mm_obj.config[mission_id]['achieve_point']
+        mm.mission.achieve += achieve_point
     reward = add_mult_gift(mm, gift)
     mm.mission.save()
     if tp_id == 2:
