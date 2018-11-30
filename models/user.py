@@ -1420,21 +1420,21 @@ class User(ModelBase):
                     guide_ids = game_config.get_guide_mapping(gid)
                     if guide_ids and gid not in self.guide:
                         self.guide[gid] = guide_ids[-1]
-            if self.guide:
-                cur_guide_sort = max(self.guide)
-                while True:
-                    guide_team_config = game_config.guide_team.get(cur_guide_sort)
-                    if not guide_team_config:
-                        break
-                    if guide_team_config['type'] != 1:    #如果是弱引导，直接给玩家完成
-                        open_level = guide_team_config['open_level']
-                        if self.level > open_level + 1:
-                            guide_ids = game_config.get_guide_mapping(cur_guide_sort)
-                            if guide_ids:
-                                self.guide[cur_guide_sort] = guide_ids[-1]
-                            else:
-                                self.guide[cur_guide_sort] = 0
-                    cur_guide_sort += 1
+            # if self.guide:
+            #     cur_guide_sort = max(self.guide)
+            #     while True:
+            #         guide_team_config = game_config.guide_team.get(cur_guide_sort)
+            #         if not guide_team_config:
+            #             break
+            #         if guide_team_config['type'] != 1:    #如果是弱引导，直接给玩家完成
+            #             open_level = guide_team_config['open_level']
+            #             if self.level > open_level + 1:
+            #                 guide_ids = game_config.get_guide_mapping(cur_guide_sort)
+            #                 if guide_ids:
+            #                     self.guide[cur_guide_sort] = guide_ids[-1]
+            #                 else:
+            #                     self.guide[cur_guide_sort] = 0
+            #         cur_guide_sort += 1
             # 增加科技点重置点
             # self.mm.tech_tree.incr_all_point(level)
             # 上传uc玩家数据
