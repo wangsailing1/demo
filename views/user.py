@@ -149,6 +149,8 @@ def game_info(hm):
     block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
+    info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
+                             'next_chapter': mm.chapter_stage.next_chapter}
 
     return 0, info
 
