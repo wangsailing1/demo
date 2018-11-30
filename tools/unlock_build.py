@@ -233,8 +233,7 @@ class UnlockBuild(TaskEventBase):
         for unlock_id, unlock_config in unlock_mapping.iteritems():
             unlock_limit = unlock_config['unlock_lvl']
             guide_team = unlock_config['unlock_guide_team']
-            if level >= unlock_limit and unlock_id not in self.mm.user.unlock_build and guide_team in self.mm.user.check_guide_done(
-                    guide_team):
+            if level >= unlock_limit and unlock_id not in self.mm.user.unlock_build and self.mm.user.check_guide_done(guide_team):
                 self.mm.user.unlock_build.append(unlock_id)
                 self.mm.user.save()
 
