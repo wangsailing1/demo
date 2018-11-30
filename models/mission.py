@@ -232,6 +232,9 @@ class Mission(ModelBase):
             'box_office_data': {},
             'box_office_last_date': '',
             'refresh_times': 0,
+            'achieve_done': [],
+            'achieve_data': {},
+            'achieve': 0,
         }
         super(Mission, self).__init__(self.uid)
 
@@ -246,8 +249,9 @@ class Mission(ModelBase):
             self.live_done = []
             self.liveness = 0
             self.refresh_times = 0
-            if not self.guide_done and not self.guide_data:
-                self.get_guide_mission()
+            # if not self.guide_done and not self.guide_data:
+            #     self.get_guide_mission()
+            self.get_all_random_mission()
             is_save = True
         if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME:
             self.box_office_done = []
@@ -308,6 +312,12 @@ class Mission(ModelBase):
             self._randmission = MissionRandom(self)
         return self._randmission
 
+    @property
+    def achieve(self):
+        if not hasattr(self, '_achieve'):
+            self._achieve = Achieve(self)
+        return self._achieve
+
     def get_all_random_mission(self):
         if not self.random_data:
             for _ in xrange(4):
@@ -345,7 +355,7 @@ class Mission(ModelBase):
 
     def get_random_mission(self):
         config = game_config.random_mission
-        pool = [[k, config[k]['weight']] for k in config.keys()]
+        pool = [[k, config[k]['weight']] for k in config.keys() if config[k]['unlock_lvl'] <= self.mm.user.level]
         rand_id = weight_choice(pool)[0]
         return rand_id
 
@@ -391,10 +401,10 @@ class Mission(ModelBase):
             if sort in kwargs:
                 self.daily.add_count(k, kwargs[sort])
 
-        for k, value in self.guide_data.iteritems():
-            sort = game_config.guide_mission[k]['sort']
-            if sort in kwargs:
-                self.guide.add_count(k, kwargs[sort])
+        # for k, value in self.guide_data.iteritems():
+        #     sort = game_config.guide_mission[k]['sort']
+        #     if sort in kwargs:
+        #         self.guide.add_count(k, kwargs[sort])
 
         for k, value in self.random_data.iteritems():
             if isinstance(k, (str, unicode)) and 'refresh_ts' in k:
@@ -410,6 +420,15 @@ class Mission(ModelBase):
             if sort in kwargs and sort == self._INCOME:
                 self.box_office.add_count(k, kwargs[sort])
         self.save()
+
+class Achieve(object):
+    def __init__(self, obj):
+        """初始化
+        """
+        self.uid = obj.uid
+        self.done = obj.achieve_done
+        self.data = obj.achieve_data
+        self.config = game_config.achieve_mission
 
 
 class BoxOffice(object):

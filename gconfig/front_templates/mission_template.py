@@ -50,4 +50,5 @@ random_mission = {
     'reward': ('reward', 'int_list'),  # 奖励
     'jump': ('jump', 'int_list'),  # 跳转
     'weight': ('weight', 'int'),  # 解锁等级
+    'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
 }
