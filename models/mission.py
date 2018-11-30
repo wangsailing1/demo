@@ -191,7 +191,7 @@ class Mission(ModelBase):
         'card.equip_piece_exchange': equip_piece_exchange,         # 装备碎片合成
         'card.card_quality_up': card_quality_up,                   # 艺人格调提升
         'shop.shop': shop_args,                                    # 商店购买
-        'mission.get_reward': mission_args,                           # 成就
+        # 'mission.get_reward': mission_args,                           # 成就
 
     }
     # mission_mapping
@@ -278,6 +278,13 @@ class Mission(ModelBase):
             if value['unlock_lvl'] > self.mm.user.level:
                 continue
             self.achieve_data[min(value.keys())] = 0
+
+    # 获取成就目标id
+    def get_achieve_id(self):
+        config = game_config.achieve_mission
+        for k, v in self.achieve_data.iteritems():
+            if config[k]['sort'] == self._ACHIEVE:
+                return k
 
 
     def get_daily_mission(self):
@@ -417,6 +424,11 @@ class Mission(ModelBase):
             sort = game_config.liveness[k]['sort']
             if sort in kwargs:
                 self.daily.add_count(k, kwargs[sort])
+
+        for k, value in self.achieve_data.iteritems():
+            sort = game_config.achieve_mission[k]['sort']
+            if sort in kwargs:
+                self.achieve_mission.add_count(k, kwargs[sort])
 
         # for k, value in self.guide_data.iteritems():
         #     sort = game_config.guide_mission[k]['sort']
