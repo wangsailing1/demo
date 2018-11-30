@@ -10,7 +10,7 @@ from lib.db import ModelTools
 from lib.utils import generate_rank_score, round_float_or_str
 import settings
 from lib.db import get_redis_client
-from models.block import get_date
+
 
 
 class AllRank(ModelTools):
@@ -505,6 +505,7 @@ class BlockRank(AllRank):
         self._key_date = self.key_date(date)
 
     def key_date(self, date=''):
+        from models.block import get_date
         if not date:
             date = get_date()
         return self._key + '||' + date

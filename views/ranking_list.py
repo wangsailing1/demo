@@ -3,7 +3,7 @@ import time
 from lib.core.environ import ModelManager
 from gconfig import game_config, get_str_words
 from models.ranking_list import BlockRank
-from models.block import REWARD_TIME, get_date
+
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -197,6 +197,7 @@ def block_index(hm):
     :param hm: 
     :return: 
     """
+    from models.block import REWARD_TIME, get_date
     mm = hm.mm
     rank_id = hm.get_argument('rank_id', 1, is_int=True)
     start = hm.get_argument('start_num', 1, is_int=True)
