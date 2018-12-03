@@ -501,6 +501,7 @@ mission_mapping = {
     'box_office': ('box_office', True),
     'guide_mission': ('guide_mission', True),
     'random_mission': ('random_mission', True),
+    'achieve_mission': ('achieve_mission', True),
 }
 
 build_mapping = {
