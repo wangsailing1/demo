@@ -65,6 +65,7 @@ vip = {
     'uk': ('vip', 'int'),  # VIP等级
     'exp': ('exp', 'int'),  # 升至下级所需钻石
     'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),  # 免费招募次数积累上限
+    'buy_point': ('buy_point', 'int'),  # 购买体力次数上限
 
     # 'des': ('des', 'unicode'),  # 特权描述
     # 'vip_buy_reward': ('vip_buy_reward', 'list_3'),  # vip特权礼包
