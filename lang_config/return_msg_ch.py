@@ -211,7 +211,16 @@ card_msg = {
 gacha_msg = {
     'gacha.get_gacha': {
         2: u'cd中'
-    }
+    },
+    'gacha.up_gacha': {
+        1: u"已到最大等级",
+        2: u"招募次数不够",
+    },
+    'gacha.receive': {
+        1: u"没有此艺人",
+        2: u"艺人错误",
+        3: u"活跃卡牌已达上限，请先雪藏艺人",
+    },
 }
 
 
