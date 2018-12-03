@@ -85,6 +85,9 @@ class Mission(object):
             for tp_id, type in self.mm.mission.MISSIONMAPPING.iteritems():
                 if tp_id == 2:
                     continue
+                #todo 新手引导任务暂时屏蔽
+                if tp_id == 3:
+                    continue
                 data[type] = self.get_status_by_type(type)
             data['liveness'] = self.get_status_liveness()
         else:
