@@ -265,7 +265,7 @@ class Mission(ModelBase):
             is_save = True
         if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME:
             self.box_office_done = []
-            self.box_office_last_time = today
+            self.box_office_last_date = today
             self.box_office_data = {self.get_box_office(): 0, 'time': int(time.time())} if self.get_box_office() else {}
             is_save = True
         if int(time.time()) > self.box_office_data.get('time', 0) + game_config.common[57]:
