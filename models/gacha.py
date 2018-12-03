@@ -74,18 +74,19 @@ class Gacha(ModelBase):
 
     def add_coin_times(self, times=1):
         self.today_coin_times += times
-        next_times = self.coin_times + times
-        next_lv = self.coin_lv
-
-        while 1:
-            if next_lv + 1 not in game_config.coin_gacha_lv:
-                break
-            if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
-                next_lv += 1
-                continue
-            break
-        self.coin_times = next_times
-        self.coin_lv = next_lv
+        self.coin_times += times
+        # next_times = self.coin_times + times
+        # next_lv = self.coin_lv
+        #
+        # while 1:
+        #     if next_lv + 1 not in game_config.coin_gacha_lv:
+        #         break
+        #     if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
+        #         next_lv += 1
+        #         continue
+        #     break
+        # self.coin_times = next_times
+        # self.coin_lv = next_lv
 
     def get_gacha_red_dot(self):
         return [not self.coin_pool_expire(), self.coin_pool_expire()]

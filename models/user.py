@@ -216,7 +216,7 @@ class User(ModelBase):
             'expired': '',
             'mk': 0,
             'unlock_build': [],
-            'action_point': self.MAX_ACTION_POINT,
+            'action_point': game_config.common[60],
             'action_point_updatetime': int(time.time()),
             'buy_point_times': 0,
             # 'buy_point_date': '',
@@ -807,8 +807,8 @@ class User(ModelBase):
         """
         point = int(point)
         if not force:
-            if self.action_point < self.MAX_ACTION_POINT:
-                self.action_point = min(self.MAX_ACTION_POINT, self.action_point + point)
+            if self.action_point < game_config.common[60]:
+                self.action_point = min(game_config.common[60], self.action_point + point)
         else:
             self.action_point += point
 
@@ -826,7 +826,7 @@ class User(ModelBase):
             return False
 
         # 体力从满减少到不满时,更新更新时间
-        if self.action_point - point < self.MAX_ACTION_POINT <= self.action_point:
+        if self.action_point - point < game_config.common[60] <= self.action_point:
             self.action_point_updatetime = int(time.time())
 
         self.action_point -= point
@@ -879,14 +879,14 @@ class User(ModelBase):
         if self.is_point_max():
             return 0
 
-        return (self.MAX_ACTION_POINT - self.action_point - 1) * game_config.common[59] + self.next_point_time()
+        return (game_config.common[60] - self.action_point - 1) * game_config.common[59] + self.next_point_time()
 
     def is_point_max(self):
         """
         体力是否已满
         :return:
         """
-        return self.action_point >= self.MAX_ACTION_POINT
+        return self.action_point >= game_config.common[60]
 
     def add_buy_point_times(self):
         """
