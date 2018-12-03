@@ -360,7 +360,7 @@ class User(ModelBase):
         today = time.strftime('%F')
         week = time.strftime('%W')
         # 刷新体力
-        div, mod = divmod(now - self.action_point_updatetime, self.ADD_POINT_TIME)
+        div, mod = divmod(now - self.action_point_updatetime, game_config.common[59])
         if not self.is_point_max() and div > 0:
             self.add_action_point(div)
             self.action_point_updatetime = now - mod
@@ -869,7 +869,7 @@ class User(ModelBase):
             return 0
 
         now = int(time.time())
-        return max(0, self.ADD_POINT_TIME - (now - self.action_point_updatetime))
+        return max(0, game_config.common[59] - (now - self.action_point_updatetime))
 
     def max_point_time(self):
         """
@@ -879,7 +879,7 @@ class User(ModelBase):
         if self.is_point_max():
             return 0
 
-        return (self.MAX_ACTION_POINT - self.action_point - 1) * self.ADD_POINT_TIME + self.next_point_time()
+        return (self.MAX_ACTION_POINT - self.action_point - 1) * game_config.common[59] + self.next_point_time()
 
     def is_point_max(self):
         """
