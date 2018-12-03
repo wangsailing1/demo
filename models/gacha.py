@@ -34,7 +34,7 @@ class Gacha(ModelBase):
             'refresh_date': '',
             'coin_times': 0,
             'today_coin_times': 0,
-            'coin_lv': 0,
+            'coin_lv': 1,
 
             'coin_pool': [],  # 探寻到的3个gacha_id
             'coin_time': 0,  # 探寻时间 按钮刷新
