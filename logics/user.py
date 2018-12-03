@@ -724,10 +724,10 @@ class UserLogic(object):
         self.user.add_action_point(self.user.PUR_BUY_POINT, force=True)
         self.user.add_buy_point_times()
 
-        self.mm.task_data.add_task_data('other_chapter', 108)
+        # self.mm.task_data.add_task_data('other_chapter', 108)
         # 触发购买体力任务
-        task_event_dispatch = self.mm.get_event('task_event_dispatch')
-        task_event_dispatch.call_method('buy_action_point')
+        # task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        # task_event_dispatch.call_method('buy_action_point')
 
         self.user.save()
 
