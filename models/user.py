@@ -424,9 +424,11 @@ class User(ModelBase):
                     break
                 div, mod = divmod(now - self.license_update_time, recover_need_time)
 
-            if not self.can_recover_license_times() and data > self.license_update_time:
-                self.license_recover_times = 0
-                self.license_update_time = data
+            if not self.can_recover_license_times():
+                if data > self.license_update_time:
+                    self.license_recover_times = 0
+                self.license_update_time = now
+            is_save = True
 
         if is_save:
             self.save()
