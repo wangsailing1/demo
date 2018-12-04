@@ -593,6 +593,12 @@ class Friend(ModelBase):
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         if like < config['like']:
             return -2
+        rapport_id = self.appointment_log.get(self.appointment_times, {}).get('log', [])
+        rapport_id = rapport_id[-1] if rapport_id else 0
+        tour_dialogue_config = game_config.tour_dialogue
+        is_end = tour_dialogue_config.get(rapport_id, {}).get('is_end', 1)
+        if not is_end:
+            return -4  # 上次约会尚未完成
         if config['unlockid'] not in self.unlocked_appointment:
             self.unlocked_appointment.append(config['unlockid'])
         self.appointment_times += 1
