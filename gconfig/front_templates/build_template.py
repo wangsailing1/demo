@@ -27,6 +27,7 @@ building = {
     'open_anim': ('open_anim', 'str'),  # 解锁动画
     'field_id': ('field_id', 'int'),  # 地块id
     'lvlup_des': ('lvlup_des', 'str'),  # 升级描述
+    'lvlup_condition': ('lvlup_condition', 'str'),  # 升级条件
 }
 
 field = {
