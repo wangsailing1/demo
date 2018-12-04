@@ -572,6 +572,7 @@ jump = {
     'des': ('des', 'unicode'),
     'target': ('target', 'int_list'),
     'unlock': ('unlock', 'int'),
+    'icon': ('icon', 'str'),
 }
 
 item_coin = {
