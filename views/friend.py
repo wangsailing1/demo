@@ -496,7 +496,9 @@ def actor_chat(hm):
 def rapport_index(hm):
     mm = hm.mm
     return 0, {'unlocked_appointment': mm.friend.unlocked_appointment,
-               'chat_log': mm.friend.appointment_log}
+               'chat_log': mm.friend.appointment_log,
+               'appointment_times': mm.friend.appointment_times,
+               }
 
 
 # 约会
@@ -545,6 +547,8 @@ def rapport(hm):
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times
     data['appointment_times'] = mm.friend.appointment_times
+    data['chat_log'] = mm.friend.appointment_log
+    data['unlocked_appointment'] = mm.friend.unlocked_appointment
     # data['tourism_times'] = mm.friend.tourism_times
     return rc, data
 
