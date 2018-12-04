@@ -161,12 +161,14 @@ class GachaLogics(object):
         need_count = config[next_lv]['count']
         if self.gacha.coin_times < need_count:
             return 2, {}  # 招募次数不够
-        cost = config[next_lv]['cost']
+        build_id = config[next_lv]['build_id']
+        build_config = game_config.building
+        cost = build_config[build_id]['cost']
         rc, data = del_mult_goods(self.mm, cost)
         if rc:
             return rc, data
         self.gacha.coin_lv = next_lv
-        build_id = config[next_lv]['build_id']
+
         self.mm.user.up_build(build_id)
         self.gacha.save()
         self.mm.user.save()
