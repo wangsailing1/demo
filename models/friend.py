@@ -84,6 +84,7 @@ class Friend(ModelBase):
             'tourism_log': {},  # 旅游记录
             'last_week': '',
             'got_point_daily': 0,
+            'unlocked_appointment': [],
 
         }
         super(Friend, self).__init__(self.uid)
@@ -116,6 +117,11 @@ class Friend(ModelBase):
             is_save = True
         if not hasattr(self, 'friends_info'):
             self.friends_info = {}
+            is_save = True
+        if not self.unlocked_appointment:
+            for k, v in game_config.date_chapter.iteritems():
+                if v['preid'] == -1:
+                    self.unlocked_appointment.append(k)
             is_save = True
         if is_save:
             self.save()
@@ -480,18 +486,18 @@ class Friend(ModelBase):
         like_need = 0
         point_need = 0
         pre_str = 'daily_dialogue'
-        if type == 2:
-            times = self.appointment_times
-            max_times = common_config[44]
-            like_need = common_config[45]
-            point_need = common_config[48]
-            pre_str = 'date_dialogue'
-        elif type == 3:
-            times = self.tourism_times
-            max_times = common_config[46]
-            like_need = common_config[47]
-            point_need = common_config[49]
-            pre_str = 'travel_dialogue'
+        # if type == 2:
+        #     times = self.appointment_times
+        #     max_times = common_config[44]
+        #     like_need = common_config[45]
+        #     point_need = common_config[48]
+        #     pre_str = 'date_dialogue'
+        # elif type == 3:
+        #     times = self.tourism_times
+        #     max_times = common_config[46]
+        #     like_need = common_config[47]
+        #     point_need = common_config[49]
+        #     pre_str = 'travel_dialogue'
         if self.mm.user.action_point < point_need:
             return -1
         if times >= max_times:
@@ -513,15 +519,15 @@ class Friend(ModelBase):
             self.phone_daily_times += 1
             self.phone_daily_log[self.phone_daily_times] = {'group_id': group_id,
                                                             'log': [choice_id]}
-        elif type == 2:
-            self.appointment_times += 1
-            self.appointment_log[self.appointment_times] = {'group_id': group_id,
-                                                            'log': [choice_id]}
-        elif type == 3:
-            self.tourism_times += 1
-            if self.tourism_times not in self.tourism_log:
-                self.tourism_log[self.tourism_times] = {'group_id': group_id,
-                                                        'log': [choice_id]}
+        # elif type == 2:
+        #     self.appointment_times += 1
+        #     self.appointment_log[self.appointment_times] = {'group_id': group_id,
+        #                                                     'log': [choice_id]}
+        # elif type == 3:
+        #     self.tourism_times += 1
+        #     if self.tourism_times not in self.tourism_log:
+        #         self.tourism_log[self.tourism_times] = {'group_id': group_id,
+        #                                                 'log': [choice_id]}
         self.save()
         return choice_id
 
@@ -531,8 +537,8 @@ class Friend(ModelBase):
         info = self.phone_daily_log
         if type == 2:
             info = self.appointment_log
-        elif type == 3:
-            info = self.tourism_log
+        # elif type == 3:
+        #     info = self.tourism_log
         times = 0
         has_chat = []
         for key, value in info.iteritems():
@@ -573,6 +579,29 @@ class Friend(ModelBase):
         self.friends_info[uid]['like'] = self.friends_info[uid].get('like', 0) + game_config.common[56]
         if is_save:
             self.save()
+
+    # 新约会开始
+    def add_rapport_first(self, group_id, now_stage, chapter_id, save=False):
+        config = game_config.date_chapter[chapter_id]
+        if now_stage != config['avg']:
+            return -1
+        times = self.appointment_times
+        common_config = game_config.common
+        max_times = common_config[44]
+        if times >= max_times:
+            return -3
+        like = self.mm.card.attr.get(group_id, {}).get('like', 0)
+        if like < config['like']:
+            return -2
+        if config['unlockid'] not in self.unlocked_appointment:
+            self.unlocked_appointment.append(config['unlockid'])
+        self.appointment_times += 1
+        self.appointment_log[self.appointment_times] = {'group_id': group_id,
+                                                        'log': [now_stage],
+                                                        'chapter_id': chapter_id}
+        if save:
+            self.save()
+        return 0
 
 
 ModelManager.register_model('friend', Friend)
