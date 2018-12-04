@@ -14,6 +14,7 @@ from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from logics.script import ScriptLogic
+from tools.gift import has_mult_goods
 
 
 def index(hm):
@@ -29,9 +30,9 @@ def pre_filming(hm):
     :return:
     """
     mm = hm.mm
-
+    cost = game_config.script_license['cost']
     sl = ScriptLogic(mm)
-    if mm.user.script_license <= 0:
+    if mm.user.script_license <= 0 and not has_mult_goods(mm, cost):
         return 1, {}
     rc, data = sl.pre_filming()
     return rc, data

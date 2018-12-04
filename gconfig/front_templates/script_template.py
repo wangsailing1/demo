@@ -141,6 +141,7 @@ script_curve = {
 script_license = ({
     'uk': ('num', 'int'),  # 今日恢复数量
     'cd': ('cd', 'int_list'),  # 冷却时间（分钟）
+    'cost': ('cost', 'int_list'),  # 许可证消耗
 }, 'script_licence_config')
 
 

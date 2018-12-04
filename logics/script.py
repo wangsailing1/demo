@@ -92,7 +92,11 @@ class ScriptLogic(object):
         script = self.mm.script
         if not self.mm.script.cur_market or self.mm.script.cur_market and not self.mm.script.script_pool:
             script.pre_filming()
-            self.mm.user.script_license -= 1
+            if self.mm.user.script_license > 0:
+                self.mm.user.script_license -= 1
+            else:
+                cost = game_config.script_license['cost']
+                del_mult_goods(self.mm, cost)
             script.save()
             self.mm.user.save()
         rc, data = self.index()
