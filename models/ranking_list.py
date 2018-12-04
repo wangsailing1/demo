@@ -512,7 +512,7 @@ class BlockRank(AllRank):
     # 把玩家添加到所属街区
     def add_user_by_block(self, uid=None, score=0):
         self.fredis.zadd(self._key_date, uid, score)
-        self.fredis.expire(self._key_date, 3 * 24 * 3600)
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     # 从街区删除玩家（玩家升级街区后操作）
     def delete_user_by_block(self, uid=None):
@@ -555,6 +555,7 @@ class BlockRank(AllRank):
         :return:
         """
         self.fredis.zadd(self._key_date, uid, generate_rank_score(rank))
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     def incr_rank(self, uid, score):
         """
@@ -564,6 +565,7 @@ class BlockRank(AllRank):
         :return:
         """
         self.fredis.zincrby(self._key_date, uid, int(score))
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     def del_rank(self, uid):
         """
