@@ -158,7 +158,7 @@ class GachaLogics(object):
         next_lv = lv + 1
         if next_lv not in config:
             return 1, {}  # 已到最大等级
-        need_count = config[next_lv]
+        need_count = config[next_lv]['count']
         if self.gacha.coin_times < need_count:
             return 2, {}  # 招募次数不够
         cost = config[next_lv]['cost']
