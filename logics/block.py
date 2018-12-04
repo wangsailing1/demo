@@ -235,6 +235,11 @@ class Block(object):
     def check_has_ceremony(self):
         if self.block.is_count:
             return
+        #todo 直接开 以后再关
+        self.block.has_ceremony = 1
+        self.block.save()
+        return True
+
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
                                                              'income')
         date = get_date_before()
