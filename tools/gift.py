@@ -478,7 +478,7 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.user.is_diamond_enough(add_diamond):
                 return False
-    elif gift_sort == 3:  # 道具
+    elif gift_sort == 5:  # 道具
         for pkg in gift_config:
             item_id = pkg[0]
             item_num = pkg[1]
@@ -494,14 +494,14 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if mm.hero.get_stone(stone_id) < stone_num:
                 return False
-    elif gift_sort == 5:  # 采集物
-        for pkg in gift_config:
-            citem_id = pkg[0]
-            citem_num = pkg[1]
-            if not citem_num:
-                continue
-            if mm.coll_item.get_item(citem_id) < citem_num:
-                return False
+    # elif gift_sort == 5:  # 采集物
+    #     for pkg in gift_config:
+    #         citem_id = pkg[0]
+    #         citem_num = pkg[1]
+    #         if not citem_num:
+    #             continue
+    #         if mm.coll_item.get_item(citem_id) < citem_num:
+    #             return False
     # elif gift_sort == 6:  # 装备
     #     return False
     elif gift_sort == 6:  # 基因
