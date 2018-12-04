@@ -103,6 +103,7 @@ plot_mapping = {
     'explain': ('explain', True),
     'dinner_begin': ('dinner_begin', True),
     'dinner_in': ('dinner_in', True),
+    'date_chapter': ('date_chapter', True),
 
     # 'ad': ('ad', True),
     # 'ad_text': ('ad_text', True),

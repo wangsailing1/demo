@@ -7,6 +7,7 @@ from logics.friend import FriendLogic
 # from logics.manufacture import ManufactureLogic
 from tools.unlock_build import FRIEND_SORT
 from lib.utils.sensitive import is_sensitive
+from gconfig import game_config
 
 
 def check_unlock(func):
@@ -492,6 +493,11 @@ def actor_chat(hm):
     data['phone_daily_times'] = mm.friend.phone_daily_times
     return rc, data
 
+def rapport_index(hm):
+    mm = hm.mm
+    return 0, {'unlocked_appointment': mm.friend.unlocked_appointment,
+               'chat_log': mm.friend.appointment_log}
+
 
 # 约会
 @check_unlock
@@ -511,22 +517,27 @@ def rapport(hm):
         return 4, {}  # 请选择约会场景
     if chapter_id not in mm.friend.unlocked_appointment:
         return 5, {}  # 约会场景未解锁
-    if not now_stage:
-        times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
-        if flag:
-            return 3, {}  #请选择对话
-            # choice_id = mm.friend.get_chat_choice(group_id, type=tp)
-        else:
-            if tp == 2:
-                choice_id = mm.friend.appointment_log[times]['log'][-1]
-            # elif tp == 3:
-            #     choice_id = mm.friend.tourism_log[times]['log'][-1]
-        if choice_id < 0:
-            return choice_id, {}
-        return 0, {'choice_id': choice_id,
-                   'appointment_times': mm.friend.appointment_times,
-                   'phone_daily_times': mm.friend.phone_daily_times,}
-                   # 'tourism_times': mm.friend.tourism_times, }
+    config = game_config.phone_daily_dialogue
+    if chapter_id not in config[group_id]['date_dialogue']:
+        return 6, {}  # 不能约该艺人到此场景
+    flag = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
+    if flag < 0:
+        return flag, {}
+    # if not now_stage:
+    #     times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
+    #     if flag:
+    #         choice_id = mm.friend.get_chat_choice(group_id, type=tp)
+    #     else:
+    #         if tp == 2:
+    #             choice_id = mm.friend.appointment_log[times]['log'][-1]
+    #         elif tp == 3:
+    #             choice_id = mm.friend.tourism_log[times]['log'][-1]
+    #     if choice_id < 0:
+    #         return choice_id, {}
+    #     return 0, {'choice_id': choice_id,
+    #                'appointment_times': mm.friend.appointment_times,
+    #                'phone_daily_times': mm.friend.phone_daily_times,
+    #                'tourism_times': mm.friend.tourism_times, }
 
     fl = FriendLogic(mm)
     rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)

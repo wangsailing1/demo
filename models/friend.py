@@ -580,5 +580,28 @@ class Friend(ModelBase):
         if is_save:
             self.save()
 
+    # 新约会开始
+    def add_rapport_first(self, group_id, now_stage, chapter_id, save=False):
+        config = game_config.date_chapter[chapter_id]
+        if now_stage != config['avg']:
+            return -1
+        times = self.appointment_times
+        common_config = game_config.common
+        max_times = common_config[44]
+        if times >= max_times:
+            return -3
+        like = self.mm.card.attr.get(group_id, {}).get('like', 0)
+        if like < config['like']:
+            return -2
+        if config['unlockid'] not in self.unlocked_appointment:
+            self.unlocked_appointment.append(config['unlockid'])
+        self.appointment_times += 1
+        self.appointment_log[self.appointment_times] = {'group_id': group_id,
+                                                        'log': [now_stage],
+                                                        'chapter_id': chapter_id}
+        if save:
+            self.save()
+        return 0
+
 
 ModelManager.register_model('friend', Friend)

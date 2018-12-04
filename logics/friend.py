@@ -929,7 +929,7 @@ class FriendLogic(object):
         add_value_config = config[choice_id]['add_value']
         add_value = self.mm.card.add_value(group_id, add_value_config)
         reward = add_mult_gift(self.mm, gift)
-        self.friend.actors.get(group_id, {}).get('chat_log', {}).get(chapter_id, []).append(choice_id)
+        self.friend.actors.setdefault(group_id, {}).setdefault('chat_log', {}).setdefault(chapter_id, []).append(choice_id)
         if config[choice_id]['is_end']:
             if group_id not in self.friend.chat_over:
                 self.friend.chat_over[group_id] = [chapter_id]
@@ -957,10 +957,10 @@ class FriendLogic(object):
             chat_log = self.friend.appointment_log.get(times_,{}).get('log',{})
             times = self.friend.appointment_times
             max_times = game_config.common[44]
-        elif type == 3:
-            chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
-            times = self.friend.tourism_times
-            max_times = game_config.common[45]
+        # elif type == 3:
+        #     chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
+        #     times = self.friend.tourism_times
+        #     max_times = game_config.common[45]
 
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
@@ -973,8 +973,8 @@ class FriendLogic(object):
             return rc, {}
         if type == 2:
             self.friend.appointment_log[times]['log'].append(choice_id)
-        elif type == 3:
-            self.friend.tourism_log[times]['log'].append(choice_id)
+        # elif type == 3:
+        #     self.friend.tourism_log[times]['log'].append(choice_id)
         num = max(config[choice_id].get('reward_num', 1), 1)
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
