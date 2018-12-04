@@ -501,26 +501,32 @@ def rapport(hm):
     choice_id = hm.get_argument('choice_id', 0, is_int=True)
     now_stage = hm.get_argument('now_stage', 0, is_int=True)
     tp = hm.get_argument('tp', 0, is_int=True)
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
 
     if not group_id:
         return 1, {}  # 未选择艺人
     if tp not in [2, 3]:
         return 2, {}  # 活动类型错误
+    if not chapter_id:
+        return 4, {}  # 请选择约会场景
+    if chapter_id not in mm.friend.unlocked_appointment:
+        return 5, {}  # 约会场景未解锁
     if not now_stage:
         times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
         if flag:
-            choice_id = mm.friend.get_chat_choice(group_id, type=tp)
+            return 3, {}  #请选择对话
+            # choice_id = mm.friend.get_chat_choice(group_id, type=tp)
         else:
             if tp == 2:
                 choice_id = mm.friend.appointment_log[times]['log'][-1]
-            elif tp == 3:
-                choice_id = mm.friend.tourism_log[times]['log'][-1]
+            # elif tp == 3:
+            #     choice_id = mm.friend.tourism_log[times]['log'][-1]
         if choice_id < 0:
             return choice_id, {}
         return 0, {'choice_id': choice_id,
                    'appointment_times': mm.friend.appointment_times,
-                   'phone_daily_times': mm.friend.phone_daily_times,
-                   'tourism_times': mm.friend.tourism_times, }
+                   'phone_daily_times': mm.friend.phone_daily_times,}
+                   # 'tourism_times': mm.friend.tourism_times, }
 
     fl = FriendLogic(mm)
     rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
@@ -528,7 +534,7 @@ def rapport(hm):
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times
     data['appointment_times'] = mm.friend.appointment_times
-    data['tourism_times'] = mm.friend.tourism_times
+    # data['tourism_times'] = mm.friend.tourism_times
     return rc, data
 
 
@@ -542,8 +548,8 @@ def actor_chat_index(hm):
                 'appointment_times': mm.friend.appointment_times,
                 'tourism_times': mm.friend.tourism_times,
                 'phone_daily_remain': mm.friend.check_chat_end(type=1)[-1],
-                'appointment_remain': mm.friend.check_chat_end(type=2)[-1],
-                'tourism_remain': mm.friend.check_chat_end(type=3)[-1], }
+                'appointment_remain': mm.friend.check_chat_end(type=2)[-1],}
+                # 'tourism_remain': mm.friend.check_chat_end(type=3)[-1], }
 
 
 @check_unlock
