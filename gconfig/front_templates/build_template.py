@@ -20,4 +20,17 @@ building = {
     'name': ('name', 'str'),  # 名称
     'default': ('default', 'int'),  # 默认存在
     'unlock_lv': ('unlock_lv', 'int'),  # 解锁等级
+    'cost': ('cost', 'int_list'),  # 消耗
+    'lv': ('lv', 'int'),  # 消耗
+    'button': ('button', 'int_list'),  # 按钮
+    'anim': ('anim', 'str'),  # 动画
+    'open_anim': ('open_anim', 'str'),  # 解锁动画
+    'field_id': ('field_id', 'int'),  # 地块id
+    'lvlup_des': ('lvlup_des', 'str'),  # 升级描述
+}
+
+field = {
+    'uk': ('field_id', 'int'),  # 地块id
+    'order': ('order', 'int'),  # 顺序
+    'can_build': ('can_build', 'int_list'),    # 可建建筑
 }

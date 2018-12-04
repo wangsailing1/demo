@@ -322,6 +322,7 @@ class GameConfigMixIn(object):
         self.shop_goods_mapping = {}
         self.book_mapping = {}
         self.phone_chapter_dialogue_mapping = {}
+        self.achieve_mission_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -411,6 +412,7 @@ class GameConfigMixIn(object):
         self.chapter_mapping.clear()
         self.book_mapping.clear()
         self.phone_chapter_dialogue_mapping.clear()
+        self.achieve_mission_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -1523,19 +1525,19 @@ class GameConfigMixIn(object):
         """
         if not self.building_unlock_mapping:
             result = {}
-            for unlock_id, unlock_config in self.building_unlock.iteritems():
-                unlock_type_config = unlock_config['unlock_type']
+            for unlock_id, unlock_config in self.homepage_button.iteritems():
+                unlock_type_config = unlock_config['sort']
                 if unlock_type_config not in result:
                     result[unlock_type_config] = {
                         unlock_id: {
-                            'unlock_limit': unlock_config['unlock_limit'],
-                            'unlock_look': unlock_config['unlock_look'],
+                            'unlock_lvl': unlock_config['unlock_lvl'],
+                            'unlock_guide_team': unlock_config['unlock_guide_team'],
                         },
                     }
                 else:
                     result[unlock_type_config][unlock_id] = {
-                        'unlock_limit': unlock_config['unlock_limit'],
-                        'unlock_look': unlock_config['unlock_look'],
+                        'unlock_lvl': unlock_config['unlock_lvl'],
+                        'unlock_guide_team': unlock_config['unlock_guide_team'],
                     }
             self.building_unlock_mapping = result
 
@@ -2450,6 +2452,16 @@ class GameConfigMixIn(object):
                 self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']] = {'dialogue_id': j['dialogue_id']}
                 self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']]['id'] = i
         return self.phone_chapter_dialogue_mapping
+
+    def get_achieve_mission_mapping(self):
+        if not self.achieve_mission_mapping:
+            for k, v in self.achieve_mission.iteritems():
+                if v['group'] not in self.achieve_mission_mapping:
+                    self.achieve_mission_mapping[v['group']] = {'unlock_lvl': v['unlock_lvl'],
+                                                                'sort': v['sort']}
+                self.achieve_mission_mapping[v['group']][k] = v
+        return self.achieve_mission_mapping
+
 
 
 

@@ -212,7 +212,17 @@ card_msg = {
 gacha_msg = {
     'gacha.get_gacha': {
         2: u'cd中'
-    }
+    },
+    'gacha.receive': {
+        1: u"没有此艺人",
+        2: u'已签约过',
+        3: u'活跃卡牌已达上限，请先雪藏艺人',
+    },
+
+    'gacha.up_gacha': {
+        1: u"已到最大等级",
+        2: u"招募次数不够",
+    },
 }
 
 
@@ -402,7 +412,6 @@ friend_msg = {
         17: u'已选择过对话',
         18: u'对话已结束',
         19: u'未选择对话',
-
     },
     'friend.apply_friend': {
         1: u'不能添加自己',
@@ -411,7 +420,30 @@ friend_msg = {
         4: u'用户不存在',
         5: u'好友的列表已经达到上限',
         6: u'已申请过',
-
+    },
+    'friend.search_friend': {
+        1: u'uid错误',
+        2: u'不能查找自己',
+        3: u'uid格式不对或不存在',
+    },
+    'friend.sent_gift': {
+        1: u'没有该好友',
+        2: u'已赠送过',
+    },
+    'friend.receive_gift': {
+        1: u'没有该好友',
+        2: u'没有该好友赠送的胶囊',
+        3: u'体力领取已达上限',
+    },
+    'friend.agree_friend': {
+        1: u'不能添加自己',
+        2: u'对方已是自己好友',
+        3: u'自己的好友列表是否已达到上限',
+        4: u'对方好友已达到上限',
+    },
+'friend.remove_friend': {
+        1: u'不能删除自己',
+        2: u'对方不是自己好友',
     },
 }
 
@@ -439,6 +471,7 @@ fans_activity_msg = {
         3: u'美元不足',
         4: u'已解锁',
         5: u'首次建筑的等级错误',
+        6: u'此地已有建筑',
     },
     'fans_activity.up_activity': {
         1: u'活动等级已经最大',

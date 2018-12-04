@@ -86,6 +86,8 @@ card_love_level = {
     'star_cost': ('star_cost', 'list_2'),
     'train_count': ('train_count', 'int'),  # 培养次数上限
     'dps_rate': ('dps_rate', 'int_list'),  # 伤害输出系数区间值（万分之)
+    'icon': ('icon', 'str'),  # 羁绊等级icon
+    'name': ('name', 'str'),  # 羁绊关系名字
 
 }
 

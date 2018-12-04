@@ -183,13 +183,7 @@ class SevenLogin(ModelBase):
         if not self.is_open():
             return False
 
-        for i in game_config.sign_first_week:
-            if i in self.got:
-                continue
-            if self.days < i:
-                continue
-            return True
-        return False
+        return self.can_get_reward()
 
 
 class MonthlySign(ModelBase):
@@ -211,6 +205,7 @@ class MonthlySign(ModelBase):
                 'days': 0,  # 签到次数
                 'usable_days': 0,  # 可用次数
                 'reward': [],  # 奖励
+                'box_got': {},  # 宝箱领取
             },
         }
         super(MonthlySign, self).__init__(self.uid)
@@ -230,6 +225,7 @@ class MonthlySign(ModelBase):
                 'days': 0,  # 签到次数
                 'usable_days': 0,  # 可用次数
                 'reward': reward,  # 签到数据
+                'box_got': {},  # 宝箱领取
             }
             is_save = True
         if cur_time != self.monthly_sign['login_date'] and max(game_config.sign_daily_normal) > (
@@ -240,7 +236,7 @@ class MonthlySign(ModelBase):
         if is_save:
             self.save()
 
-    def today_can_sign(self):
+    def today_can_sign(self,red_dot=True):
         """ 今天能否签
 
         :return:
@@ -248,6 +244,10 @@ class MonthlySign(ModelBase):
         cur_time = datetime_to_str(self.today, datetime_format='%Y-%m-%d')
 
         monthly_sign = self.monthly_sign
+        if red_dot:
+            for k, v in monthly_sign['box_got'].iteritems():
+                if v == 1:
+                    return 1
         return 1 if cur_time != monthly_sign['date'] else 0
 
 

@@ -49,5 +49,21 @@ random_mission = {
     'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
     'jump': ('jump', 'int_list'),  # 跳转
-    'weight': ('weight', 'int'),  # 解锁等级
+    'weight': ('weight', 'int'),  # 权重
+    'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
+}
+
+# 成就任务
+achieve_mission = {
+    'uk': ('id', 'int'),
+    'mission_name': ('mission_name', 'str'),  # 任务名
+    'describe': ('describe', 'str'),  # 描述
+    'group': ('group', 'int'),  # 任务组
+    'next_id': ('next_id', 'int'),  # 下个任务
+    'sort': ('sort', 'int'),  # 类型
+    'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
+    'reward': ('reward', 'int_list'),  # 奖励
+    'achieve_point': ('achieve_point', 'int'),  # 成就点
+    'jump': ('jump', 'int_list'),  # 跳转
+    'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
 }

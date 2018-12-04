@@ -73,6 +73,7 @@ def main(hm):
     result['appointment_times'] = mm.friend.appointment_times
     result['tourism_times'] = mm.friend.tourism_times
     result['seven_login'] = mm.seven_login.is_open()
+    result['fans_activity_info'] = mm.fans_activity.fans_activity_info()
 
     return 0, result
 
@@ -145,8 +146,11 @@ def game_info(hm):
     item_info = dict(item=mm.item.items)
     block = Block(mm)
     block.check_has_ceremony()
+    block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
+    info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
+                             'next_chapter': mm.chapter_stage.next_chapter}
 
     return 0, info
 

@@ -947,4 +947,5 @@ sign_first_week = {
 sign_daily_normal = {
     'uk': ('day', 'int'),               # 每月签到日期
     'reward': ('reward', 'list_3'),     # 每月签到奖励
+    'extra_reward': ('extra_reward', 'list_3'),     # 每月签到奖励
 }

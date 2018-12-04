@@ -140,10 +140,11 @@ class MonthlySignLogic(object):
 
         monthly_sign = self.monthly_sign.monthly_sign
         result = {
-            'today_can_sign': self.monthly_sign.today_can_sign(),
+            'today_can_sign': self.monthly_sign.today_can_sign(red_dot=False),
             'days': monthly_sign['days'],
             # 'usable_days': monthly_sign['usable_days'],
             'config': monthly_sign['reward'],
+            'box_got': monthly_sign.get('box_got', {}),
         }
         return result
 
@@ -152,6 +153,7 @@ class MonthlySignLogic(object):
 
         :return:
         """
+        config = game_config.sign_daily_normal
         monthly_sign = self.monthly_sign.monthly_sign
         today = time.strftime('%F')
 
@@ -164,6 +166,9 @@ class MonthlySignLogic(object):
         monthly_sign['days'] += 1
         monthly_sign['usable_days'] -= 1
         monthly_sign['date'] = today
+        extra_reward = config[monthly_sign['days']]['extra_reward']
+        if extra_reward:
+            monthly_sign['box_got'][monthly_sign['days']] = 1
 
         self.monthly_sign.save()
 
@@ -172,5 +177,24 @@ class MonthlySignLogic(object):
         }
         result.update(self.index())
 
+        return 0, result
+
+    def box_get(self,days):
+        config = game_config.sign_daily_normal
+        monthly_sign = self.monthly_sign.monthly_sign
+        if 'box_got' not in monthly_sign:
+            monthly_sign['box_got'] = {}
+        if days not in monthly_sign['box_got']:
+            return 1, {}   # 条件未达到
+        if monthly_sign['box_got'][days] == 2:
+            return 2, {}   # 已领取
+        gift = config[days]['extra_reward']
+        reward = add_mult_gift(self.mm, gift)
+        monthly_sign['box_got'][days] = 2
+        self.monthly_sign.save()
+        result = {
+            'reward': reward,
+        }
+        result.update(self.index())
         return 0, result
 

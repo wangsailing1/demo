@@ -103,6 +103,7 @@ plot_mapping = {
     'explain': ('explain', True),
     'dinner_begin': ('dinner_begin', True),
     'dinner_in': ('dinner_in', True),
+    'date_chapter': ('date_chapter', True),
 
     # 'ad': ('ad', True),
     # 'ad_text': ('ad_text', True),
@@ -501,12 +502,14 @@ mission_mapping = {
     'box_office': ('box_office', True),
     'guide_mission': ('guide_mission', True),
     'random_mission': ('random_mission', True),
+    'achieve_mission': ('achieve_mission', True),
 }
 
 build_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'card_building': ('card_building', True),
     'building': ('building', True),
+    'field': ('field', True),
 }
 
 guide_mapping = {

@@ -1072,7 +1072,7 @@ class ScriptLogic(object):
         last_dollar = max(last_dollar, 0)
         script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
-        if now <= continued_start:
+        if now <= continued_start or script_info['continued_expire'] - continued_start < 60:
             script.continued_script.pop(script_id)
             script.save()
 

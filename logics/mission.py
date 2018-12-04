@@ -50,6 +50,8 @@ class Mission(object):
                 return 1
             return 0
         for mission_id, value in mission_obj.data.iteritems():
+            if isinstance(mission_id, basestring) and 'time' in mission_id:
+                continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             if stats['status'] == 1:
                 return 1
@@ -61,19 +63,33 @@ class Mission(object):
             return 1
         return 0
 
-    def mission_index(self, tp_id=0,is_save=True):
+    def mission_red_dot(self,type = 'daily'):
+        mission_obj = getattr(self.mission, type)
+        for mission_id in mission_obj.data:
+            if isinstance(mission_id, basestring) and ('time' in mission_id or 'refresh_ts' in mission_id):
+                continue
+            has_reward = self.has_reward_by_type(type=type, mission_id=mission_id)
+            done = self.get_done_mission(type=type, mission_id=mission_id)
+            if has_reward and not done:
+                return True
+        return False
+
+    def mission_index(self, tp_id=0, is_save=True):
         data = {}
-        data['remain_refresh_times'] = game_config.common.get(42,2) - self.mission.refresh_times
+        data['remain_refresh_times'] = game_config.common.get(42, 2) - self.mission.refresh_times
         if not tp_id:
-            if self.mission.check_guide_over():
-                self.mission.get_all_random_mission()
-                if is_save:
-                    self.mission.save()
+            # if self.mission.check_guide_over():
+            #     self.mission.get_all_random_mission()
+            #     if is_save:
+            #         self.mission.save()
             for tp_id, type in self.mm.mission.MISSIONMAPPING.iteritems():
                 if tp_id == 2:
                     continue
+                #todo 新手引导任务暂时屏蔽
+                if tp_id == 3:
+                    continue
                 data[type] = self.get_status_by_type(type)
-                data['liveness'] = self.get_status_liveness()
+            data['liveness'] = self.get_status_liveness()
         else:
             type = self.mm.mission.MISSIONMAPPING[tp_id]
             data[type] = self.get_status_by_type(type)
@@ -115,6 +131,8 @@ class Mission(object):
         result = {}
         done = mission_obj.done
         for mission_id in mission_obj.data:
+            if isinstance(mission_id, (str, unicode)) and 'time' in mission_id:
+                continue
             if isinstance(mission_id, (str, unicode)) and 'refresh_ts' in mission_id:
                 now = int(time.time())
                 end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME

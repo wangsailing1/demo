@@ -65,6 +65,7 @@ vip = {
     'uk': ('vip', 'int'),  # VIP等级
     'exp': ('exp', 'int'),  # 升至下级所需钻石
     'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),  # 免费招募次数积累上限
+    'buy_point': ('buy_point', 'int'),  # 购买体力次数上限
 
     # 'des': ('des', 'unicode'),  # 特权描述
     # 'vip_buy_reward': ('vip_buy_reward', 'list_3'),  # vip特权礼包
@@ -393,21 +394,34 @@ dirtyword_ch = ({
                 }, 'dirtyword')
 
 # 主页按钮配置
+# homepage_button = {
+#     'uk': ('id', 'int'),  # 按钮id
+#     'build': ('build', 'int'),  # 建筑位置
+#     'sort': ('sort', 'int'),  # 按钮类型
+#     'name': ('name', 'unicode'),  # 名字
+#     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
+#     'icon': ('icon', 'str'),  # icon
+#     'jump': ('jump', 'str'),  # 跳转
+#     'button': (('button1', 'button2', 'button3', 'button4', 'button5',
+#                 'button6', 'button7', 'button8', 'button9', 'button10',
+#                 'button11', 'button12', 'button13', 'button14', 'button15'), ('int', 'mult_list')),  # 按钮子按钮1-10
+#     'father': ('father', 'int'),  # 父按钮
+#     'msg': ('msg', 'unicode'),  # 功能描述
+#     'order': ('order', 'int'),  # 前端显示
+#     'reward_info': ('reward_info', 'unicode'),  # 奖励说明
+# }
+
 homepage_button = {
-    'uk': ('id', 'int'),  # 按钮id
-    'build': ('build', 'int'),  # 建筑位置
-    'sort': ('sort', 'int'),  # 按钮类型
-    'name': ('name', 'unicode'),  # 名字
-    'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
-    'icon': ('icon', 'str'),  # icon
-    'jump': ('jump', 'str'),  # 跳转
-    'button': (('button1', 'button2', 'button3', 'button4', 'button5',
-                'button6', 'button7', 'button8', 'button9', 'button10',
-                'button11', 'button12', 'button13', 'button14', 'button15'), ('int', 'mult_list')),  # 按钮子按钮1-10
-    'father': ('father', 'int'),  # 父按钮
-    'msg': ('msg', 'unicode'),  # 功能描述
-    'order': ('order', 'int'),  # 前端显示
-    'reward_info': ('reward_info', 'unicode'),  # 奖励说明
+    'uk': ('id', 'int'),
+    'order': ('order', 'int'),
+    'group': ('group', 'int'),
+    'sort': ('sort', 'int'),
+    'unlock_lvl': ('unlock_lvl', 'int'),
+    'unlock_guide_team': ('unlock_guide_team', 'int'),
+    'icon': ('icon', 'str'),
+    'jump': ('jump', 'int'),
+    'button': (('button1', 'button2', 'button3', 'button4', 'button5'), ('int', 'mult_list')),
+
 }
 
 # 跑马灯配置

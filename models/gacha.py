@@ -34,7 +34,7 @@ class Gacha(ModelBase):
             'refresh_date': '',
             'coin_times': 0,
             'today_coin_times': 0,
-            'coin_lv': 0,
+            'coin_lv': 1,
 
             'coin_pool': [],  # 探寻到的3个gacha_id
             'coin_time': 0,  # 探寻时间 按钮刷新
@@ -74,18 +74,33 @@ class Gacha(ModelBase):
 
     def add_coin_times(self, times=1):
         self.today_coin_times += times
-        next_times = self.coin_times + times
-        next_lv = self.coin_lv
+        self.coin_times += times
+        # next_times = self.coin_times + times
+        # next_lv = self.coin_lv
+        #
+        # while 1:
+        #     if next_lv + 1 not in game_config.coin_gacha_lv:
+        #         break
+        #     if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
+        #         next_lv += 1
+        #         continue
+        #     break
+        # self.coin_times = next_times
+        # self.coin_lv = next_lv
 
-        while 1:
-            if next_lv + 1 not in game_config.coin_gacha_lv:
-                break
-            if next_times >= game_config.coin_gacha_lv[next_lv + 1]['count']:
-                next_lv += 1
-                continue
-            break
-        self.coin_times = next_times
-        self.coin_lv = next_lv
+    def get_gacha_red_dot(self):
+        return [not self.coin_pool_expire(), self.coin_pool_expire()]
+
+    def get_can_up_red_hot(self):
+        config = game_config.coin_gacha_lv
+        lv = self.coin_lv
+        next_lv = lv + 1
+        if next_lv not in config:
+            return False
+        need_count = config[next_lv]
+        if self.coin_times < need_count:
+            return False
+        return True
 
 
 ModelManager.register_model('gacha', Gacha)

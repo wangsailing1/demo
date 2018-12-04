@@ -43,7 +43,7 @@ class Block(ModelBase):
 
             self.big_sale = 0
             self.award_ceremony = 0
-            self.has_ceremony = 1
+            self.has_ceremony = 0
             self.is_count = 0
             self.reward_data = {}
             self.save()
@@ -77,6 +77,24 @@ class Block(ModelBase):
         now_time = int(time.time())
         remain_time = reward_time - now_time
         return remain_time
+
+    def ceremony_red_dot(self):
+        cup = 0
+        for k, v in self.reward_data.iteritems():
+            if k == 'big_sale_cup':
+                cup += v
+            else:
+                cup += v['cup']
+        if self.has_ceremony and cup and self.is_count:
+            return True
+        if self.award_ceremony <= 1 and self.is_count:
+            return True
+        return False
+
+
+    def block_reward_red_hot(self):
+        now = time.strftime('%F')
+        return now != self.reward_daily
 
 
 # 获取日期

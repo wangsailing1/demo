@@ -122,7 +122,7 @@ class GachaLogics(object):
         if gacha_id in self.gacha.coin_receive:
             return 2, {}
         if not self.mm.card.can_add_new_card():
-            return 3, {}   #活跃卡牌已达上限，请先雪藏艺人
+            return 3, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         user = self.mm.user
         gacha_config = game_config.coin_gacha[gacha_id]
@@ -158,15 +158,17 @@ class GachaLogics(object):
         next_lv = lv + 1
         if next_lv not in config:
             return 1, {}  # 已到最大等级
-        need_count = config[next_lv]
+        need_count = config[next_lv]['count']
         if self.gacha.coin_times < need_count:
             return 2, {}  # 招募次数不够
-        cost = config[next_lv]['cost']
+        build_id = config[next_lv]['build_id']
+        build_config = game_config.building
+        cost = build_config[build_id]['cost']
         rc, data = del_mult_goods(self.mm, cost)
         if rc:
             return rc, data
         self.gacha.coin_lv = next_lv
-        build_id = config[next_lv]['build_id']
+
         self.mm.user.up_build(build_id)
         self.gacha.save()
         self.mm.user.save()

@@ -102,8 +102,8 @@ class ScriptGacha(ModelBase):
 
     def gacha_times_enough(self, gacha_type=1):
         if gacha_type == 1:
-            return self.coin_left_times > 0
-        return True
+            return [self.coin_left_times > 0, self.recover_expire()]
+        return [True, 0]
 
 
 ModelManager.register_model('script_gacha', ScriptGacha)

@@ -602,5 +602,13 @@ class Script(ModelBase):
             'type_log': type_log
         }
 
+    def get_continued_script(self):
+        info = []
+        for script_id,value in self.continued_script.iteritems():
+            if value['continued_expire'] > value['continued_start']:
+                info.append(script_id)
+        return info
+
+
 
 ModelManager.register_model('script', Script)
