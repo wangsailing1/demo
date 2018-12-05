@@ -581,7 +581,7 @@ class Friend(ModelBase):
             self.save()
 
     # 新约会开始
-    def add_rapport_first(self, group_id, now_stage, chapter_id, save=False):
+    def add_rapport_first(self, group_id, now_stage, chapter_id, save=True):
         config = game_config.date_chapter[chapter_id]
         if now_stage != config['avg']:
             return -1
