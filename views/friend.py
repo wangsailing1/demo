@@ -522,10 +522,13 @@ def rapport(hm):
     config = game_config.phone_daily_dialogue
     if chapter_id not in config[group_id]['date_dialogue']:
         return 6, {}  # 不能约该艺人到此场景
+    fl = FriendLogic(mm)
     if not choice_id:
-        flag = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
-    if flag < 0:
-        return flag, {}
+        data = {{'reward': {},
+                   'add_value': {}}}
+        rc = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
+        if rc < 0:
+            return rc, {}
     # if not now_stage:
     #     times, flag, has_chat = mm.friend.check_chat_end(group_id, type=tp)
     #     if flag:
@@ -542,8 +545,8 @@ def rapport(hm):
     #                'phone_daily_times': mm.friend.phone_daily_times,
     #                'tourism_times': mm.friend.tourism_times, }
 
-    fl = FriendLogic(mm)
-    rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
+    else:
+        rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times
