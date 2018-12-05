@@ -255,7 +255,6 @@ class User(ModelBase):
             'last_add_gs_msg': 0,  # gs客服消息时间
             'rebate_flag': False,  # 是否已返利
             '_build': {},  # 建筑信息
-            'before_update_time': 0, # 上次拍片许可证恢复时间
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -380,7 +379,6 @@ class User(ModelBase):
         #     self.vip_exclusive_notice = False
         #     is_save = True
         data = int(time.mktime(time.strptime(time.strftime('%F') + ' ' + '00:00:00', '%Y-%m-%d %H:%M:%S')))
-
         if self.refresh_date != today:
             self.refresh_date = today
             self.add_guild_exp = 0
@@ -389,11 +387,10 @@ class User(ModelBase):
             self.vip_daily_reward = False
             self.chat_times = {}
             self.buy_silver_times = 0
+            self.buy_silver_log = []
             if not self.can_recover_license_times():
                 self.license_recover_times = 0
                 self.license_update_time = data
-                self.before_update_time = data
-            self.buy_silver_log = []
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -416,17 +413,16 @@ class User(ModelBase):
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
                 if self.script_license >= game_config.common[20]:
-                    self.license_update_time = int(time.time())
+                    if data > self.license_update_time:
+                        self.license_recover_times = 0
+                    self.license_update_time = now
                     break
                 self.script_license += 1
                 self.license_recover_times += 1
-                if self.before_update_time < data <= self.license_update_time:
-                    self.license_recover_times = 0
-                    recover_need_time = self.license_recover_need_time()
-                self.before_update_time = self.license_update_time
+                check_time = self.license_update_time
                 self.license_update_time += recover_need_time
-                # if check_time < data <= self.license_update_time:
-                #     self.license_recover_times = 0
+                if check_time < data <= self.license_update_time:
+                    self.license_recover_times = 0
 
                 recover_need_time = self.license_recover_need_time()
                 if not recover_need_time:
@@ -435,9 +431,6 @@ class User(ModelBase):
 
             if not self.can_recover_license_times():
                 self.license_update_time = now
-                if data > self.license_update_time:
-                    self.license_recover_times = 0
-                    self.license_update_time = data
             is_save = True
 
         if is_save:
