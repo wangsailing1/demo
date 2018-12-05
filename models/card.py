@@ -451,8 +451,9 @@ class Card(ModelBase):
 
     def add_love_gift_exp(self, card_oid, gift_type, add_exp, card_dict=None):
         card_dict = card_dict or self.cards[card_oid]
-        info = card_dict['love_gift_pro'].setdefault(gift_type, {'exp': 0, 'lv': 1})
+        info = card_dict['love_gift_pro'].setdefault(gift_type, {'exp': 0, 'lv': 1, 'all_exp': 0})
         next_exp = info['exp'] + add_exp
+        info['all_exp'] += add_exp
         next_lv = info['lv']
         while 1:
             if next_lv + 1 not in game_config.card_love_gift:
