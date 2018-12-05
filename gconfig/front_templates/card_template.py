@@ -88,6 +88,7 @@ card_love_level = {
     'dps_rate': ('dps_rate', 'int_list'),  # 伤害输出系数区间值（万分之)
     'icon': ('icon', 'str'),  # 羁绊等级icon
     'name': ('name', 'str'),  # 羁绊关系名字
+    'gift_num_max': ('gift_num_max', 'int'),
 
 }
 
@@ -96,7 +97,6 @@ card_love_grow = {
     'uk': ('id', 'int'),  # 卡片 星级
     # 羁绊升级所有属性加成比(万)[升到等级，加成比]
     'grow_love': ('grow_love', 'int_list'),
-    'gift_num_max': ('gift_num_max', 'int'),
 }
 
 # 羁绊送礼等级
