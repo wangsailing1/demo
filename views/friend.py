@@ -524,8 +524,8 @@ def rapport(hm):
         return 6, {}  # 不能约该艺人到此场景
     fl = FriendLogic(mm)
     if not choice_id:
-        data = {{'reward': {},
-                   'add_value': {}}}
+        data = {'reward': {},
+                'add_value': {}}
         rc = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
         if rc < 0:
             return rc, {}
