@@ -522,7 +522,8 @@ def rapport(hm):
     config = game_config.phone_daily_dialogue
     if chapter_id not in config[group_id]['date_dialogue']:
         return 6, {}  # 不能约该艺人到此场景
-    flag = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
+    if not choice_id:
+        flag = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
     if flag < 0:
         return flag, {}
     # if not now_stage:

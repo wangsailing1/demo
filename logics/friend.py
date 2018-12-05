@@ -892,7 +892,7 @@ class FriendLogic(object):
             if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                         config[now_stage]['next'] and choice_id != config[now_stage]['next']):
                 return 16, {}  # 对话选择错误
-            times, x , y= self.friend.check_chat_end(group_id)
+            times, x, y = self.friend.check_chat_end(group_id)
             chat_log = self.friend.phone_daily_log.get(times, {}).get('log', [])
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
@@ -929,7 +929,8 @@ class FriendLogic(object):
         add_value_config = config[choice_id]['add_value']
         add_value = self.mm.card.add_value(group_id, add_value_config)
         reward = add_mult_gift(self.mm, gift)
-        self.friend.actors.setdefault(group_id, {}).setdefault('chat_log', {}).setdefault(chapter_id, []).append(choice_id)
+        self.friend.actors.setdefault(group_id, {}).setdefault('chat_log', {}).setdefault(chapter_id, []).append(
+            choice_id)
         if config[choice_id]['is_end']:
             if group_id not in self.friend.chat_over:
                 self.friend.chat_over[group_id] = [chapter_id]
@@ -952,9 +953,9 @@ class FriendLogic(object):
         if (config[now_stage]['option_team'] and choice_id not in config[now_stage]['option_team']) or (
                     config[now_stage]['next'] and choice_id != config[now_stage]['next']):
             return 16, {}  # 对话选择错误
-        times_, flag ,has_chat = self.friend.check_chat_end(group_id, type=type)
+        times_, flag, has_chat = self.friend.check_chat_end(group_id, type=type)
         if type == 2:
-            chat_log = self.friend.appointment_log.get(times_,{}).get('log',{})
+            chat_log = self.friend.appointment_log.get(times_, {}).get('log', {})
             times = self.friend.appointment_times
             max_times = game_config.common[44]
         # elif type == 3:
