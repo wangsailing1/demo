@@ -96,6 +96,7 @@ card_love_grow = {
     'uk': ('id', 'int'),  # 卡片 星级
     # 羁绊升级所有属性加成比(万)[升到等级，加成比]
     'grow_love': ('grow_love', 'int_list'),
+    'gift_num_max': ('gift_num_max', 'int'),
 }
 
 # 羁绊送礼等级
