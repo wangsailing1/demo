@@ -276,7 +276,7 @@ dinner_in = {
 date_chapter = {
     'uk': ('id', 'int'),
     'name': ('name', 'unicode'),
-    'avg': ('avg', 'str'),
+    'avg': ('avg', 'int'),
     'like': ('like', 'int'),
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),
