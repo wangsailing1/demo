@@ -409,7 +409,6 @@ class APIRequestHandler(BaseRequestHandler):
                 try:
                     Mission.do_task_api( method_param, self.hm, rc, data)
                 except:
-                    import traceback
                     print_log(traceback.print_exc())
 
                 # 执行成功保存数据
