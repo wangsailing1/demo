@@ -513,7 +513,8 @@ class BlockRank(AllRank):
         super(AllRank, self).__init__()
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
-        self.fredis = self.get_father_redis(father_server)
+        # self.fredis = self.get_father_redis(father_server)
+        self.fredis = get_redis_client(settings.public)
         self._key_date = self.key_date(date)
 
     def key_date(self, date=''):
