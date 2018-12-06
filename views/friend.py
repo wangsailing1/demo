@@ -37,7 +37,7 @@ def friends(hm):
     data['newest_friend'] = mm.friend.newest_friend
     data['phone_daily_remain'] = mm.friend.check_chat_end(type=1)[-1]
     data['appointment_remain'] = mm.friend.check_chat_end(type=2)[-1]
-    data['tourism_remain'] = mm.friend.check_chat_end(type=3)[-1]
+    # data['tourism_remain'] = mm.friend.check_chat_end(type=3)[-1]
 
 
     return 0, data
@@ -565,7 +565,7 @@ def actor_chat_index(hm):
     return rc, {'actor': data,
                 'phone_daily_times': mm.friend.phone_daily_times,
                 'appointment_times': mm.friend.appointment_times,
-                'tourism_times': mm.friend.tourism_times,
+                # 'tourism_times': mm.friend.tourism_times,
                 'phone_daily_remain': mm.friend.check_chat_end(type=1)[-1],
                 'appointment_remain': mm.friend.check_chat_end(type=2)[-1],}
                 # 'tourism_remain': mm.friend.check_chat_end(type=3)[-1], }

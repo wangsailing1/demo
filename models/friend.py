@@ -97,11 +97,11 @@ class Friend(ModelBase):
         now = datetime.datetime.now().strftime('%Y-%m-%d')
         week = datetime.datetime.now().strftime('%Y-%W')
         is_save = False
-        if week != self.last_week:
-            self.last_week = week
-            self.tourism_times = 0
-            self.tourism_log = {}
-            is_save = True
+        # if week != self.last_week:
+        #     self.last_week = week
+        #     self.tourism_times = 0
+        #     self.tourism_log = {}
+        #     is_save = True
         if now != self.last_refresh_date:
             self.battle_friend = []
             self.parised_friend = []
@@ -565,10 +565,10 @@ class Friend(ModelBase):
         data = {}
         data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
-        data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
+        # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
         data['phone_daily_remain'] = self.check_chat_end()[-1]
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
-        data['tourism_remain'] = self.check_chat_end(type=3)[-1]
+        # data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data
 
     def add_friend_like(self, uid, is_save=False):
