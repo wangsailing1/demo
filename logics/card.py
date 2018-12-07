@@ -50,11 +50,10 @@ class CardLogic(object):
         next_level = card_dict['lv'] + 1
         if next_level not in game_config.card_level:
             return 3, {}  # 已到最大等级
-        next_level_config = game_config.card_level[next_level]
-        next_exp = next_level_config['exp']
-        nexd_coin = next_level_config['level_gold']
+        next_exp = level_config['exp']
+        nexd_coin = level_config['level_gold']
         need_exp = next_exp - card_dict['exp']
-        need_coin = math.ceil(need_exp * 1.0 * nexd_coin / next_exp)
+        need_coin = math.ceil(need_exp  * nexd_coin / next_exp)
         cost_coin = min(user.coin, need_coin)
         if user.coin < cost_coin:
             return 'error_coin', {}
