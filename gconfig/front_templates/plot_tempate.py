@@ -205,8 +205,8 @@ phone_daily_dialogue = {
     'uk': ('group_id', 'int'),
     'daily_dialogue1': ('daily_dialogue1', 'int_list'),
     'daily_dialogue2': ('daily_dialogue2', 'int_list'),
-    'date_dialogue': ('date_dialogue', 'int_list'),
-    # 'date_dialogue2': ('date_dialogue2', 'int_list'),
+    'date_dialogue1': ('date_dialogue1', 'int_list'),
+    'date_dialogue2': ('date_dialogue2', 'int_list'),
     # 'travel_dialogue1': ('travel_dialogue1', 'int_list'),
     # 'travel_dialogue2': ('travel_dialogue2', 'int_list'),
 }

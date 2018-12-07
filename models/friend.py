@@ -119,12 +119,26 @@ class Friend(ModelBase):
             self.friends_info = {}
             is_save = True
         if not self.unlocked_appointment:
+            all_list = self.get_own_dialogue()
             for k, v in game_config.date_chapter.iteritems():
-                if v['preid'] == -1:
+                if v['preid'] == -1 and k in all_list:
                     self.unlocked_appointment.append(k)
             is_save = True
         if is_save:
             self.save()
+
+    # 按性别获取能开启的聊天场景
+    def get_own_dialogue(self):
+        pre_str = 'daily_dialogue'
+        sex = game_config.main_hero.get(self.mm.user.role, {}).get('sex', 1)
+        key_word = '%s%s' % (pre_str, sex)
+        config = game_config.phone_daily_dialogue
+        all_list = []
+        for _, v in config.iteritems():
+            if v[key_word]:
+                all_list.extend(v[key_word])
+        all_list = list(set(all_list))
+        return all_list
 
     def set_send_gift(self, friend_id):
         """
