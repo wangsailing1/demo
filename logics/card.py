@@ -17,6 +17,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import add_dict
 from tools.gift import del_mult_goods
+import math
 
 
 class CardLogic(object):
@@ -46,15 +47,25 @@ class CardLogic(object):
             return 2, {}        # 请升级格调等级
 
         level_config = game_config.card_level[card_dict['lv']]
-        add_exp = min(user.coin, level_config['level_gold'])
-        if user.coin < add_exp:
+        next_level = card_dict['lv'] + 1
+        if next_level not in game_config.card_level:
+            return 3, {}  # 已到最大等级
+        next_level_config = game_config.card_level[next_level]
+        next_exp = next_level_config['exp']
+        nexd_coin = next_level_config['level_gold']
+        need_exp = next_exp - card_dict['exp']
+        need_coin = math.ceil(need_exp * 1.0 * nexd_coin / next_exp)
+        cost_coin = min(user.coin, need_coin)
+        if user.coin < cost_coin:
             return 'error_coin', {}
-
+        add_exp = cost_coin * next_exp / nexd_coin
+        if cost_coin == need_coin:
+            add_exp = need_exp
         if not card.add_card_exp(card_oid, add_exp, card_dict):
             return 3, {}
 
         card.save()
-        user.deduct_coin(add_exp)
+        user.deduct_coin(cost_coin)
         user.save()
 
         return 0, {}
