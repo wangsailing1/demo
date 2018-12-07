@@ -121,7 +121,7 @@ class Friend(ModelBase):
         if not self.unlocked_appointment:
             all_list = self.get_own_dialogue()
             for k, v in game_config.date_chapter.iteritems():
-                if v['preid'] == -1 and k in all_list:
+                if v['preid'] == -1:
                     self.unlocked_appointment.append(k)
             is_save = True
         if is_save:
@@ -129,7 +129,7 @@ class Friend(ModelBase):
 
     # 按性别获取能开启的聊天场景
     def get_own_dialogue(self):
-        pre_str = 'daily_dialogue'
+        pre_str = 'date_dialogue'
         sex = game_config.main_hero.get(self.mm.user.role, {}).get('sex', 1)
         key_word = '%s%s' % (pre_str, sex)
         config = game_config.phone_daily_dialogue
