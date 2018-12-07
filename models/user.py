@@ -255,6 +255,7 @@ class User(ModelBase):
             'last_add_gs_msg': 0,  # gs客服消息时间
             'rebate_flag': False,  # 是否已返利
             '_build': {},  # 建筑信息
+            'dialogue': [],  # 建筑信息
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
