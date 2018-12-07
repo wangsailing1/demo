@@ -519,11 +519,8 @@ def rapport(hm):
         return 4, {}  # 请选择约会场景
     if chapter_id not in mm.friend.unlocked_appointment:
         return 5, {}  # 约会场景未解锁
-    if choice_id not in mm.friend.get_own_dialogue():
-        return 7, {}  # 约会场景不合适
-    config = game_config.phone_daily_dialogue
-    if chapter_id not in config[group_id]['date_dialogue']:
-        return 6, {}  # 不能约该艺人到此场景
+    if chapter_id not in mm.friend.get_own_dialogue():
+        return 6, {}  # 约会场景不合适
     fl = FriendLogic(mm)
     if not choice_id:
         data = {'reward': {},
