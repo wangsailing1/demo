@@ -40,6 +40,8 @@ def seven_login(hm):
     :return:
     """
     mm = hm.mm
+    if not mm.seven_login.is_open():
+        return 1, {}  # 活动已结束
 
     sll = SevenLoginLogic(mm)
     rc, data = sll.seven_login_index()

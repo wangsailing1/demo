@@ -72,8 +72,6 @@ class SevenLoginLogic(object):
         七日登录index
         :return:
         """
-        if not self.seven_login.is_open():
-            return 1, {}    # 活动已结束
 
         data = {
             'days': self.seven_login.days,  # 登录天数
