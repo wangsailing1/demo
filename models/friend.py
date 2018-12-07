@@ -119,7 +119,6 @@ class Friend(ModelBase):
             self.friends_info = {}
             is_save = True
         if not self.unlocked_appointment:
-            all_list = self.get_own_dialogue()
             for k, v in game_config.date_chapter.iteritems():
                 if v['preid'] == -1:
                     self.unlocked_appointment.append(k)
