@@ -188,6 +188,14 @@ def guide(hm):
     return rc, data
 
 
+def dialogue(hm):
+    mm = hm.mm
+    dialogue_id = hm.get_argument('dialogue_id', is_int=True)
+    mm.user.dialogue.append(dialogue_id)
+    mm.user.save()
+    return 0, {}
+
+
 def blacklist(hm):
     """
     黑名单首页
@@ -351,7 +359,6 @@ def register_name(hm):
     if rc != 0:
         return rc, {}
     return 0, data
-
 
 
 def charge_name(hm):
@@ -542,6 +549,7 @@ def get_player_icon(hm):
 
     return 0, data
 
+
 def unlock_icon(hm):
     mm = hm.mm
 
@@ -730,19 +738,20 @@ def slg_index(hm):
     }
     return 0, data
 
+
 def user_info(hm):
     mm = hm.mm
     all_info = mm.script.count_info()
     ar = mm.get_obj_tools('output_rank')
     data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
             'script_info': mm.script.get_scrip_info_by_num(),
-            'end_level':all_info['end_level'],
+            'end_level': all_info['end_level'],
             'style_log': all_info['style_log'],
             'type_log': all_info['type_log'],
-            'cup':mm.block.cup_log,
-            'block_num':mm.block.block_num,
-            'rank':ar.get_rank(mm.uid),
-            'chapter':mm.chapter_stage.get_now_stage(),
-            'cup_log_card':mm.block.cup_log_card,
+            'cup': mm.block.cup_log,
+            'block_num': mm.block.block_num,
+            'rank': ar.get_rank(mm.uid),
+            'chapter': mm.chapter_stage.get_now_stage(),
+            'cup_log_card': mm.block.cup_log_card,
             'cup_log_script': mm.block.cup_log_script}
     return 0, data
