@@ -242,6 +242,7 @@ class UserLogic(object):
             'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
             'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 旅游聊天约会
+            'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
         }
 
         # 特殊的几个红点,todo
