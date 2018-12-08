@@ -254,6 +254,7 @@ class UserLogic(object):
             'liveness': ('mission', 'get_liveness_red_dot'),  # 活跃度
             'license_recover_expire': ('user', 'get_license_recover_red_dot'),  # 拍摄许可证倒计时
             'has_new_dialogue': ('chapter_stage', 'get_chapter_red_dot'),  # 新剧情聊天
+            'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
         }
 
         # 特殊的几个红点,todo
