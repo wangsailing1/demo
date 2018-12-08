@@ -409,6 +409,8 @@ class CardLogic(object):
             equip.add_equip(equip_id, exchange_num)
             equip.del_piece(piece_id, cost * exchange_num)
             add_dict(reward.setdefault('equip', {}), equip_id, exchange_num)
+        if not reward.get('equip'):
+            return 1, {}  # 碎片数量不足
         equip.save()
         return 0, {'reward': reward}
 

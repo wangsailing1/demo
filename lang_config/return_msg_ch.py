@@ -206,6 +206,9 @@ card_msg = {
         3: u'装备超出所需上限',
         4: u'装备与卡牌不匹配',
     },
+    'card.equip_piece_auto_exchange': {
+        1: u'碎片数量不足',
+    },
 }
 
 
