@@ -138,15 +138,19 @@ def datetime_now():
 SECONDS_ONE_DAY = 3600*24
 
 
-def timestamp_day():
+def timestamp_day(t=0):
     """# timestamp_today: 获得当天0点的时间戳
     args:
         :    ---    arg
     returns:
         0    ---    
     """
-    today = datetime_module.date.today()
-    time_0 = time.mktime(today.timetuple())
+    if not t:
+        today = datetime_module.date.today()
+        time_0 = time.mktime(today.timetuple())
+    else:
+        today = datetime.datetime.strptime(time.strftime('%F',time.localtime(t)), "%Y-%m-%d").timetuple()
+        time_0 = time.mktime(today.timetuple())
     return time_0
 
 
@@ -397,3 +401,9 @@ def server_active_inreview_open_and_close(mm):
             server_inreview[k] = 1
             active_remain_time[k] = e_time
     return server_inreview, active_remain_time
+
+
+def get_server_days(server_id):
+    server_open_time = serverM.get_server_config(server_id).get('open_time')
+    now = int(time.time())
+    return timestamp_different_days(server_open_time, now) + 1
