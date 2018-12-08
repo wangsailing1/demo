@@ -628,9 +628,11 @@ class Friend(ModelBase):
     def get_actor_chat(self):
         data = {}
         for group_id, value in self.actors.iteritems():
-            dialogue = list(set(value['chat_log'].keys()) - set(self.chat_over.get(group_id, [])))
-            if dialogue:
-                data[group_id] = dialogue
+            for chapter_id, dialogue in value['chat_log'].iteritems():
+                if chapter_id in self.chat_over.get(group_id, []):
+                    continue
+                if dialogue:
+                    data[group_id] = dialogue
         return data
 
 
