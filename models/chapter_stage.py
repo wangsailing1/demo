@@ -49,5 +49,18 @@ class Chapter_stage(ModelBase):
             stage = max(stage)
         return '%s-%s' % (chapter, stage)
 
+    def get_chapter_red_dot(self):
+        dialogue_list = []
+        config = game_config.get_chapter_mapping()
+        for chapter, value in self.chapter.iteritems():
+            for type_hard, info in value.iteritems():
+                stage_id = max(info.keys() if info.keys else [0])
+                stage_config = config[chapter][type_hard]
+                if stage_id < len(stage_config['stage_id']) and stage_config['dialogue_id'][stage_id]:
+                    dialogue_list.append(stage_config['dialogue_id'][stage_id])
+        return dialogue_list
+
+
+
 
 ModelManager.register_model('chapter_stage', Chapter_stage)
