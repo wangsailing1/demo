@@ -80,19 +80,23 @@ class Block(ModelBase):
 
 
 # 获取日期
-def get_date():
+def get_date(dt=''):
+    if not dt:
+        dt = REWARD_TIME
     now = time.strftime('%F')
     now_time = time.strftime('%T')
-    if now_time >= REWARD_TIME:
+    if now_time >= dt:
         now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
     return now
 
 
 # 获取前一天日期
-def get_date_before():
+def get_date_before(dt=''):
+    if not dt:
+        dt = REWARD_TIME
     now = time.strftime('%F')
     now_time = time.strftime('%T')
-    if now_time < REWARD_TIME:
+    if now_time < dt:
         now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
     return now
 

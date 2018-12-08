@@ -270,3 +270,8 @@ def block_index(hm):
             'rank_own': income_rank_own_list,
             'own_info': own_info
         }
+
+
+def get_out_put(hm):
+    mm = hm.mm
+

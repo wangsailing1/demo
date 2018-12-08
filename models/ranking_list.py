@@ -180,17 +180,28 @@ class AllOutPutRank(AllRank):
     总票房排行
     uid 格式 uid + '|' + group_id
     """
+    REWARDTIME = '06:00:00'
 
-    def __init__(self,uid='', server='', *args, **kwargs):
+    def __init__(self,uid='', server='', date='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = server
         self._key = self.make_key(uid, server_name=father_server)
         self.fredis = self.get_redis_client(father_server)
+        self._key_date = self.key_date(date)
+
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
     #     weekday = time.strftime("%F")
     #     self._key_date = '%s_%s' % (self._key, weekday)
+
+    def key_date(self, date=''):
+        if not date:
+            date = get_date(dt=self.REWARDTIME)
+        return self._key + '||' + date
+
+    def add_reward_rank(self,rank_list):
+        pass
 
 
 class GuildTaskRank(AllRank):
