@@ -7,7 +7,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
-from lib.utils.time_tools import get_server_days
+from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days
 
 """
 任务对应个个接口的返回数据
@@ -150,6 +150,13 @@ def mission_args(hm, data, mission):
     return {mission._ACHIEVE: {'target1': 0, 'value': achieve}}
 
 
+
+# =================================需要自检的数值类任务func=================================
+
+def target_sort1():
+    pass
+
+
 TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
 CHANGE_NUM = [1, 19, 21]  # 纯数值 玩家等级  公司市值
 CARD_LEVEL = 2  # 艺人等级
@@ -183,6 +190,9 @@ class Carnival(ModelBase):
     # mission_mapping
     MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission'}
     BOXOFFICEREFRESHTIME = '05:00:00'
+
+    # 数值类任务初始化时需要自检的
+    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
 
     # 配置target_sort映射
 
@@ -223,14 +233,66 @@ class Carnival(ModelBase):
             'carnival_step': 0,
         }
 
-    def pre_use(self):
-        server_days = get_server_days(self._server_name)
-        config = game_config.carnival_days
+    def pre_use(self, save=False):
+        server_carnival_days = self.server_carvical_open()
+        carnival_active_days = self.server_carvical_open(tp=2)
+        if not server_carnival_days and self.server_carnival_days:
+            self.server_carnival_data = {}
+            self.server_carnival_done = {}
+            self.server_dice_num = 0
+            self.server_carnival_days = 0
+            self.server_carnival_step = 0
+            save = True
+        if not carnival_active_days and self.carnival_days:
+            self.carnival_data = {}
+            self.carnival_done = {}
+            self.dice_num = 0
+            self.carnival_days = 0
+            self.carnival_step = 0
+            save = True
+        if server_carnival_days and server_carnival_days != self.server_carnival_days:
+            self.server_carnival_days = server_carnival_days
+            self.server_carnival_data = {}
+            mission_config = game_config.carnival_mission
+            for mission_id, value in mission_config.iteritems():
+                if value['days_new'] == server_carnival_days:
+                    self.server_carnival_data[mission_id] = 0
+                    # todo 自检数值类任务完成程度
+                    mission_sort = value['sort']
+                    if mission_sort in self.NEEDCHECKMISSIONID:
+                        func = globals()['target_sort%s' % mission_sort]
+
+        if carnival_active_days and carnival_active_days != self.carnival_days:
+            self.carnival_days = carnival_active_days
+            self.carnival_data = {}
+            mission_config = game_config.carnival_mission
+            for mission_id, value in mission_config.iteritems():
+                if value['days_old'] == server_carnival_days:
+                    self.carnival_data[mission_id] = 0
+                    # todo 自检数值类任务完成程度
+                    mission_sort = value['sort']
+                    if mission_sort in self.NEEDCHECKMISSIONID:
+                        pass
+
+        if save:
+            self.save()
 
     def server_carvical_open(self, tp=1):
         server_days = get_server_days(self._server_name)
         config = game_config.carnival_days[tp]
-
+        if tp == 1:
+            start = int(config['open'].split(' ')[0])
+            end = int(config['close'].split(' ')[0])
+            if start <= server_days <= end:
+                return server_days
+            return 0
+        elif tp == 2:
+            start = str2timestamp(config['open'])
+            end = str2timestamp(config['close'])
+            now = int(time.time())
+            if start <= now <= end:
+                return timestamp_different_days(start, now) + 1
+            return 0
 
     @property
     def server_arnival(self):
@@ -243,7 +305,6 @@ class Carnival(ModelBase):
         if not hasattr(self, '_carnival_active'):
             self._carnival_active = CarnivalActive(self)
         return self._carnival_active
-
 
     @classmethod
     def do_task_api(cls, method, hm, rc, data):
@@ -275,7 +336,6 @@ class Carnival(ModelBase):
                 self.carnival_active.add_count(k, kwargs[sort])
 
         self.save()
-
 
 
 class ServerCarnival(object):
