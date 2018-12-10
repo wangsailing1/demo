@@ -45,9 +45,17 @@ def script_make(hm, data, mission):
     target_sort_type = mission._SCRIPT_TYPE
     target_sort_style = mission._SCRIPT_STYLE
     target_sort_income = mission._INCOME
+    target_limit_actor = mission._LIMIT_ACTOR
+    target_once = mission._ONCE
+    target_first_income = mission._FIRST_INCOME
+    ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-            target_sort_income: {'target1': 0, 'value': data['cur_script']['finished_summary']['income']}}
+            target_sort_income: {'target1': 0, 'value': data['cur_script']['finished_summary']['income']},
+            target_limit_actor: {'target1': script_id, 'value': ids},
+            target_once: {'target1': script_id, 'value': data['cur_script']['finished_summary']['income']},
+            target_first_income: {'target1': script_id,
+                                  'value': data['cur_script']['finished_first_income']['first_income']}, }
 
 
 # 推图次数
@@ -64,8 +72,9 @@ def chapter_stage_auto_args(hm, data, mission):
 def card_gacha(hm, data, mission):
     sort = hm.get_argument('sort', is_int=True)
     count = hm.get_argument('count', 1, is_int=True)
+    gacha_id = hm.get_argument('gacha_id', is_int=True)
     target_sort = mission._CARD_GACHA
-    return {target_sort: {'target1': sort, 'value': count}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': gacha_id}}
 
 
 # 抽剧本
@@ -73,7 +82,8 @@ def script_gacha(hm, data, mission):
     sort = hm.get_argument('sort', is_int=True)
     count = hm.get_argument('count', 1, is_int=True)
     target_sort = mission._SCRIPT_GACHA
-    return {target_sort: {'target1': sort, 'value': count}}
+    script_id = data['reward'].get('own_script', [])
+    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}}
 
 
 # 等级
@@ -150,18 +160,90 @@ def mission_args(hm, data, mission):
     return {mission._ACHIEVE: {'target1': 0, 'value': achieve}}
 
 
-
 # =================================需要自检的数值类任务func=================================
 
-def target_sort1():
-    pass
+# 玩家等级
+def target_sort1(mm, mission_obj, target):
+    value = mm.user.level
+    return {mission_obj._PLAYER_LV: {'target1': 0, 'value': value}}
+
+
+# 艺人等级
+def target_sort2(mm, mission_obj, target):
+    value = []
+    for card_id, value in mm.card.cards.iteritems():
+        if value['lv'] >= target[0]:
+            value.append(card_id)
+    return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': value}}
+
+
+# 关卡通关
+def target_sort7(mm, mission_obj, target):
+    config = game_config.chapter
+    chapter = 0
+    type_hard = 0
+    stage = 0
+    for value in config.values():
+        if target[0] in value['stage_id']:
+            chapter = value['chapter_id']
+            type_hard = value['hard_type']
+            stage = value['stage_id'].index(target[0]) + 1
+    info = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+    return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
+                                         'star': info.get('star', 0)}}
+
+
+# 艺人数量
+def target_sort15(mm, mission_obj, target):
+    num = 0
+    config = game_config.card_basis
+    for card_id, value in mm.card.cards.iteritems():
+        star = config[value['id']]['star_level']
+        if star >= target[0]:
+            num += 1
+    return {mission_obj._CARD_NUM: {'target1': target[0], 'value': num}}
+
+
+# 剧本数量
+def target_sort16(mm, mission_obj, target):
+    num = 0
+    config = game_config.script
+    for script_id in mm.script_book.scripts:
+        if config[script_id]['star'] >= target[0]:
+            num += 1
+    return {mission_obj._SCRIPT_NUM: {'target1': target[0], 'value': num}}
+
+
+# 公司市值
+def target_sort19(mm, mission_obj, target):
+    return {mission_obj._COMPANY_VALUE: {'target1': target[1], 'value': 1}}
+
+
+# 艺人好感度
+def target_sort23(mm, mission_obj, target):
+    num = 0
+    config = game_config.card_basis
+    group_ids = []
+    for card_id, value in mm.card.cards.iteritems():
+        group_id = config[value['id']]['group']
+        group_ids.append(group_id)
+        if value['love_exp'] >= target[0]:
+            num += 1
+    for g_id in mm.card.attr:
+        if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
+            num += 1
+    return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
 
 TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
+MULT_TYPE = 22  # 剧本拍摄多要求
+TYPE_STYLE = [24, 25]
 CHANGE_NUM = [1, 19, 21]  # 纯数值 玩家等级  公司市值
 CARD_LEVEL = 2  # 艺人等级
 FIRST_CHAPTER = 7  # 首次通关
 NUM_CHAPTER = 8  # 通关次数
+GACHA = [3, 4]
+GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
 
 
 class Carnival(ModelBase):
@@ -193,6 +275,7 @@ class Carnival(ModelBase):
 
     # 数值类任务初始化时需要自检的
     NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
+    CONFIGMAPPING = {1: 'server_', 2: ''}
 
     # 配置target_sort映射
 
@@ -217,6 +300,10 @@ class Carnival(ModelBase):
     _SCRIPT_REWRITE = 18  # 剧本重写
     _COMPANY_VALUE = 19  # 公司市值
     _ACHIEVE = 21  # 成就
+    _LIMIT_ACTOR = 22  # 自制艺人限制型
+    _ACTOR_LOVE = 23  # 艺人好感度
+    _ONCE = 24  # 单次自制票房
+    _FIRST_INCOME = 25  # 首映票房/收视
 
     def __init__(self, uid=None):
         self.uid = uid
@@ -226,56 +313,75 @@ class Carnival(ModelBase):
             'server_dice_num': 0,
             'server_carnival_days': 0,
             'server_carnival_step': 0,
+            'server_reward_data': [],
             'carnival_data': {},
             'carnival_done': {},
             'dice_num': 0,
             'carnival_days': 0,
             'carnival_step': 0,
+            'reward_data': [],
         }
+        
+        super(Carnival, self).__init__(self.uid)
 
     def pre_use(self, save=False):
-        server_carnival_days = self.server_carvical_open()
-        carnival_active_days = self.server_carvical_open(tp=2)
-        if not server_carnival_days and self.server_carnival_days:
+        server_days = self.server_carvical_open()
+        carnival_days = self.server_carvical_open(tp=2)
+        if not server_days and self.server_carnival_days:
             self.server_carnival_data = {}
             self.server_carnival_done = {}
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 0
             save = True
-        if not carnival_active_days and self.carnival_days:
+        if not carnival_days and self.carnival_days:
             self.carnival_data = {}
             self.carnival_done = {}
             self.dice_num = 0
             self.carnival_days = 0
             self.carnival_step = 0
             save = True
-        if server_carnival_days and server_carnival_days != self.server_carnival_days:
-            self.server_carnival_days = server_carnival_days
+        if server_days and server_days != self.server_carnival_days:
+            self.server_carnival_days = server_days
             self.server_carnival_data = {}
             mission_config = game_config.carnival_mission
             for mission_id, value in mission_config.iteritems():
-                if value['days_new'] == server_carnival_days:
+                if value['days_new'] == server_days:
                     self.server_carnival_data[mission_id] = 0
-                    # todo 自检数值类任务完成程度
                     mission_sort = value['sort']
                     if mission_sort in self.NEEDCHECKMISSIONID:
                         func = globals()['target_sort%s' % mission_sort]
+                        target_data = value['target']
+                        kwargs = func(self.mm, self, target_data)
+                        self.do_task(kwargs)
 
-        if carnival_active_days and carnival_active_days != self.carnival_days:
-            self.carnival_days = carnival_active_days
+        if carnival_days and carnival_days != self.carnival_days:
+            self.carnival_days = carnival_days
             self.carnival_data = {}
             mission_config = game_config.carnival_mission
             for mission_id, value in mission_config.iteritems():
-                if value['days_old'] == server_carnival_days:
+                if value['days_old'] == server_days:
                     self.carnival_data[mission_id] = 0
-                    # todo 自检数值类任务完成程度
                     mission_sort = value['sort']
                     if mission_sort in self.NEEDCHECKMISSIONID:
-                        pass
+                        func = globals()['target_sort%s' % mission_sort]
+                        target_data = value['target']
+                        kwargs = func(self.mm, self, target_data)
+                        self.do_task(kwargs)
 
         if save:
             self.save()
+
+    def carnival_max_id(self,tp=1):
+        if tp == 1:
+            config = game_config.carnival_new_reward
+        else:
+            config = game_config.carnival_old_reward
+        id = 0
+        for k, v in config.iteritems():
+            if v['unlock_day'] == self.server_carnival_days and k >= id:
+                id = k
+        return id
 
     def server_carvical_open(self, tp=1):
         server_days = get_server_days(self._server_name)
@@ -319,84 +425,176 @@ class Carnival(ModelBase):
         if rc != 0 or method not in cls._METHOD_FUNC_MAP:
             return
 
-        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, hm.mm.mission)
+        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, hm.mm.carnival)
         if kwargs:
-            mission = hm.mm.mission
+            mission = hm.mm.carnival
             mission.do_task(kwargs)
 
     def do_task(self, kwargs):
         for k, value in self.server_carnival_data.iteritems():
-            sort = game_config.liveness[k]['sort']
+            sort = game_config.carnival_mission[k]['sort']
             if sort in kwargs:
                 self.server_arnival.add_count(k, kwargs[sort])
 
         for k, value in self.carnival_data.iteritems():
-            sort = game_config.achieve_mission[k]['sort']
+            sort = game_config.carnival_mission[k]['sort']
             if sort in kwargs:
                 self.carnival_active.add_count(k, kwargs[sort])
-
         self.save()
 
 
-class ServerCarnival(object):
+class DoMission(object):
+    def __init__(self, obj):
+        super(DoMission, self).__init__()
+        self.uid = obj.uid
+        self.done = obj.done
+        self.data = obj.data
+        self.num = obj.num
+        self.days = obj.days
+        self.config = game_config.carnival_mission
+
+    def add_count(self, mission_id, value):
+
+        target_data = self.config[mission_id]['target']
+        if self.config[mission_id]['sort'] in TYPE_MAPPING:
+            type = TYPE_MAPPING[self.config[mission_id]['sort']]
+            script_type = game_config.script[value['target1']][type]
+            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        # 单次自制票房,首映票房/收视
+        elif self.config[mission_id]['sort'] in TYPE_STYLE:
+            script_type = game_config.script[value['target1']]['type']
+            script_style = game_config.script[value['target1']]['style']
+            if script_type == target_data[0] and script_style == target_data[3] and \
+                            value['end_lv'] >= target_data[2] and value['value'] >= target_data[4]:
+                if mission_id in self.data:
+                    self.data[mission_id] += 1
+                else:
+                    self.data[mission_id] = 1
+
+        # 自制艺人限制型
+        elif self.config[mission_id]['sort'] == MULT_TYPE:
+            script_type = game_config.script[value['target1']]['type']
+            script_style = game_config.script[value['target1']]['style']
+            if script_type == target_data[0] and script_style == target_data[3] and \
+                            value['end_lv'] >= target_data[2] and self.check_limit_actor(target_data[4],
+                                                                                         value['value']):
+                if mission_id in self.data:
+                    self.data[mission_id] += 1
+                else:
+                    self.data[mission_id] = 1
+
+        # 任意艺人达到特定等级
+        elif self.config[mission_id]['sort'] == CARD_LEVEL:
+            card_id = value['card_id']
+            if isinstance(self.data[mission_id], int):
+                self.data[mission_id] = []
+            if isinstance(card_id, list):
+                for card_oid in card_id:
+                    if card_oid not in self.data[mission_id] and value['value'] >= target_data[0]:
+                        self.data[mission_id].append(card_oid)
+            else:
+                if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
+                    self.data[mission_id].append(card_id)
+
+        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
+            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
+            star = value.get('star', 0)
+            type_hard = value['target1']
+            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+        elif self.config[mission_id]['sort'] in GACHA:
+            gacha_type = value['target1']
+            info = value['info']
+            num = self.check_gacha(target_data, gacha_type, self.config[mission_id]['sort'], info)
+            if mission_id in self.data:
+                self.data[mission_id] += num
+            else:
+                self.data[mission_id] = num
+        elif self.config[mission_id]['sort'] in CHANGE_NUM:
+            self.data[mission_id] = value['value']
+
+        else:
+            if mission_id in self.data:
+                self.data[mission_id] += value['value']
+            else:
+                self.data[mission_id] = value['value']
+
+        # 判断任务是否完成 自动领奖
+        if self.data[mission_id] >= target_data[1]:
+            if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
+                return
+            self.done.setdefault(self.days, []).append(mission_id)
+            self.num += self.config[mission_id]['reward']
+            self.data[mission_id] = 0
+
+    # 判断抽卡与抽剧本
+    def check_gacha(self, target, gacha_type, sort, info):
+        if sort == GACHA[0]:
+            config = game_config.coin_gacha[info]
+            reward = config['reward']
+            if reward[0][0] == 8:  # 整卡 道具类型
+                star = game_config.card_basis[reward[0][1]]['star_level']
+                if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
+                        gacha_type == target[0] or not target[0]):
+                    return 1
+            else:
+                star = game_config.use_item[reward[0][1]]['star']
+                if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
+                        gacha_type == target[0] or not target[0]):
+                    return 1
+        else:
+            script_id = info[0] if info else 0
+            star = game_config.script.get(script_id,{}).get('star', 0)
+            if star >= target[2]:
+                return 1
+        return 0
+
+    # 判断自制艺人限制型任务
+    def check_limit_actor(self, target, cards):
+        data = {1: 0, 2: 0}
+        for _target in target:
+            data[_target[0]] = _target[3]
+        for oid in cards:
+            config = game_config.card_basis[int(oid)]
+            sex = config['sex_type']
+            profession_type = config['profession_type']
+            profession_class = config['profession_class']
+            for _target in target:
+                if sex == _target[0] and profession_type == _target[1] and profession_class == _target[2]:
+                    data[sex] -= 1
+        if data[1] <= 0 and data[2] <= 0:
+            return True
+        return False
+
+
+class ServerCarnival(DoMission):
     def __init__(self, obj):
         """初始化
         """
+        super(DoMission, self).__init__()
         self.uid = obj.uid
         self.done = obj.server_carnival_done
         self.data = obj.server_carnival_data
         self.num = obj.server_dice_num
+        self.days = obj.server_carnival_days
         self.config = game_config.carnival_mission
 
     def get_count(self, mission_id):
         return self.data.get(mission_id, 0)
-
-    def add_count(self, mission_id, value):
-
-        if self.config[mission_id]['sort'] in TYPE_MAPPING:
-            type = TYPE_MAPPING[self.config[mission_id]['sort']]
-            target_data = self.config[mission_id]['target']
-            script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-
-        # 任意艺人达到特定等级
-        elif self.config[mission_id]['sort'] == CARD_LEVEL:
-            target_data = self.config[mission_id]['target']
-            card_id = value['card_id']
-            if isinstance(self.data[mission_id], int):
-                self.data[mission_id] = []
-            if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
-                self.data[mission_id].append(card_id)
-
-        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            target_data = self.config[mission_id]['target']
-            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-
-        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
-            target_data = self.config[mission_id]['target']
-            star = value.get('star', 0)
-            type_hard = value['target1']
-            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-        elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            self.data[mission_id] = value['value']
-
-        else:
-            if mission_id in self.data:
-                self.data[mission_id] += value['value']
-            else:
-                self.data[mission_id] = value['value']
 
     def done_task(self, mission_id):
         """完成任务
@@ -414,65 +612,20 @@ class ServerCarnival(object):
             self.data.pop(mission_id)
 
 
-class CarnivalActive(object):
+class CarnivalActive(DoMission):
     def __init__(self, obj):
         """初始化
         """
+        super(DoMission, self).__init__()
         self.uid = obj.uid
         self.done = obj.carnival_done
         self.data = obj.carnival_data
         self.num = obj.dice_num
+        self.days = obj.carnival_days
         self.config = game_config.carnival_mission
 
     def get_count(self, mission_id):
         return self.data.get(mission_id, 0)
-
-    def add_count(self, mission_id, value):
-
-        if self.config[mission_id]['sort'] in TYPE_MAPPING:
-            type = TYPE_MAPPING[self.config[mission_id]['sort']]
-            target_data = self.config[mission_id]['target']
-            script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-
-        # 任意艺人达到特定等级
-        elif self.config[mission_id]['sort'] == CARD_LEVEL:
-            target_data = self.config[mission_id]['target']
-            card_id = value['card_id']
-            if isinstance(self.data[mission_id], int):
-                self.data[mission_id] = []
-            if card_id not in self.data[mission_id] and value['value'] >= target_data[0]:
-                self.data[mission_id].append(card_id)
-
-        elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            target_data = self.config[mission_id]['target']
-            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-
-        elif self.config[mission_id]['sort'] == NUM_CHAPTER:
-            target_data = self.config[mission_id]['target']
-            star = value.get('star', 0)
-            type_hard = value['target1']
-            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
-                if mission_id in self.data:
-                    self.data[mission_id] += value['value']
-                else:
-                    self.data[mission_id] = value['value']
-        elif self.config[mission_id]['sort'] in CHANGE_NUM:
-            self.data[mission_id] = value['value']
-
-        else:
-            if mission_id in self.data:
-                self.data[mission_id] += value['value']
-            else:
-                self.data[mission_id] = value['value']
 
     def done_task(self, mission_id):
         """完成任务
@@ -488,3 +641,6 @@ class CarnivalActive(object):
                     if v['lv'] >= config['target'][0]:
                         self.data[next_id].append(k)
             self.data.pop(mission_id)
+
+
+ModelManager.register_model('carnival', Carnival)

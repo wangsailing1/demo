@@ -149,7 +149,7 @@ def timestamp_day(t=0):
         today = datetime_module.date.today()
         time_0 = time.mktime(today.timetuple())
     else:
-        today = datetime.datetime.strptime(time.strftime('%F',time.localtime(t)), "%Y-%m-%d").timetuple()
+        today = datetime_module.datetime.strptime(time.strftime('%F',time.localtime(t)), "%Y-%m-%d")
         time_0 = time.mktime(today.timetuple())
     return time_0
 

@@ -37,7 +37,7 @@ carnival_days = {
     'close': ('close', 'str'),  # 结束时间
 }
 
-carnival_random = {
+carnival_random = ({
     'uk': ('id', 'int'),  # 色子id
     'ratio': ('ratio', 'int'),  # 色子概率
-}
+},'carnival_random_translate')
