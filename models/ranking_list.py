@@ -10,7 +10,7 @@ from lib.db import ModelTools
 from lib.utils import generate_rank_score, round_float_or_str
 import settings
 from lib.db import get_redis_client
-from models.block import get_date
+from models.block import get_date, get_date_before
 
 
 class AllRank(ModelTools):
@@ -137,6 +137,15 @@ class AllRank(ModelTools):
         key_by_date = '%s_%s' % (self._key, 'backup')
         return key_by_date
 
+    def get_rank_before(self, uid):
+        key_by_date = self.backup_key()
+        rank = self.fredis.zrevrank(key_by_date, uid)
+        if rank is None:
+            rank = -1
+
+        return rank + 1
+
+
 
 class AppealRank(AllRank):
     """
@@ -180,14 +189,12 @@ class AllOutPutRank(AllRank):
     总票房排行
     uid 格式 uid + '|' + group_id
     """
-    REWARDTIME = '06:00:00'
 
     def __init__(self,uid='', server='', date='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = server
         self._key = self.make_key(uid, server_name=father_server)
         self.fredis = self.get_redis_client(father_server)
-        self._key_date = self.key_date(date)
 
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
@@ -195,13 +202,7 @@ class AllOutPutRank(AllRank):
     #     weekday = time.strftime("%F")
     #     self._key_date = '%s_%s' % (self._key, weekday)
 
-    def key_date(self, date=''):
-        if not date:
-            date = get_date(dt=self.REWARDTIME)
-        return self._key + '||' + date
 
-    def add_reward_rank(self,rank_list):
-        pass
 
 
 class GuildTaskRank(AllRank):

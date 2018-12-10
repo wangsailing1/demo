@@ -1,18 +1,13 @@
 # -*- coding: utf-8 –*-
-import settings
-from gconfig import game_config
 from models.ranking_list import AllOutPutRank
-import time
-from lib.utils.debug import print_log
 
 
-def send_output_reward(server):
-    from lib.core.environ import ModelManager
-    config = game_config.out_put_reward
+def rank_list_backup(server):
     output_rank = AllOutPutRank('', server)
-    output_rank_list = output_rank.get_all_user(withscores=True)
-    if not output_rank_list:
-        return
+    # output_rank_list = output_rank.get_all_user(withscores=True)
+    # if not output_rank_list:
+    #     return
+    output_rank.rank_backup()
 
 
     # for rank, value in enumerate(output_rank_list, 1):

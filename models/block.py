@@ -7,6 +7,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 
 REWARD_TIME = '22:30:00'
+REFRESH_TIME = '06:00:00'
 
 
 class Block(ModelBase):
@@ -31,13 +32,16 @@ class Block(ModelBase):
             'has_ceremony': 0,
             'cup_log': {},  # 奖杯获取
             'is_count': 0,  # 是否计算奖杯
-            'cup_log_card':{},
-            'cup_log_script':{}
+            'cup_log_card': {},
+            'cup_log_script': {},
+            'rank_reward_got': [], # 排行奖励
+            'rank_reward_date': '',  # 领奖时间
         }
 
         super(Block, self).__init__(self.uid)
 
     def pre_use(self):
+        save = False
         if self.last_date != get_date():
             self.last_date = get_date()
 
@@ -46,6 +50,13 @@ class Block(ModelBase):
             self.has_ceremony = 1
             self.is_count = 0
             self.reward_data = {}
+            save = True
+        last_date = get_date_before(REFRESH_TIME)
+        if last_date != self.rank_reward_date:
+            self.rank_reward_date = last_date
+            self.rank_reward_got = []
+            save = True
+        if save:
             self.save()
 
     def up_block(self, cup, is_save=False):

@@ -4,6 +4,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config, get_str_words
 from models.ranking_list import BlockRank
 from models.block import REWARD_TIME, get_date
+from tools.gift import add_mult_gift
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -272,6 +273,20 @@ def block_index(hm):
         }
 
 
-def get_out_put(hm):
+def get_reward(hm):
     mm = hm.mm
+    config = game_config.rank_reward_list
+    ar = mm.get_obj_tools(rank_mapping[3])
+    rank = ar.get_rank_before(mm.uid)
+    if rank == -1:
+        return 1, {}  # 本人没有排行
+    gift = []
+    for id, value in config.iteritems():
+        if value['rank'][0] <= rank <= value['rank'][1]:
+            gift = value['daily_reward']
+    mm.block.rank_reward_got = gift
+    reward = add_mult_gift(mm, gift)
+    mm.block.save()
+    return 0, {'reward':reward}
+
 
