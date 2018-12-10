@@ -1,9 +1,7 @@
 #! --*-- coding: utf-8 --*--
 __author__ = 'kaiqigu'
 
-import datetime
 import time
-import cPickle as pickle
 
 from lib.core.environ import ModelManager
 from lib.db import ModelTools
@@ -137,6 +135,15 @@ class AllRank(ModelTools):
         key_by_date = '%s_%s' % (self._key, 'backup')
         return key_by_date
 
+    def get_rank_before(self, uid):
+        key_by_date = self.backup_key()
+        rank = self.fredis.zrevrank(key_by_date, uid)
+        if rank is None:
+            rank = -1
+
+        return rank + 1
+
+
 
 class AppealRank(AllRank):
     """
@@ -144,7 +151,11 @@ class AppealRank(AllRank):
     uid 格式 uid + '|' + group_id 
     """
 
-    # def __init__(self, uid='', server='', *args, **kwargs):
+    def __init__(self, uid='', server='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(uid, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
@@ -159,7 +170,11 @@ class OutPutRank(AllRank):
     """
 
 
-    # def __init__(self,uid='', server='', *args, **kwargs):
+    def __init__(self,uid='', server='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(uid, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
@@ -173,12 +188,19 @@ class AllOutPutRank(AllRank):
     uid 格式 uid + '|' + group_id
     """
 
-    # def __init__(self,uid='', server='', *args, **kwargs):
+    def __init__(self,uid='', server='', date='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(uid, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
+
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
     #     weekday = time.strftime("%F")
     #     self._key_date = '%s_%s' % (self._key, weekday)
+
+
 
 
 class GuildTaskRank(AllRank):
@@ -501,7 +523,8 @@ class BlockRank(AllRank):
         super(AllRank, self).__init__()
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
-        self.fredis = self.get_father_redis(father_server)
+        # self.fredis = self.get_father_redis(father_server)
+        self.fredis = get_redis_client(settings.public)
         self._key_date = self.key_date(date)
 
     def key_date(self, date=''):
