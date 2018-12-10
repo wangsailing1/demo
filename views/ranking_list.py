@@ -125,10 +125,14 @@ def rank_index(hm):
                                             'rank_own': ar.get_rank(mm.uid),
                                             'group_name': game_config.script_group_object.get(group_id, {}).get(
                                                 'name', '')})
+        rank_before = ar.get_rank_before(mm.uid)
+        rank_reward_got = mm.block.rank_reward_got
 
         return 0, {
             'rank_list': alloutput_rank_list,
-            'rank_own': alloutput_rank_own_list
+            'rank_own': alloutput_rank_own_list,
+            'rank_before':rank_before,
+            'rank_reward_got':rank_reward_got,
         }
 
 
@@ -288,6 +292,8 @@ def get_reward(hm):
     mm.block.rank_reward_got = gift
     reward = add_mult_gift(mm, gift)
     mm.block.save()
-    return 0, {'reward':reward}
+    return 0, {'reward':reward,
+               'rank_before':rank,
+               'rank_reward_got':mm.block.rank_reward_got,}
 
 
