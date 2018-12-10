@@ -282,7 +282,7 @@ def get_reward(hm):
     config = game_config.rank_reward_list
     ar = mm.get_obj_tools(rank_mapping[3])
     rank = ar.get_rank_before(mm.uid)
-    if rank == -1:
+    if not rank:
         return 1, {}  # 本人没有排行
     if mm.block.rank_reward_got:
         return 2, {}  # 已领奖励
