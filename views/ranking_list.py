@@ -280,6 +280,8 @@ def get_reward(hm):
     rank = ar.get_rank_before(mm.uid)
     if rank == -1:
         return 1, {}  # 本人没有排行
+    if mm.block.rank_reward_got:
+        return 2, {}  # 已领奖励
     gift = []
     for id, value in config.iteritems():
         if value['rank'][0] <= rank <= value['rank'][1]:
