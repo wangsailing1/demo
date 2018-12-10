@@ -154,7 +154,7 @@ class AppealRank(AllRank):
     def __init__(self, uid='', server='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = server
-        self._key = self.make_key(uid, server_name=father_server)
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
         self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
@@ -173,7 +173,7 @@ class OutPutRank(AllRank):
     def __init__(self,uid='', server='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = server
-        self._key = self.make_key(uid, server_name=father_server)
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
         self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
@@ -191,7 +191,7 @@ class AllOutPutRank(AllRank):
     def __init__(self,uid='', server='', date='', *args, **kwargs):
         super(AllRank, self).__init__()
         father_server = server
-        self._key = self.make_key(uid, server_name=father_server)
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
         self.fredis = self.get_redis_client(father_server)
 
     #     super(AllRank, self).__init__()
