@@ -90,6 +90,7 @@ class Carnival(object):
         self.carnival.save()
         _, data = self.index(tp=tp)
         data['reward'] = rewards
+        data['choice_num'] = step_num
         return 0, data
 
     def get_reward(self,tp=1, mission_id=''):
