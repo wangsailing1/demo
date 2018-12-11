@@ -598,3 +598,9 @@ login_reward_id = {
     'uid_list': ('uid_list', 'str_list'),
     'url': ('url', 'str'),
 }
+
+money_guide = {
+    'uk': ('id', 'int'),
+    'guide': ('guide', 'int_list'),
+    'des': ('des', 'unicode'),
+}

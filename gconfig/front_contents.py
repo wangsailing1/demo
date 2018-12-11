@@ -263,6 +263,7 @@ user_config_mapping = {
     'loading_gif': ('loading_gif', True),
     'help': ('help', True),
     'login_reward_id': ('login_reward_id', True),
+    'money_guide': ('money_guide', True),
 }
 
 #
