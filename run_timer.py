@@ -65,6 +65,7 @@ from lib.utils import filedefaultdict
 from lib.utils.mail import send_sys_mail
 from lib.db import ModelTools
 from models.server import ServerUidList
+from logics.script import genearte_random_event, genearte_global_event
 from logics.ranking_list import rank_list_backup
 from logics.toy import send_rank_reward
 
@@ -84,6 +85,8 @@ TIMER_JOBS = (
 
     # 每5分钟记录一次在线数据
     ('cron', dict(minute='*/5'), backup_all_server_online_count, 1),
+    ('cron', dict(hours='*'), genearte_random_event, 1),
+    ('cron', dict(minute='*/30'), genearte_global_event, 1),
 
     # 公会战
     # 筛选可参与的公会,分组

@@ -10,9 +10,10 @@ import time
 import copy
 import random
 import itertools
+import settings
 from gconfig import game_config
 
-from lib.db import ModelBase
+from lib.db import ModelBase, get_redis_client
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 from lib.core.environ import ModelManager
@@ -77,7 +78,68 @@ class Script(ModelBase):
             'end_lv_log': {}  # 剧本大卖统计 {script_id: {end_lv: times}}
 
         }
+        self.global_cache = self.get_global_redis_client()
         super(Script, self).__init__(self.uid)
+
+    @classmethod
+    def get_global_redis_client(cls):
+        return get_redis_client(settings.SERVERS['public']['redis'])
+
+    @classmethod
+    def generate_random_event_key(cls, date_str=None):
+        key = '%s_%s' % (cls.make_key_cls('random_event', 'public'), date_str or time.strftime('%F'))
+        return key
+
+    @classmethod
+    def generate_global_event_key(cls, date_str=None):
+        key = '%s_%s' % (cls.make_key_cls('global_event', 'public'), date_str or time.strftime('%F'))
+        return key
+
+    @classmethod
+    def set_random_event(cls, date_str=None):
+        redis = cls.get_global_redis_client()
+        key = cls.generate_random_event_key(date_str)
+
+        id_weights = [(k, v['weight']) for k, v in game_config.random_event.iteritems()]
+        event_id = weight_choice(id_weights)[0]
+        redis.lpush(key, '%s_%s' % (int(time.time()), event_id))
+        return event_id
+
+    @classmethod
+    def get_random_event(cls, date_str=None):
+        redis = cls.get_global_redis_client()
+        key = cls.generate_random_event_key(date_str)
+
+        rs = redis.lrange(key, 0, 0)
+        if not rs:
+            return
+        ts, event_id = rs[0].split('_')
+        expire = game_config.common[61]
+        if time.time() - int(ts) < expire:
+            return int(event_id)
+
+    @classmethod
+    def set_global_event(cls, date_str=None):
+        redis = cls.get_global_redis_client()
+        key = cls.generate_global_event_key(date_str)
+
+        id_weights = [(k, v['weight']) for k, v in game_config.global_market.iteritems()]
+        event_id = weight_choice(id_weights)[0]
+        redis.lpush(key, '%s_%s' % (int(time.time()), event_id))
+        return event_id
+
+    @classmethod
+    def get_global_event(cls, date_str=None):
+        redis = cls.get_global_redis_client()
+        key = cls.generate_global_event_key(date_str)
+
+        rs = redis.lrange(key, 0, 0)
+        if not rs:
+            return
+        ts, event_id = rs[0].split('_')
+        expire = game_config.common[61]
+        if time.time() - int(ts) < expire:
+            return int(event_id)
 
     def pre_use(self):
         # 连续拍片类型，保留最近10个
@@ -604,11 +666,27 @@ class Script(ModelBase):
 
     def get_continued_script(self):
         info = []
-        for script_id,value in self.continued_script.iteritems():
+        for script_id, value in self.continued_script.iteritems():
             if value['continued_expire'] > value['continued_start']:
                 info.append(script_id)
         return info
 
+    def check_event_effect(self, film_info=None):
+        """检查随机事件、全服事件buff
+        """
+        film_info = film_info or self.cur_script
+        script_id = film_info['id']
+        script_config = game_config.script[script_id]
+
+        style = script_config['style']
+        type = script_config['type']
+
+        data = 0
+
+
+        random_event = self.get_random_event()
+        global_event = self.get_global_event()
+        return {'random': random_event, 'global': global_event}
 
 
 ModelManager.register_model('script', Script)

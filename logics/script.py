@@ -20,6 +20,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 
+from models.script import Script
 from models.card import Card
 from models.ranking_list import BlockRank
 
@@ -398,6 +399,12 @@ class ScriptLogic(object):
                 attr_value = attrs.get(pro_id, 0)
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
                      / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+
+            # todo 增加事件和全球影响事件buff
+            event_buff = 10
+            event_buff = min(event_buff, 5)
+            # 属性 = 属性 * （1 + 影响比例）（最大5%）
+            d = d * (1 + event_buff/100.0)
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -1088,3 +1095,13 @@ class ScriptLogic(object):
             'reward': {'dollar': last_dollar},
             'continued_script': script.continued_script
         }
+
+
+def genearte_random_event():
+    """随机事件"""
+    Script.set_random_event()
+
+
+def genearte_global_event():
+    """全服事件"""
+    Script.set_global_event()

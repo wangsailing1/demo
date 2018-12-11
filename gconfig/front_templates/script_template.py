@@ -9,7 +9,7 @@ Created on 2018-08-31
 script = {
     'uk': ('id', 'int'),  # 剧本id
     'name': ('name', 'int'),  # 名字
-    'type': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
+    'type': ('type', 'int'),  # 种类1=电影 2=电视 3=综艺
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重
     'cost': ('cost', 'int'),  # 剧本消耗(美元)
@@ -238,3 +238,14 @@ barrage = {
 }
 
 
+# 市场随机事件
+random_event = {
+    'uk': ('id', 'int'),
+    'des': ('des', 'int'),  # 描述
+    'effect': ('effect', 'int_list'),  # 影响 [type, style, buff_percent]
+    'weight': ('weight', 'int'),  # 权重
+}
+
+
+# 全球市场事件
+global_market = random_event

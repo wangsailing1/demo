@@ -149,6 +149,10 @@ script_mapping = {
     'audi_comment': ('audi_comment', True),
     'barrage': ('barrage', True),
 
+    'random_event': ('random_event', True),
+    'global_market': ('global_market', True),
+
+
 }
 
 equip_mapping = {
