@@ -284,7 +284,7 @@ class Chapter_stage(object):
             # 暴击伤害
             hurt = self.crit_hurt(hurt, score)
             is_crit = True
-        return [hurt,is_crit]
+        return [hurt, is_crit]
 
     def crit_hurt(self, hurt, score):
         crit = 1.1 + score / 100.0

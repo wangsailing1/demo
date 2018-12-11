@@ -1455,7 +1455,7 @@ class User(ModelBase):
             'change_type': 'user',  # 级别经验类型 玩家经验、等级
         }
         gift = []
-        for i in xrange(cur_level, self.level + 1):
+        for i in xrange(cur_level +1 , self.level + 1):
             level_gift = game_config.player_level.get(cur_level, {}).get('award')
             gift.extend(level_gift)
         add_mult_gift(self.mm, gift)
