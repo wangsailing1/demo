@@ -27,4 +27,21 @@ def dice(hm):
     rc, data = carnival.dice(tp=tp)
     return rc, data
 
+def get_dice(hm):
+    mm = hm.mm
+    tp = hm.get_argument('carvical_type', 1, is_int=True)
+    m_id = hm.get_argument('mission_id', 0, is_int=True)
+    carnival = Carnival(mm)
+    done = carnival.get_done_mission(tp=tp,mission_id=m_id)
+    if done:
+        return 1, {} # 已领
+    status = carnival.has_reward_by_type(tp=tp,mission_id=m_id)
+    if not status:
+        return 2, {}  # 未完成
+    rc, data = carnival.get_reward(tp=tp,mission_id=m_id)
+    return rc, data
+
+
+
+
 
