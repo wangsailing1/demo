@@ -116,9 +116,9 @@ class CardLogic(object):
 
                         add_love_gift_pro.append((tp, num * item_num))
 
-        gift_count = card_dict['gift_count'] + add_gift_count
-        if gift_count > gift_lv_max:
-            return 3, {}            # 超出送礼上限
+        # gift_count = card_dict['gift_count'] + add_gift_count
+        # if gift_count > gift_lv_max:
+        #     return 3, {}            # 超出送礼上限
 
         for item_id, item_num in items:
             item.del_item(item_id, item_num)
