@@ -7,7 +7,7 @@ carnival_mission = {
     'sort': ('sort', 'int'),  # 类型
     'target': (('target1', 'target2', 'target3','target4','target5',), ('int_list_or_int2', 'mult_force_num_list')),
     'reward': ('reward', 'int'),  # 奖励骰子数量
-    'jump': ('jump', 'int'),  # 跳转
+    'jump': ('jump', 'int_list'),  # 跳转
     'if_reuse': ('if_reuse', 'int'),  # 可否重复完成
     'days_new': ('days_new', 'int'),  # 新服嘉年华天数
     'days_old': ('days_old', 'int'),  # 普通嘉年华天数
