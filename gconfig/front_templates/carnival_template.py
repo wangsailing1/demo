@@ -11,6 +11,7 @@ carnival_mission = {
     'if_reuse': ('if_reuse', 'int'),  # 可否重复完成
     'days_new': ('days_new', 'int'),  # 新服嘉年华天数
     'days_old': ('days_old', 'int'),  # 普通嘉年华天数
+    'name': ('name', 'str'),  # 普通嘉年华天数
 }
 
 
@@ -20,6 +21,7 @@ carnival_new_reward = {
     'icon': ('icon', 'str'),  # 类型
     'reward': ('reward', 'int_list'),  # 奖励
     'unlock_day': ('unlock_day', 'int'),  # 跳转
+    'place': ('place', 'int_list'),  # 位置
 }
 
 carnival_old_reward = {
@@ -28,6 +30,7 @@ carnival_old_reward = {
     'icon': ('icon', 'str'),  # 类型
     'reward': ('reward', 'int_list'),  # 奖励
     'unlock_day': ('unlock_day', 'int'),  # 跳转
+    'place': ('place', 'int_list'),  # 位置
 }
 
 carnival_days = {
