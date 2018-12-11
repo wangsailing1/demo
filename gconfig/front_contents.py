@@ -519,5 +519,14 @@ guide_mapping = {
     'dialogue_guide_team': ('dialogue_guide_team', True),
     'dialogue_guide': ('dialogue_guide', True),
 }
+
+carvinal_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'carnival_mission': ('carnival_mission', True),
+    'carnival_new_reward': ('carnival_new_reward', True),
+    'carnival_old_reward': ('carnival_old_reward', True),
+    'carnival_days': ('carnival_days', True),
+    'carnival_random': ('carnival_random', True),
+}
 # 注册需要写到最下面
 register_handler()

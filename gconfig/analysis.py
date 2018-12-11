@@ -767,6 +767,12 @@ def int_list_to_dict(value):
     return dict(enumerate(value))
 
 
+def carnival_random_translate(config, data):
+    print data,11111,config
+    add_dict_list(config, 'dice_ratio', [data['uk'],data['ratio']])
+    return config
+
+
 mapping = {
     # int: 0 or -1 or 1 or '0' or '1' or '-1'
     'int': lambda x: int(x) if x not in space else 0,
@@ -864,5 +870,6 @@ mapping = {
     'common_config': common_pop_key('value'),
     'script_licence_config': specail_pop_uk('num'),
     'gacha_cd_config': specail_pop_uk('time'),
+    'carnival_random_translate': carnival_random_translate,
 }
 
