@@ -311,13 +311,13 @@ class Carnival(ModelBase):
             'server_carnival_done': {},
             'server_dice_num': 0,
             'server_carnival_days': 0,
-            'server_carnival_step': 0,
+            'server_carnival_step': 1,
             'server_reward_data': [],
             'carnival_data': {},
             'carnival_done': {},
             'dice_num': 0,
             'carnival_days': 0,
-            'carnival_step': 0,
+            'carnival_step': 1,
             'reward_data': [],
         }
         
@@ -331,14 +331,14 @@ class Carnival(ModelBase):
             self.server_carnival_done = {}
             self.server_dice_num = 0
             self.server_carnival_days = 0
-            self.server_carnival_step = 0
+            self.server_carnival_step = 1
             save = True
         if not carnival_days and self.carnival_days:
             self.carnival_data = {}
             self.carnival_done = {}
             self.dice_num = 0
             self.carnival_days = 0
-            self.carnival_step = 0
+            self.carnival_step = 1
             save = True
         if server_days and server_days != self.server_carnival_days:
             self.server_carnival_days = server_days
