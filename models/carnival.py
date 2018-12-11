@@ -270,8 +270,7 @@ class Carnival(ModelBase):
 
     }
     # mission_mapping
-    MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission'}
-    BOXOFFICEREFRESHTIME = '05:00:00'
+    MISSIONMAPPING = {1: 'server_arnival', 2: 'carnival_active'}
 
     # 数值类任务初始化时需要自检的
     NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
@@ -533,13 +532,13 @@ class DoMission(object):
             else:
                 self.data[mission_id] = value['value']
 
-        # 判断任务是否完成 自动领奖
-        if self.data[mission_id] >= target_data[1]:
-            if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
-                return
-            self.done.setdefault(self.days, []).append(mission_id)
-            self.num += self.config[mission_id]['reward']
-            self.data[mission_id] = 0
+        # # 判断任务是否完成 自动领奖
+        # if self.data[mission_id] >= target_data[1]:
+        #     if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
+        #         return
+        #     self.done.setdefault(self.days, []).append(mission_id)
+        #     self.num += self.config[mission_id]['reward']
+        #     self.data[mission_id] = 0
 
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info):
