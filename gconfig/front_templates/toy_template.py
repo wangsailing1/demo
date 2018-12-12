@@ -35,7 +35,7 @@ rmb_gacha_control = {
     'compensate':           ('compensate',          'int_list'),       # 补偿奖励
 }
 
-# 付费娃娃机消耗
+# 付费娃娃机排行
 rmb_gacha_rank = {
     'uk':                   ('id',                  'int'),             # id
     'rank':                 ('rank',                'int_list'),        # 排名

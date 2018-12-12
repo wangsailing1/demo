@@ -538,6 +538,7 @@ toy_mapping = {
     'free_gacha': ('free_gacha', True),
     'free_gacha_cost': ('free_gacha_cost', True),
     'free_gacha_control': ('free_gacha_control', True),
+    'rmb_gacha_rank': ('rmb_gacha_rank', True),
 }
 # 注册需要写到最下面
 register_handler()
