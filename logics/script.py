@@ -442,7 +442,7 @@ class ScriptLogic(object):
             'card_effect': result.get('card_effect', 0)
         }
 
-    # 按step计算关注度
+    # 按step计算关注度 (主要是计算加成后的关注度)
     def calc_attention_by_step(self, step, film_info=None, is_save=False):
         if not self.mm.script.cur_script:
             return
