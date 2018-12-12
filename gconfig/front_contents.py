@@ -382,6 +382,7 @@ active_mapping = {
     #     'honor_shop_new': ('honor_shop_new', True),
     'sign_first_week': ('sign_first_week', True),
     'sign_daily_normal': ('sign_daily_normal', True),
+    'active': ('active', True),
 }
 
 daily_activity_mapping = {
@@ -527,6 +528,16 @@ carvinal_mapping = {
     'carnival_old_reward': ('carnival_old_reward', True),
     'carnival_days': ('carnival_days', True),
     'carnival_random': ('carnival_random', True),
+}
+
+toy_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'rmb_gacha': ('rmb_gacha', True),
+    'rmb_gacha_cost': ('rmb_gacha_cost', True),
+    'rmb_gacha_control': ('rmb_gacha_control', True),
+    'free_gacha': ('free_gacha', True),
+    'free_gacha_cost': ('free_gacha_cost', True),
+    'free_gacha_control': ('free_gacha_control', True),
 }
 # 注册需要写到最下面
 register_handler()

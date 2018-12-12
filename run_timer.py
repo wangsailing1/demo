@@ -65,7 +65,8 @@ from lib.utils import filedefaultdict
 from lib.utils.mail import send_sys_mail
 from lib.db import ModelTools
 from models.server import ServerUidList
-from logics.ranking_list import send_output_reward
+from logics.ranking_list import rank_list_backup
+from logics.toy import send_rank_reward
 
 # from lib.statistics.data_analysis import do_data_process_hourly, level_pass_rate
 # from scrips.statistics.dmp_snapshot import do_snapshot
@@ -91,7 +92,8 @@ TIMER_JOBS = (
     # ('cron', dict(day_of_week='2,3', hour='22'), group_team, 0),
     # 公会战周五晚上结算发奖
     # ('cron', dict(day_of_week='4', hour='22'), settlement_reward, 0),
-    ('cron', dict(hour=6), send_output_reward, 0),
+    ('cron', dict(hour=6), rank_list_backup, 0),
+    ('cron', dict(hour=6), send_rank_reward, 0),
 
 )
 DATE_LIST_JOBS = (

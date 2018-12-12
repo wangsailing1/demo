@@ -949,3 +949,15 @@ sign_daily_normal = {
     'reward': ('reward', 'list_3'),     # 每月签到奖励
     'extra_reward': ('extra_reward', 'list_3'),     # 每月签到奖励
 }
+
+# 活动时间配置
+active = {
+    'uk':               ('id',              'int'),     # 序号
+    'active_version':   ('active_version',  'int'),     # 版本号
+    'start_time':       ('start_time',      'str'),     # 开始时间
+    'end_time':         ('end_time',        'str'),     # 结束时间
+    'active_type':      ('active_type',     'int'),     # 活动类型
+    'param1':           ('param1',          'int'),     # 参数1
+    'param2':           ('param2',          'int'),     # 参数2
+    'param3':           ('param3',          'int'),     # 参数3
+}
