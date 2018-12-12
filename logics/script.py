@@ -380,6 +380,11 @@ class ScriptLogic(object):
         # else:
         #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
 
+        # 增加事件和全球影响事件buff
+        # 属性 = 属性 * （1 + 影响比例）（最大5%）
+        event_buff = script.check_event_effect()
+        event_buff = min(event_buff, 5)
+
         base_a = 0
         pro_count = 0
         for pro_id in [art_pro_id, temperament_pro_id]:
@@ -400,11 +405,7 @@ class ScriptLogic(object):
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
                      / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
-            # todo 增加事件和全球影响事件buff
-            event_buff = 10
-            event_buff = min(event_buff, 5)
-            # 属性 = 属性 * （1 + 影响比例）（最大5%）
-            d = d * (1 + event_buff/100.0)
+            d = d * (1 + event_buff / 100.0)
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -435,6 +436,8 @@ class ScriptLogic(object):
                 attr_value = attrs.get(pro_id, 0)
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
                      / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+
+            d = d * (1 + event_buff / 100.0)
             base_b += d
 
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
@@ -645,6 +648,8 @@ class ScriptLogic(object):
         # if script_config['type'] != 1:
         #     first_income = 1.0 * first_income / game_config.common[11]
         #     first_income = round(first_income, 4)
+
+        # todo 检查全服当前类型总票房
         return {'first_income': first_income}
 
     def calc_medium_judge(self):
