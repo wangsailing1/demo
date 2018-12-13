@@ -95,12 +95,14 @@ class ScrollBar(ModelBase, TaskEventBase):
     def script_first_luck(self, mm):
         """拍片首次爆款"""
         msg = self.generate_msg('')
+        # todo 真实消息
         msg['msg'] = u'test_first_luck %s' % mm.uid
         self.add_message(msg)
 
     def script_step_luck(self, mm):
         """拍片爆款后达成阶段性目标"""
         msg = self.generate_msg('')
+        # todo 真实消息
         msg['msg'] = u'test_step-luck %s' % mm.uid
         self.add_message(msg)
 

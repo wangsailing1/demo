@@ -182,7 +182,7 @@ class Script(ModelBase):
             cur_script['continued_expire'] = now + continued_time * 60
             cur_script['continued_start'] = now
 
-            # todo 是否有续作需要激活
+            # 是否有续作需要激活
             self.check_next_sequel(cur_script)
             g_id, all_income = self.get_group_id_all_income(cur_script)
             auid = self.uid
