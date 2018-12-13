@@ -30,6 +30,7 @@ avg_dialogue = {
     'entry_mode': ('entry_mode', 'int'),
     'top_picture': ('top_picture', 'str'),
     'time_frame': ('time_frame', 'int_or_float_list'),
+    'avg_bgm': ('avg_bgm', 'str'),
 }
 
 # 战斗内广告栏
@@ -257,6 +258,7 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'avg_bgm': ('avg_bgm', 'str'),
 }
 
 explain = {
