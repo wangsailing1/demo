@@ -359,7 +359,7 @@ active_mapping = {
     #     'gacha_reward_hero': ('gacha_reward_hero', True),
     #     'gacha_reward': ('gacha_reward', True),
     #     'month_card': ('month_card', True),
-    #     'active_inreview': ('active_inreview', True),
+        'active_inreview': ('active_inreview', True),
     #     'limit_weapon': ('limit_weapon', True),
     #     'limit_box_reward': ('limit_box_reward', True),
     #     'limit_box_shop': ('limit_box_shop', True),
