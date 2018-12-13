@@ -541,5 +541,10 @@ toy_mapping = {
     'free_gacha_control': ('free_gacha_control', True),
     'rmb_gacha_rank': ('rmb_gacha_rank', True),
 }
+
+gift_center_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'welfare_notice': ('welfare_notice', True),
+}
 # 注册需要写到最下面
 register_handler()

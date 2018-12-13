@@ -660,7 +660,7 @@ active_inreview = {
     'uk': ('id', 'int'),                        # 对应入口
     'is_open': ('is_open', 'int'),              # 是否开启
     'show_lv': ('show_lv', 'int'),              # 开启等级
-    'server_id': ('server_id', 'int_list'),     # 开启服务器
+    # 'server_id': ('server_id', 'int_list'),     # 开启服务器
     'server_new': ('server_new', 'int'),        # 新老服开启服务器
     'show_time': ('show_time', 'str'),          # 开启时间
 }
