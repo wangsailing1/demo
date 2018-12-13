@@ -107,7 +107,7 @@ def script_gacha(hm, data, mission):
     count = hm.get_argument('count', 1, is_int=True)
     target_sort = mission._SCRIPT_GACHA
     script_id = data['reward'].get('own_script', [])
-    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': script_id, 'tp': 1}}
 
 
 # 等级
@@ -544,7 +544,7 @@ class DoMission(object):
             gacha_type = value['target1']
             info = value['info']
             tp = value['tp']  # 来源
-            num = self.check_gacha(target_data, gacha_type, self.config[mission_id]['sort'], info ,tp)
+            num = self.check_gacha(target_data, gacha_type, self.config[mission_id]['sort'], info, tp)
             if mission_id in self.data:
                 self.data[mission_id] += num
             else:
@@ -568,6 +568,7 @@ class DoMission(object):
 
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
+        # 获得艺人
         if sort == GACHA[0]:
             # config = game_config.coin_gacha[info]
             if (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
@@ -582,6 +583,7 @@ class DoMission(object):
                     if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                             gacha_type == target[0] or not target[0]):
                         return 1
+        # 获得剧本
         else:
             script_id = info[0] if info else 0
             star = game_config.script.get(script_id,{}).get('star', 0)
