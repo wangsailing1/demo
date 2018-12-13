@@ -258,6 +258,9 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'entry_mode': ('entry_mode', 'int'),
+    'top_picture': ('top_picture', 'str'),
+    'time_frame': ('time_frame', 'int_or_float_list'),
     'avg_bgm': ('avg_bgm', 'str'),
 }
 
