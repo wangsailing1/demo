@@ -485,13 +485,13 @@ server_inreview = {
     'uk': ('ID', 'int'),
     'banner': ('banner', 'str'),
     'is_open': ('is_open', 'int'),
-    'show_id': ('show_id', 'int'),
-    'mark': ('mark', 'int'),
+    # 'show_id': ('show_id', 'int'),
+    # 'mark': ('mark', 'int'),
     'name': ('name', 'str'),
-    'story': ('story', 'unicode'),
-    'default': ('default', 'unicode'),
+    # 'story': ('story', 'unicode'),
+    # 'default': ('default', 'unicode'),
     'show_lv': ('show_lv', 'int'),
-    'sort': ('sort', 'int'),
+    # 'sort': ('sort', 'int'),
 }
 
 # 称号

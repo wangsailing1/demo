@@ -17,11 +17,13 @@ from logics.account import login_verify
 from lib.utils import sid_generate
 from lib.utils.sensitive import is_sensitive
 from tools.gift import add_mult_gift
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from return_msg_config import i18n_msg
 from gconfig import get_str_words
 import hashlib
 from lib.sdk_platform.sdk_uc import send_role_data_uc
+from lib.utils.time_tools import str2timestamp
+import copy
 
 
 def generate_mk(account):
@@ -547,3 +549,23 @@ def check_session(hm):
         return 1, {}
 
     return 0, {}
+
+def notice(hm):
+    lan = hm.get_argument('lan', '1')
+    config = copy.deepcopy(game_config.welfare_notice)
+    info = {}
+    lan = MUITL_LAN[lan]
+    now = int(time.time())
+    for k, v in config.iteritems():
+        if not v['start_time'] or not  v['end_time']:
+            continue
+        start_time = str2timestamp(v['start_time'])
+        end_time = str2timestamp(v['end_time'])
+        if start_time <= now <= end_time:
+            content = game_config.get_language_config(lan)[v['des']]
+            info[k] = v
+            info[k]['des'] = content
+    return 0, info
+
+
+

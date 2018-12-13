@@ -519,5 +519,10 @@ guide_mapping = {
     'dialogue_guide_team': ('dialogue_guide_team', True),
     'dialogue_guide': ('dialogue_guide', True),
 }
+
+gift_center_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'welfare_notice': ('welfare_notice', True),
+}
 # 注册需要写到最下面
 register_handler()
