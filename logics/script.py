@@ -649,8 +649,19 @@ class ScriptLogic(object):
         #     first_income = 1.0 * first_income / game_config.common[11]
         #     first_income = round(first_income, 4)
 
-        # todo 检查全服当前类型总票房
-        return {'first_income': first_income}
+        # 检查全服总票房
+        luck_info = script.check_luck_income(script_config['type'], first_income)
+        first_income = luck_info['income']
+        # 广播
+        if luck_info['first_luck']:
+            self.mm.scroll_bar.script_first_luck(self.mm)
+        if luck_info['step_luck']:
+            self.mm.scroll_bar.script_step_luck(self.mm)
+
+        return {
+            'first_income': first_income,
+            'debuff': luck_info['debuff']
+        }
 
     def calc_medium_judge(self):
         """

@@ -741,19 +741,25 @@ class Script(ModelBase):
         now = int(time.time())
         luck_type, luck_start = self.get_luck_info()
         buff = debuff = 0
+        trigge_first_luck = trigge_step_luck = False
         # 当前是否达有爆款类型
         if luck_type:
             if now - luck_start >= 5 * 60:
                 # 过期了，清空各种类型票房，重新计数
                 self.clear_type_income_info()
-
             else:
-                # todo 爆款周期内, 按概率触发debuff
-                debuff = -game_config.common[64]
-
+                # 爆款周期内, 按概率触发debuff
+                if random.randint(1, 10000) <= game_config.common[66]:
+                    debuff += game_config.common[65]
                 # 非爆款类型不再计入票房总数
                 if luck_type != script_type:
-                    return income * (1 + buff / debuff)
+                    return {
+                        'income': int(income * (1 + (buff + debuff) / 10000.0)),
+                        'first_luck': trigge_first_luck,
+                        'step_luck': trigge_step_luck,
+                        'buff': buff,
+                        'debuff': debuff,
+                    }
 
         redis = self.global_cache
         key = self.generate_all_type_income_key()
@@ -766,20 +772,23 @@ class Script(ModelBase):
         # 首次达成爆款
         trigge_first_luck = last_income < limit <= cur_income
 
-        # todo 5分钟爆款周期内每增加 y, 下个玩家按百分比增加票房
-        # 爆款之后达成阶段性票房
+        # 爆款之后达成阶段性票房, 玩家按百分比增加票房
         trigge_step_luck = last_income > limit and \
                                  (cur_income // step_limit > last_income // step_limit)
 
         if trigge_first_luck:
             self.set_luck_type(script_type)
-            buff = game_config.common[64]
+            buff += game_config.common[64]
 
-        # todo
         if trigge_step_luck:
-            buff = game_config.common[64]
-            income = income
-        return int(income * (1 + buff/100.0))
+            buff += game_config.common[64]
+        return {
+            'income': int(income * (1 + (buff + debuff) / 10000.0)),
+            'first_luck': trigge_first_luck,
+            'step_luck': trigge_step_luck,
+            'buff': buff,
+            'debuff': debuff,
+        }
 
 
 ModelManager.register_model('script', Script)
