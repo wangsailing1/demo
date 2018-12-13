@@ -73,8 +73,32 @@ def card_gacha(hm, data, mission):
     sort = hm.get_argument('sort', is_int=True)
     count = hm.get_argument('count', 1, is_int=True)
     gacha_id = hm.get_argument('gacha_id', is_int=True)
+    reward = game_config.coin_gacha[gacha_id]['reward']
     target_sort = mission._CARD_GACHA
-    return {target_sort: {'target1': sort, 'value': count, 'info': gacha_id}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': reward}}
+
+
+# 抓娃娃
+def get_toy(hm, data, mission):
+    reward_id = hm.get_argument('reward_id', is_int=True)
+    sort = hm.get_argument('sort',is_int=True)
+    if sort == 1:
+        config = game_config.rmb_gacha
+    else:
+        config = game_config.free_gacha
+    card = []
+    script = []
+    if data['got']:
+        gift = config[reward_id]['award']
+        for item_id in gift:
+            if item_id[0] in [8, 9]: # 卡牌整卡，碎片
+                card.append(item_id)
+            elif item_id[0] == 15:
+                script.append(item_id[1])
+    target_card_sort = mission._CARD_GACHA
+    target_script_sort = mission._SCRIPT_GACHA
+    return {target_card_sort: {'target1': 0, 'value': 1, 'info': card},
+            target_script_sort: {'target1': 0, 'value': 1, 'info': script},}
 
 
 # 抽剧本
@@ -258,6 +282,7 @@ class Carnival(ModelBase):
         'chapter_stage.auto_sweep': chapter_stage_auto_args,  # 自动推图 增加通关次数
         'script_gacha.get_gacha': script_gacha,  # 抽剧本
         'gacha.receive': card_gacha,  # 抽卡
+        'toy.get_toy': get_toy,  # 抽卡
         'card.card_level_up': card_lv,  # 艺人升级
         'friend.sent_gift': send_gift,  # 好友送礼
         'friend.sent_gift_all': send_gift,  # 一键送礼
@@ -543,15 +568,14 @@ class DoMission(object):
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info):
         if sort == GACHA[0]:
-            config = game_config.coin_gacha[info]
-            reward = config['reward']
-            if reward[0][0] == 8:  # 整卡 道具类型
-                star = game_config.card_basis[reward[0][1]]['star_level']
+            # config = game_config.coin_gacha[info]
+            if info[0][0] == 8:  # 整卡 道具类型
+                star = game_config.card_basis[info[0][1]]['star_level']
                 if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
                         gacha_type == target[0] or not target[0]):
                     return 1
             else:
-                star = game_config.use_item[reward[0][1]]['star']
+                star = game_config.use_item[info[0][1]]['star']
                 if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                         gacha_type == target[0] or not target[0]):
                     return 1

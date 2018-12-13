@@ -82,6 +82,7 @@ class Toy(object):
             self.toy.add_rank(self.mm.uid, self.toy.catch_num)
         _ , data = self.index()
         data['reward'] = reward
+        data['got'] = got
         return 0, data
 
     def get_group_mustgetnum(self,group_id):

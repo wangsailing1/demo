@@ -60,7 +60,7 @@ class Toy(ModelBase):
         return self._key
 
     def get_version(self):
-        return get_version_by_active_id(active_id=1)
+        return get_version_by_active_id(active_id=2001)
 
     def is_free_refresh(self):
         return int(time.time()) >= self.last_refresh_time + self.get_refresh_time()
@@ -124,7 +124,7 @@ class FreeToy(Toy):
         super(Toy, self).__init__(self.uid)
 
     def get_version(self):
-        return get_version_by_active_id(active_id=2)
+        return get_version_by_active_id(active_id=2002)
 
     def get_refresh_time(self):
         config = game_config.free_gacha_control[self.version]
