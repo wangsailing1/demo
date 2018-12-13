@@ -129,6 +129,7 @@ welfare_notice = {
     'end_time': ('end_time', 'str'),        # 结束时间
     'mark': ('mark', 'int_list'),
     'show_time': ('show_time', 'unicode'),
+    'order': ('order', 'int'),
 }
 
 server_notice = {

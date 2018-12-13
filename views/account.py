@@ -563,8 +563,10 @@ def notice(hm):
         end_time = str2timestamp(v['end_time'])
         if start_time <= now <= end_time:
             content = game_config.get_language_config(lan)[v['des']]
+            name = game_config.get_language_config(lan)[v['name']]
             info[k] = v
             info[k]['des'] = content
+            info[k]['name'] = name
     return 0, info
 
 
