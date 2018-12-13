@@ -65,7 +65,7 @@ class UserLogic(object):
 
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
-        # result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
+        result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
 
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
