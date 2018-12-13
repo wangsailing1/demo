@@ -419,11 +419,11 @@ def get_server_list(server_list):
             if server_uid.owned_count() <= 2000:
                 not_enough_new_servers.append(server_id)
     if not_enough_new_servers:
-        return random.choice(not_enough_new_servers)
+        return [random.choice(not_enough_new_servers)]
     if new_servers:
-        return random.choice(new_servers)
+        return [random.choice(new_servers)]
     all_list = server_list[-2:] if len(server_list) >= 2 else server_list
-    return random.choice(all_list)
+    return [random.choice(all_list)]
 
 
 
