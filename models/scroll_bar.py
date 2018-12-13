@@ -100,7 +100,7 @@ class ScrollBar(ModelBase, TaskEventBase):
 
     def script_step_luck(self, mm):
         """拍片爆款后达成阶段性目标"""
-        msg = self.generate_msg()
+        msg = self.generate_msg('')
         msg['msg'] = u'test_step-luck %s' % mm.uid
         self.add_message(msg)
 
