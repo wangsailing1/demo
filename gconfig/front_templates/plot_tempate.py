@@ -27,6 +27,7 @@ avg_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'avg_bgm': ('avg_bgm', 'str'),
 }
 
 # 战斗内广告栏
@@ -254,6 +255,7 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'avg_bgm': ('avg_bgm', 'str'),
 }
 
 explain = {
