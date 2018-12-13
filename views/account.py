@@ -383,8 +383,8 @@ def get_user_server_list(hm, account=None):
             'ks': sid,
             'mk': '',
         }
-
-    server_list = get_server_list(server_list)
+    # todo 暂时屏蔽服务器自动选择
+    # server_list = get_server_list(server_list)
 
     if not Account.check_exist(account):
         return 0, {  # 查无此人
