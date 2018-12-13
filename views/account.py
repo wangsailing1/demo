@@ -10,7 +10,7 @@ from lib.utils.string_operation import is_account
 from lib.core.environ import ModelManager
 from lib.statistics.bdc_event_funcs import special_bdc_log
 from models.account import Account
-from models.server import ServerUidList
+from models.server import ServerUidList, ServerUid
 from models.server import ServerConfig
 from models.bloom_filter import BloomFilter
 from logics.account import login_verify
@@ -78,17 +78,17 @@ def login(hm):
     :param hm:
     :return:
     """
-    account_name = hm.get_argument('account')
-    password = hm.get_argument('passwd', '')
-
-    acc = Account.get(account_name)
-    if acc.inited:
-        return 1, {}
-
-    if not acc.check_passwd(password):
-        return 2, {}
-
-    sid, expired = acc.get_or_create_session_and_expired(force=True)
+    # account_name = hm.get_argument('account')
+    # password = hm.get_argument('passwd', '')
+    #
+    # acc = Account.get(account_name)
+    # if acc.inited:
+    #     return 1, {}
+    #
+    # if not acc.check_passwd(password):
+    #     return 2, {}
+    #
+    # sid, expired = acc.get_or_create_session_and_expired(force=True)
 
     rc, data = get_user_server_list(hm)
     if rc != 0:
@@ -384,6 +384,8 @@ def get_user_server_list(hm, account=None):
             'mk': '',
         }
 
+    server_list = get_server_list(server_list)
+
     if not Account.check_exist(account):
         return 0, {  # 查无此人
             'server_list': server_list,
@@ -404,6 +406,25 @@ def get_user_server_list(hm, account=None):
         'ks': sid,
         'mk': mk,
     }
+
+def get_server_list(server_list):
+    new_servers = []
+    not_enough_new_servers = []
+    for server_id in server_list:
+        if server_id['server'] in ['master', 'public']:
+            continue
+        if game_config.get_config_type(server_id['server']) == 1:
+            new_servers.append(server_id)
+            server_uid = ServerUid(server_id)
+            if server_uid.owned_count() <= 2000:
+                not_enough_new_servers.append(server_id)
+    if not_enough_new_servers:
+        return random.choice(not_enough_new_servers)
+    if new_servers:
+        return random.choice(new_servers)
+    all_list = server_list[-2:] if len(server_list) >= 2 else server_list
+    return random.choice(all_list)
+
 
 
 def get_another_list(hm, flag=None):
