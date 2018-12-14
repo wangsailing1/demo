@@ -527,6 +527,27 @@ active_msg = {
     },
 }
 
+toy_msg = {
+    'toy.index': {
+        1: u'活动未开启',
+    },
+    'toy.get_toy': {
+        1: u'活动未开启',
+        2: u'娃娃已经被抓走了',
+        3: u'娃娃错误',
+        4: u'道具不足',
+    },
+    'toy.refresh': {
+        1: u'活动未开启',
+        2: u'道具不足',
+    },
+    'toy.get_rank_reward': {
+        1: u'活动未开启',
+        2: u'排行没有奖励',
+        3: u'奖励已领',
+    },
+}
+
 i18n = {
     'user_name': u'敢斗团',
     'dark_steet': u'黑街擂台',
