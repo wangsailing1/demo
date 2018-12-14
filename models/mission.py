@@ -106,7 +106,7 @@ def script_gacha(hm, data, mission):
     count = hm.get_argument('count', 1, is_int=True)
     target_sort = mission._SCRIPT_GACHA
     script_id = data['reward'].get('own_script', [])
-    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}, 'tp': 1}
 
 
 # 等级
