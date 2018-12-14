@@ -14,7 +14,7 @@ liveness = {
     'describe': ('describe', 'int'),  # 任务描述
     'liveness': ('liveness', 'int'),  # 活跃度
     'sort': ('sort', 'int'),  # 类型
-    'target': (('target1', 'target2', 'target3',), ('int', 'mult_force_num_list')),  # 目标
+    'target': (('target1', 'target2', 'target3', 'target4' 'target5'), ('int', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
     'jump': ('jump', 'int_list'),  # 跳转
     'unlock_level': ('unlock_level', 'int_list'),  # 解锁等级
