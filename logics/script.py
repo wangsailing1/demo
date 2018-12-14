@@ -651,17 +651,12 @@ class ScriptLogic(object):
 
         # 检查全服总票房
         luck_info = script.check_luck_income(script_config['type'], first_income)
-        first_income = luck_info['income']
-        # 广播
-        if luck_info['first_luck']:
-            self.mm.scroll_bar.script_first_luck(self.mm)
-        if luck_info['step_luck']:
-            self.mm.scroll_bar.script_step_luck(self.mm)
-
-        return {
-            'first_income': first_income,
-            'debuff': luck_info['debuff']
-        }
+        # buff广播
+        if luck_info['first_luck'] or luck_info['step_luck']:
+            self.mm.scroll_bar.script_luck_buff(self.mm, cur_script['id'], script_config)
+        elif luck_info['debuff']:
+            luck_info['debuff_msg'] = self.mm.scroll_bar.script_luck_debuff(self.mm, cur_script['id'], script_config)
+        return luck_info
 
     def calc_medium_judge(self):
         """

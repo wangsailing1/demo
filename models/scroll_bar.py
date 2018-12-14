@@ -9,6 +9,8 @@ from gconfig import game_config
 from lib.db import ModelTools, ModelBase
 from lib.core.environ import ModelManager
 import settings
+from return_msg_config import i18n_msg
+from gconfig import get_str_words
 
 
 class ScrollBar(ModelBase, TaskEventBase):
@@ -92,19 +94,27 @@ class ScrollBar(ModelBase, TaskEventBase):
         }
         return data
 
-    def script_first_luck(self, mm):
+    def script_luck_buff(self, mm, script_id, script_config=None):
         """拍片首次爆款"""
-        msg = self.generate_msg('')
-        # todo 真实消息
-        msg['msg'] = u'test_first_luck %s' % mm.uid
-        self.add_message(msg)
+        script_config = script_config or game_config.script[script_id]
+        script_name = get_str_words(mm.user.language_sort, script_config['name'])
 
-    def script_step_luck(self, mm):
-        """拍片爆款后达成阶段性目标"""
+        custom_msg = i18n_msg.get('script_luck_buff', mm.user.language_sort) % (mm.user.name, script_name)
         msg = self.generate_msg('')
-        # todo 真实消息
-        msg['msg'] = u'test_step-luck %s' % mm.uid
+        msg['msg'] = custom_msg
         self.add_message(msg)
+        return custom_msg
+
+    def script_luck_debuff(self, mm, script_id, script_config=None):
+        """同类型片子太多，debuff"""
+        script_config = script_config or game_config.script[script_id]
+        script_name = get_str_words(mm.user.language_sort, script_config['name'])
+
+        custom_msg = i18n_msg.get('script_luck_debuff', mm.user.language_sort) % script_name
+        # msg = self.generate_msg('')
+        # msg['msg'] = custom_msg
+        # self.add_message(msg)
+        return custom_msg
 
     # ########################
     # 对应触发任务 start
