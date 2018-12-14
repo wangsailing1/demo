@@ -81,7 +81,7 @@ def update(req, **kwargs):
         if level < cur_level:
             cur_level = mm.user.level = 1
         for lv in xrange(cur_level, level):
-            add_exp += game_config.hero_exp.get(lv, {}).get('player_exp', 0)
+            add_exp += game_config.player_level.get(lv, {}).get('exp', 0)
         if add_exp > 0:
             mm.user.add_player_exp(add_exp)
     else:
