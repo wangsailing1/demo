@@ -62,6 +62,10 @@ class Toy(ModelBase):
     def is_free_refresh(self):
         return int(time.time()) >= self.last_refresh_time + self.get_refresh_time()
 
+    def remain_refresh_time(self):
+        remain_time = self.last_refresh_time + self.get_refresh_time() - int(time.time())
+        return max(remain_time, 0)
+
     def get_refresh_time(self):
         config = game_config.rmb_gacha_control[self.version]
         return config['cd'] * 60
