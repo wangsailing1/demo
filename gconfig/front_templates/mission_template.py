@@ -51,6 +51,7 @@ random_mission = {
     'jump': ('jump', 'int_list'),  # 跳转
     'weight': ('weight', 'int'),  # 权重
     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
+    'name': ('name', 'str'),  # 名字
 }
 
 # 成就任务
