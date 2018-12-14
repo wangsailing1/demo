@@ -51,7 +51,7 @@ class Carnival(object):
                    'carnival_days': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_days')),
                    'carnival_step': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_step')),
                    'max_id': self.carnival.carnival_max_id(tp=tp),
-                   'status':self.get_status_by_type(tp)}
+                   'status': self.get_status_by_type(tp)}
 
     def dice(self, tp=1):
         if tp == 1:
@@ -93,7 +93,7 @@ class Carnival(object):
         data['choice_num'] = step_num
         return 0, data
 
-    def get_reward(self,tp=1, mission_id=''):
+    def get_reward(self, tp=1, mission_id=''):
         type = self.carnival.MISSIONMAPPING[tp]
         mission_obj = getattr(self.carnival, type)
         if mission_id not in mission_obj.data:
@@ -108,8 +108,6 @@ class Carnival(object):
         _, data = self.index(tp=tp)
         data['got_num'] = mission_obj.config[mission_id]['reward']
         return 0, data
-
-
 
     def has_reward_by_type(self, tp=1, mission_id=''):
         type = self.carnival.MISSIONMAPPING[tp]
@@ -129,7 +127,7 @@ class Carnival(object):
         type = self.carnival.MISSIONMAPPING[tp]
         mission_obj = getattr(self.carnival, type)
         config = mission_obj.config
-        if mission_id in mission_obj.done.get(mission_obj.days, []) and not config['if_reuse'] :
+        if mission_id in mission_obj.done.get(mission_obj.days, []) and not config['if_reuse']:
             return 1
         return 0
 
@@ -142,7 +140,6 @@ class Carnival(object):
             if has_reward and not done:
                 return True
         return False
-
 
     def get_status(self, mission_obj, mission_id, config):
         target_sort = config['sort']

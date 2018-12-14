@@ -75,13 +75,13 @@ def card_gacha(hm, data, mission):
     gacha_id = hm.get_argument('gacha_id', is_int=True)
     reward = game_config.coin_gacha[gacha_id]['reward']
     target_sort = mission._CARD_GACHA
-    return {target_sort: {'target1': sort, 'value': count, 'info': reward}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1}}
 
 
 # 抓娃娃
 def get_toy(hm, data, mission):
     reward_id = hm.get_argument('reward_id', is_int=True)
-    sort = hm.get_argument('sort',is_int=True)
+    sort = hm.get_argument('sort', is_int=True)
     if sort == 1:
         config = game_config.rmb_gacha
     else:
@@ -91,14 +91,14 @@ def get_toy(hm, data, mission):
     if data['got']:
         gift = config[reward_id]['award']
         for item_id in gift:
-            if item_id[0] in [8, 9]: # 卡牌整卡，碎片
+            if item_id[0] in [8, 9]:  # 卡牌整卡，碎片
                 card.append(item_id)
             elif item_id[0] == 15:
                 script.append(item_id[1])
     target_card_sort = mission._CARD_GACHA
     target_script_sort = mission._SCRIPT_GACHA
-    return {target_card_sort: {'target1': 0, 'value': 1, 'info': card},
-            target_script_sort: {'target1': 0, 'value': 1, 'info': script},}
+    return {target_card_sort: {'target1': 0, 'value': 1, 'info': card, 'tp': 2},
+            target_script_sort: {'target1': 0, 'value': 1, 'info': script, 'tp': 2}, }
 
 
 # 抽剧本
@@ -107,7 +107,7 @@ def script_gacha(hm, data, mission):
     count = hm.get_argument('count', 1, is_int=True)
     target_sort = mission._SCRIPT_GACHA
     script_id = data['reward'].get('own_script', [])
-    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}}
+    return {target_sort: {'target1': sort, 'value': count, 'info': script_id, 'tp': 1}}
 
 
 # 等级
@@ -282,7 +282,7 @@ class Carnival(ModelBase):
         'chapter_stage.auto_sweep': chapter_stage_auto_args,  # 自动推图 增加通关次数
         'script_gacha.get_gacha': script_gacha,  # 抽剧本
         'gacha.receive': card_gacha,  # 抽卡
-        'toy.get_toy': get_toy,  # 抽卡
+        'toy.get_toy': get_toy,  # 抓娃娃
         'card.card_level_up': card_lv,  # 艺人升级
         'friend.sent_gift': send_gift,  # 好友送礼
         'friend.sent_gift_all': send_gift,  # 一键送礼
@@ -345,7 +345,7 @@ class Carnival(ModelBase):
             'carnival_step': 1,
             'reward_data': [],
         }
-        
+
         super(Carnival, self).__init__(self.uid)
 
     def pre_use(self, save=False):
@@ -396,7 +396,7 @@ class Carnival(ModelBase):
         if save:
             self.save()
 
-    def carnival_max_id(self,tp=1):
+    def carnival_max_id(self, tp=1):
         if tp == 1:
             config = game_config.carnival_new_reward
         else:
@@ -543,7 +543,8 @@ class DoMission(object):
         elif self.config[mission_id]['sort'] in GACHA:
             gacha_type = value['target1']
             info = value['info']
-            num = self.check_gacha(target_data, gacha_type, self.config[mission_id]['sort'], info)
+            tp = value['tp']  # 来源
+            num = self.check_gacha(target_data, gacha_type, self.config[mission_id]['sort'], info, tp)
             if mission_id in self.data:
                 self.data[mission_id] += num
             else:
@@ -557,31 +558,35 @@ class DoMission(object):
             else:
                 self.data[mission_id] = value['value']
 
-        # # 判断任务是否完成 自动领奖
-        # if self.data[mission_id] >= target_data[1]:
-        #     if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
-        #         return
-        #     self.done.setdefault(self.days, []).append(mission_id)
-        #     self.num += self.config[mission_id]['reward']
-        #     self.data[mission_id] = 0
+                # # 判断任务是否完成 自动领奖
+                # if self.data[mission_id] >= target_data[1]:
+                #     if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
+                #         return
+                #     self.done.setdefault(self.days, []).append(mission_id)
+                #     self.num += self.config[mission_id]['reward']
+                #     self.data[mission_id] = 0
 
     # 判断抽卡与抽剧本
-    def check_gacha(self, target, gacha_type, sort, info):
+    def check_gacha(self, target, gacha_type, sort, info, tp):
+        # 获得艺人
         if sort == GACHA[0]:
             # config = game_config.coin_gacha[info]
-            if info[0][0] == 8:  # 整卡 道具类型
-                star = game_config.card_basis[info[0][1]]['star_level']
-                if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
-                        gacha_type == target[0] or not target[0]):
-                    return 1
-            else:
-                star = game_config.use_item[info[0][1]]['star']
-                if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
-                        gacha_type == target[0] or not target[0]):
-                    return 1
+            if (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
+                        isinstance(target[4], list) and tp in target[4]):
+                if info[0][0] == 8:  # 整卡 道具类型
+                    star = game_config.card_basis[info[0][1]]['star_level']
+                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
+                                    gacha_type == target[0] or not target[0]):
+                        return 1
+                else:
+                    star = game_config.use_item[info[0][1]]['star']
+                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
+                                    gacha_type == target[0] or not target[0]):
+                        return 1
+        # 获得剧本
         else:
             script_id = info[0] if info else 0
-            star = game_config.script.get(script_id,{}).get('star', 0)
+            star = game_config.script.get(script_id, {}).get('star', 0)
             if star >= target[2]:
                 return 1
         return 0
