@@ -43,7 +43,7 @@ class Toy(object):
         if not catch:
             gift = gacha_control_config[self.toy.version]['compensate']
             reward = add_mult_gift(self.mm, gift)
-            self.toy.toy_list[reward_id]['num'] += 1
+            # self.toy.toy_list[reward_id]['num'] += 1
             self.toy.toy_num += 1
             self.toy.all_toy_num += 1
             self.toy.save()

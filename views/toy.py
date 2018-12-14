@@ -16,6 +16,7 @@ def get_toy(hm):
     catch = hm.get_argument('catch', is_int=True)
     sort = hm.get_argument('sort', is_int=True)
     reward_id = hm.get_argument('reward_id', is_int=True)
+    print 11111,catch
     toy = Toy(mm, sort)
     rc, data = toy.get_toy(catch, reward_id)
     return rc, data
