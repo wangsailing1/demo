@@ -9,9 +9,9 @@
         <th>唯一id</th>
         <th>名字</th>
         <th>等级</th>
-        <th>经验</th>
-        <th>进阶等级</th>
-        <th>星级</th>
+        <!--<th>经验</th>-->
+        <!--<th>进阶等级</th>-->
+        <!--<th>星级</th>-->
         <th>操作</th>
     </tr>
 {% if card %}
@@ -24,9 +24,9 @@
         <td>{{ card_oid }}</td>
         <td>{{ card_dict['id'] }}</td>
         <td><input type="text" name="lv" value="{{ card_dict['lv'] }}" size="5" /></td>
-        <td>{{ card_dict['exp'] }}</td>
-        <td><input type="text" name="evo" value="{{ card_dict['evo'] }}" size="5" /></td>
-        <td><input type="text" name="star" value="{{ card_dict['star'] }}" size="5" /></td>
+        <!--<td>{{ card_dict['exp'] }}</td>-->
+        <!--<td><input type="text" name="evo" value="{{ card_dict['evo'] }}" size="5" /></td>-->
+        <!--<td><input type="text" name="star" value="{{ card_dict['star'] }}" size="5" /></td>-->
         <td><input value="修改" name="modify"  type="submit" onclick="return confirm('确认需要修改吗?')" /><br/>
             <input value="删除" name="delete"  type="submit" onclick="return confirm('确认需要删除吗?')" /></td>
         </form>
