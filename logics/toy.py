@@ -25,7 +25,7 @@ class Toy(object):
         data = {}
         data['reward_list'] = self.toy.toy_list
         data['version'] = self.toy.version
-        data['remian_time'] = self.toy.remain_refresh_time()
+        data['remain_time'] = self.toy.remain_refresh_time()
         if self.sort == 1:
             data['rank'] = self.toy.get_all_user(start=0, end=99)
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
