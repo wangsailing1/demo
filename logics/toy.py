@@ -21,7 +21,13 @@ class Toy(object):
         self.toy = getattr(self.mm, self.mapping[sort])
         self.pre_str = self.pre_str_mapping[sort]
 
+    def is_open(self):
+        action_config_id, version = self.toy.get_version()
+        return version
+
     def index(self):
+        if not self.is_open():
+            return 1, {}  # 活动未开启
         data = {}
         data['reward_list'] = self.toy.toy_list
         data['version'] = self.toy.version
@@ -34,6 +40,8 @@ class Toy(object):
         return 0, data
 
     def get_toy(self, catch, reward_id):
+        if not self.is_open():
+            return 1, {}  # 活动未开启
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
         gacha_cost_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_cost'))
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
@@ -41,7 +49,7 @@ class Toy(object):
         cost = gacha_cost_config[min(self.toy.toy_num + 1, max(gacha_cost_config.keys()))]['cost']
         rc = has_mult_goods(self.mm, cost)
         if not rc:
-            return 1, {}  # 道具不足
+            return 4, {}  # 道具不足
         del_mult_goods(self.mm, cost)
         if not catch:
             gift = gacha_control_config[self.toy.version]['compensate']
@@ -110,6 +118,8 @@ class Toy(object):
         return rate >= random.randint(1, 10000)
 
     def refresh(self):
+        if not self.is_open():
+            return 1, {}  # 活动未开启
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
         if self.toy.is_free_refresh():
             cost = []
@@ -118,7 +128,7 @@ class Toy(object):
             cost = gacha_control_config[self.toy.version]['cost']
         rc = has_mult_goods(self.mm, cost)
         if not rc:
-            return 1, {}  # 道具不足
+            return 2, {}  # 道具不足
         del_mult_goods(self.mm, cost)
         self.toy.refresh_reward()
         self.toy.save()
@@ -126,9 +136,11 @@ class Toy(object):
         return 0, data
 
     def get_rank_reward(self):
+        if not self.is_open():
+            return 1, {}  # 活动未开启
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))
         if self.toy.rank_reward:
-            return 1, {}  # 奖励已领
+            return 3, {}  # 奖励已领
         rank = self.toy.get_rank(self.mm.uid)
         gift = []
         for id, value in gacha_rank_config:
