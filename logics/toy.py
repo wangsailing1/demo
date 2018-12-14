@@ -26,6 +26,7 @@ class Toy(object):
         data['reward_list'] = self.toy.toy_list
         data['version'] = self.toy.version
         data['remain_time'] = self.toy.remain_refresh_time()
+        data['luck_num'] = self.toy.catch_num_current
         if self.sort == 1:
             data['rank'] = self.toy.get_all_user(start=0, end=99)
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
@@ -57,20 +58,17 @@ class Toy(object):
             got = True
         else:
             got = self.check_got(reward_id)
+        self.toy.toy_num += 1
+        self.toy.all_toy_num += 1
+        self.toy.catch_num_current += 1
 
         if not got:
             gift = gacha_control_config[self.toy.version]['compensate']
             self.toy.toy_list[reward_id]['num'] += 1
-            self.toy.toy_num += 1
-            self.toy.all_toy_num += 1
-            self.toy.catch_num_current += 1
         else:
             gift = gacha_config[self.toy.toy_list[reward_id]['reward_id']]['award']
             self.toy.toy_list[reward_id]['num'] += 1
-            self.toy.toy_num += 1
-            self.toy.all_toy_num += 1
             self.toy.catch_num += 1
-            self.toy.catch_num_current += 1
             self.toy.toy_list.pop(reward_id)
             self.toy.got_reward.append(reward_id)
         # 抽完自动刷新
