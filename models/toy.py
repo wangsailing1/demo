@@ -5,27 +5,24 @@ import time
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
-from lib.utils import generate_rank_score, round_float_or_str,weight_choice
+from lib.utils import generate_rank_score, round_float_or_str, weight_choice
 import settings
 from lib.utils.active_inreview_tools import get_version_by_active_id
 
 
-
-
 class Toy(ModelBase):
-
-    def __init__(self,uid):
+    def __init__(self, uid):
         self.uid = uid
         self._attrs = {
             'toy_list': {},  # 奖池
             'version': 0,  # 版本号
             'toy_num': 0,  # 本次抓取次数
-            'all_toy_num': 0, # 总抓取次数
-            'got_reward': [], # 获得的娃娃
-            'catch_num_current': 0, # 本次抓住次数
-            'last_refresh_time': 0, # 刷新时间
-            'catch_num': 0,   # 排行用
-            'rank_reward': [], # 排行奖励
+            'all_toy_num': 0,  # 总抓取次数
+            'got_reward': [],  # 获得的娃娃
+            'catch_num_current': 0,  # 本次抓住次数
+            'last_refresh_time': 0,  # 刷新时间
+            'catch_num': 0,  # 排行用
+            'rank_reward': [],  # 排行奖励
         }
         super(Toy, self).__init__(self.uid)
         server = self.get_server_name(self.uid)
@@ -95,7 +92,7 @@ class Toy(ModelBase):
         if save:
             self.save()
 
-    def add_rank(self,uid,score):
+    def add_rank(self, uid, score):
         _key = self.get_key()
         self.fredis.zadd(_key, uid, generate_rank_score(score))
 
@@ -119,8 +116,7 @@ class Toy(ModelBase):
 
 
 class FreeToy(Toy):
-
-    def __int__(self,uid):
+    def __int__(self, uid):
         super(Toy, self).__init__(self.uid)
 
     def get_version(self):
@@ -151,8 +147,3 @@ class FreeToy(Toy):
 
 ModelManager.register_model('toy', Toy)
 ModelManager.register_model('freetoy', FreeToy)
-
-
-
-
-

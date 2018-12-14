@@ -31,14 +31,14 @@ class Toy(object):
         return 0, data
 
     def get_toy(self, catch, reward_id):
-        gacha_config = getattr(game_config,'%s%s'%(self.pre_str,'gacha'))
+        gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
         gacha_cost_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_cost'))
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
 
         cost = gacha_cost_config[min(self.toy.toy_num + 1, max(gacha_cost_config.keys()))]['cost']
         rc = has_mult_goods(self.mm, cost)
         if not rc:
-            return 1, {} # 道具不足
+            return 1, {}  # 道具不足
         del_mult_goods(self.mm, cost)
         if not catch:
             gift = gacha_control_config[self.toy.version]['compensate']
@@ -80,26 +80,27 @@ class Toy(object):
         self.toy.save()
         if self.sort == 1:
             self.toy.add_rank(self.mm.uid, self.toy.catch_num)
-        _ , data = self.index()
+        _, data = self.index()
         data['reward'] = reward
         return 0, data
 
-    def get_group_mustgetnum(self,group_id):
+    def get_group_mustgetnum(self, group_id):
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
         config = gacha_control_config[self.toy.version]
         for group, num in config['group_mustgetnum']:
             if group == group_id:
                 return num
 
-    def check_got(self,reward_id):
+    def check_got(self, reward_id):
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
         reward_need_num = max(self.toy.catch_num_current - gacha_config[reward_id]['mustlost'], 0)
         if not reward_need_num:
             return False
         undrop_rate_dict = dict(gacha_config[reward_id]['undrop_rate'])
-        reward_need_num = reward_need_num if reward_need_num <= max(undrop_rate_dict.keys()) else max(undrop_rate_dict.keys())
+        reward_need_num = reward_need_num if reward_need_num <= max(undrop_rate_dict.keys()) else max(
+            undrop_rate_dict.keys())
         rate = undrop_rate_dict.get(reward_need_num)
-        return rate >= random.randint(1,10000)
+        return rate >= random.randint(1, 10000)
 
     def refresh(self):
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
@@ -110,17 +111,17 @@ class Toy(object):
             cost = gacha_control_config[self.toy.version]['cost']
         rc = has_mult_goods(self.mm, cost)
         if not rc:
-            return 1 , {}  # 道具不足
+            return 1, {}  # 道具不足
         del_mult_goods(self.mm, cost)
         self.toy.refresh_reward()
         self.toy.save()
-        _ , data = self.index()
+        _, data = self.index()
         return 0, data
 
     def get_rank_reward(self):
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))
         if self.toy.rank_reward:
-            return 1, {}  #奖励已领
+            return 1, {}  # 奖励已领
         rank = self.toy.get_rank(self.mm.uid)
         gift = []
         for id, value in gacha_rank_config:
@@ -134,40 +135,30 @@ class Toy(object):
         self.toy.save()
         return 0, {'reward': reward}
 
+
 def send_rank_reward(server):
     _, version = get_version_by_active_id(active_id=1)
     if version:
         return
-    _, version = get_version_by_active_id(active_id=1,differ_time=3600)
+    _, version = get_version_by_active_id(active_id=1, differ_time=3600)
     if not version:
         return
     toy = MToy.get('%s1234567' % server)
     _key = toy.get_key(version)
-    all_rank = toy.get_all_user(start=0,end=99,r_key=_key)
+    all_rank = toy.get_all_user(start=0, end=99, r_key=_key)
     config = game_config.rmb_gacha_rank
     info = {}
-    for rank, uid in enumerate(all_rank,1):
-        for k,value in config.iteritems():
-            if value['rank'][0] <=rank <= value['rank'][1]:
+    for rank, uid in enumerate(all_rank, 1):
+        for k, value in config.iteritems():
+            if value['rank'][0] <= rank <= value['rank'][1]:
                 mm = ModelManager(uid)
                 gift = value['reward']
                 title = value['mail_title']
                 content = value['mail_content']
                 lan = MUITL_LAN(mm.user.language_sort)
                 title = game_config.get_language_config(lan)[title]
-                content = game_config.get_language_config(lan)[content]%rank
+                content = game_config.get_language_config(lan)[content] % rank
                 msg = mm.mail.generate_mail(content, title=title, gift=gift)
                 mm.mail.add_mail(msg)
-                info[uid] = [rank,gift]
+                info[uid] = [rank, gift]
     print_log(info)
-
-
-
-
-
-
-
-
-
-
-
