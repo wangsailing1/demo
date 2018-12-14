@@ -339,6 +339,10 @@ class Mission(ModelBase):
     _SCRIPT_REWRITE = 18  # 剧本重写
     _COMPANY_VALUE = 19  # 公司市值
     _ACHIEVE = 21  # 成就
+    _LIMIT_ACTOR = 22  # 自制艺人限制型
+    _ACTOR_LOVE = 23  # 艺人好感度
+    _ONCE = 24  # 单次自制票房
+    _FIRST_INCOME = 25  # 首映票房/收视
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
