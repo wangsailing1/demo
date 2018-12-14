@@ -41,8 +41,6 @@ class Toy(object):
         rc = has_mult_goods(self.mm, cost)
         if not rc:
             return 1, {}  # 道具不足
-        if self.toy.toy_list[reward_id]['flag'] == 1:
-            return 2, {}  # 娃娃已经被抓走了
         del_mult_goods(self.mm, cost)
         if not catch:
             gift = gacha_control_config[self.toy.version]['compensate']
@@ -54,6 +52,8 @@ class Toy(object):
             _, data = self.index()
             data['reward'] = reward
             return 0, data
+        if self.toy.toy_list[reward_id]['flag'] == 1:
+            return 2, {}  # 娃娃已经被抓走了
         group_id = gacha_config[self.toy.toy_list[reward_id]['reward_id']]['group']
         group_need = self.get_group_mustgetnum(group_id)
         if self.toy.toy_num > group_need:
