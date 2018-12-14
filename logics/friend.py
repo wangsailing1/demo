@@ -987,9 +987,14 @@ class FriendLogic(object):
         # if config[choice_id]['is_end']:
         #     self.friend.phone_daily_times += 1
         self.friend.save()
+        if group_id not in self.mm.card.group_ids:
+            love_lv = 0
+        else:
+            love_lv = self.mm.card.get_card(self.mm.card.group_ids[group_id])['love_lv']
         return 0, {'reward': reward,
                    'add_value': add_value,
-                   'old_value': old_value}
+                   'old_value': old_value,
+                   'love_lv': love_lv,}
 
     def choice_reward(self, config, num):
         gift = []
