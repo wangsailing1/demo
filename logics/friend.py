@@ -15,6 +15,7 @@ from lib.core.environ import ModelManager
 from logics.user import UserLogic
 from models.user import User as UserM
 from lib.utils import weight_choice
+import copy
 
 
 class FriendLogic(object):
@@ -980,13 +981,15 @@ class FriendLogic(object):
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
+        old_value = copy.deepcopy(self.mm.card.attr[group_id])
         add_value = self.mm.card.add_value(group_id, add_value_config)
         reward = add_mult_gift(self.mm, gift)
         # if config[choice_id]['is_end']:
         #     self.friend.phone_daily_times += 1
         self.friend.save()
         return 0, {'reward': reward,
-                   'add_value': add_value}
+                   'add_value': add_value,
+                   'old_value': old_value}
 
     def choice_reward(self, config, num):
         gift = []
