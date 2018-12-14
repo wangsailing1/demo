@@ -83,7 +83,7 @@ class Toy(ModelBase):
             for _ in range(group_num):
                 weight_config = toy_reward_weight[group_id]
                 reward_id = weight_choice(weight_config)[0]
-                self.toy_list[num] = {'reward_id': reward_id, 'num': 0}
+                self.toy_list[num] = {'reward_id': reward_id, 'num': 0 , 'flag': 0}
                 num += 1
         if save:
             self.save()
