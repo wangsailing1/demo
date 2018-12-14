@@ -434,9 +434,9 @@ class CardLogic(object):
         build_id = config[next_lv]['build_id']
         build_config = game_config.building
         cost = build_config[build_id]['cost']
-        rc, data = del_mult_goods(self.mm,cost)
+        rc, _ = del_mult_goods(self.mm,cost)
         if rc:
-            return rc, data
+            return rc, {}
         self.mm.card.card_building_level = next_lv
         self.mm.user.up_build(build_id, is_save=True)
         self.mm.card.save()
