@@ -732,10 +732,10 @@ class Script(ModelBase):
         else:
             return [None, None]
 
-    def check_luck_income(self, script_type, income):
+    def check_luck_income(self, script_type, first_income):
         """判断本次拍片是否达成全服爆款
         :param script_type:
-        :param income:
+        :param first_income:
         :return:
         """
         now = int(time.time())
@@ -754,7 +754,7 @@ class Script(ModelBase):
                 # 非爆款类型不再计入票房总数
                 if luck_type != script_type:
                     return {
-                        'income': int(income * (1 + (buff + debuff) / 10000.0)),
+                        'income': int(first_income * (1 + (buff + debuff) / 10000.0)),
                         'first_luck': trigge_first_luck,
                         'step_luck': trigge_step_luck,
                         'buff': buff,
@@ -763,8 +763,8 @@ class Script(ModelBase):
 
         redis = self.global_cache
         key = self.generate_all_type_income_key()
-        cur_income = redis.hincrby(key, script_type, income)
-        last_income = cur_income - income
+        cur_income = redis.hincrby(key, script_type, first_income)
+        last_income = cur_income - first_income
 
         limit = game_config.common[62]
         step_limit = game_config.common[63]
@@ -783,7 +783,7 @@ class Script(ModelBase):
         if trigge_step_luck:
             buff += game_config.common[64]
         return {
-            'income': int(income * (1 + (buff + debuff) / 10000.0)),
+            'first_income': int(first_income * (1 + (buff + debuff) / 10000.0)),
             'first_luck': trigge_first_luck,
             'step_luck': trigge_step_luck,
             'buff': buff,

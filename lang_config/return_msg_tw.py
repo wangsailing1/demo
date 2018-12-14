@@ -203,7 +203,7 @@ chapter_stage_msg = {
 
 
 i18n = {
-    'user_name': u'敢鬥團',
+    'user_name': u'明日之星',
     'dark_steet': u'黑街擂臺',
     'friend': u'好友%s',
     'rally': u'血塵拉力賽',
@@ -244,6 +244,9 @@ i18n = {
     'hunt_box': u'您的寶箱獎勵未領取，請查收',
     'limit_discount': u'限時特惠禮包',
     'challenge_rank': u'極限挑戰排名獎',
+    'script_luck_buff': u'恭喜玩家 %s 最新影片《%s》把握住了市場脈搏，票房極大提升！',
+    'script_luck_debuff': u'由於當前市場同類型作品過多，您的影片《%s》未能達到預期票房。',
+
     1: u'%s (LV.%s) 將你加為好友',
     2: u'%s表示仰慕你很久了，申請添加你為好友，是否通過好友申請？',
     3: u'%s已通過了你的好友申請，你們現在已經是好友了，趕快私密他吧！',

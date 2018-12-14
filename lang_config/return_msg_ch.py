@@ -528,7 +528,7 @@ active_msg = {
 }
 
 i18n = {
-    'user_name': u'敢斗团',
+    'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
     'friend': u'好友%s',
     'rally': u'血尘拉力赛',
@@ -569,6 +569,9 @@ i18n = {
     'hunt_box': u'您的宝箱奖励未领取，请查收',
     'limit_discount': u'限时特惠礼包',
     'challenge_rank': u'极限挑战排名奖',
+    'script_luck_buff': u'恭喜玩家 %s 最新影片《%s》把握住了市场脉搏，票房极大提升！',
+    'script_luck_debuff': u'由于当前市场同类型作品过多，您的影片《%s》未能达到预期票房。',
+
     1: u'%s (LV.%s) 将你加为好友',
     2: u'%s表示仰慕你很久了，申请添加你为好友，是否通过好友申请？',
     3: u'%s已通过了你的好友申请，你们现在已经是好友了，赶快私密他吧！',
