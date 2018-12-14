@@ -27,6 +27,7 @@ class Toy(object):
         data['version'] = self.toy.version
         data['remain_time'] = self.toy.remain_refresh_time()
         data['luck_num'] = self.toy.catch_num_current
+        data['toy_num'] = self.toy.toy_num
         if self.sort == 1:
             data['rank'] = self.toy.get_all_user(start=0, end=99)
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
@@ -52,6 +53,8 @@ class Toy(object):
             _, data = self.index()
             data['reward'] = reward
             return 0, data
+        if reward_id not in self.toy.toy_list:
+            return 3, {}  # 娃娃错误
         if self.toy.toy_list[reward_id]['flag'] == 1:
             return 2, {}  # 娃娃已经被抓走了
         group_id = gacha_config[self.toy.toy_list[reward_id]['reward_id']]['group']
