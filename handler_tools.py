@@ -76,12 +76,13 @@ def user_status(mm):
         'guild_coin': mm.user.guild_coin,       # 公会币
         'config_type': mm.user.config_type,
         'chat_times': mm.user.chat_times,       # 聊天次数
-        'got_icon':mm.user.got_icon,
+        'got_icon': mm.user.got_icon,
         'attention': mm.user.attention,
         'script_license': mm.user.script_license,
         'license_recover_expire':mm.user.license_recover_expire(),
         'remain_recover_times': mm.user.remain_recover_times(),
-        'build_info':mm.user.group_ids,
+        'build_info': mm.user.group_ids,
+        'card_box': mm.card.card_box,
     }
     return data
 
