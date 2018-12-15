@@ -622,9 +622,10 @@ class DoMission(object):
                 if (sex == _target[0] or not _target[0]) and (profession_type == _target[1] or not _target[1]) and (
                         profession_class == _target[2] or not _target[2]):
                     data[num] -= 1
-        if data[1] <= 0 and data[2] <= 0:
-            return True
-        return False
+        for k, v in data.iteritems():
+            if v > 0:
+                return False
+        return True
 
 
 class ServerCarnival(DoMission):
