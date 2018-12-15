@@ -358,9 +358,15 @@ class Chapter_stage(object):
         if choice_stage not in config[now_stage]['option_team']:
             return 12, {}  # 剧情选择错误
         if not card_id:
+            gift = config[choice_stage]['reward']
+            reward = {}
+            if gift:
+                self.chapter_stage.got_reward_dialogue.append(now_stage)
+                reward = add_mult_gift(self.mm, gift)
+                self.chapter_stage.save()
             return 0, {
                 'add_value': {},
-                'reward': {},
+                'reward': reward,
                 'love_lv': 0,
                 'old_value': {}
             }
