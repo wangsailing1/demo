@@ -65,7 +65,8 @@ class Card(ModelBase):
 
             },
             'attr': {},
-            'card_building_level':1
+            'card_building_level': 1,
+            'card_box': 0,
 
         }
         self._group_ids = {}
@@ -580,7 +581,7 @@ class Card(ModelBase):
     def can_add_new_card(self):
         config = game_config.card_building
         max_num = config[self.card_building_level]['card_limit']
-        return max_num > len(self.get_can_use_card())
+        return max_num + self.card.card_box > len(self.get_can_use_card())
 
 
 ModelManager.register_model('card', Card)

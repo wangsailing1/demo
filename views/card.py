@@ -7,6 +7,7 @@ Created on 2018-08-24
 """
 
 from logics.card import CardLogic
+from gconfig import game_config
 
 
 def open(hm):
@@ -147,5 +148,17 @@ def up_card_building(hm):
     cl = CardLogic(hm.mm)
     rc, data = cl.up_card_building()
     return rc, data
+
+def add_card_box(hm):
+    mm = hm.mm
+    cost = game_config.common[6]
+    if mm.user.diamond < cost:
+        return 1, {}  # 钻石不足
+    mm.card.card_box += 1
+    mm.user.deduct_diamond(cost)
+    mm.user.save()
+    mm.card.save()
+    return 0, {'card_box':mm.card.card_box}
+
 
 
