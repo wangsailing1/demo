@@ -207,6 +207,7 @@ class ShopLogics(object):
         reward = add_mult_gift(self.mm, gift_config)
         rc, data = self.index()
         data['reward'] = reward
+        data['sort'] = sell_sort
 
         # 记录累积商城购买次数
         # self.mm.task_data.add_task_data('shop', self.sort)
