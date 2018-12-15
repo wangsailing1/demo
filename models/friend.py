@@ -118,11 +118,11 @@ class Friend(ModelBase):
         if not hasattr(self, 'friends_info'):
             self.friends_info = {}
             is_save = True
-        if not self.unlocked_appointment:
-            for k, v in game_config.date_chapter.iteritems():
-                if v['preid'] == -1:
-                    self.unlocked_appointment.append(k)
-            is_save = True
+        # if not self.unlocked_appointment:
+        for k, v in game_config.date_chapter.iteritems():
+            if v['preid'] == -1 and k not in self.unlocked_appointment:
+                self.unlocked_appointment.append(k)
+                is_save = True
         if is_save:
             self.save()
 
