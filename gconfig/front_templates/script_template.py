@@ -189,6 +189,7 @@ attention_level = {
     'max_attention': ('max_attention', 'int'),  #
     'name_trans': ('name_trans', 'str'),  #
     'icon': ('icon', 'str'),  #
+    'color': ('color', 'int_list'),  #
 
 }
 
@@ -245,6 +246,7 @@ random_event = {
     'des': ('des', 'int'),  # 描述
     'effect': ('effect', 'int_list'),  # 影响 [type, style, buff_percent]
     'weight': ('weight', 'int'),  # 权重
+    'des1': ('des1', 'int'),  # 描述
 }
 
 
