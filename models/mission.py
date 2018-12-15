@@ -50,10 +50,10 @@ def script_make(hm, data, mission):
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-            target_sort_income: {'target1': 0, 'value': data['cur_script']['finished_summary']['income']},
-            target_limit_actor: {'target1': script_id, 'value': ids},
-            target_once: {'target1': script_id, 'value': data['cur_script']['finished_summary']['income']},
-            target_first_income: {'target1': script_id,
+            target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
+            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids},
+            target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
+            target_first_income: {'target1': script_id, 'end_lv': end_lv,
                                   'value': data['cur_script']['finished_first_income']['first_income']}, }
 
 
