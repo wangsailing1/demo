@@ -608,20 +608,20 @@ class DoMission(object):
 
     # 判断自制艺人限制型任务
     def check_limit_actor(self, target, cards):
-        data = {1: 0, 2: 0}
+        data = {}
         if not target:
             return True
-        for _target in target:
-            data[_target[0]] = _target[3]
+        for num, _target in enumerate(target, 1):
+            data[num] = _target[3]
         for oid in cards:
             config = game_config.card_basis[int(oid)]
             sex = config['sex_type']
             profession_type = config['profession_type']
             profession_class = config['profession_class']
-            for _target in target:
-                if sex == _target[0] and (profession_type == _target[1] or not _target[1]) and (
-                                profession_class == _target[2] or not _target[2]):
-                    data[sex] -= 1
+            for num, _target in enumerate(target, 1):
+                if (sex == _target[0] or not _target[0]) and (profession_type == _target[1] or not _target[1]) and (
+                        profession_class == _target[2] or not _target[2]):
+                    data[num] -= 1
         if data[1] <= 0 and data[2] <= 0:
             return True
         return False
