@@ -106,7 +106,7 @@ def script_gacha(hm, data, mission):
     count = hm.get_argument('count', 1, is_int=True)
     target_sort = mission._SCRIPT_GACHA
     script_id = data['reward'].get('own_script', [])
-    return {target_sort: {'target1': sort, 'value': count, 'info': script_id}, 'tp': 1}
+    return {target_sort: {'target1': sort, 'value': count, 'info': script_id, 'tp': 1}}
 
 
 # 等级
@@ -162,7 +162,8 @@ def scrip_get(hm, data, mission):
 
 # 购物
 def shop_args(hm, data, mission):
-    return {mission._SHOP: {'target1': 0, 'value': 1}}
+    sort = data.get('sort', 2)
+    return {mission._SHOP: {'target1': sort, 'value': 1}}
 
 
 # 剧本重写
@@ -267,6 +268,7 @@ FIRST_CHAPTER = 7  # 首次通关
 NUM_CHAPTER = 8  # 通关次数
 GACHA = [3, 4]
 GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
+FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
 
 
 class Mission(ModelBase):
@@ -307,7 +309,11 @@ class Mission(ModelBase):
         'card.card_train': card_train,  # 卡牌训练
         'card.equip_piece_exchange': equip_piece_exchange,  # 装备碎片合成
         'card.card_quality_up': card_quality_up,  # 艺人格调提升
-        'shop.shop': shop_args,  # 商店购买
+        'shop.buy': shop_args,  # 商店购买
+        'shop.gift_buy': shop_args,  # 礼品商店购买
+        'shop.resource_buy': shop_args,  # 资源商店购买
+        'shop.mystical_buy': shop_args,  # 神秘商店购买
+        'shop.period_buy': shop_args,  # 限时商店购买
         # 'mission.get_reward': mission_args,                           # 成就
 
     }
@@ -624,7 +630,7 @@ class DoMission(object):
         if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
             script_type = game_config.script[value['target1']][type]
-            if script_type == target_data[0] and value['end_lv'] >= target_data[2]:
+            if (script_type == target_data[0] or not target_data[0]) and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
@@ -645,7 +651,8 @@ class DoMission(object):
         elif self.config[mission_id]['sort'] == MULT_TYPE:
             script_type = game_config.script[value['target1']]['type']
             script_style = game_config.script[value['target1']]['style']
-            if script_type == target_data[0] and script_style == target_data[3] and \
+            if (script_type == target_data[0] or not target_data[0]) and (
+                            script_style == target_data[3] or not target_data[3]) and \
                             value['end_lv'] >= target_data[2] and self.check_limit_actor(target_data[4],
                                                                                          value['value']):
                 if mission_id in self.data:
@@ -693,6 +700,16 @@ class DoMission(object):
         elif self.config[mission_id]['sort'] in CHANGE_NUM:
             self.data[mission_id] = value['value']
 
+        elif self.config[mission_id]['sort'] in FANS_ACTIVITY:
+            num = 0
+            if not target_data[0] or (target_data[0] and target_data[0] == value['target1']):
+                num = value['value']
+            if mission_id in self.data:
+                self.data[mission_id] += num
+            else:
+                self.data[mission_id] = num
+
+
         else:
             if mission_id in self.data:
                 self.data[mission_id] += value['value']
@@ -733,6 +750,8 @@ class DoMission(object):
     # 判断自制艺人限制型任务
     def check_limit_actor(self, target, cards):
         data = {1: 0, 2: 0}
+        if not target:
+            return True
         for _target in target:
             data[_target[0]] = _target[3]
         for oid in cards:
@@ -741,7 +760,8 @@ class DoMission(object):
             profession_type = config['profession_type']
             profession_class = config['profession_class']
             for _target in target:
-                if sex == _target[0] and profession_type == _target[1] and profession_class == _target[2]:
+                if sex == _target[0] and (profession_type == _target[1] or not _target[1]) and (
+                        profession_class == _target[2] or not _target[2]):
                     data[sex] -= 1
         if data[1] <= 0 and data[2] <= 0:
             return True
