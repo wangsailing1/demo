@@ -46,6 +46,10 @@ class Gacha(ModelBase):
 
     def pre_use(self):
         today = time.strftime('%F')
+
+        # 老号容错 开始初始值从0 改为1
+        if not self.coin_lv:
+            self.coin_lv = 1
         if self.refresh_date != today:
             self.refresh_date = today
             self.today_coin_times = 0
