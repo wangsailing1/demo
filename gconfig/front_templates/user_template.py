@@ -422,7 +422,7 @@ homepage_button = {
     'jump': ('jump', 'int'),
     'button': (('button1', 'button2', 'button3', 'button4', 'button5'), ('int', 'mult_list')),
     'direction': ('direction', 'int'),
-
+    'name': ('name', 'int'),
 }
 
 # 跑马灯配置
