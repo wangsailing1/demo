@@ -383,7 +383,7 @@ class Carnival(ModelBase):
                         func = globals()['target_sort%s' % mission_sort]
                         target_data = value['target']
                         kwargs = func(self.mm, self, target_data)
-                        self.do_task(kwargs)
+                        self.do_task(kwargs, save=False)
             save = True
 
         if carnival_days and carnival_days != self.carnival_days:
@@ -391,14 +391,14 @@ class Carnival(ModelBase):
             self.carnival_data = {}
             mission_config = game_config.carnival_mission
             for mission_id, value in mission_config.iteritems():
-                if value['days_old'] == server_days:
+                if value['days_old'] == carnival_days:
                     self.carnival_data[mission_id] = 0
                     mission_sort = value['sort']
                     if mission_sort in self.NEEDCHECKMISSIONID:
                         func = globals()['target_sort%s' % mission_sort]
                         target_data = value['target']
                         kwargs = func(self.mm, self, target_data)
-                        self.do_task(kwargs)
+                        self.do_task(kwargs, save=False)
             save = True
 
         if save:
@@ -462,7 +462,7 @@ class Carnival(ModelBase):
             mission = hm.mm.carnival
             mission.do_task(kwargs)
 
-    def do_task(self, kwargs):
+    def do_task(self, kwargs, save=True):
         for k, value in self.server_carnival_data.iteritems():
             sort = game_config.carnival_mission[k]['sort']
             if sort in kwargs:
@@ -472,7 +472,8 @@ class Carnival(ModelBase):
             sort = game_config.carnival_mission[k]['sort']
             if sort in kwargs:
                 self.carnival_active.add_count(k, kwargs[sort])
-        self.save()
+        if save:
+            self.save()
 
 
 class DoMission(object):
