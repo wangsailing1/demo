@@ -73,6 +73,7 @@ def update(req, **kwargs):
     action_point = int(req.get_argument('action_point'))
     script_license = int(req.get_argument('script_license'))
     server_dice_num = int(req.get_argument('server_dice_num'))
+    dice_num = int(req.get_argument('dice_num'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -163,6 +164,7 @@ def update(req, **kwargs):
     #     mm.user.add_box_key(-diff_box_key)
     mm.user.script_license = script_license
     mm.carnival.server_dice_num = server_dice_num
+    mm.carnival.dice_num = dice_num
     vip = min(max(game_config.vip), vip)
     if mm.user.vip != vip:
         mm.user.vip = vip
