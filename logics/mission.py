@@ -147,5 +147,5 @@ class Mission(object):
         return {
             'result': result,
             'done': done,
-            'time': time_data
+            'cur_task': time_data
         }
