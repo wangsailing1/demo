@@ -37,6 +37,7 @@ class Toy(object):
         if self.sort == 1:
             data['rank'] = self.get_all_rank_user_info()
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
+            data['own_score'] = self.toy.get_score(self.mm.uid)
         return 0, data
 
 
