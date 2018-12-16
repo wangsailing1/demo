@@ -207,8 +207,6 @@ def new_user(hm):
     # 测试服，创建指定账号
     test_init(mm)
 
-
-
     # 公测返利
     mm.user.rebate_recharge()
 
@@ -312,7 +310,6 @@ def test_init(mm):
         mm.card.save()
 
 
-
 def mark_user_login(hm):
     """mark_user_login: 标记用户最近登录，防多设备登录
     args:
@@ -384,7 +381,9 @@ def get_user_server_list(hm, account=None):
             'mk': '',
         }
     # todo 暂时屏蔽服务器自动选择
-    # server_list = get_server_list(server_list)
+    serve_active_time.sort(key=lambda x: x[1])
+    current_server = serve_active_time[-1][0] if serve_active_time else ''
+    server_list = get_server_list(server_list, current_server)
 
     if not Account.check_exist(account):
         return 0, {  # 查无此人
@@ -394,7 +393,6 @@ def get_user_server_list(hm, account=None):
             'mk': '',
         }
 
-    serve_active_time.sort(key=lambda x: x[1])
     if another_server_list:
         server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], x['server']))
 
@@ -402,12 +400,15 @@ def get_user_server_list(hm, account=None):
     special_bdc_log(uu, sort='account_login', **kwargs)
     return 0, {
         'server_list': server_list,
-        'current_server': serve_active_time[-1][0] if serve_active_time else '',
+        'current_server': current_server,
         'ks': sid,
         'mk': mk,
     }
 
-def get_server_list(server_list):
+
+def get_server_list(server_list, current_server):
+    if current_server:
+        return [server for server in server_list if server['server'] == current_server]
     new_servers = []
     not_enough_new_servers = []
     for server_id in server_list:
@@ -424,7 +425,6 @@ def get_server_list(server_list):
         return [random.choice(new_servers)]
     all_list = server_list[-2:] if len(server_list) >= 2 else server_list
     return [random.choice(all_list)]
-
 
 
 def get_another_list(hm, flag=None):
@@ -571,6 +571,7 @@ def check_session(hm):
 
     return 0, {}
 
+
 def notice(hm):
     lan = hm.get_argument('lan', '1')
     config = copy.deepcopy(game_config.welfare_notice)
@@ -578,7 +579,7 @@ def notice(hm):
     lan = MUITL_LAN[lan]
     now = int(time.time())
     for k, v in config.iteritems():
-        if not v['start_time'] or not  v['end_time']:
+        if not v['start_time'] or not v['end_time']:
             continue
         start_time = str2timestamp(v['start_time'])
         end_time = str2timestamp(v['end_time'])
@@ -589,6 +590,3 @@ def notice(hm):
             info[k]['des'] = content
             info[k]['name'] = name
     return 0, info
-
-
-

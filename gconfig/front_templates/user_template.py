@@ -605,3 +605,9 @@ money_guide = {
     'guide': ('guide', 'int_list'),
     'des': ('des', 'unicode'),
 }
+
+server_type = {
+    'uk': ('server_id', 'int'),
+    'time': ('time', 'str'),
+    'type': ('type', 'int'),
+}
