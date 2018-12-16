@@ -878,8 +878,10 @@ class BoxOffice(object):
 
     def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
+        self.data.pop(mission_id)
         if next_id:
-            self.data = {next_id: 0, 'time': int(time.time())}
+            self.data[next_id] = 0
+            self.data['time'] = int(time.time())
 
 
 class MissionDaily(DoMission):
