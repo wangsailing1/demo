@@ -49,6 +49,7 @@ class Toy(object):
             self.toy.save()
             _, data = self.index()
             data['reward'] = reward
+            data['got'] = False
             return 0, data
         group_id = gacha_config[self.toy.toy_list[reward_id]['reward_id']]['group']
         group_need = self.get_group_mustgetnum(group_id)
