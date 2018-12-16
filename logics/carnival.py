@@ -51,7 +51,8 @@ class Carnival(object):
                    'carnival_days': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_days')),
                    'carnival_step': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_step')),
                    'max_id': self.carnival.carnival_max_id(tp=tp),
-                   'status': self.get_status_by_type(tp)}
+                   'status': self.get_status_by_type(tp),
+                   'tp':tp}
 
     def dice(self, tp=1):
         if tp == 1:
