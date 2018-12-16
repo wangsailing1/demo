@@ -83,7 +83,7 @@ def user_status(mm):
         'remain_recover_times': mm.user.remain_recover_times(),
         'build_info': mm.user.group_ids,
         'card_box': mm.card.card_box,
-        'timezone': time.strftime("%Z"),
+        'timezone': time.timezone / -3600,
     }
     return data
 
