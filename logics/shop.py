@@ -55,7 +55,7 @@ class AllShopLogics(object):
 
 class ShopLogics(object):
 
-    FORMAT = '%Y/%m/%d %H:%M:%S'
+    FORMAT = '%Y-%m-%d %H:%M:%S'
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.shop
