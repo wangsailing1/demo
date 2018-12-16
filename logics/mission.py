@@ -141,8 +141,11 @@ class Mission(object):
                 continue
             stats = self.get_status(mission_obj, mission_id, mission_obj.config[mission_id])
             result[stats['id']] = [stats['value'], stats['need_value'], stats['status']]
-
+        time_data = {}
+        if type == 'box_office':
+            time_data = mission_obj.data
         return {
             'result': result,
-            'done': done
+            'done': done,
+            'time': time_data
         }
