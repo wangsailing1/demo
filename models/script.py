@@ -604,8 +604,9 @@ class Script(ModelBase):
 
     def get_continued_script(self):
         info = []
+        now = int(time.time())
         for script_id,value in self.continued_script.iteritems():
-            if value['continued_expire'] > value['continued_start']:
+            if value['continued_expire'] <= now:
                 info.append(script_id)
         return info
 
