@@ -51,6 +51,7 @@ card_basis = {
     'ex_special_rate': ('ex_special_rate', 'int'),  # 额外触发概率( 万分比）
     'special_quality': ('special_quality', 'int_list'),  # 艺术/娱乐触发权重
     'last_lv': ('last_lv', 'int'),  # 艺术/娱乐触发权重
+    'adle_action': ('adle_action', 'str'),  # 
 
 }
 

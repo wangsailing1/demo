@@ -423,6 +423,7 @@ homepage_button = {
     'button': (('button1', 'button2', 'button3', 'button4', 'button5'), ('int', 'mult_list')),
     'direction': ('direction', 'int'),
     'name': ('name', 'int'),
+    'red_point': ('red_point', 'int'),
 }
 
 # 跑马灯配置
@@ -604,4 +605,10 @@ money_guide = {
     'uk': ('id', 'int'),
     'guide': ('guide', 'int_list'),
     'des': ('des', 'unicode'),
+}
+
+server_type = {
+    'uk': ('server_id', 'int'),
+    'time': ('time', 'str'),
+    'type': ('type', 'int'),
 }

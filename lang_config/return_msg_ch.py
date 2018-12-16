@@ -47,7 +47,7 @@ return_msg_config = {
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',
-
+    'error_equip_piece': u'装备碎片不足',
     'error_stone': u"灵魂石不足",
     'error_item': u'道具不足',
     'error_citem': u'采集物不足',
@@ -560,6 +560,24 @@ toy_msg = {
         3: u'奖励已领',
     },
 }
+
+carnival_msg = {
+    'carniva.index': {
+        1: u'活动已结束',
+    },
+    'carniva.dice': {
+        1: u'活动已结束',
+        2: u'骰子不足',
+        11: u'格子已达最大',
+    },
+    'carniva.get_dice': {
+        1: u'活动已结束',
+        2: u'已领取',
+        3: u'未完成',
+        11: u'任务id错误',
+    },
+}
+
 
 i18n = {
     'user_name': u'明日之星',
