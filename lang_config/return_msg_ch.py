@@ -528,15 +528,15 @@ active_msg = {
 }
 
 carnival_msg = {
-    'carniva.index': {
+    'carnival.index': {
         1: u'活动已结束',
     },
-    'carniva.dice': {
+    'carnival.dice': {
         1: u'活动已结束',
         2: u'骰子不足',
         11: u'格子已达最大',
     },
-    'carniva.get_dice': {
+    'carnival.get_dice': {
         1: u'活动已结束',
         2: u'已领取',
         3: u'未完成',
