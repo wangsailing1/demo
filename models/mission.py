@@ -489,8 +489,6 @@ class Mission(ModelBase):
         return self._achieve_mission
 
     def get_all_random_mission(self):
-        if self.mm.user.level < 20:
-            return
         if not self.random_data:
             for _ in xrange(4):
                 while True:
