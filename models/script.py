@@ -23,6 +23,8 @@ from models.block import get_date
 
 class Script(ModelBase):
     POOL_SIZE = 3
+    MAX_EVENT = 24
+    RECENT_EVENT_NUM = 3
 
     _need_diff = ('own_script',)
     SEXMAPPING = {1: 'nv', 2: 'nan'}
@@ -87,12 +89,14 @@ class Script(ModelBase):
 
     @classmethod
     def generate_random_event_key(cls, date_str=None):
-        key = '%s_%s' % (cls.make_key_cls('random_event', 'public'), date_str or time.strftime('%F'))
+        # key = '%s_%s' % (cls.make_key_cls('random_event', 'public'), date_str or time.strftime('%F'))
+        key = '%s_%s' % (cls.make_key_cls('random_event', 'public'), '')
         return key
 
     @classmethod
     def generate_global_event_key(cls, date_str=None):
-        key = '%s_%s' % (cls.make_key_cls('global_event', 'public'), date_str or time.strftime('%F'))
+        # key = '%s_%s' % (cls.make_key_cls('global_event', 'public'), date_str or time.strftime('%F'))
+        key = '%s_%s' % (cls.make_key_cls('global_event', 'public'), '')
         return key
 
     @classmethod
@@ -102,7 +106,17 @@ class Script(ModelBase):
 
         id_weights = [(k, v['weight']) for k, v in game_config.random_event.iteritems()]
         event_id = weight_choice(id_weights)[0]
+        # 最近3条事件不能重复
+        recent_events = [int(i.split('_')[1]) for i in redis.lrange(key, 0, cls.RECENT_EVENT_NUM - 1)]
+        retry = 0
+        while recent_events and event_id in recent_events:
+            event_id = weight_choice(id_weights)[0]
+            retry += 1
+            if retry >= 20:
+                break
+
         redis.lpush(key, '%s_%s' % (int(time.time()), event_id))
+        redis.ltrim(key, 0, cls.MAX_EVENT)     # 留最近24条
         return event_id
 
     @classmethod
@@ -125,7 +139,17 @@ class Script(ModelBase):
 
         id_weights = [(k, v['weight']) for k, v in game_config.global_market.iteritems()]
         event_id = weight_choice(id_weights)[0]
+        # 最近3条事件不能重复
+        recent_events = [int(i.split('_')[1]) for i in redis.lrange(key, 0, cls.RECENT_EVENT_NUM - 1)]
+        retry = 0
+        while recent_events and event_id in recent_events:
+            event_id = weight_choice(id_weights)[0]
+            retry += 1
+            if retry >= 20:
+                break
+
         redis.lpush(key, '%s_%s' % (int(time.time()), event_id))
+        redis.ltrim(key, 0, cls.MAX_EVENT)     # 留最近24条
         return event_id
 
     @classmethod
@@ -140,6 +164,26 @@ class Script(ModelBase):
         expire = game_config.common[61]
         if time.time() - int(ts) < expire:
             return int(event_id)
+
+    @classmethod
+    def recent_event(cls, date_str=None):
+        """给前端看的最近几条事件信息"""
+        data = []
+        redis = cls.get_global_redis_client()
+        random_key = cls.generate_random_event_key(date_str)
+        global_key = cls.generate_global_event_key(date_str)
+
+        random_event = redis.lrange(random_key, 0, cls.RECENT_EVENT_NUM)
+        for i in random_event:
+            ts, event_id = map(int, i.split('_'))
+            data.append((event_id, ts, 'random'))
+
+        global_event = redis.lrange(global_key, 0, cls.RECENT_EVENT_NUM)
+        for i in global_event:
+            ts, event_id = map(int, i.split('_'))
+            data.append((event_id, ts, 'global'))
+        data.sort(key=lambda x: x[0])
+        return data[-5:]
 
     def pre_use(self):
         # 连续拍片类型，保留最近10个

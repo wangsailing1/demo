@@ -207,3 +207,9 @@ def test_calc_attr(hm):
     sl = ScriptLogic(mm)
     d = sl.calc_script_attr()
     return 0, {'data': d}
+
+
+def recent_event(hm):
+    script = hm.mm.script
+    recent_event = script.recent_event()
+    return 0, {'event': recent_event}
