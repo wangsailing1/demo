@@ -182,7 +182,7 @@ class Script(ModelBase):
         for i in global_event:
             ts, event_id = map(int, i.split('_'))
             data.append((event_id, ts, 'global'))
-        data.sort(key=lambda x: x[0])
+        data.sort(key=lambda x: x[1])
         return data[-5:]
 
     def pre_use(self):
