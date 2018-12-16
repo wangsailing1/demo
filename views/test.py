@@ -18,3 +18,7 @@ def test_ok(hm):
 def test_mail(hm):
     1 / 0
     return 0, {}
+
+
+def test_return_error(hm):
+    return 0, 0
