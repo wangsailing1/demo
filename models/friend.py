@@ -99,8 +99,10 @@ class Friend(ModelBase):
         is_save = False
         if week != self.last_week:
             self.last_week = week
-            self.tourism_times = 0
-            self.tourism_log = {}
+            # self.tourism_times = 0
+            # self.tourism_log = {}
+            self.appointment_times = 0
+            self.appointment_log = {}
             is_save = True
         if now != self.last_refresh_date:
             self.battle_friend = []
@@ -112,8 +114,7 @@ class Friend(ModelBase):
             self.phone_daily_times = 0
             self.got_point_daily = 0
             self.phone_daily_log = {}
-            self.appointment_times = 0
-            self.appointment_log = {}
+
             is_save = True
         if not hasattr(self, 'friends_info'):
             self.friends_info = {}
