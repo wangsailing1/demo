@@ -51,9 +51,10 @@ def script_make(hm, data, mission):
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
-            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids},
-            target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
-            target_first_income: {'target1': script_id, 'end_lv': end_lv,
+            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids, 'style': data['cur_script']['style']},
+            target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income'],
+                          'style': data['cur_script']['style']},
+            target_first_income: {'target1': script_id, 'end_lv': end_lv, 'style': data['cur_script']['style'],
                                   'value': data['cur_script']['finished_first_income']['first_income']}, }
 
 
@@ -640,7 +641,7 @@ class DoMission(object):
         # 单次自制票房,首映票房/收视
         elif self.config[mission_id]['sort'] in TYPE_STYLE:
             script_type = game_config.script[value['target1']]['type']
-            script_style = game_config.script[value['target1']]['style']
+            script_style = value['style']
             if script_type == target_data[0] and script_style == target_data[3] and \
                             value['end_lv'] >= target_data[2] and value['value'] >= target_data[4]:
                 if mission_id in self.data:
@@ -651,7 +652,7 @@ class DoMission(object):
         # 自制艺人限制型
         elif self.config[mission_id]['sort'] == MULT_TYPE:
             script_type = game_config.script[value['target1']]['type']
-            script_style = game_config.script[value['target1']]['style']
+            script_style = value['style']
             if (script_type == target_data[0] or not target_data[0]) and (
                             script_style == target_data[3] or not target_data[3]) and \
                             value['end_lv'] >= target_data[2] and self.check_limit_actor(target_data[4],
