@@ -104,7 +104,10 @@ class Carnival(object):
             mission_obj.data[mission_id] = 0
         else:
             mission_obj.data.pop(mission_id)
-        mission_obj.num += mission_obj.config[mission_id]['reward']
+        if tp == 2:
+            self.carnival.dice_num += mission_obj.config[mission_id]['reward']
+        if tp == 1:
+            self.carnival.server_dice_num += mission_obj.config[mission_id]['reward']
         self.carnival.save()
         _, data = self.index(tp=tp)
         data['got_num'] = mission_obj.config[mission_id]['reward']
