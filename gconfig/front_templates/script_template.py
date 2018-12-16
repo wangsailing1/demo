@@ -24,7 +24,7 @@ script = {
     'story': ('story', 'int'),  # 说明
     'icon': ('icon', 'str'),  # 图标
     'background': ('background', 'str'),  # 拍摄场景
-    'music': ('music', 'int'),  # 拍摄音乐
+    'music': ('music', 'str'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
     'style_effect': ('style_effect', 'int_list'),  # 最佳类型
     # 市场需求1-男(百分之)  2：女 3：儿童
