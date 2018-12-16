@@ -437,6 +437,7 @@ class Mission(ModelBase):
                 continue
             if value < config[m_id]['target1']:
                 self.box_office_data[m_id] = 0
+                self.box_office_data['time'] = int(time.time())
                 return True
         return False
 
