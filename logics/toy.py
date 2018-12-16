@@ -35,9 +35,21 @@ class Toy(object):
         data['luck_num'] = self.toy.catch_num_current
         data['toy_num'] = self.toy.toy_num
         if self.sort == 1:
-            data['rank'] = self.toy.get_all_user(start=0, end=99)
+            data['rank'] = self.get_all_rank_user_info()
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
         return 0, data
+
+
+    def get_all_rank_user_info(self):
+        info = []
+        rank_list = self.toy.get_all_user(start=0, end=99, withscores=True)
+        rank = 1
+        for uid, score in rank_list:
+            mm = ModelManager(uid)
+            info.append({'name': mm.user.name, 'score':score, 'rank': rank})
+            rank += 1
+        return info
+
 
     def get_toy(self, catch, reward_id):
         if not self.is_open():
