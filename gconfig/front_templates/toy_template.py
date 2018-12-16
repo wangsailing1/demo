@@ -16,7 +16,7 @@ rmb_gacha = {
     'sequence':         ('sequence',        'int'),                 # 显示顺序（从前往后）
     'undrop_rate':      ('undrop_rate',     'int_list'),            # 被抽中后不脱抓概率万分比（次数，概率）
     'mustlost':         ('mustlost',        'int'),                 # 第几次抓取之前必脱钩（不含没对准）
-    'award_action':     ('award_action',    'str'),                 # 奖品动画
+    'award_action':     ('award_action',    'str_list'),                 # 奖品动画
 }
 
 # 付费娃娃机消耗
@@ -55,7 +55,7 @@ free_gacha = {
     'sequence':         ('sequence',        'int'),                 # 显示顺序（从前往后）
     'undrop_rate':      ('undrop_rate',     'int_list'),            # 被抽中后不脱抓概率万分比（次数，概率）
     'mustlost':         ('mustlost',        'int'),                 # 第几次抓取之前必脱钩（不含没对准）
-    'award_action':     ('award_action',    'str'),                 # 奖品动画
+    'award_action':     ('award_action',    'str_list'),                 # 奖品动画
 }
 
 # 免费娃娃机消耗
