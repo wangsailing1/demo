@@ -408,11 +408,14 @@ class Carnival(ModelBase):
     def carnival_max_id(self, tp=1):
         if tp == 1:
             config = game_config.carnival_new_reward
+            days = self.server_carnival_days
         else:
             config = game_config.carnival_old_reward
+            days = self.carnival_days
+
         id = 0
         for k, v in config.iteritems():
-            if v['unlock_day'] == self.server_carnival_days and k >= id:
+            if v['unlock_day'] == days and k >= id:
                 id = k
         return id
 
