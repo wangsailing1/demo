@@ -47,7 +47,7 @@ return_msg_config = {
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',
-
+    'error_equip_piece': u'装备碎片不足',
     'error_stone': u"灵魂石不足",
     'error_item': u'道具不足',
     'error_citem': u'采集物不足',
