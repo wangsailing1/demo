@@ -384,6 +384,7 @@ class Carnival(ModelBase):
                         target_data = value['target']
                         kwargs = func(self.mm, self, target_data)
                         self.do_task(kwargs)
+            save = True
 
         if carnival_days and carnival_days != self.carnival_days:
             self.carnival_days = carnival_days
@@ -398,6 +399,7 @@ class Carnival(ModelBase):
                         target_data = value['target']
                         kwargs = func(self.mm, self, target_data)
                         self.do_task(kwargs)
+            save = True
 
         if save:
             self.save()
