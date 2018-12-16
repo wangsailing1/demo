@@ -733,7 +733,7 @@ class Script(ModelBase):
             event_config = game_config.random_event[random_event]
             all_effect.extend(event_config['effect'])
         if global_event:
-            event_config = game_config.global_market[random_event]
+            event_config = game_config.global_market[global_event]
             all_effect.extend(event_config['effect'])
 
         for tp, stp, buff in all_effect:
