@@ -243,10 +243,10 @@ barrage = {
 # 市场随机事件
 random_event = {
     'uk': ('id', 'int'),
-    'des': ('des', 'int'),  # 描述
+    'des': ('des', 'str'),  # 描述
     'effect': ('effect', 'int_list'),  # 影响 [type, style, buff_percent]
     'weight': ('weight', 'int'),  # 权重
-    'des1': ('des1', 'int'),  # 描述
+    'des1': ('des1', 'str'),  # 描述
 }
 
 
