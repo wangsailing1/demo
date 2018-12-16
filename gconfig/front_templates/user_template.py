@@ -598,3 +598,9 @@ login_reward_id = {
     'uid_list': ('uid_list', 'str_list'),
     'url': ('url', 'str'),
 }
+
+server_type = {
+    'uk': ('server_id', 'int'),
+    'time': ('time', 'str'),
+    'type': ('type', 'int'),
+}

@@ -383,8 +383,9 @@ def get_user_server_list(hm, account=None):
             'ks': sid,
             'mk': '',
         }
-
-    server_list = get_server_list(server_list)
+    serve_active_time.sort(key=lambda x: x[1])
+    current_server = serve_active_time[-1][0] if serve_active_time else ''
+    server_list = get_server_list(server_list, current_server)
 
     if not Account.check_exist(account):
         return 0, {  # 查无此人
@@ -394,7 +395,6 @@ def get_user_server_list(hm, account=None):
             'mk': '',
         }
 
-    serve_active_time.sort(key=lambda x: x[1])
     if another_server_list:
         server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], x['server']))
 
@@ -402,12 +402,14 @@ def get_user_server_list(hm, account=None):
     special_bdc_log(uu, sort='account_login', **kwargs)
     return 0, {
         'server_list': server_list,
-        'current_server': serve_active_time[-1][0] if serve_active_time else '',
+        'current_server': current_server,
         'ks': sid,
         'mk': mk,
     }
 
-def get_server_list(server_list):
+def get_server_list(server_list, current_server):
+    if current_server:
+        return [server for server in server_list if server['server'] == current_server]
     new_servers = []
     not_enough_new_servers = []
     for server_id in server_list:
