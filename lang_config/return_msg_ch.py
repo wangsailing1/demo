@@ -578,6 +578,18 @@ carnival_msg = {
     },
 }
 
+ranking_list_msg = {
+    'ranking_list.get_script_info': {
+        1: u'请选择剧本',
+    },
+    'ranking_list.get_group_info': {
+        1: u'请选择剧本组',
+    },
+    'ranking_list.get_reward': {
+        1: u'本人没有排行',
+        2: u'已领奖励',
+    },
+}
 
 i18n = {
     'user_name': u'明日之星',
