@@ -60,6 +60,7 @@ class Toy(object):
             self.toy.save()
             _, data = self.index()
             data['reward'] = reward
+            data['got'] = False
             return 0, data
         if reward_id not in self.toy.toy_list:
             return 3, {}  # 娃娃错误
