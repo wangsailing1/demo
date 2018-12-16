@@ -85,7 +85,7 @@ TIMER_JOBS = (
 
     # 每5分钟记录一次在线数据
     ('cron', dict(minute='*/5'), backup_all_server_online_count, 1),
-    ('cron', dict(hours='*'), genearte_random_event, 1),
+    ('cron', dict(hour='*'), genearte_random_event, 1),
     ('cron', dict(minute='*/30'), genearte_global_event, 1),
 
     # 公会战
