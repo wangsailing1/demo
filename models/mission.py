@@ -263,7 +263,7 @@ class Mission(ModelBase):
             if not self.achieve_done and not self.achieve_data:
                 self.get_achieve_mission()
             is_save = True
-        if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME:
+        if self.box_office_last_date != today and box_office_time >= self.BOXOFFICEREFRESHTIME and self.mm.user.level >= 5:
             self.box_office_done = []
             self.box_office_last_date = today
             self.box_office_data = {self.get_box_office(): 0, 'time': int(time.time())} if self.get_box_office() else {}
