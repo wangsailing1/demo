@@ -209,6 +209,10 @@ card_msg = {
     'card.equip_piece_auto_exchange': {
         1: u'碎片数量不足',
     },
+    'card.card_piece_exchange': {
+        1: u'已有此类艺人',
+        2: u'活跃卡牌已达上限，请先雪藏艺人',
+    },
 }
 
 

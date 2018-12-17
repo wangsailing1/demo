@@ -357,7 +357,7 @@ class CardLogic(object):
         if card.get_piece(piece_id) < cost:
             return 'error_card_piece', {}
         if not self.mm.card.can_add_new_card():
-            return 2, {}   #活跃卡牌已达上限，请先雪藏艺人
+            return 2, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         card_id = card.add_card(card_id)
         card.del_piece(piece_id, cost)
