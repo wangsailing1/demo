@@ -884,7 +884,6 @@ class BoxOffice(object):
         """
         if mission_id not in self.done:
             self.done.append(mission_id)
-            self.data.pop(mission_id)
             self.start_next(mission_id)
 
     def start_next(self, mission_id):
