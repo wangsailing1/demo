@@ -9,6 +9,7 @@ Created on 2018-05-30
 import datetime
 from lib.db import ModelBase
 from lib.statistics.data_analysis import get_global_cache
+from lib.statistics import bdc_event_funcs
 from lib.core.environ import ModelManager
 from models.server import ServerConfig
 
@@ -39,6 +40,7 @@ def backup_all_server_online_count():
     sc = ServerConfig.get()
     today = datetime.datetime.today()
 
+    bdc_info = []
     for server_id, _ in sc.yield_open_servers():
         mm = ModelManager('%s1234567' % server_id)
         online_users = mm.get_obj_tools('online_users')
@@ -47,11 +49,16 @@ def backup_all_server_online_count():
         online_users.backup_online_user_count(online_user_count, today)
         count += online_user_count
 
+        # bdc 日志收集
+        bdc_info.append((server_id, online_user_count))
+
     global_cache = get_global_cache()
     online_key = '%s%s' % (all_server_online_prefix, today.strftime(FORMAT))
     if count:
         global_cache.hset(online_key, today.strftime('%H:%M'), count)
         global_cache.expire(online_key, 24 * 3600 * 7)
+
+    bdc_event_funcs.bdc_online_scence_log(bdc_info)
     return count
 
 

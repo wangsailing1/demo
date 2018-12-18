@@ -10,6 +10,7 @@ from lib.utils.string_operation import is_account
 from lib.core.environ import ModelManager
 from lib.statistics.bdc_event_funcs import special_bdc_log
 from models.account import Account
+from models.user import User
 from models.server import ServerUidList, ServerUid
 from models.server import ServerConfig
 from models.bloom_filter import BloomFilter
@@ -181,10 +182,8 @@ def new_user(hm):
     mm.user.register_ip = remote_ip
     # 发送等级为1的邮件
     mm.user.send_level_mail(0, 1)
-    if appid == '2':  # 和前端协定1:android,2:iOS
-        mm.user.appid = 'ios'
-    else:
-        mm.user.appid = 'android'
+
+    mm.user.appid = mm.user.APPID_OS_MAPPING.get(appid, 'android')
 
     mm.user.package_appid = appid
     mm.user.uuid = uuid
@@ -337,6 +336,8 @@ def get_user_server_list(hm, account=None):
     """
     account = hm.get_argument('account', '') if not account else account
     remote_ip = hm.req.request.headers.get('X-Real-Ip', '') or hm.req.request.remote_ip
+    appid = hm.get_argument('appd', '')
+
     # 英雄互娱给的 渠道id, 0为母包，母包不上线
     tpid = hm.get_argument('tpid', 0, is_int=True)
 
@@ -398,7 +399,7 @@ def get_user_server_list(hm, account=None):
     if another_server_list:
         server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], x['server']))
 
-    kwargs = {'ip': remote_ip, 'device': device_mark}
+    kwargs = {'ip': remote_ip, 'device': device_mark, 'client_os': User.APPID_OS_MAPPING.get(appid, 'android')}
     special_bdc_log(uu, sort='account_login', **kwargs)
     return 0, {
         'server_list': server_list,

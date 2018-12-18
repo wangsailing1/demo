@@ -146,6 +146,12 @@ class User(ModelBase):
     SERVER_OPENING_AWARD_EXPIRE = 7  # 开服奖励有效期 天数
     ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
 
+    # 和前端协定1:android,2:iOS
+    APPID_OS_MAPPING = {
+        '2': 'ios',
+        '1': 'android',
+    }
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
@@ -160,6 +166,7 @@ class User(ModelBase):
             'package_appid': '',
             'register_ip': '',
             'active_ip': '',
+            'final_action': '',
             'uuid': '',
             'reg_name': False,
             'change_name': 0,  # 改名次数
@@ -686,10 +693,15 @@ class User(ModelBase):
         if ts - self.active_time > self.ONLINE_USERS_TIME_RANGE:
             online_duration = self.active_time - self.online_time
             self.online_time = ts
-            _kwargs = {'ldt': time_tools.strftimestamp(self.active_time), 'duration': online_duration}
+            _kwargs = {
+                'ldt': time_tools.strftimestamp(self.active_time),
+                'duration': online_duration,
+                'final_action': self.final_action,
+            }
             special_bdc_log(self, sort='role_logout', **_kwargs)
 
         self.active_time = ts
+        self.final_action = self.mm.action
 
     def decr_guild_coin_times(self, coin_id, num=1, save=False):
         """
@@ -1326,6 +1338,7 @@ class User(ModelBase):
         is_uplevel = False
         if not add_exp:
             return False
+        cur_exp = self.vip_exp
         next_exp = self.vip_exp + add_exp
         cur_level = self.vip
         next_level = self.vip
@@ -1355,6 +1368,16 @@ class User(ModelBase):
 
         if is_save:
             self.save()
+
+        kwargs = {
+            'old_exp': cur_exp,
+            'cur_exp': self.vip_exp,
+            'old_lv': cur_level,
+            'cur_lv': self.vip,
+            'change_type': 'VIP_EXP',  # 级别经验类型 玩家经验、等级
+        }
+        special_bdc_log(self, sort='exp_change', **kwargs)
+        special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='VIP'))
 
     def add_player_exp(self, add_exp):
         """ 增加战队经验
@@ -1452,7 +1475,7 @@ class User(ModelBase):
             'cur_exp': self.exp,
             'old_lv': cur_level,
             'cur_lv': self.level,
-            'change_type': 'user',  # 级别经验类型 玩家经验、等级
+            'change_type': 'EXP',  # 级别经验类型 玩家经验、等级
         }
         gift = []
         for i in xrange(cur_level +1 , self.level + 1):
@@ -1460,7 +1483,7 @@ class User(ModelBase):
             gift.extend(level_gift)
         add_mult_gift(self.mm, gift)
         special_bdc_log(self, sort='exp_change', **kwargs)
-        special_bdc_log(self, sort='level_change', **kwargs)
+        special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='PLE'))
         return True
 
     def add_player_exp_for_config(self, action_id, times=1):

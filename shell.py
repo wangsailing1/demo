@@ -2,6 +2,7 @@
 
 __author__ = 'sm'
 
+import os
 import sys
 import json
 import random
@@ -26,6 +27,7 @@ settings.set_env(env)
 
 from lib.utils import zip_date
 from lib.utils.change_time import debug_sync_change_time
+from lib.db import *
 from lib.core.environ import ModelManager
 
 from gconfig import front_game_config as game_config
