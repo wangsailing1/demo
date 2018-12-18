@@ -186,6 +186,12 @@ def mission_args(hm, data, mission):
     return {mission._ACHIEVE: {'target1': 0, 'value': achieve}}
 
 
+# 购买体力
+def buy_point(hm, data, mission):
+    mm = hm.mm
+    return {mission._SHOP: {'target1': 2, 'value': 1}}
+
+
 # =================================需要自检的数值类任务func=================================
 
 # 玩家等级
@@ -298,6 +304,7 @@ class Carnival(ModelBase):
         'shop.resource_buy': shop_args,  # 资源商店购买
         'shop.mystical_buy': shop_args,  # 神秘商店购买
         'shop.period_buy': shop_args,  # 限时商店购买
+        'user.buy_point': buy_point,  # 购买体力
         # 'mission.get_reward': mission_args,                           # 成就
 
     }

@@ -155,8 +155,8 @@ def add_card(req, **kwargs):
 
             if mm.card.has_card_with_group_id(card_id):
                 continue
-
-            mm.card.add_card(card_id)
+            lv = max(game_config.card_basis[card_id].get('last_lv'), 1)
+            mm.card.add_card(card_id, lv=lv)
         mm.card.save()
         result['msg'] = 'success'
 
