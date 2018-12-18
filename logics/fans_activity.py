@@ -132,7 +132,6 @@ class FansActivity(object):
             items = self.mm.fans_activity.count_produce(activity_id=activity_id)
             config_id = config[activity_id]
             all_time = config_id['time'] * 60
-            print all_time, value['start_time'], int(time.time())
             remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
             data['activity_log'][activity_id] = {
                 'items': items,
