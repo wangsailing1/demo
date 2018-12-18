@@ -335,7 +335,7 @@ class Card(ModelBase):
         count_lv = cur_lv - card_config['last_lv']
 
         base_char_pro = card_config['char_pro']
-        grow_id = card_config['love_growid']
+        grow_id = card_config['lv_growid']
         grow_config = game_config.card_level_grow[grow_id]
 
         # 格调加成
@@ -346,7 +346,7 @@ class Card(ModelBase):
                 lv_grow_add = 0
                 # 公式确定后可以优化，只是奇偶数取不同列的话 复杂度可以做成常量的
                 for lv in xrange(1, count_lv + 1):
-                    if cur_lv == 1:
+                    if lv == 1 and not card_config['last_lv']:
                         continue
                     if lv % 2:
                         pro_grow_add = grow_config['pro_grow_odd'][idx]
