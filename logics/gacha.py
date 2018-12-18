@@ -128,10 +128,11 @@ class GachaLogics(object):
         cost = gacha_config['cost']
         if not user.is_like_enough(cost):
             return 'error_like', {}
+        card_id = 0
         for gift in gacha_config['reward']:
             if gift[0] == 8:
                 card_id = gift[1]
-        if not self.mm.card.can_add_new_card() and not self.mm.card.has_card_with_group_id(card_id):
+        if card_id and not self.mm.card.can_add_new_card() and not self.mm.card.has_card_with_group_id(card_id):
             return 3, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         reward = add_mult_gift(self.mm, gacha_config['reward'])
