@@ -576,6 +576,8 @@ jump = {
     'target': ('target', 'int_list'),
     'unlock': ('unlock', 'int'),
     'icon': ('icon', 'str'),
+    'button_id': ('button_id', 'int'),
+    'close_under': ('close_under', 'int'),
 }
 
 item_coin = {

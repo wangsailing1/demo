@@ -17,6 +17,7 @@ equip = {
     # 属性加成
     'add_attr': (('add_attr1', 'add_attr2', 'add_attr3', 'add_attr4',
                   'add_attr5', 'add_attr6'), ('int', 'mult_force_num_list')),
+    'piece_id': ('piece_id', 'int'),  #
 }
 
 
