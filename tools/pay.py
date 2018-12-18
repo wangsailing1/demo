@@ -409,7 +409,7 @@ def get_buy_point_need_diamond(mm):
     :return:
     """
     cur_times = mm.user.buy_point_times
-    need_diamond = game_config.common(58, [50])
+    need_diamond = game_config.common[58]
     if cur_times >= len(need_diamond):
         return need_diamond[-1]
     else:
