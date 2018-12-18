@@ -419,6 +419,18 @@ class APIRequestHandler(BaseRequestHandler):
                     import traceback
                     print_log(traceback.print_exc())
 
+                # 检测新手引导关键步
+                try:
+                    guide_team = self.get_argument('guide_team', is_int=True)
+                    guide_id = self.get_argument('guide_id', is_int=True)
+                    if guide_team and guide_id:
+                        from logics.user import UserLogic
+                        ul = UserLogic(self.hm.mm)
+                        ul.guide(guide_team, guide_id, 0)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
                 # 执行成功保存数据
                 self.hm.mm.do_save()
 
