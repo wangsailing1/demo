@@ -318,6 +318,8 @@ class CardLogic(object):
         cost_like = 0
         # 取消雪藏 消耗点赞数
         if not cold:
+            if not self.mm.card.can_add_new_card():
+                return 2, {}  # 活跃卡牌已达上限
             if self.mm.friend.check_actor(group_id):
                 self.mm.friend.actors[group_id]['show'] = 1
             else:
