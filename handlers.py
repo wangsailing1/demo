@@ -421,9 +421,11 @@ class APIRequestHandler(BaseRequestHandler):
 
                 # 检测新手引导关键步
                 try:
-                    guide_team = self.get_argument('guide_team', is_int=True)
-                    guide_id = self.get_argument('guide_id', is_int=True)
+                    guide_team = self.get_argument('guide_team','')
+                    guide_id = self.get_argument('guide_id','')
                     if guide_team and guide_id:
+                        guide_team = int(guide_team)
+                        guide_id = int(guide_id)
                         from logics.user import UserLogic
                         ul = UserLogic(self.hm.mm)
                         ul.guide(guide_team, guide_id, 0)
