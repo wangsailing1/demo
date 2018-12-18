@@ -249,7 +249,7 @@ user_config_mapping = {
     'skill_stone': ('skill_stone', True),
     'title': ('title', True),
     'player_icon': ('player_icon', True),
-    # 'dirtyword_ch': ('dirtyword_ch', True),
+    'dirtyword_ch': ('dirtyword_ch', True),
     'homepage_button': ('homepage_button', True),
     'message': ('message', True),
     'common_attention': ('common_attention', True),
