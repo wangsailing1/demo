@@ -318,6 +318,8 @@ class CardLogic(object):
         cost_like = 0
         # 取消雪藏 消耗点赞数
         if not cold:
+            if not self.mm.card.can_add_new_card():
+                return 2, {}  # 活跃卡牌已达上限
             if self.mm.friend.check_actor(group_id):
                 self.mm.friend.actors[group_id]['show'] = 1
             else:
@@ -356,7 +358,7 @@ class CardLogic(object):
         print piece_id, card.pieces
         if card.get_piece(piece_id) < cost:
             return 'error_card_piece', {}
-        if not self.mm.card.can_add_new_card():
+        if not self.mm.card.can_add_new_card() and not self.mm.card.has_card_with_group_id(card_id):
             return 2, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         card_id = card.add_card(card_id)
