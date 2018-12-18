@@ -359,6 +359,7 @@ class Card(ModelBase):
                 char_pro.append(base_pro)
 
         # 羁绊属性加成, 所有属性加成万分比
+        grow_id = card_config['love_growid']
         love_grow_config = game_config.card_love_grow[grow_id]
         grow_love = love_grow_config['grow_love']
 
