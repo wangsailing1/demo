@@ -83,7 +83,7 @@ class Toy(object):
         if self.toy.toy_num > group_need:
             got = True
         else:
-            got = self.check_got(reward_id)
+            got = self.check_got(self.toy.toy_list[reward_id]['reward_id'])
         self.toy.toy_num += 1
         self.toy.all_toy_num += 1
         self.toy.catch_num_current += 1
