@@ -967,8 +967,8 @@ class FriendLogic(object):
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
             return 17, {}  # 已选择过对话
-        if times >= max_times:
-            return 13, {}  # 次数超出
+        # if times >= max_times:
+        #     return 13, {}  # 次数超出
         cost = config[choice_id]['cost']
         rc, _ = del_mult_goods(self.mm, cost)
         if rc != 0:
