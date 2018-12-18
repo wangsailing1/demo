@@ -106,7 +106,7 @@ class Toy(object):
 
         reward = add_mult_gift(self.mm, gift)
         self.toy.save()
-        if self.sort == 1:
+        if self.sort == 1 and self.toy.catch_num :
             self.toy.add_rank(self.mm.uid, self.toy.catch_num)
         _, data = self.index()
         data['reward'] = reward

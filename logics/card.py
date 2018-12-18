@@ -430,7 +430,7 @@ class CardLogic(object):
         if next_lv not in config:
             return 1, {}  #等级最大
         if self.mm.user.level < config[next_lv]['player_lv']:
-            return 2, {}  #等级未达到
+            return 2, {}  #等级未达到要求
         build_id = config[next_lv]['build_id']
         build_config = game_config.building
         cost = build_config[build_id]['cost']

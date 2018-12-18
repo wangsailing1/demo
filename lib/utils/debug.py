@@ -10,6 +10,8 @@ import time
 import datetime
 import hashlib
 from collections import defaultdict
+from mail import send_sys_mail, send_dingtalk
+
 
 from mail import send_sys_mail
 
@@ -121,6 +123,10 @@ def error_mail(debug, addr_list):
                         rc = send_sys_mail(addr_list, subject, s)
                         CLIENT_EXCEPTION_CACHES[content_md5] += 1
                         print_log('error_mail %s rc: %s' % (s, str(rc)))
+                        try:
+                            send_dingtalk(settings.DINGTALK, subject, s)
+                        except:
+                            pass
                 else:
                     rc = 0
                     print_log('error_mail %s rc: %s' % (s, str(rc)))
