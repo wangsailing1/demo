@@ -18,6 +18,7 @@ def is_sensitive(word):
     """
     for i, v in enumerate(WORDS):
         if isinstance(word, (str, unicode)):
+            word = word.replace(' ', '')
             if v in word:
                 return True
         elif isinstance(word, (list, tuple)):
