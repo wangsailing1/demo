@@ -241,7 +241,7 @@ class ShopLogics(object):
 
         rc, silvers = del_mult_goods(self.mm, new_items)
         if rc != 0:
-            return rc, 0
+            return rc, {}
 
         reward = add_gift(self.mm, 1, [[0, silvers]])
 
