@@ -10,6 +10,9 @@ import time
 import json
 
 DEBUG = True
+# 是否强制发出来error至钉钉，忽略DEBUG影响
+IMMEDIATE_DINGTALK_ERROR_MAIL = True
+
 PRODUCT_NAME = u'大卖王'
 PLATFORM = ''    # 平台标示
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
