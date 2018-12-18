@@ -424,6 +424,7 @@ homepage_button = {
     'direction': ('direction', 'int'),
     'name': ('name', 'int'),
     'red_point': ('red_point', 'int'),
+    'quick_jump': ('quick_jump', 'int'),
 }
 
 # 跑马灯配置
