@@ -171,7 +171,7 @@ class GachaLogics(object):
         cost = build_config[build_id]['cost']
         rc, data = del_mult_goods(self.mm, cost)
         if rc:
-            return rc, data
+            return rc, {}
         self.gacha.coin_lv = next_lv
 
         self.mm.user.up_build(build_id)
