@@ -181,6 +181,10 @@ def guide(hm):
     guide_team = hm.get_argument('guide_team', is_int=True)
     guide_id = hm.get_argument('guide_id', is_int=True)
     skip = hm.get_argument('skip', is_int=True)
+    sort = hm.get_argument('sort', is_int=True)
+    # 前端容错
+    if not guide_team:
+        guide_team = sort
 
     ul = UserLogic(mm)
     rc, data = ul.guide(guide_team, guide_id, skip)
