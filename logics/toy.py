@@ -28,6 +28,8 @@ class Toy(object):
     def index(self):
         if not self.is_open():
             return 1, {}  # 活动未开启
+        if self.check_done():
+            self.toy.refresh_reward()
         data = {}
         data['reward_list'] = self.toy.toy_list
         data['version'] = self.toy.version
@@ -101,7 +103,7 @@ class Toy(object):
             # self.toy.toy_list.pop(reward_id)
 
         # 抽完自动刷新
-        if not self.toy.toy_list:
+        if self.check_done():
             self.toy.refresh_reward()
 
         reward = add_mult_gift(self.mm, gift)
@@ -112,6 +114,12 @@ class Toy(object):
         data['reward'] = reward
         data['got'] = got
         return 0, data
+
+    def check_done(self):
+        for k, v in self.toy.toy_list.iteritems():
+            if not v['flag']:
+                return False
+        return True
 
     def get_group_mustgetnum(self, group_id):
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
