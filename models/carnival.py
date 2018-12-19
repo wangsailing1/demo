@@ -593,7 +593,7 @@ class DoMission(object):
         # 获得艺人
         if sort == GACHA[0]:
             # config = game_config.coin_gacha[info]
-            if (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
+            if info and (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
                         isinstance(target[4], list) and tp in target[4]):
                 if info[0][0] == 8:  # 整卡 道具类型
                     star = game_config.card_basis[info[0][1]]['star_level']
