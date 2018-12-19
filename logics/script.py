@@ -478,7 +478,7 @@ class ScriptLogic(object):
         L = N = M = style_suit_effect = 0
         market_enough = True
         # todo 当前初始关注度
-        init_attention = sum(self.mm.user.attention.values())
+        init_attention = sum([j for i,j in self.mm.user.attention.iteritems() if i != 3])
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
@@ -544,7 +544,7 @@ class ScriptLogic(object):
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
         market_enough = True
-        init_attention = sum(self.mm.user.attention.values())
+        init_attention = sum([j for i,j in self.mm.user.attention.iteritems() if i != 3])
 
         card_popularity = 0
         if film_info:
