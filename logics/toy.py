@@ -100,7 +100,7 @@ class Toy(object):
             # self.toy.toy_list.pop(reward_id)
 
         # 抽完自动刷新
-        if not self.check_done():
+        if self.check_done():
             self.toy.refresh_reward()
 
         reward = add_mult_gift(self.mm, gift)
