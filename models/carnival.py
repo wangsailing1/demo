@@ -601,7 +601,7 @@ class DoMission(object):
                                     gacha_type == target[0] or not target[0]):
                         return 1
                 else:
-                    star = game_config.use_item[info[0][1]]['star']
+                    star = game_config.card_piece[info[0][1]]['star']
                     if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
