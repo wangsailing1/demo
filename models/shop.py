@@ -120,10 +120,14 @@ class MysticalShop(Shop):
     def pre_use(self):
         refresh_time, next_time = self.get_refresh_time()
         now = time.strftime(self.FORMAT)
+        save = self.mysticalrefresh_times()
+        self.mysticalrefresh_times()
         if self.refresh_time < refresh_time and now > refresh_time:
             self.refresh_goods()
             self.refresh_time = refresh_time
             self.next_time = int(time.mktime(time.strptime(next_time, self.FORMAT)))
+            save = True
+        if save:
             self.save()
 
     def mysticalrefresh_times(self):
@@ -131,6 +135,8 @@ class MysticalShop(Shop):
         if self.refresh_date != today:
             self.refresh_date = today
             self.refresh_times = 0
+            return True
+        return False
 
     def refresh_goods(self, is_save=False, is_manual=False):
 
@@ -199,14 +205,23 @@ class GiftShop(Shop):
             'refresh_time': 0,
             'refresh_times': 0,
             'goods': {},
-            'next_time': 0
+            'next_time': 0,
+            'refresh_date': '',
         }
         super(Shop, self).__init__(self.uid)
 
     def pre_use(self):
+        today = time.strftime('%F')
+        save = False
+        if self.refresh_date != today:
+            self.refresh_goods()
+            self.refresh_time = time.strftime(self.FORMAT)
+            save = True
         if not self.goods and not self.refresh_time:
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
+            save = True
+        if save:
             self.save()
 
     def refresh_goods(self, is_save=False):
@@ -258,14 +273,23 @@ class ResourceShop(Shop):
             'refresh_time': 0,
             'refresh_times': 0,
             'goods': {},
-            'next_time': 0
+            'next_time': 0,
+            'refresh_date': '',
         }
         super(Shop, self).__init__(self.uid)
 
     def pre_use(self):
+        today = time.strftime('%F')
+        save = False
+        if self.refresh_date != today:
+            self.refresh_goods()
+            self.refresh_time = time.strftime(self.FORMAT)
+            save = True
         if not self.goods and not self.refresh_time:
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
+            save = True
+        if save:
             self.save()
 
     def refresh_goods(self, is_save=False):
