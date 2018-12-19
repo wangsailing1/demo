@@ -28,6 +28,8 @@ class Toy(object):
     def index(self):
         if not self.is_open():
             return 1, {}  # 活动未开启
+        if self.check_done():
+            self.toy.refresh_reward()
         data = {}
         data['reward_list'] = self.toy.toy_list
         data['version'] = self.toy.version
