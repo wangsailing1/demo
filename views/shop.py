@@ -257,10 +257,11 @@ def mystical_refresh(hm):
     mm.mystical_shop.refresh_time = now
     mm.mystical_shop.refresh_goods()
     config = game_config.price_ladder
-    if mm.mystical_shop.refresh_times >= len(config):
-        return 1, {}  # 刷新次数也达最大次数
+    # if mm.mystical_shop.refresh_times >= len(config):
+    #     return 1, {}  # 刷新次数也达最大次数
     mm.mystical_shop.refresh_times += 1
-    need_coin = config[mm.mystical_shop.refresh_times]['mystical_store_cost']
+    times = min(mm.mystical_shop.refresh_times, len(config))
+    need_coin = config[times]['mystical_store_cost']
     if need_coin > mm.user.diamond:
         return 3, {}  # 钻石不足
     mm.user.diamond -= need_coin
