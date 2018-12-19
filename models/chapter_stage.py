@@ -41,7 +41,7 @@ class Chapter_stage(ModelBase):
             self.save()
 
     def get_now_stage(self):
-        chapter = max(self.next_chapter)
+        chapter = max([i for i in self.next_chapter if not game_config.chapter[i]['hard_type']])
         stage = self.chapter.get(chapter, {}).get(0, {}).keys()
         if not stage:
             stage = 1

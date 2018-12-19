@@ -370,6 +370,8 @@ class ScriptLogic(object):
         attr_rate = game_config.common[33] / 100.0
         # 属性作用上升率
         attr_up_rate = game_config.common[53] / 10000.0
+        # 属性作用上升系数
+        attr_up_factor = game_config.common[67] / 10000.0
         # 属性作用上升指数
         attr_up_index = game_config.common[54] / 10000.0
 
@@ -378,7 +380,9 @@ class ScriptLogic(object):
         # 【 当艺术 / 含艺术属性角色数量 < 艺术基准系数】
         #       part艺术 =（艺术 / 含艺术属性的角色数量 / 艺术基准系数） ^ 属性作用指数
         # else:
-        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+        #       处理后的属性作用上升率 = 属性作用上升系数/（演技基准系数^属性作用上升率）
+        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*处理后的属性作用上升率 /（1 + 处理后的属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+
 
         # 增加事件和全球影响事件buff
         # 属性 = 属性 * （1 + 影响比例）（最大5%）
@@ -401,9 +405,10 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
+                new_attr_up_rate = attr_up_factor / (attr_up_factor ** attr_up_rate)
                 attr_value = attrs.get(pro_id, 0)
-                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
+                     / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
             base_a += d
@@ -415,7 +420,8 @@ class ScriptLogic(object):
         # 【 当娱乐 / 含娱乐属性角色数量 < 娱乐基准系数】
         #       part娱乐 =（娱乐 / 含娱乐属性的角色数量 / 娱乐基准系数） ^ 属性作用指数
         # else:
-        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
+        #       处理后的属性作用上升率 = 属性作用上升系数/（演技基准系数^属性作用上升率）
+        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*处理后的属性作用上升率 /（1 + 处理后的属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
 
         base_b = 0
         pro_count = 0
@@ -433,9 +439,10 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
+                new_attr_up_rate = attr_up_factor / (attr_up_factor ** attr_up_rate)
                 attr_value = attrs.get(pro_id, 0)
-                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
+                     / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
             base_b += d
