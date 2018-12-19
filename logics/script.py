@@ -471,7 +471,7 @@ class ScriptLogic(object):
         L = N = M = style_suit_effect = 0
         market_enough = True
         # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum(self.mm.user.attention.values())
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
@@ -499,6 +499,8 @@ class ScriptLogic(object):
             for role_id, card_oid in film_info['card'].iteritems():
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
+        if step == 1:
+            self.mm.user.add_attention(3, L)
         all_popularity = 0
         for role_id, card_oid in script.cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
@@ -522,6 +524,7 @@ class ScriptLogic(object):
         script.cur_script['attention'] = int(attention)
         if is_save:
             script.save()
+            self.mm.user.save()
         return {'attention': int(attention),
                 'card_effect': card_popularity / standard_popularity, }
 
@@ -534,8 +537,7 @@ class ScriptLogic(object):
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
         market_enough = True
-        # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum(self.mm.user.attention.values())
 
         card_popularity = 0
         if film_info:
@@ -821,6 +823,9 @@ class ScriptLogic(object):
         end_lv = end_lv_rate[idx][0]
 
         cur_script['end_lv'] = end_lv
+        next_attention = game_config.script_end_level[end_lv]['next_attention']
+        self.user.attention = {}
+        self.user.add_attention(2, next_attention)
 
         # 记录街区总排行（显示用,按票房）
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
