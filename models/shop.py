@@ -214,6 +214,7 @@ class GiftShop(Shop):
         today = time.strftime('%F')
         save = False
         if self.refresh_date != today:
+            self.refresh_date = today
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
             save = True
@@ -282,6 +283,7 @@ class ResourceShop(Shop):
         today = time.strftime('%F')
         save = False
         if self.refresh_date != today:
+            self.refresh_date = today
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
             save = True
