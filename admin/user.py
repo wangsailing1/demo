@@ -74,6 +74,7 @@ def update(req, **kwargs):
     script_license = int(req.get_argument('script_license'))
     server_dice_num = int(req.get_argument('server_dice_num'))
     dice_num = int(req.get_argument('dice_num'))
+    chapter = req.get_argument('chapter')
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -88,6 +89,29 @@ def update(req, **kwargs):
     else:
         mm.user.exp = exp
     mm.user.name = name
+
+    # 调章节
+    chapter_id, stage = [int(i) for i in chapter.split('-')]
+    stage = min(stage, 10)
+    chapter_config = game_config.chapter
+    mm.chapter_stage.next_chapter = [1]
+    mm.chapter_stage.chapter = {}
+    for k, v in chapter_config.iteritems():
+        if k <= chapter_id and v['hard_type'] == 0:
+            if k < chapter_id:
+                stage_max = 10
+            else:
+                stage_max = stage
+            if k not in mm.chapter_stage.chapter:
+                mm.chapter_stage.chapter[k] = {0: {}}
+                if stage_max == 10:
+                    mm.chapter_stage.next_chapter.extend(v['next_chapter'])
+            for stage_id in range(stage_max):
+                if v['stage_id'][stage_id]:
+                    mm.chapter_stage.chapter[k][0][stage_id+1] = {'fight_times': 0, 'star': 7}
+                else:
+                    mm.chapter_stage.chapter[k][0][stage_id + 1] = {}
+
 
     # 钻石
     admin = auth.get_admin_by_request(req)
@@ -172,6 +196,7 @@ def update(req, **kwargs):
 
     mm.user.save()
     mm.carnival.save()
+    mm.chapter_stage.save()
 
     msg = 'success'
 

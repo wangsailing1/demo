@@ -78,8 +78,12 @@
         <td><input style="border-style:none; width:100%" name="script_license" type="text" value="{{mm.user.script_license}}" /></td>
         <th align="left">新服嘉年华骰子数</th>
         <td><input style="border-style:none; width:100%" name="server_dice_num" type="text" value="{{mm.carnival.server_dice_num}}" /></td>
+    </tr>
+    <tr>
         <th align="left">嘉年华骰子数</th>
         <td><input style="border-style:none; width:100%" name="dice_num" type="text" value="{{mm.carnival.dice_num}}" /></td>
+        <th align="left">关卡</th>
+        <td><input style="border-style:none; width:100%" name="chapter" type="text" value="{{mm.chapter_stage.get_now_stage()}}" /></td>
     </tr>
     <tr><td colspan="10"><input name="submit" type="submit" value="修改" /></td></tr>
 </table>
