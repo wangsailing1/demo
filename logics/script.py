@@ -141,7 +141,7 @@ class ScriptLogic(object):
         user.deduct_dollar(cost)
         info = self.calc_attention_by_step(1)
         # 来自本部的关注度为 关注度 - 初始关注度
-        init_att = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
+        init_att = sum([j for i, j in user.attention.iteritems() if i != 3])
         att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
         user.add_attention(3, att)
         script.save()
@@ -199,7 +199,7 @@ class ScriptLogic(object):
         cur_script['card_effect'] = effect
         info = self.calc_attention_by_step(2)
         # 来自本部的关注度为 关注度 - 初始关注度
-        init_att = sum([self.mm.user.attention.values()])
+        init_att = sum(user.attention.values())
         att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
         user.add_attention(3, att)
 
@@ -244,7 +244,7 @@ class ScriptLogic(object):
 
         result = self.calc_attention_by_step(3)
         # 来自本部的关注度为 关注度 - 初始关注度
-        init_att = sum([self.mm.user.attention.values()])
+        init_att = sum(user.attention.values())
         att = result.get('attention', 0) - init_att if result.get('attention', 0) else 0
         user.add_attention(3, att)
         rc, data = self.index()
