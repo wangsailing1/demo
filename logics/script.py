@@ -139,7 +139,8 @@ class ScriptLogic(object):
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
         user.deduct_dollar(cost)
-        self.calc_attention_by_step(1)
+        info = self.calc_attention_by_step(1)
+        user.add_attention(3, info.get('attention', 0))
         script.save()
         user.save()
 
@@ -490,7 +491,6 @@ class ScriptLogic(object):
                 min_attection = game_config.common[40] / 10000.0
                 if attention < min_attection:
                     attention = min_attection
-                self.mm.user.add_attention(3, int(attention))
                 script.cur_script['attention'] = int(attention)
                 if is_save:
                     script.save()
