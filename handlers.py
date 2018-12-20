@@ -166,12 +166,39 @@ class LoginHandler(BaseRequestHandler):
             return self.result_info('error_method')
 
         if callable(method):
+            pre_status, pre_data = self.pre_handler()
+            if pre_status:
+                return self.result_info(pre_status, pre_data)
             rc, data = method(self.hm)
             if rc != 0:
                 return self.result_info(rc)
 
             return self.result_info(rc, data)
         return self.result_info('error_not_call_method')
+
+    def pre_handler(self):
+        """ 处理方法之前
+
+        :return:
+        """
+        # return 0, None
+
+        # 强制更新
+        version = self.hm.get_argument('version', '')
+        pt = self.hm.get_argument('pt', '')
+        tpid = self.hm.get_argument('tpid', '')
+        if not pt:
+            return 0, None
+        version_config = game_config.version.get(str(tpid), game_config.version.get(pt))
+        if version_config and version_config['version'] > version:
+            return 'error_9998', {
+                'custom_msg': version_config['msg'],
+                'client_upgrade': {
+                    'url': version_config['url'],
+                    'msg': version_config['msg'],
+                },
+            }
+        return 0, None
 
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self):
