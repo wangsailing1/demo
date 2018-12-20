@@ -140,7 +140,10 @@ class ScriptLogic(object):
         self.mm.script_book.add_book(script_id)
         user.deduct_dollar(cost)
         info = self.calc_attention_by_step(1)
-        user.add_attention(3, info.get('attention', 0))
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
+        att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
+        user.add_attention(3, att)
         script.save()
         user.save()
 
@@ -404,7 +407,8 @@ class ScriptLogic(object):
             else:
                 attr_value = attrs.get(pro_id, 0)
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                     / (1 + attr_up_rate * (
+                    1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
             base_a += d
@@ -436,7 +440,8 @@ class ScriptLogic(object):
             else:
                 attr_value = attrs.get(pro_id, 0)
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                     / (1 + attr_up_rate * (
+                    1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
             base_b += d
@@ -472,7 +477,7 @@ class ScriptLogic(object):
         L = N = M = style_suit_effect = 0
         market_enough = True
         # todo 当前初始关注度
-        init_attention = sum([j for i,j in self.mm.user.attention.iteritems() if i != 3])
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
@@ -537,7 +542,7 @@ class ScriptLogic(object):
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
         market_enough = True
-        init_attention = sum([j for i,j in self.mm.user.attention.iteritems() if i != 3])
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
 
         card_popularity = 0
         if film_info:
@@ -840,7 +845,7 @@ class ScriptLogic(object):
             near_rank = new_rank - 1
         if new_rank == 1:
             near_rank = 2
-        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)
+        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1, withscores=True)
         near_score = rank_list[0][1] if rank_list else 0
 
         cur_script['old_rank'] = [old_rank, old_score]
@@ -1036,7 +1041,7 @@ class ScriptLogic(object):
         script_info = script.continued_script[script_id]
         now = int(time.time())
         if script_info['continued_expire'] - now <= 60:
-            return 3, {}  #推广时间已过
+            return 3, {}  # 推广时间已过
         continued_lv = script_info['continued_lv']
         if continued_lv + 1 not in game_config.script_continued_level:
             return 2, {}  # 已是最大等级
@@ -1046,7 +1051,6 @@ class ScriptLogic(object):
         rc, _ = del_mult_goods(self.mm, upgrade_cost)
         if rc:
             return rc, {}
-
 
         continued_start = script_info['continued_start']
         div, mod = divmod(now - continued_start, 60)
