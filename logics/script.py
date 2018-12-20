@@ -825,8 +825,8 @@ class ScriptLogic(object):
 
         cur_script['end_lv'] = end_lv
         next_attention = game_config.script_end_level[end_lv]['next_attention']
-        self.user.attention = {}
-        self.user.add_attention(2, next_attention)
+        self.mm.user.attention = {}
+        self.mm.user.add_attention(2, next_attention)
 
         # 记录街区总排行（显示用,按票房）
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
