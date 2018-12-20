@@ -497,6 +497,7 @@ class ScriptLogic(object):
                 min_attection = game_config.common[40] / 10000.0
                 if attention < min_attection:
                     attention = min_attection
+                self.mm.user.add_attention(3, int(attention))
                 script.cur_script['attention'] = int(attention)
                 if is_save:
                     script.save()
@@ -528,8 +529,6 @@ class ScriptLogic(object):
         if attention < min_attection:
             attention = min_attection
         script.cur_script['attention'] = int(attention)
-        if step == 1:
-            self.mm.user.add_attention(3, attention)
         if is_save:
             script.save()
             self.mm.user.save()
