@@ -241,6 +241,9 @@ class ScriptLogic(object):
         result = self.calc_attention_by_step(3)
         # 来自本部的关注度为 关注度 - 初始关注度
         init_att = sum(user.attention.values())
+
+        # 添加选完剧本时的关注度
+        script.cur_script['attention_market'] = init_att
         att = result.get('attention_initial', 0) - init_att if result.get('attention_initial', 0) else 0
         user.add_attention(3, att)
         rc, data = self.index()
