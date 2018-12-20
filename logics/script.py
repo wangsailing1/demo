@@ -636,9 +636,13 @@ class ScriptLogic(object):
         min_attection = game_config.common[40] / 10000.0
         if attention < min_attection:
             attention = min_attection
+        if not standard_popularity:
+            card_p = 0
+        else:
+            card_p = card_popularity / standard_popularity
         return {
             'attention': int(attention),  # 关注度
-            'card_effect': card_popularity / standard_popularity,  # 艺人人气对关注度影响
+            'card_effect': card_p,  # 艺人人气对关注度影响
             'attention_initial': int(attention_initial)
         }
 
