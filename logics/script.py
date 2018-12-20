@@ -198,10 +198,6 @@ class ScriptLogic(object):
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
         info = self.calc_attention_by_step(2)
-        # 来自本部的关注度为 关注度 - 初始关注度
-        init_att = sum(user.attention.values())
-        att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
-        user.add_attention(3, att)
 
         script.save()
         user.save()
@@ -245,7 +241,7 @@ class ScriptLogic(object):
         result = self.calc_attention_by_step(3)
         # 来自本部的关注度为 关注度 - 初始关注度
         init_att = sum(user.attention.values())
-        att = result.get('attention', 0) - init_att if result.get('attention', 0) else 0
+        att = result.get('attention_initial', 0) - init_att if result.get('attention_initial', 0) else 0
         user.add_attention(3, att)
         rc, data = self.index()
         data.update(effect)
@@ -283,6 +279,7 @@ class ScriptLogic(object):
     def calc_result(self, film_info=None):
         """拍摄结算"""
         result = {}
+        user = self.mm.user
         script = self.mm.script
         cur_script = film_info or script.cur_script
 
@@ -297,6 +294,10 @@ class ScriptLogic(object):
                     reward.append(d)
         result = self.calc_attention_by_step(1)
         attention = self.calc_attention()
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum(user.attention.values())
+        att = attention.get('attention', 0) - init_att if attention.get('attention', 0) else 0
+        user.add_attention(3, att)
         result['reward'] = reward
         result['attention_initial'] = attention['attention_initial']
         result['attention_end'] = attention['attention']
