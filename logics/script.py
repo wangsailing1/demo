@@ -535,9 +535,9 @@ class ScriptLogic(object):
         population_rate = game_config.common[50]  # 人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
-        attention_rate = 1 + (all_popularity ** all_popularity_rate /
-                              (
-                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+        # attention_rate = 1 + (all_popularity ** all_popularity_rate /
+        #                       (
+        #                           all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
         attention = init_attention + (L + N) * population_rate + style_suit_effect - M
 
