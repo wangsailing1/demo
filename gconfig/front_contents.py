@@ -244,7 +244,7 @@ user_config_mapping = {
     # 'drama': ('drama', True),
 
     # 'test_config': ('test_config', True),
-    # 'version': ('version', True),
+    'version': ('version', True),
     'team_skill': ('team_skill', True),
     'skill_stone': ('skill_stone', True),
     'title': ('title', True),
