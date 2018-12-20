@@ -506,8 +506,7 @@ class ScriptLogic(object):
             for role_id, card_oid in film_info['card'].iteritems():
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
-        if step == 1:
-            self.mm.user.add_attention(3, L)
+
         all_popularity = 0
         for role_id, card_oid in script.cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
@@ -529,6 +528,8 @@ class ScriptLogic(object):
         if attention < min_attection:
             attention = min_attection
         script.cur_script['attention'] = int(attention)
+        if step == 1:
+            self.mm.user.add_attention(3, attention)
         if is_save:
             script.save()
             self.mm.user.save()
