@@ -139,7 +139,11 @@ class ScriptLogic(object):
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
         user.deduct_dollar(cost)
-        self.calc_attention_by_step(1)
+        info = self.calc_attention_by_step(1)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum([j for i, j in user.attention.iteritems() if i != 3])
+        att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
+        user.add_attention(3, att)
         script.save()
         user.save()
 
@@ -193,7 +197,7 @@ class ScriptLogic(object):
         cur_script['cost'] += cost
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
-        self.calc_attention_by_step(2)
+        info = self.calc_attention_by_step(2)
 
         script.save()
         user.save()
@@ -208,6 +212,7 @@ class ScriptLogic(object):
         :return:
         """
         script = self.mm.script
+        user = self.mm.user
 
         cur_script = script.cur_script
         if not cur_script:
@@ -234,6 +239,14 @@ class ScriptLogic(object):
         finished_reward = self.check_finished_reward()
 
         result = self.calc_attention_by_step(3)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum(user.attention.values())
+
+        att = result.get('attention_initial', 0) - init_att if result.get('attention_initial', 0) else 0
+
+        # 添加选完剧本时的关注度
+        script.cur_script['attention_market'] = att
+        user.add_attention(3, att)
         rc, data = self.index()
         data.update(effect)
         data['cur_script']['attention'] = result['attention_initial']
@@ -241,6 +254,7 @@ class ScriptLogic(object):
             data['finished_reward'] = finished_reward
 
         script.save()
+        user.save()
 
         return rc, data
 
@@ -269,6 +283,7 @@ class ScriptLogic(object):
     def calc_result(self, film_info=None):
         """拍摄结算"""
         result = {}
+        user = self.mm.user
         script = self.mm.script
         cur_script = film_info or script.cur_script
 
@@ -283,6 +298,10 @@ class ScriptLogic(object):
                     reward.append(d)
         result = self.calc_attention_by_step(1)
         attention = self.calc_attention()
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum(user.attention.values())
+        att = attention.get('attention', 0) - init_att if attention.get('attention', 0) else 0
+        user.add_attention(3, att)
         result['reward'] = reward
         result['attention_initial'] = attention['attention_initial']
         result['attention_end'] = attention['attention']
@@ -409,7 +428,6 @@ class ScriptLogic(object):
                 attr_value = attrs.get(pro_id, 0)
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
                      / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
-
             d = d * (1 + event_buff / 100.0)
             base_a += d
 
@@ -478,7 +496,7 @@ class ScriptLogic(object):
         L = N = M = style_suit_effect = 0
         market_enough = True
         # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
@@ -506,6 +524,7 @@ class ScriptLogic(object):
             for role_id, card_oid in film_info['card'].iteritems():
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
+
         all_popularity = 0
         for role_id, card_oid in script.cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
@@ -529,6 +548,7 @@ class ScriptLogic(object):
         script.cur_script['attention'] = int(attention)
         if is_save:
             script.save()
+            self.mm.user.save()
         return {'attention': int(attention),
                 'card_effect': card_popularity / standard_popularity, }
 
@@ -541,8 +561,7 @@ class ScriptLogic(object):
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
         market_enough = True
-        # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
 
         card_popularity = 0
         if film_info:
@@ -828,6 +847,9 @@ class ScriptLogic(object):
         end_lv = end_lv_rate[idx][0]
 
         cur_script['end_lv'] = end_lv
+        next_attention = game_config.script_end_level[end_lv]['next_attention']
+        self.mm.user.attention = {}
+        self.mm.user.add_attention(2, next_attention)
 
         # 记录街区总排行（显示用,按票房）
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
@@ -842,7 +864,7 @@ class ScriptLogic(object):
             near_rank = new_rank - 1
         if new_rank == 1:
             near_rank = 2
-        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)
+        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1, withscores=True)
         near_score = rank_list[0][1] if rank_list else 0
 
         cur_script['old_rank'] = [old_rank, old_score]
@@ -1038,7 +1060,7 @@ class ScriptLogic(object):
         script_info = script.continued_script[script_id]
         now = int(time.time())
         if script_info['continued_expire'] - now <= 60:
-            return 3, {}  #推广时间已过
+            return 3, {}  # 推广时间已过
         continued_lv = script_info['continued_lv']
         if continued_lv + 1 not in game_config.script_continued_level:
             return 2, {}  # 已是最大等级
@@ -1048,7 +1070,6 @@ class ScriptLogic(object):
         rc, _ = del_mult_goods(self.mm, upgrade_cost)
         if rc:
             return rc, {}
-
 
         continued_start = script_info['continued_start']
         div, mod = divmod(now - continued_start, 60)
