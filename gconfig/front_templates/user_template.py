@@ -315,12 +315,12 @@ test_config = {
 }
 
 # 版本强制更新表
-# version = {
-#     'uk': ('platform', 'str'),
-#     'version': ('version', 'str'),
-#     'url': ('url', 'str'),
-#     'msg': ('msg', 'unicode'),
-# }
+version = {
+    'uk': ('platform', 'str'),
+    'version': ('version', 'str'),
+    'url': ('url', 'str'),
+    'msg': ('msg', 'unicode'),
+}
 
 
 # 战队技能表

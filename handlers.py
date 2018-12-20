@@ -468,8 +468,9 @@ class APIRequestHandler(BaseRequestHandler):
 
         # 强制更新
         version = self.hm.get_argument('version', '')
+        pt = self.hm.get_argument('pt', '')
         tpid = self.hm.mm.user.tpid
-        version_config = game_config.version.get(str(tpid), game_config.version.get('all'))
+        version_config = game_config.version.get(str(tpid), game_config.version.get(pt))
         if version_config and version_config['version'] > version:
             return 'error_9998', {
                 'custom_msg': version_config['msg'],
