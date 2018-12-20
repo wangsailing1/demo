@@ -529,15 +529,16 @@ class ScriptLogic(object):
         for role_id, card_oid in script.cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
             all_popularity += card_info['popularity']
-        all_popularity_rate = game_config.common[34] / 100.0
-        popularity_constant = game_config.common[35] / 100.0
-        popularity_rate = game_config.common[36] / 100.0
+        # all_popularity_rate = game_config.common[34] / 100.0
+        # popularity_constant = game_config.common[35] / 100.0
+        # popularity_rate = game_config.common[36] / 100.0
         population_rate = game_config.common[50]  # 人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
-        attention_rate = 1 + (all_popularity ** all_popularity_rate /
-                              (
-                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+        # attention_rate = 1
+        # if all_popularity ** all_popularity_rate != 0:
+        #     attention_rate = 1 + (all_popularity ** all_popularity_rate / (
+        #         all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
         attention = init_attention + (L + N) * population_rate + style_suit_effect - M
 
@@ -620,10 +621,10 @@ class ScriptLogic(object):
         # 所得到的值就是关注度加成系数。
         # 总人气指数，人气计算常数，人气系数读取common表/100，（common表34,35,36行，计算后结果值为1.5,0.49，0.2）
 
-        attention_rate = 1 + (all_popularity ** all_popularity_rate /
-                              (
-                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
-
+        attention_rate = 1
+        if all_popularity ** all_popularity_rate != 0:
+            attention_rate = 1 + (all_popularity ** all_popularity_rate / (
+                all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
         attention_initial = init_attention + (L + N) * population_rate + style_suit_effect - M
         attention = attention_initial * attention_rate
 
