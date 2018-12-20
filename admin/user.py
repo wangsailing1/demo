@@ -171,7 +171,7 @@ def update(req, **kwargs):
     if diff_action_point > 0:
         mm.user.decr_action_point(diff_action_point)
     elif diff_action_point < 0:
-        mm.user.add_action_point(-diff_action_point)
+        mm.user.add_action_point(-diff_action_point,force=True)
 
     # # 统帅精力
     # diff_energy = mm.commander.energy - energy
