@@ -197,7 +197,11 @@ class ScriptLogic(object):
         cur_script['cost'] += cost
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
-        self.calc_attention_by_step(2)
+        info = self.calc_attention_by_step(2)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum([self.mm.user.attention.values()])
+        att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
+        user.add_attention(3, att)
 
         script.save()
         user.save()
@@ -212,6 +216,7 @@ class ScriptLogic(object):
         :return:
         """
         script = self.mm.script
+        user = self.mm.user
 
         cur_script = script.cur_script
         if not cur_script:
@@ -238,6 +243,10 @@ class ScriptLogic(object):
         finished_reward = self.check_finished_reward()
 
         result = self.calc_attention_by_step(3)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum([self.mm.user.attention.values()])
+        att = result.get('attention', 0) - init_att if result.get('attention', 0) else 0
+        user.add_attention(3, att)
         rc, data = self.index()
         data.update(effect)
         data['cur_script']['attention'] = result['attention_initial']
@@ -245,6 +254,7 @@ class ScriptLogic(object):
             data['finished_reward'] = finished_reward
 
         script.save()
+        user.save()
 
         return rc, data
 
