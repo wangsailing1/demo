@@ -546,8 +546,12 @@ class ScriptLogic(object):
         if is_save:
             script.save()
             self.mm.user.save()
+        if not standard_popularity:
+            card_p = 0
+        else:
+            card_p = card_popularity / standard_popularity
         return {'attention': int(attention),
-                'card_effect': card_popularity / standard_popularity, }
+                'card_effect': card_p, }
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
