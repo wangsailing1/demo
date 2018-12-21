@@ -222,6 +222,29 @@ def force_int_float_list_or_int_float(value):
         data.append(map(force_mix, v))
     return data
 
+def force_int_float_list_or_int_float2(value):
+    """ 1,2 -> [1, 2]  1 -> 1 '' -> [] '[10,10,10],[10,10,10]' -> [[10,10,10],[10,10,10]]
+
+    :param value:
+    :return:
+    """
+    if value in space:
+        return 0
+    if value == 'NA':
+        return value
+    if not isinstance(value, basestring):
+        return force_mix(value)
+    start_index = value.find('[')
+    if start_index < 0:
+        return [force_mix(i.strip()) for i in value.split(',') if i]
+    end_index = value.find(']')
+    num = value.count(',', start_index, end_index) + 1
+    list_compile = list_compiles[num]
+    data = []
+    for v in list_compile.findall(value):
+        data.append(map(force_mix, v))
+    return data
+
 
 def force_int_list(x):
     try:
@@ -813,6 +836,7 @@ mapping = {
     '2int_list': force_2int_list,
     # int_float_list_or_int_float: 1,2 -> [1, 2]  1 -> 1 '' -> [] '[10,10,10],[10,10,10]' -> [[10,10,10],[10,10,10]]
     'int_float_list_or_int_float': force_int_float_list_or_int_float,
+    'int_float_list_or_int_float2': force_int_float_list_or_int_float2,
     # list_1: '[9680],[9801]'   [[9680], [9801]]
     'list_1': force_list(1),
     # list_2: '[9680,9800],[9801,10000]' [[9680, 9800], [9801, 10000]]

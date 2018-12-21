@@ -7,7 +7,7 @@ from gconfig import check
 
 common = ({
               'uk': ('id', 'int'),
-              'value': ('value', 'int_float_list_or_int_float')
+              'value': ('value', 'int_float_list_or_int_float2')
           }, 'common_config')
 
 player_level = {
