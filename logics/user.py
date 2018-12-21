@@ -724,7 +724,7 @@ class UserLogic(object):
             return 'error_diamond', {}    # 钻石不足
 
         self.user.deduct_diamond(diamond)
-        reward = add_mult_gift(self.mm, [[3, 0, self.self.user.PUR_BUY_POINT]])
+        reward = add_mult_gift(self.mm, [[3, 0, self.user.PUR_BUY_POINT]])
         self.user.add_buy_point_times()
 
         # self.mm.task_data.add_task_data('other_chapter', 108)
