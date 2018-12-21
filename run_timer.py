@@ -93,7 +93,7 @@ TIMER_JOBS = (
     # 公会战周五晚上结算发奖
     # ('cron', dict(day_of_week='4', hour='22'), settlement_reward, 0),
     ('cron', dict(hour=6), rank_list_backup, 0),
-    ('cron', dict(hour=6), send_rank_reward, 0),
+    ('cron', dict(hour=0, minute=5), send_rank_reward, 0),
 
 )
 DATE_LIST_JOBS = (
