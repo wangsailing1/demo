@@ -77,7 +77,6 @@ new_guide_mission = {
     'sort': ('sort', 'int'),  # 类型
     'target': (('target1', 'target2', 'target3', 'target4', 'target5'), ('int_list_or_int2', 'mult_force_num_list')),  # 目标
     'reward': ('reward', 'int_list'),  # 奖励
-    'jump': ('jump', 'int_list'),  # 跳转
     'guide': ('guide', 'int'),  # 解锁等级
     'next_guide': ('next_guide', 'int'),  # 解锁等级
 }
