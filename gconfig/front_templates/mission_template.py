@@ -68,3 +68,16 @@ achieve_mission = {
     'jump': ('jump', 'int_list'),  # 跳转
     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
 }
+
+# 新手引导任务
+new_guide_mission = {
+    'uk': ('id', 'int'),
+    'describe': ('describe', 'str'),  # 描述
+    'next_id': ('next_id', 'int'),  # 下个任务
+    'sort': ('sort', 'int'),  # 类型
+    'target': (('target1', 'target2', 'target3', 'target4', 'target5'), ('int_list_or_int2', 'mult_force_num_list')),  # 目标
+    'reward': ('reward', 'int_list'),  # 奖励
+    'jump': ('jump', 'int_list'),  # 跳转
+    'guide': ('guide', 'int'),  # 解锁等级
+    'next_guide': ('next_guide', 'int'),  # 解锁等级
+}

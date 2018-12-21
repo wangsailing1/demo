@@ -509,6 +509,7 @@ mission_mapping = {
     'guide_mission': ('guide_mission', True),
     'random_mission': ('random_mission', True),
     'achieve_mission': ('achieve_mission', True),
+    'new_guide_mission': ('new_guide_mission', True),
 }
 
 build_mapping = {
