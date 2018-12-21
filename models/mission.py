@@ -215,12 +215,13 @@ def target_sort7(mm, mission_obj, target):
     stage = 0
     for value in config.values():
         if target[0] in value['stage_id']:
-            chapter = value['chapter_id']
+            chapter = value['num']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
+    info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage,{})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-                                         'star': info.get('star', 0)}}
+                                         'star': info1.get('star', 0)}}
 
 
 # 艺人数量
@@ -397,9 +398,9 @@ class Mission(ModelBase):
         today = time.strftime('%F')
         box_office_time = time.strftime('%T')
         is_save = False
-        if self.new_guide_data and not self.new_guide_done:
+        if not self.new_guide_data and not self.new_guide_done:
             self.new_guide_data[1] = 0
-            self.check_new_guide_mission()
+            self.check_new_guide_mission(1)
             is_save = True
         if self.date != today:
             self.date = today
@@ -499,13 +500,13 @@ class Mission(ModelBase):
     @property
     def randmission(self):
         if not hasattr(self, '_randmission'):
-            self._randmission = NewGuideMission(self)
+            self._randmission = MissionRandom(self)
         return self._randmission
 
     @property
     def new_guide(self):
         if not hasattr(self, '_new_guide'):
-            self._new_guide = MissionRandom(self)
+            self._new_guide = NewGuideMission(self)
         return self._new_guide
 
     @property
@@ -721,7 +722,7 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
@@ -953,7 +954,7 @@ class NewGuideMission(DoMission):
         next_id = self.config[mission_id]['next_id']
         if next_id:
             self.data[next_id] = 0
-            self.obj.check_new_guide_mission()
+            self.obj.check_new_guide_mission(next_id)
 
 
 

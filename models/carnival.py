@@ -216,13 +216,16 @@ def target_sort7(mm, mission_obj, target):
     type_hard = 0
     stage = 0
     for value in config.values():
+        print 222222
         if target[0] in value['stage_id']:
-            chapter = value['chapter_id']
+            print 111111111,target[0],value['stage_id']
+            chapter = value['num']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
+    info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-                                         'star': info.get('star', 0)}}
+                                         'star': info1.get('star', 0)}}
 
 
 # 艺人数量
@@ -546,7 +549,7 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
