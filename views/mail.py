@@ -4,7 +4,6 @@ __author__ = 'kaiqigu'
 
 
 from logics.mail import MailLogic
-from tools.unlock_build import MAIL_SORT
 
 
 def check_unlock(func):

@@ -21,8 +21,7 @@ from tools.pay import (
     get_honor_shop_refresh_need_coin,
 )
 from tools.gift import add_mult_gift, del_mult_goods, add_gift
-from tools.unlock_build import check_build, GUILD_SHOP_SORT, DARK_STREET, DAILY_RALLY, AREA_SORT, DONATE_SHOP, \
-    OUTLAND_PYRAMID, EQUIP_SHOP, HONOR_SHOP
+from tools.unlock_build import check_build
 
 
 class AllShopLogics(object):
@@ -41,13 +40,13 @@ class AllShopLogics(object):
         data = {
             # 'period_shop_open': True if self.period_shop.get_refresh_time() else False,     # 限时商店是否开启
             'guild_shop_open': True if self.mm.user.guild_id else False,  # 公会商店是否开启
-            'dark_shop_open': self.mm.user.check_build(DARK_STREET),  # 黑街商店是否开启
-            'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),  # 游骑兵黑市是否开启
-            'arena_shop_open': self.mm.user.check_build(AREA_SORT),  # 竞技场商店是否开启
-            'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),  # 荣耀商店是否开启
-            'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),  # 虫洞商店是否开启
-            'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),  # 装备商店是否开启
-            'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),  # 荣耀商店是否开启
+            # 'dark_shop_open': self.mm.user.check_build(DARK_STREET),  # 黑街商店是否开启
+            # 'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),  # 游骑兵黑市是否开启
+            # 'arena_shop_open': self.mm.user.check_build(AREA_SORT),  # 竞技场商店是否开启
+            # 'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),  # 荣耀商店是否开启
+            # 'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),  # 虫洞商店是否开启
+            # 'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),  # 装备商店是否开启
+            # 'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),  # 荣耀商店是否开启
         }
 
         return 0, data

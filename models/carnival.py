@@ -220,7 +220,7 @@ def target_sort7(mm, mission_obj, target):
             chapter = value['chapter_id']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
-    info = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+    info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
                                          'star': info.get('star', 0)}}
 

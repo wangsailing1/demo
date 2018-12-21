@@ -7,7 +7,7 @@ import datetime
 
 from gconfig import game_config
 from logics.user import UserLogic
-from tools.unlock_build import refresh_unlock_build, SLG_BIG_WORLD
+from tools.unlock_build import refresh_unlock_build
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from models.user import GSMessage
 from models import server as serverM

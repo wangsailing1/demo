@@ -8,7 +8,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils import weight_choice, get_it, not_repeat_weight_choice_2
 from gconfig import game_config
-from tools.unlock_build import check_build, PERIOD_SHOP
+from tools.unlock_build import check_build
 
 
 class Shop(ModelBase):
@@ -380,7 +380,7 @@ class PeriodShop(Shop):
 
         :return:
         """
-        if check_build(self.mm, PERIOD_SHOP) and get_it(self.OPEN_RATE) and not self.start_time:
+        if  get_it(self.OPEN_RATE) and not self.start_time:
             self.start_time = int(time.time())
             self.show_times += 1
             self.refresh_times = 0

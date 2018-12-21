@@ -13,7 +13,6 @@ import settings
 from lib.db import ModelBase, ModelTools
 from gconfig import game_config
 from lib.core.environ import ModelManager
-from tools.unlock_build import EXP_POT
 from lib.utils import get_it
 from lib.utils import weight_choice
 from lib.statistics.bdc_event_funcs import special_bdc_log
@@ -963,8 +962,8 @@ class User(ModelBase):
         作废
         :return:
         """
-        if not self.mm.user.check_build(EXP_POT):
-            return
+        # if not self.mm.user.check_build(EXP_POT):
+        #     return
 
         now = int(time.time())
         if not self.update_exp_pot:

@@ -5,7 +5,6 @@ __author__ = 'kaiqigu'
 from logics.user import UserLogic
 from logics.friend import FriendLogic
 # from logics.manufacture import ManufactureLogic
-from tools.unlock_build import FRIEND_SORT
 from lib.utils.sensitive import is_sensitive
 from gconfig import game_config
 

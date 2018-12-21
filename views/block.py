@@ -5,8 +5,20 @@ from logics.block import Block
 from gconfig import game_config
 from models.ranking_list import BlockRank
 from models.block import get_date_before
+from tools.unlock_build import CEREMONY_SORT
 
 
+def check_unlock(func):
+    def wrapper(hm):
+        mm = hm.mm
+        if not mm.user.check_build(CEREMONY_SORT):
+            return 'error_unlock', {}
+
+        return func(hm)
+
+    return wrapper
+
+@check_unlock
 def join_award_ceremony(hm):
     mm = hm.mm
     block = Block(mm)
@@ -24,7 +36,7 @@ def join_award_ceremony(hm):
     mm.block.save()
     return 0, data
 
-
+@check_unlock
 def choice_winner(hm):
     mm = hm.mm
     tp = hm.get_argument('tp', 0, is_int=True)
@@ -44,7 +56,7 @@ def choice_winner(hm):
         return 0, {'reward': reward}
     return 0, {}
 
-
+@check_unlock
 def congratulation(hm):
     mm = hm.mm
     if mm.block.award_ceremony == 2:
@@ -55,7 +67,7 @@ def congratulation(hm):
     mm.block.save()
     return 0, {'reward': reward}
 
-
+@check_unlock
 def get_reward(hm):
     mm = hm.mm
     if mm.block.get_award_ceremony:
@@ -64,7 +76,7 @@ def get_reward(hm):
     data = block.get_reward()
     return 0, data
 
-
+@check_unlock
 def get_daily_reward(hm):
     mm = hm.mm
     now = time.strftime('%F')
