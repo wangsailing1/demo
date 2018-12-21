@@ -218,7 +218,7 @@ def target_sort7(mm, mission_obj, target):
             chapter = value['chapter_id']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
-    info = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+    info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
                                          'star': info.get('star', 0)}}
 
@@ -263,6 +263,13 @@ def target_sort23(mm, mission_obj, target):
         if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
             num += 1
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
+
+
+#建造任务
+def target_sort26(mm, mission_obj, target):
+    build_info = mm.user._build
+    info = target[0] in build_info
+    return {mission_obj._BUILD: {'target1': target[0], 'value': 1 if info else 0}}
 
 
 TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
@@ -325,7 +332,7 @@ class Mission(ModelBase):
 
     }
     # mission_mapping
-    MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission'}
+    MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission', 7: 'new_guide'}
     BOXOFFICEREFRESHTIME = '05:00:00'
 
     # 数值类任务初始化时需要自检的
@@ -358,6 +365,7 @@ class Mission(ModelBase):
     _ACTOR_LOVE = 23  # 艺人好感度
     _ONCE = 24  # 单次自制票房
     _FIRST_INCOME = 25  # 首映票房/收视
+    _BUILD = 26  # 建筑任务
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
@@ -380,6 +388,8 @@ class Mission(ModelBase):
             'achieve_done': [],
             'achieve_data': {},
             'achieve': 0,
+            'new_guide_data': {},
+            'new_guide_done': [],
         }
         super(Mission, self).__init__(self.uid)
 
@@ -387,6 +397,10 @@ class Mission(ModelBase):
         today = time.strftime('%F')
         box_office_time = time.strftime('%T')
         is_save = False
+        if self.new_guide_data and not self.new_guide_done:
+            self.new_guide_data[1] = 0
+            self.check_new_guide_mission()
+            is_save = True
         if self.date != today:
             self.date = today
             self.daily_done = []
@@ -485,8 +499,14 @@ class Mission(ModelBase):
     @property
     def randmission(self):
         if not hasattr(self, '_randmission'):
-            self._randmission = MissionRandom(self)
+            self._randmission = NewGuideMission(self)
         return self._randmission
+
+    @property
+    def new_guide(self):
+        if not hasattr(self, '_new_guide'):
+            self._new_guide = MissionRandom(self)
+        return self._new_guide
 
     @property
     def achieve_mission(self):
@@ -532,6 +552,16 @@ class Mission(ModelBase):
         if is_save:
             self.save()
 
+    #  自检数值类新手引导任务是否完成
+    def check_new_guide_mission(self, mission_id):
+        config = game_config.new_guide_mission[mission_id]
+        mission_sort = config['sort']
+        if mission_sort in self.NEEDCHECKMISSIONID:
+            func = globals()['target_sort%s' % mission_sort]
+            target_data = config['target']
+            kwargs = func(self.mm, self, target_data)
+            self.do_task(kwargs)
+
     # 自检数值类随机任务是否完成
     def check_and_do_random_mission(self, mission_id):
         config = game_config.random_mission[mission_id]
@@ -542,7 +572,7 @@ class Mission(ModelBase):
             kwargs = func(self.mm, self, target_data)
             self.do_task(kwargs)
 
-    # 自检数值类随机任务是否完成
+    # 自检数值类成就任务是否完成
     def check_and_do_achive_mission(self, mission_id):
         config = game_config.achieve_mission[mission_id]
         mission_sort = config['sort']
@@ -623,6 +653,11 @@ class Mission(ModelBase):
             sort = game_config.box_office[k]['sort']
             if sort in kwargs and sort == self._INCOME:
                 self.box_office.add_count(k, kwargs[sort])
+
+        for k, value in self.new_guide_data.iteritems():
+            sort = game_config.new_guide_mission[k]['sort']
+            if sort in kwargs :
+                self.new_guide.add_count(k, kwargs[sort])
         self.save()
 
 
@@ -892,6 +927,34 @@ class BoxOffice(object):
         if next_id:
             self.data[next_id] = 0
             self.data['time'] = int(time.time())
+
+
+class NewGuideMission(DoMission):
+    def __init__(self, obj):
+        super(DoMission, self).__init__()
+        self.obj = obj
+        self.uid = obj.uid
+        self.done = obj.new_guide_done
+        self.data = obj.new_guide_data
+        self.config = game_config.new_guide_mission
+
+    def get_count(self, mission_id):
+        return self.data.get(mission_id, 0)
+
+    def done_task(self, mission_id):
+        """完成任务
+        """
+        if mission_id not in self.done:
+            self.done.append(mission_id)
+            self.data.pop(mission_id)
+            self.start_next(mission_id)
+
+    def start_next(self,mission_id):
+        next_id = self.config[mission_id]['next_id']
+        if next_id:
+            self.data[next_id] = 0
+            self.obj.check_new_guide_mission()
+
 
 
 class MissionDaily(DoMission):

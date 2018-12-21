@@ -724,7 +724,7 @@ class UserLogic(object):
             return 'error_diamond', {}    # 钻石不足
 
         self.user.deduct_diamond(diamond)
-        self.user.add_action_point(self.user.PUR_BUY_POINT, force=True)
+        reward = add_mult_gift(self.mm, [[3, 0, self.self.user.PUR_BUY_POINT]])
         self.user.add_buy_point_times()
 
         # self.mm.task_data.add_task_data('other_chapter', 108)
@@ -734,7 +734,7 @@ class UserLogic(object):
 
         self.user.save()
 
-        return 0, {}
+        return 0, {'reward':reward}
 
     def opera_awards_index(self):
         """
