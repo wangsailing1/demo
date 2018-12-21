@@ -50,9 +50,12 @@ def script_make(hm, data, mission):
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-            target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
-            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids, 'style': data['cur_script']['style']},
-            target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income'],
+            target_sort_income: {'target1': 0, 'end_lv': end_lv,
+                                 'value': data['cur_script']['finished_summary']['income']},
+            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids,
+                                 'style': data['cur_script']['style']},
+            target_once: {'target1': script_id, 'end_lv': end_lv,
+                          'value': data['cur_script']['finished_summary']['income'],
                           'style': data['cur_script']['style']},
             target_first_income: {'target1': script_id, 'end_lv': end_lv, 'style': data['cur_script']['style'],
                                   'value': data['cur_script']['finished_first_income']['first_income']}, }
@@ -184,10 +187,40 @@ def mission_args(hm, data, mission):
     achieve = mm.mission.achieve
     return {mission._ACHIEVE: {'target1': 0, 'value': achieve}}
 
+
 # 购买体力
 def buy_point(hm, data, mission):
     mm = hm.mm
     return {mission._SHOP: {'target1': 2, 'value': 1}}
+
+
+# 建筑任务 所有建筑都通过models.user里的add_build完成，直接用装饰器对add_build处理
+# def building(func):
+#     def wrapper(*args, **kwargs):
+#         mm = args[0].mm
+#         if mm.mission.new_guide_data:
+#             save = False
+#             for mission_id in mm.mission.new_guide_data.keys():
+#                 print mission_id
+#                 try:
+#                     build_id = args[1]
+#                     group_id = game_config.building[build_id]['group']
+#                     target = game_config.new_guide_mission[mission_id]['target']
+#                     if group_id == target[0]:
+#                         mm.mission.new_guide_data[mission_id] = 1
+#                         save = True
+#                 except:
+#                     print 'building config is error'
+#             if save:
+#                 mm.mission.save()
+#         return func(*args, **kwargs)
+#     return wrapper
+
+# 建筑任务
+def build(hm, data, mission):
+    mm = hm.mm
+    group_id = data['group_id']
+    return {mission._BUILD: {'target1': group_id, 'value': 1}}
 
 
 # =================================需要自检的数值类任务func=================================
@@ -219,7 +252,7 @@ def target_sort7(mm, mission_obj, target):
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
-    info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage,{})
+    info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
                                          'star': info1.get('star', 0)}}
 
@@ -266,7 +299,7 @@ def target_sort23(mm, mission_obj, target):
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
 
-#建造任务
+# 建造任务
 def target_sort26(mm, mission_obj, target):
     build_info = mm.user._build
     info = target[0] in build_info
@@ -283,6 +316,7 @@ NUM_CHAPTER = 8  # 通关次数
 GACHA = [3, 4]
 GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
 FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
+BUILD = 26  # 建筑
 
 
 class Mission(ModelBase):
@@ -329,6 +363,7 @@ class Mission(ModelBase):
         'shop.mystical_buy': shop_args,  # 神秘商店购买
         'shop.period_buy': shop_args,  # 限时商店购买
         'user.buy_point': buy_point,  # 购买体力
+        'fans_activity.unlock_activity': build,  # 购买体力
         # 'mission.get_reward': mission_args,                           # 成就
 
     }
@@ -553,7 +588,7 @@ class Mission(ModelBase):
         if is_save:
             self.save()
 
-    #  自检数值类新手引导任务是否完成
+    # 自检数值类新手引导任务是否完成
     def check_new_guide_mission(self, mission_id):
         config = game_config.new_guide_mission[mission_id]
         mission_sort = config['sort']
@@ -657,7 +692,7 @@ class Mission(ModelBase):
 
         for k, value in self.new_guide_data.iteritems():
             sort = game_config.new_guide_mission[k]['sort']
-            if sort in kwargs :
+            if sort in kwargs:
                 self.new_guide.add_count(k, kwargs[sort])
         self.save()
 
@@ -722,7 +757,8 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= target_data[2]:
+            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= \
+                    target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
@@ -756,7 +792,13 @@ class DoMission(object):
                 self.data[mission_id] += num
             else:
                 self.data[mission_id] = num
-
+        # 建筑任务
+        elif self.config[mission_id]['sort'] == BUILD:
+            if target_data[0] and target_data[0] == value['target1']:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
 
         else:
             if mission_id in self.data:
@@ -809,7 +851,7 @@ class DoMission(object):
             profession_class = config['profession_class']
             for num, _target in enumerate(target, 1):
                 if (sex == _target[0] or not _target[0]) and (profession_type == _target[1] or not _target[1]) and (
-                        profession_class == _target[2] or not _target[2]):
+                                profession_class == _target[2] or not _target[2]):
                     data[num] -= 1
         for k, v in data.iteritems():
             if v > 0:
@@ -950,12 +992,11 @@ class NewGuideMission(DoMission):
             self.data.pop(mission_id)
             self.start_next(mission_id)
 
-    def start_next(self,mission_id):
+    def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
         if next_id:
             self.data[next_id] = 0
             self.obj.check_new_guide_mission(next_id)
-
 
 
 class MissionDaily(DoMission):

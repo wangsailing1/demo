@@ -63,6 +63,7 @@ def unlock_activity(hm):
     mm.fans_activity.save()
     fa = FansActivity(mm)
     rc, data = fa.fans_index()
+    data['group_id'] = game_config.building.get(config['build_id'],{}).get('group', 0)
     return 0, data
 
 
