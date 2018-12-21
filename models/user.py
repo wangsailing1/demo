@@ -26,6 +26,7 @@ from models import server as serverM
 from lib.utils.time_tools import relative_activity_remain_time
 from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
+# from models.mission import building
 
 BAN_INFO_MESSAGE = {
     'expire': u'我们已对您的账号封停至 {} ！\n',
@@ -1882,6 +1883,7 @@ class User(ModelBase):
                     self.add_build(build_id, value['field_id'], save=False)
             self.save()
 
+    # @building
     def add_build(self, build_id, field_id, save=True):
         if build_id in self._build:
             return
