@@ -76,7 +76,9 @@ def card_gacha(hm, data, mission):
     gacha_id = hm.get_argument('gacha_id', is_int=True)
     reward = game_config.coin_gacha[gacha_id]['reward']
     target_sort = mission._CARD_GACHA
-    return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1}}
+    num = 1 if reward[0][0] == 8 else 0
+    return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1},
+            mission._CARD_NUM: {'target1': 0, 'value': num}}
 
 
 # 抓娃娃
@@ -202,11 +204,11 @@ def target_sort1(mm, mission_obj, target):
 
 # 艺人等级
 def target_sort2(mm, mission_obj, target):
-    value = []
+    info = []
     for card_id, value in mm.card.cards.iteritems():
         if value['lv'] >= target[0]:
-            value.append(card_id)
-    return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': value}}
+            info.append(card_id)
+    return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': info}}
 
 
 # 关卡通关
