@@ -76,7 +76,7 @@ def card_gacha(hm, data, mission):
     gacha_id = hm.get_argument('gacha_id', is_int=True)
     reward = game_config.coin_gacha[gacha_id]['reward']
     target_sort = mission._CARD_GACHA
-    num = 1 if reward[0][0] == 8 else 0
+    num = len(data.get('reward', {}).get('cards', []))
     return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1},
             mission._CARD_NUM: {'target1': 0, 'value': num}}
 
