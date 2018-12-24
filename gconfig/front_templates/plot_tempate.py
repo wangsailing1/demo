@@ -263,6 +263,7 @@ tour_dialogue = {
     'top_picture': ('top_picture', 'str'),
     'time_frame': ('time_frame', 'int_or_float_list'),
     'avg_bgm': ('avg_bgm', 'str'),
+    'hero_zoom': ('hero_zoom', 'int_or_float_list'),
 }
 
 explain = {
