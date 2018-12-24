@@ -775,12 +775,19 @@ def build(hm):
     config = game_config.building[build_id]
     if field_id != config['field_id']:
         return 5, {}  # 地块错误
-    if mm.user.level < config['unlock_lv']:
+    group_id = config['group']
+    unlock_config = game_config.homepage_button
+    unlock_lv = 0
+    for value in unlock_config.values():
+        if value['group'] == group_id:
+            unlock_lv = value['unlock_lvl']
+            break
+    if mm.user.level < unlock_lv:
         return 6, {}  # 未达到解锁等级
     cost = config['cost']
     rc, _ = del_mult_goods(mm, cost)
     if rc:
         return rc, {}
     mm.user.add_build(build_id, field_id)
-    group_id = config['group']
+
     return 0, {'group_id': group_id}
