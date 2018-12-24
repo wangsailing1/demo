@@ -365,7 +365,7 @@ class Mission(ModelBase):
         'shop.mystical_buy': shop_args,  # 神秘商店购买
         'shop.period_buy': shop_args,  # 限时商店购买
         'user.buy_point': buy_point,  # 购买体力
-        'fans_activity.unlock_activity': build,  # 购买体力
+        'fans_activity.unlock_activity': build,  # 建筑任务
         # 'mission.get_reward': mission_args,                           # 成就
 
     }
