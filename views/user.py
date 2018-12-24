@@ -14,6 +14,7 @@ from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
 from logics.mission import Mission
+from tools.gift import del_mult_goods
 
 
 def main(hm):
@@ -760,3 +761,25 @@ def user_info(hm):
             'cup_log_card': mm.block.cup_log_card,
             'cup_log_script': mm.block.cup_log_script}
     return 0, data
+
+def build(hm):
+    mm = hm.mm
+    build_id = hm.get_argument('build_id', is_int=True)
+    field_id = hm.get_argument('field_id', is_int=True)
+    if not build_id or not field_id:
+        return 4, {}  # 参数错误
+    build_status = mm.user.check_build_id(build_id)
+    if build_status and build_status != 2:
+        return build_status, {}
+    config = game_config.building[build_id]
+    if field_id != config['field_id']:
+        return 5, {}  # 地块错误
+    if mm.user.level < config['unlock_lv']:
+        return 6, {}  # 未达到解锁等级
+    cost = config['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc:
+        return rc, {}
+    mm.user.add_build(build_id,field_id)
+    return 0, {}
+
