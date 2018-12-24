@@ -781,5 +781,6 @@ def build(hm):
     if rc:
         return rc, {}
     mm.user.add_build(build_id,field_id)
-    return 0, {}
+    group_id = config['group']
+    return 0, {'group_id': group_id}
 
