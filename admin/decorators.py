@@ -14,6 +14,7 @@ def require_permission(view_func):
     """
     装饰器，用于判断管理后台的帐号是否有权限访问
     """
+
     def wrapped_view_func(request, *args, **kwargs):
 
         path = request.request.path
@@ -39,7 +40,6 @@ def require_permission(view_func):
 
 
 class Logging(ModelTools):
-
     SERVER_NAME = 'master'
 
     EXPIRE_DAY = 30
@@ -93,12 +93,12 @@ class Logging(ModelTools):
             elif '/admin/give_god_stone_commit/' in path:
                 arguments = request.request.arguments
                 god_stones = [(k, int(arguments.get('god_stone_num_%s' % k, ['0'])[0]))
-                        for k in game_config.god_stone if int(arguments.get('god_stone_num_%s' % k, ['0'])[0])]
+                              for k in game_config.god_stone if int(arguments.get('god_stone_num_%s' % k, ['0'])[0])]
                 return u'赠送圣石', god_stones
             elif '/admin/give_seed_commit/' in path:
                 arguments = request.request.arguments
                 seeds = [(k, int(arguments.get('seed_num_%s' % k, ['0'])[0]))
-                        for k in game_config.seed if int(arguments.get('seed_num_%s' % k, ['0'])[0])]
+                         for k in game_config.seed if int(arguments.get('seed_num_%s' % k, ['0'])[0])]
                 return u'赠送种子', seeds
             else:
                 params = dict(request.request.arguments.iteritems())
@@ -128,6 +128,7 @@ class Logging(ModelTools):
             'ip': request.request.headers.get('X-Real-Ip', ''),
         }
         self.redis.lpush(self._key, pickle.dumps(result, pickle.HIGHEST_PROTOCOL))
+        self.redis.expire(self._key, self.EXPIRE_DAY * 3)
 
     def get_all_logging(self, day=EXPIRE_DAY):
         data = []
@@ -147,6 +148,7 @@ class Logging(ModelTools):
         for k in self.redis.lrange(key, 0, -1):
             data.append(pickle.loads(k))
         return data
+
 
 class ApprovalPayment(ModelTools):
     """ 审批支付
@@ -274,5 +276,6 @@ class ApprovalPayment(ModelTools):
         for k in self.redis.lrange(key, 0, -1):
             data.append(pickle.loads(k))
         return data
+
 
 Logging('yunfei.yan')
