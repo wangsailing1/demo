@@ -375,7 +375,7 @@ class Mission(ModelBase):
     BOXOFFICEREFRESHTIME = '05:00:00'
 
     # 数值类任务初始化时需要自检的
-    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
+    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]
 
     # 配置target_sort映射
 
