@@ -762,6 +762,7 @@ def user_info(hm):
             'cup_log_script': mm.block.cup_log_script}
     return 0, data
 
+
 def build(hm):
     mm = hm.mm
     build_id = hm.get_argument('build_id', is_int=True)
@@ -780,7 +781,6 @@ def build(hm):
     rc, _ = del_mult_goods(mm, cost)
     if rc:
         return rc, {}
-    mm.user.add_build(build_id,field_id)
+    mm.user.add_build(build_id, field_id)
     group_id = config['group']
     return 0, {'group_id': group_id}
-
