@@ -290,6 +290,16 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('attention', {}), add_type, add_num)
         mm.user.save()
 
+    elif gift_sort == 20:  # 卡牌人气
+        for pkg in gift_config:
+            add_type = pkg[0]
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.card.add_card_popularity(add_type,add_num)
+            add_dict(data.setdefault('popularity', {}), add_type, add_num)
+        mm.card.save()
+
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]
@@ -408,6 +418,13 @@ def del_goods(mm, goods_sort, goods_config):
 
     elif goods_sort == 14:  # vip经验
         pass
+
+    elif goods_sort == 20:  # 卡牌人气
+        for pkg in goods_config:
+            # if not mm.card.is_enough_popularity(pkg[0], pkg[1]):
+            #     return 'error_popularity', 0
+            mm.card.delete_card_popularity(pkg[0], pkg[1])
+        mm.card.save()
 
     return 0, silver_count
 
