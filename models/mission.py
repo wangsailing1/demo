@@ -49,7 +49,7 @@ def script_make(hm, data, mission):
     target_first_income = mission._FIRST_INCOME
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-            target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
+            target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1, 'style': data['cur_script']['style']},
             target_sort_income: {'target1': 0, 'end_lv': end_lv,
                                  'value': data['cur_script']['finished_summary']['income']},
             target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids,
@@ -715,7 +715,10 @@ class DoMission(object):
         target_data = self.config[mission_id]['target']
         if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
-            script_type = game_config.script[value['target1']][type]
+            if type == 'style':
+                script_type = value['style']
+            else:
+                script_type = game_config.script[value['target1']][type]
             if (script_type == target_data[0] or not target_data[0]) and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
