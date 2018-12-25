@@ -13,6 +13,7 @@ class Business(object):
         data = {}
         data['business_id'] = self.business.business_id
         data['business_times'] = self.business.business_times
+        data['remain_time'] = self.business.business_recover_expire()
         return 0, data
 
     def handling(self, select_id, auto):
