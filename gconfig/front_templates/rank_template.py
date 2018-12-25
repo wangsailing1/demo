@@ -48,5 +48,5 @@ cup_num = {
 # 颁奖设置
 dan_grading_privilage = {
     'uk': ('id', 'int'),
-    'disc': ('disc', 'int'),
+    'disc': ('disc', 'str'),
 }
