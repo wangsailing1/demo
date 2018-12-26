@@ -382,13 +382,14 @@ def stat(func):
                                         'after': attrs_after,
                                     })
 
-                                    # bdc eventinfo 变动
-                                    _kwargs = {'obj': 'Card@%s' % old_card_info['id'], 'ldt': ldt, 'diff': 1}
-                                    bdc_event_funcs.special_bdc_log(mm.user, sort='remove_item', **_kwargs)
+                                    if old_card_info['id'] != new_card_info['id']:
+                                        # bdc eventinfo 变动
+                                        _kwargs = {'obj': 'Card@%s' % old_card_info['id'], 'ldt': ldt, 'diff': 1}
+                                        bdc_event_funcs.special_bdc_log(mm.user, sort='remove_item', **_kwargs)
 
-                                    # bdc eventinfo 变动
-                                    _kwargs = {'obj': 'Card@%s' % new_card_info['id'], 'ldt': ldt, 'diff': 1}
-                                    bdc_event_funcs.special_bdc_log(mm.user, sort='get_item', **_kwargs)
+                                        # bdc eventinfo 变动
+                                        _kwargs = {'obj': 'Card@%s' % new_card_info['id'], 'ldt': ldt, 'diff': 1}
+                                        bdc_event_funcs.special_bdc_log(mm.user, sort='get_item', **_kwargs)
 
                         elif attr_type == 'pieces':
                             for piece_id, new_piece_count in attr_type_value['update'].iteritems():

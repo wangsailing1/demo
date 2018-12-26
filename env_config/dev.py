@@ -9,6 +9,8 @@ import inspect
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
+BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+
 PLATFORM = 'dev'    # 平台标示
 URL_PARTITION = 'big_sale'
 MASTER_HOST = '219.142.26.114:9180'
