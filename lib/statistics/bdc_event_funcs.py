@@ -87,25 +87,55 @@ def _xxx(user, *args, **kwargs):
 
 import os
 import time
+import json
+import uuid
 from itertools import chain
 
 import settings
 from lib.utils.loggings import get_log, StatLoggingUtil
 from lib.utils.encoding import force_unicode
+from celery_app.aliyun_bdc_log import send_bdc_log_to_aliyun
+
 from gconfig import game_config
 from gconfig import get_str_words
 
+
 BDC_EVENT_MAPPING = {
-    'user_register_name': 'CREATE_ROLE',
-    'user_main': 'ROLE_LOGIN',
-    'shop_buy': 'SHOPBUY',
-    'mission_mission_award': 'FINISH_QUEST',
-    'mission_side_award': 'FINISH_QUEST',
-    'private_city_battle_data': 'PVE_INSTANCE',
-    'private_city_battle_end': 'PVE_FINISH',
-    'high_ladder_battle_data': 'PVP_FINISH',
-    'user_guide': 'NEWG',
-    'gacha_get_gacha': 'LOTTERY',
+    ######## 非api接口，special_bdc_log 里自定义的动作类型 ########
+    'account_login': '10004',
+    'new_account': '10005',
+    'role_logout': '10007',
+    'get_money': '10008',
+    'remove_money': '10009',
+    'online_scene': '10010',
+
+    'get_item': '10013',
+    'remove_item': '10014',
+    'level_change': '10017',
+    'exp_change': '10017',
+
+    ######## 非api接口，special_bdc_log 里自定义的动作类型 ########
+
+    # 'user_register_name': 'CREATE_ROLE',
+    'user_main': '10006',
+    'user_guide': '10011',
+
+    'shop_buy': '10015',
+    'shop_gift_buy': '10015',
+    'shop_resource_buy': '10015',
+    'shop_mystical_buy': '10015',
+    'shop_period_buy': '10015',
+    'gacha_get_gacha': '10016',
+
+    'mission_get_reward': '10019',
+    'chapter_stage_chapter_stage_fight': '10021',
+    'chapter_stage_auto_sweep': '10021',
+
+    # 'mission_side_award': 'FINISH_QUEST',
+    # 'private_city_battle_data': 'PVE_INSTANCE',
+    # 'private_city_battle_end': 'PVE_FINISH',
+    # 'high_ladder_battle_data': 'PVP_FINISH',
+    # 'user_guide': 'NEWG',
 }
 
 
@@ -128,19 +158,77 @@ def get_anm(account_name, tpid, cid=None):
     return '_'.join((cid, account_name.split('_')[-1]))
 
 
-def get_base_info(user):
-    cid = settings.get_bdc_channel_id(user.tpid)
-    sid = settings.get_bdc_server_id(user._server_name)
-    anm = get_anm(user.account, user.tpid, cid)
-
+def get_bdc_api_base_info():
+    """bdc 接口通用参数"""
+    appkey = settings.BDC_APP_KEY
+    platform = settings.BDC_PLATFORM
     return {
-        'sid': sid,
-        'cid': cid,
-        'aid': user.account,
-        'anm': anm,
-        'rid': user.uid,
-        'rlv': user.level,
-        'vip': user.vip,
+        'event_uuid': str(uuid.uuid1()),
+        'event_time': int(time.time()),
+        'event_time2': time.strftime('%F'),
+        'appkey': appkey,
+        'platform': platform,
+        'buess_time': int(time.time()),
+    }
+
+
+def get_game_base_info(user, **kwargs):
+    """bdc 业务通用参数"""
+    cid = settings.get_bdc_channel_id(user.tpid)
+
+    if user.__class__.__name__ == 'Account':
+        # todo
+        mm = None
+        server_id = ''
+        client_os = kwargs.get('client_os', 'ANDROID').upper()
+        user_id = user.uid
+        role_id = ''
+        role_key = ''
+        user_ip = kwargs.get('ip', '')
+        device_id = kwargs.get('device', '')
+    else:
+        mm = user.mm
+        server_id = user._server_name
+        client_os = user.appid.upper() or 'ANDROID'
+        user_id = user.account
+        role_id = user.role
+        role_key = user.uid
+        user_ip = kwargs.get('ip', user.active_ip)
+        device_id = kwargs.get('device', user.device)
+
+    appkey = settings.BDC_APP_KEY
+    platform = settings.BDC_PLATFORM
+    # todo 账号ID（聚合SDK关联ID） 聚合SDK关联ID(HeroSDK返回的uid)
+    return {
+        # 'sid': sid,
+        # 'cid': cid,
+        # 'aid': user.account,
+        # 'anm': anm,
+        # 'rid': user.uid,
+        # 'rlv': user.level,
+        # 'vip': user.vip,
+
+        'event_id': '',
+        'event_uuid': str(uuid.uuid1()),
+        'event_time': int(time.time()),
+        'event_time2': time.strftime('%F'),
+        'appkey': appkey,
+        'platform': platform,
+
+        'client_os': client_os,   # IOS|ANDROID|PAD|WEB
+        'server_id': server_id,
+        'channel_id': cid,              # todo 使用英雄互娱统一渠道ID配置表
+        'app_channel_id': cid,          # todo 使用英雄互娱统一渠道ID配置表
+        'device_id': device_id,
+
+        'user_id': user_id,       # todo 账号ID（聚合SDK关联ID） 聚合SDK关联ID(HeroSDK返回的uid)
+        'open_id': user_id,
+        'role_id': role_id,
+        'role_key': role_key,
+        'transaction_id': mm.get_transaction_id() if mm else '',    # 事件关联ID
+        'user_ip': user_ip,
+        'buess_time': int(time.time()),
+
     }
 
 
@@ -153,23 +241,21 @@ def generate_log(data):
 
 def user_guide(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
-    sort = hm.get_argument('sort', is_int=True)
-    guide_id = hm.get_argument('guide_id', is_int=True)
+    base_info = get_game_base_info(user)
+    # sort = hm.get_argument('sort', is_int=True)
+    # guide_id = hm.get_argument('guide_id', is_int=True)
 
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-
-        sort,
-        guide_id,
-    ]
+    content = {
+        'guide_id': data['sort'],
+        'guide_num': data['guide_id'],
+    }
+    content.update(base_info)
+    return content
 
 
 def user_register_name(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
     return [
         base_info['sid'],
@@ -185,7 +271,7 @@ def user_register_name(hm, args, data, **kwargs):
 
 def user_main(hm, args, data, **kwargs):
     """
-    return [sid,aid,anm,rid,rnm,mac,rlv,vip,cid]
+    return
     :param hm:
     :param args:
     :param data:
@@ -193,22 +279,47 @@ def user_main(hm, args, data, **kwargs):
     :return:
     """
     user = hm.mm.user
-    base_info = get_base_info(user)
-    remote_ip = hm.req.request.headers.get('X-Real-Ip', '') or hm.req.request.remote_ip
+    base_info = get_game_base_info(user)
 
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['anm'],
-        base_info['rid'],
-        user.name,
-        user.device,
-        user.level,
-        user.vip,
-        base_info['cid'],
-        user.diamond,
-        remote_ip,
-    ]
+    content = {
+        'free_diamond_balance': user.diamond_free,
+        'donate_diamond_balance': 0,
+        'charge_diamond_balance': user.diamond_charge,
+        'gold_balance': user.coin,
+        'login_situation': user.appid.upper(),      # 登录场景
+        'role_level': user.level,
+        'vip_level': user.vip,
+
+    }
+    # content = {'user_balance': {'coin': user.coin}}
+    content.update(base_info)
+    return content
+
+
+def _role_logout(user, **kwargs):
+    base_info = get_game_base_info(user)
+
+    content = {
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'free_diamond_balance': user.diamond_free,
+        'donate_diamond_balance': 0,
+        'charge_diamond_balance': user.diamond_charge,
+        'gold_balance': user.coin,
+        'final_scene': '',                          # 登出场景
+        'final_action': kwargs['final_action'],     # 登出前操作
+        'online_time': kwargs['duration'],          # 登出前操作
+    }
+    content.update(base_info)
+    return content
+
+
+def change_method_name_type(method):
+    """修改函数名命名规则，改成驼峰命名，给bdc用"""
+    d = []
+    for i in method.split('.'):
+        d.extend(i.split('_'))
+    return ''.join((i.capitalize() for i in d))
 
 
 def shop_buy(hm, args, data, **kwargs):
@@ -222,91 +333,111 @@ def shop_buy(hm, args, data, **kwargs):
     :return:
     """
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
     _bdc_event_info = data.pop('_bdc_event_info')
     cost = _bdc_event_info['cost'][0]
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        base_info['rlv'],
-        base_info['vip'],
-        _bdc_event_info['goods_id'],
-        _bdc_event_info['num'],
-        cost[0],
-        cost[2],
-        hm.get_argument('method'),
-    ]
+
+    method = change_method_name_type(hm.mm.action)
+    content = {
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'product_id': _bdc_event_info['goods_id'],
+        'product_num': _bdc_event_info['num'],
+        'money_type': cost[0],
+        'buy_cost': cost[2],
+        'shop_type': method,
+
+    }
+    content.update(base_info)
+    return content
 
 
-def mission_mission_award(hm, args, data, **kwargs):
+shop_gift_buy = shop_buy
+shop_resource_buy = shop_buy
+shop_mystical_buy = shop_buy
+shop_period_buy = shop_buy
+
+
+def mission_get_reward(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
-
-    task_id = hm.get_argument('task_id', is_int=True)
-    config = game_config.mission_main.get(task_id)
-    sort = config['sort']
-
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-
-        sort,               # 任务类型 主线任务
-        task_id,            # 任务id
-        data.get('reward', []),         # 奖励
-        hm.mm.action,                 # 完成条件
-    ]
+    base_info = get_game_base_info(user)
+    # 1每日任务 2档期任务 3新手任务 4随机任务  5活跃度 6 成就任务 7 新手引导任务
+    tp_id = hm.get_argument('tp_id', 0, is_int=True)
+    mission_id = hm.get_argument('mission_id', 0, is_int=True)
+    context = {
+        'task_type': tp_id,
+        'task_id': mission_id,
+        'rewards_info': data.get('reward', {}),
+    }
+    context.update(base_info)
+    return context
 
 
-def mission_side_award(hm, args, data, **kwargs):
+def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
-    task_id = hm.get_argument('task_id', is_int=True)
-    config = game_config.mission_side.get(task_id)
-    sort = config['sort']
+    stage = hm.get_argument('stage', '')
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
+    align = hm.get_argument('align', '')
 
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
+    chapter_id, stage_id = [int(i) for i in stage.split('-')]
+    align = align.split('_')
+    # {pos_id: card_id}
+    align = [(int(align[i * 2]), align[i * 2 + 1]) for i in range(len(align) / 2)]
+    align.sort(key=lambda x: x[0])
 
-        sort,               # 任务类型 主线任务
-        task_id,            # 任务id
-        data.get('reward', []),         # 奖励
-        hm.mm.action,                 # 完成条件
-    ]
-
-
-def private_city_battle_data(hm, args, data, **kwargs):
-    user = hm.mm.user
-    base_info = get_base_info(user)
-
-    chapter_id = hm.get_argument('chapter_id', is_int=True)     # 1
-    stage_id = hm.get_argument('stage_id', is_int=True)         # 10100
-    team = hm.get_mapping_argument('team', is_int=False, num=0)
+    lineup = ';'.join([i[1] for i in align])
+    iswin = 0 if data.get('win', True) else 1
 
     chapter_cfg = game_config.chapter[chapter_id]
-    name = get_str_words(0, chapter_cfg['chapter_name'])
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        base_info['rlv'],
+    name = get_str_words(1, chapter_cfg['chapter_name'])
+    context = {
+        'pve_type': type_hard,
+        'pve_id': stage,            # chapter_id-stage_id
+        'pve_name': name,
+        'team_id': -1,              # 组队id,  我们没有多人组队pve，队伍id就用-1代替
+        'iswin': iswin,             # 0 胜利 1 失败
+        'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
+        'complete_type': 0,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
+    }
+    context.update(base_info)
+    return context
 
-        chapter_id,         # 副本类型
-        stage_id,           # 副本id
-        name,                 # 副本名称
-        '-1',               # 组队id,  我们没有多人组队pve，队伍id就用-1代替
 
-    ]
+def chapter_stage_auto_sweep(hm, args, data, **kwargs):
+    user = hm.mm.user
+    base_info = get_game_base_info(user)
+
+    stage = hm.get_argument('stage', '')
+    times = hm.get_argument('times', 1, is_int=True)
+    type_hard = hm.get_argument('type_hard', 0, is_int=True)
+
+    chapter_id, stage_id = [int(i) for i in stage.split('-')]
+    # {pos_id: card_id}
+
+    lineup = ''
+    iswin = 0 if data.get('win', True) else 1
+
+    chapter_cfg = game_config.chapter[chapter_id]
+    name = get_str_words(1, chapter_cfg['chapter_name'])
+    context = {
+        'pve_type': type_hard,
+        'pve_id': stage,            # chapter_id-stage_id
+        'pve_name': name,
+        'team_id': -1,              # 组队id,  我们没有多人组队pve，队伍id就用-1代替
+        'iswin': iswin,             # 0 胜利 1 失败
+        'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
+        'complete_type': times,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
+    }
+    context.update(base_info)
+    return context
 
 
 def private_city_battle_end(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
     chapter_id = hm.get_argument('chapter_id', is_int=True)
     stage_id = hm.get_argument('stage_id', is_int=True)
@@ -334,7 +465,7 @@ def private_city_battle_end(hm, args, data, **kwargs):
 
 def high_ladder_battle_data(hm, args, data, **kwargs):
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
     team = hm.get_mapping_argument('team', is_int=False, num=0)
     team_len = len([i for i in team if i])
@@ -356,27 +487,24 @@ def high_ladder_battle_data(hm, args, data, **kwargs):
     ]
 
 
-# def gacha_get_gacha(hm, args, data, **kwargs):
-#     user = hm.mm.user
-#     base_info = get_base_info(user)
-#
-#     sort = hm.get_argument('sort', is_int=True)
-#     count = hm.get_argument('count', is_int=True)
-#
-#     reward = data['reward']
-#     _bdc_event_info = data.pop('_bdc_event_info')
-#     return [
-#         base_info['sid'],
-#         base_info['aid'],
-#         base_info['rid'],
-#         base_info['rlv'],
-#         base_info['vip'],
-#
-#         sort,
-#         reward,
-#         _bdc_event_info['cost_type'],
-#         _bdc_event_info['cost_num']
-#     ]
+def gacha_get_gacha(hm, args, data, **kwargs):
+    user = hm.mm.user
+    base_info = get_game_base_info(user)
+
+    sort = hm.get_argument('sort', is_int=True)
+
+    reward = {}
+    _bdc_event_info = data.pop('_bdc_event_info')
+    content = {
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'action_type': sort,
+        'rewards_info': reward,
+        'money_type': _bdc_event_info['cost_type'],
+        'buy_cost': _bdc_event_info['cost_num'],
+    }
+    content.update(base_info)
+    return content
 
 
 ####################### 通过api接口抓取的动作  end ###############################
@@ -385,130 +513,123 @@ def high_ladder_battle_data(hm, args, data, **kwargs):
 ####################### 通过 special_bdc_log 调用的自定义的动作  start###############################
 
 
-def _device_register(hm, args, data, **kwargs):
-    user = hm.mm.user
-    base_info = get_base_info(user)
+def _account_login(account, **kwargs):
+    """账号登录"""
+    base_info = get_game_base_info(account, **kwargs)
+    content = {'user_balance': {}}
 
-    return [
-        user.register_ip,
-        base_info['cid'],
-        user.device,
-        hm.get_argument('version'),
-        user.appid,
-    ]
+    content.update(base_info)
+    return content
 
 
 def _new_account(hm, args, data, **kwargs):
+    """创建角色"""
     user = hm.mm.user
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        user.device,
-        base_info['anm'],
-        user.register_ip,
-        base_info['cid'],
-        hm.get_argument('version'),
-        user.appid,
-        '',             # TODO telephone,
-    ]
+    content = {
+        'character_id': user.role,
+        'role_name': user.name,
+        'role_extra': '',
+    }
+    content.update(base_info)
+    return content
 
 
-def _exp_change(user, **kwargs):
-    base_info = get_base_info(user)
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        kwargs['change_type'],       # 经验类型
-        kwargs['old_exp'],
-        kwargs['cur_exp'],
-        user.mm.action,
-    ]
+def _money_change(user, **kwargs):
+    base_info = get_game_base_info(user)
 
-
-def _role_logout(user, **kwargs):
-    base_info = get_base_info(user)
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-
-        kwargs['duration'],
-        '',                     # 退出类型
-    ]
+    content = {
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'before_balance': kwargs['before'],
+        'after_balance': kwargs['after'],
+        'money_type': kwargs['obj'],
+        'reason_id': user.mm.action,
+        'reason_info': {},
+    }
+    content.update(base_info)
+    return content
 
 
 def _level_change(user, **kwargs):
     old_lv, cur_lv = kwargs['old_lv'], kwargs['cur_lv']
     if old_lv == cur_lv:
-        return []
-    base_info = get_base_info(user)
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        kwargs['change_type'],            # 级别类型
-        old_lv,
-        kwargs['old_exp'],
-        cur_lv,
-        kwargs['cur_exp'],
-        user.mm.action
-    ]
+        return {}
+    base_info = get_game_base_info(user)
+
+    content = {
+        'point': kwargs['change_type'],
+        'point_before': old_lv,
+        'point_after': cur_lv,
+    }
+    content.update(base_info)
+    return content
 
 
-def _account_login(account, **kwargs):
-    cid = settings.get_bdc_channel_id(account.tpid)
-    anm = get_anm(account.uid, account.tpid, cid)
+def _exp_change(user, **kwargs):
+    base_info = get_game_base_info(user)
+    content = {
+        'point': kwargs['change_type'],
+        'point_before': kwargs['old_exp'],
+        'point_after': kwargs['cur_exp'],
+    }
+    content.update(base_info)
+    return content
+
+
+def _device_register(hm, args, data, **kwargs):
+    user = hm.mm.user
+    base_info = get_game_base_info(user)
+
     return [
-        '',         # sid
-        account.uid,
-        kwargs['device'],
-        anm,
-        cid,
-        '',
-        kwargs['ip'],
+        user.register_ip,
+        base_info['cid'],
+        user.device,
+        hm.get_argument('version'),
+        user.appid,
     ]
 
 
 def _item_change(user, **kwargs):
-    base_info = get_base_info(user)
+    base_info = get_game_base_info(user)
 
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        base_info['rlv'],
-        base_info['vip'],
+    content = {
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'product_id': kwargs['obj'],
+        'product_num': abs(kwargs['diff']),
+        'reason_id': user.mm.action,
+        'reason_info': {},
 
-        kwargs['item_id'],
-        kwargs['before'],
-        kwargs['after'],
-        '',
-        user.mm.action,
-    ]
-
-
-def _money_change(user, **kwargs):
-    base_info = get_base_info(user)
-
-    return [
-        base_info['sid'],
-        base_info['aid'],
-        base_info['rid'],
-        base_info['rlv'],
-        base_info['vip'],
-
-        kwargs['before'],
-        kwargs['after'],
-        kwargs['obj'],
-        '',                 # 关联id
-        user.mm.action,
-    ]
+    }
+    content.update(base_info)
+    return content
 
 
 ####################### 通过 special_bdc_log 调用的自定义的动作  end ###############################
+
+
+def bdc_online_scence_log(online_info):
+    """在线统计，run_timer 里每五分钟调用一次
+    :param online_info: [(server_id, role_info)]
+    :return:
+    """
+    logs = []
+    base_info = get_bdc_api_base_info()
+    for server_id, role_num in online_info:
+        context = {
+            'event_id': BDC_EVENT_MAPPING['online_scene'],
+            'server_id': server_id,
+            'role_num': role_num
+        }
+        context.update(base_info)
+        logs.append(context)
+        if not len(logs) % 100:
+            send_bdc_log_to_aliyun(logs)
+            logs = []
+
+    send_bdc_log_to_aliyun(logs)
 
 
 def special_bdc_log(user, sort, **kwargs):
@@ -521,58 +642,37 @@ def special_bdc_log(user, sort, **kwargs):
     logger = bdc_log_file(user._server_name)
     # TODO generate_log
 
-    prefix = [ldt]
     if sort == 'new_account':
         hm = kwargs['hm']
         data = _new_account(hm, {}, {})
-        event = 'ACCOUNT_REGISTER'
-        prefix.append(event)
 
     elif sort == 'new_device':
         hm = kwargs['hm']
         data = _device_register(hm, {}, {})
-        event = 'DEV_REGISTER'
-        prefix.append(event)
 
     elif sort == 'role_logout':
         data = _role_logout(user, **kwargs)
-        event = 'ROLE_LOGOUT'
-        prefix.append(event)
 
     elif sort == 'exp_change':
         data = _exp_change(user, **kwargs)
-        event = 'EXP_CHANGE'
-        prefix.append(event)
 
     elif sort == 'level_change':
         data = _level_change(user, **kwargs)
-        event = 'LEVEL_CHANGE'
-        prefix.append(event)
 
     elif sort == 'account_login':
         data = _account_login(user, **kwargs)
-        event = 'ACCOUNT_LOGIN'
-        prefix.append(event)
 
     elif sort == 'get_item':
         data = _item_change(user, **kwargs)
-        event = 'GET_ITEM'
-        prefix.append(event)
 
     elif sort == 'remove_item':
         data = _item_change(user, **kwargs)
-        event = 'REMOVE_ITEM'
-        prefix.append(event)
 
     elif sort == 'get_money':
         data = _money_change(user, **kwargs)
-        event = 'GET_MONEY'
-        prefix.append(event)
 
     elif sort == 'remove_money':
         data = _money_change(user, **kwargs)
-        event = 'REMOVE_MONEY'
-        prefix.append(event)
 
     else:
         print 'no sort:---', sort
@@ -583,11 +683,17 @@ def special_bdc_log(user, sort, **kwargs):
     log = get_log(f_name, logging_class=StatLoggingUtil, propagate=0)
     if not data:
         return
-    if isinstance(data[0], list):
+
+    event = BDC_EVENT_MAPPING[sort]
+    if isinstance(data, list):
         for d in data:
-            log.info(settings.BDC_LOG_DELITIMER.join((force_unicode(i) for i in chain(prefix, d))))
+            d['event_id'] = event
+            log.info(json.dumps(d, separators=(',', ';')))
     else:
-        log.info(settings.BDC_LOG_DELITIMER.join((force_unicode(i) for i in chain(prefix, data))))
+        data['event_id'] = event
+        log.info(json.dumps(data, separators=(',', ';')))
+
+    send_bdc_log_to_aliyun(data)
 
 
 

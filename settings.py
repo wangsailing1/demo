@@ -20,16 +20,37 @@ BACK_BATTLE_DEBUG = False   # 后端战斗debug
 # 注册包名(只有iOS的, 现主要用于过滤其它游戏模拟iOS充值回调我们的请求)
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos', 'com.kaiqigu.cjyx2.cntzd']
 ADMIN_LIST = [
-    'yunfei.yan@kaiqigu.com'
+    'jianmin.liu@kaiqigu.com',
+    'ming.song@kaiqigu.com',
 ]
 
 DEFAULT_BACKEND_ADMIN = [   # 初始化后台管理员
-    ('test_admin', '123'),      # username, password
+    ('test_admin', '1qwer$#@'),      # username, password
 ]
 
 # 报错 钉钉通知地址
 DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=18313a7facae1b034a61512918d79d7bb35335ddbe95c997503f1c62b6adffdd'
 
+############### 2019.12.11 英雄互娱新版 BI 接入系统相关参数，直接对接阿里云 ###############
+
+BDC_LOG_SEND_TO_ALIYUN = False      # bdc日志开关，是否发往阿里云
+BDC_APP_KEY = '3bfd444171e8488fbeb3d7984176c60b'
+# 日志平台类型  SERVER|SERVER_TEST 正式|测试
+BDC_PLATFORM = 'SERVER_TEST'
+
+BDC_END_POINT = 'http://cn-beijing.log.aliyuncs.com'
+BDC_LOG_PROJECT = 'tyrannosaurus'
+BDC_LOG_STORE_SERVER = 'bwl_risingstar_serverlib'
+BDC_ACCESS_KEY_ID = 'LTAI3eTRUxker0ei'
+BDC_ACCESS_KEY_SECRET = 'DwuWlaS2Quqdoy8ZI8SNc1qbVKhg8a'
+
+
+
+############### 2019.12.11 英雄互娱新版 BI 接入系统相关参数，直接对接阿里云 ###############
+
+
+
+#### 作废 2019.12.11 #######
 # 英雄互娱 bi 接入相关参数 ########
 
 BDC_VERSION_ID = '13'       # 版本ID          # ios 11, 安卓13
@@ -42,6 +63,8 @@ BDC_SERVER_TYPE = '01'   # 2位区服分类ID
 BDC_CHANNEL_ID = '001270'   # 渠道ID 安卓渠道     000001: 官方正版
 BDC_LOG_DELITIMER = '\x1b\x7c'
 # 英雄互娱 bi 接入相关参数 ########
+#### 作废 2019.12.11 #######
+
 
 
 # slg服务redis地址，用来查看slg在线人数等

@@ -22,32 +22,35 @@ BROKER_URL = 'redis://:%s@%s:%s/%d' % (
 CELERY_RESULT_PERSISTENT = False
 CELERY_RESULT_BACKEND = 'rpc://'
 
-CELERY_RESULT_SERIALIZER = 'json' # 读取任务结果一般性能要求不高，所以使用了可读性更好的JSON
-CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24 # 任务过期时间，不建议直接写86400，应该让这样的magic数字表述更明显
+CELERY_TASK_SERIALIZER = 'json'         # json|pickle|yaml|msgpack
+CELERY_RESULT_SERIALIZER = 'json'       # 读取任务结果一般性能要求不高，所以使用了可读性更好的JSON
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 1  # 任务执行结果过期时间，不建议直接写秒数，应该让这样的magic数字表述更明显
 
 # Timezone
-CELERY_TIMEZONE='Asia/Shanghai'    # 指定时区，不指定默认为 'UTC'
+CELERY_TIMEZONE = 'Asia/Shanghai'  # 指定时区，不指定默认为 'UTC'
 # CELERY_TIMEZONE='UTC'
 
 # import
 CELERY_IMPORTS = (
     'celery_app.task1',
     'celery_app.task2',
-    'celery_app.test_battle',
+    # 'celery_app.test_battle',
 )
 
 CELERYD_CONCURRENCY = 1
+
+
 def change_concurrency(num):
     """ celery worker 并发数
     """
     globals()['CELERYD_CONCURRENCY'] = num
+
 
 schdule_logs_path = os.path.join(settings.BASE_ROOT, 'logs/cw_logs')
 if not os.path.exists(schdule_logs_path):
     os.makedirs(schdule_logs_path)
 CELERYD_LOG_FILE = os.path.join(schdule_logs_path, 'cw_%s_%s' % (str(settings.CW_NUM), time.strftime("%Y%m%d")))
 CELERY_DEFAULT_QUEUE = 'celery'
-
 
 # schedules
 # CELERYBEAT_SCHEDULE = {
