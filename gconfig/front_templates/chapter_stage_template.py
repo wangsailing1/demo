@@ -35,11 +35,11 @@ chapter = {
     'script_end_level': ('script_end_level', 'int'),  # 几星扫荡
     'stage_id': (('stage_id1', 'stage_id2', 'stage_id3', 'stage_id4', 'stage_id5',
                   'stage_id6', 'stage_id7', 'stage_id8', 'stage_id9', 'stage_id10', 'stage_id11', 'stage_id12',
-                  'stage_id13', 'stage_id14'), ('int', 'mult_force_num_list')),
+                  ), ('int', 'mult_force_num_list')),
     # 关卡
     'dialogue_id': (('dialogue_id1', 'dialogue_id2', 'dialogue_id3', 'dialogue_id4', 'dialogue_id5',
                      'dialogue_id6', 'dialogue_id7', 'dialogue_id8', 'dialogue_id9', 'dialogue_id10', 'dialogue_id11',
-                     'dialogue_id12', 'dialogue_id13', 'dialogue_id14'), ('int', 'mult_force_num_list')),
+                     'dialogue_id12'), ('int', 'mult_force_num_list')),
     # 剧情关卡
     'fight_reward1': ('fight_reward1', 'int_list'),  # 星级奖励1
     'star_num1': ('star_num1', 'int'),  # 奖励1需求星数
