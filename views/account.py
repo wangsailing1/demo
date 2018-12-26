@@ -217,7 +217,7 @@ def new_user(hm):
 
     hm.mm = mm
     # bdc 日志
-    kwargs = {'hm': hm, 'ldt': time.strftime('%F %T')}
+    kwargs = {'hm': hm, 'ldt': time.strftime('%F %T'), 'ip': remote_ip}
     if new_account:
         special_bdc_log(mm.user, sort='new_account', **kwargs)
     if new_device:
