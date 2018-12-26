@@ -644,11 +644,11 @@ def special_bdc_log(user, sort, **kwargs):
 
     if sort == 'new_account':
         hm = kwargs['hm']
-        data = _new_account(hm, {}, {})
+        data = _new_account(hm, {}, {}, **kwargs)
 
     elif sort == 'new_device':
         hm = kwargs['hm']
-        data = _device_register(hm, {}, {})
+        data = _device_register(hm, {}, {}, **kwargs)
 
     elif sort == 'role_logout':
         data = _role_logout(user, **kwargs)
