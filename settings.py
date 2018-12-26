@@ -107,6 +107,9 @@ def get_bdc_channel_id(yxhy_channel_id):
 
     yxhy_channel_id = int(yxhy_channel_id)
     channel_config = game_config.hero_channel_config.get(yxhy_channel_id)
+    # todo 等前端接完sdk、配置
+    return 18   # 英雄互娱-安卓
+
     bdc_id = BDC_CHANNEL_ID
     if channel_config:
         bdc_id = channel_config['bdc_id'].zfill(6)
