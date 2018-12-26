@@ -365,13 +365,13 @@ def mission_get_reward(hm, args, data, **kwargs):
     # 1每日任务 2档期任务 3新手任务 4随机任务  5活跃度 6 成就任务 7 新手引导任务
     tp_id = hm.get_argument('tp_id', 0, is_int=True)
     mission_id = hm.get_argument('mission_id', 0, is_int=True)
-    context = {
+    content = {
         'task_type': tp_id,
         'task_id': mission_id,
-        'rewards_info': data.get('reward', {}),
+        'rewards_info': json.dumps(data.get('reward', {})),
     }
-    context.update(base_info)
-    return context
+    content.update(base_info)
+    return content
 
 
 def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
@@ -393,7 +393,7 @@ def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
 
     chapter_cfg = game_config.chapter[chapter_id]
     name = get_str_words(1, chapter_cfg['chapter_name'])
-    context = {
+    content = {
         'pve_type': type_hard,
         'pve_id': stage,            # chapter_id-stage_id
         'pve_name': name,
@@ -402,8 +402,8 @@ def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
         'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
         'complete_type': 0,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
     }
-    context.update(base_info)
-    return context
+    content.update(base_info)
+    return content
 
 
 def chapter_stage_auto_sweep(hm, args, data, **kwargs):
@@ -422,7 +422,7 @@ def chapter_stage_auto_sweep(hm, args, data, **kwargs):
 
     chapter_cfg = game_config.chapter[chapter_id]
     name = get_str_words(1, chapter_cfg['chapter_name'])
-    context = {
+    content = {
         'pve_type': type_hard,
         'pve_id': stage,            # chapter_id-stage_id
         'pve_name': name,
@@ -431,8 +431,8 @@ def chapter_stage_auto_sweep(hm, args, data, **kwargs):
         'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
         'complete_type': times,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
     }
-    context.update(base_info)
-    return context
+    content.update(base_info)
+    return content
 
 
 def private_city_battle_end(hm, args, data, **kwargs):
@@ -618,13 +618,13 @@ def bdc_online_scence_log(online_info):
     logs = []
     base_info = get_bdc_api_base_info()
     for server_id, role_num in online_info:
-        context = {
+        content = {
             'event_id': BDC_EVENT_MAPPING['online_scene'],
             'server_id': server_id,
             'role_num': role_num
         }
-        context.update(base_info)
-        logs.append(context)
+        content.update(base_info)
+        logs.append(content)
         if not len(logs) % 100:
             send_bdc_log_to_aliyun(logs)
             logs = []
