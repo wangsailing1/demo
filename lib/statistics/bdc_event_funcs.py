@@ -688,10 +688,10 @@ def special_bdc_log(user, sort, **kwargs):
     if isinstance(data, list):
         for d in data:
             d['event_id'] = event
-            log.info(json.dumps(d, separators=(',', ';')))
+            log.info(json.dumps(d, separators=(',', ':')))
     else:
         data['event_id'] = event
-        log.info(json.dumps(data, separators=(',', ';')))
+        log.info(json.dumps(data, separators=(',', ':')))
 
     send_bdc_log_to_aliyun(data)
 
