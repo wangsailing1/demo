@@ -1003,7 +1003,7 @@ class NewGuideMission(DoMission):
 
     def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
-        if next_id:
+        if next_id and next_id not in self.data:
             self.data[next_id] = 0
             self.obj.check_new_guide_mission(next_id)
 
