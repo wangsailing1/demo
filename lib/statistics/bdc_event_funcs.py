@@ -525,7 +525,7 @@ def _account_login(account, **kwargs):
 def _new_account(hm, args, data, **kwargs):
     """创建角色"""
     user = hm.mm.user
-    base_info = get_game_base_info(user)
+    base_info = get_game_base_info(user, **kwargs)
 
     content = {
         'character_id': user.role,
