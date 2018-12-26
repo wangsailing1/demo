@@ -34,4 +34,6 @@ field = {
     'uk': ('field_id', 'int'),  # 地块id
     'order': ('order', 'int'),  # 顺序
     'can_build': ('can_build', 'int_list'),    # 可建建筑
+    'sort': ('sort', 'int'),    #
+    'scaling': ('scaling', 'float'),    #
 }

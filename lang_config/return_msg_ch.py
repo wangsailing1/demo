@@ -88,6 +88,7 @@ return_msg_config = {
     'error_equip_coin': u'装备币不足',
     'error_honor_coin': u'荣誉币不足',
     'error_guild_add_max': u'今日添加成员已达上限，无法添加成员',
+    'error_popularity': u'人气不足',
 }
 
 account_msg = {
@@ -177,6 +178,13 @@ user_msg = {
     },
     'user.blacklist_add': {
         1: u'已经在屏蔽名单中',
+    },
+    'user.build': {
+        1: u'配置错误',
+        3: u'已拥有建筑',
+        4: u'参数错误',
+        5: u'地块错误',
+        6: u'未达到解锁等级',
     },
 }
 
@@ -611,6 +619,16 @@ ranking_list_msg = {
     'ranking_list.get_reward': {
         1: u'本人没有排行',
         2: u'已领奖励',
+    },
+}
+
+business_msg = {
+    'business.handling': {
+        1: u'尚不能自动处理',
+        2: u'请选择',
+        3: u'已处理完所有事务',
+        11: u'配置错误',
+        12: u'选项错误',
     },
 }
 

@@ -38,7 +38,7 @@ if settings.DEBUG:
     debug_sync_change_time()
 
 if settings.ENV_NAME in ['song', 'dev']:
-    mm = ModelManager('gtt11234567')
-    mm2 = ModelManager('gtt11234568')
+    mm = ModelManager('%s11234567' % settings.UID_PREFIX)
+    mm2 = ModelManager('%s11234568' % settings.UID_PREFIX)
 
     c = mm.user.redis

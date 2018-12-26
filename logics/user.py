@@ -255,6 +255,7 @@ class UserLogic(object):
             'license_recover_expire': ('user', 'get_license_recover_red_dot'),  # 拍摄许可证倒计时
             'has_new_dialogue': ('chapter_stage', 'get_chapter_red_dot'),  # 新剧情聊天
             'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
+            'business': ('business', 'get_red_dot'),  # 有艺人聊天
         }
 
         # 特殊的几个红点,todo
@@ -724,7 +725,7 @@ class UserLogic(object):
             return 'error_diamond', {}    # 钻石不足
 
         self.user.deduct_diamond(diamond)
-        self.user.add_action_point(self.user.PUR_BUY_POINT, force=True)
+        reward = add_mult_gift(self.mm, [[3, 0, self.user.PUR_BUY_POINT]])
         self.user.add_buy_point_times()
 
         # self.mm.task_data.add_task_data('other_chapter', 108)
@@ -734,7 +735,7 @@ class UserLogic(object):
 
         self.user.save()
 
-        return 0, {}
+        return 0, {'reward':reward}
 
     def opera_awards_index(self):
         """

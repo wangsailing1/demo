@@ -13,7 +13,6 @@ import settings
 from lib.db import ModelBase, ModelTools
 from gconfig import game_config
 from lib.core.environ import ModelManager
-from tools.unlock_build import EXP_POT
 from lib.utils import get_it
 from lib.utils import weight_choice
 from lib.statistics.bdc_event_funcs import special_bdc_log
@@ -27,6 +26,7 @@ from models import server as serverM
 from lib.utils.time_tools import relative_activity_remain_time
 from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
+# from models.mission import building
 
 BAN_INFO_MESSAGE = {
     'expire': u'我们已对您的账号封停至 {} ！\n',
@@ -963,8 +963,8 @@ class User(ModelBase):
         作废
         :return:
         """
-        if not self.mm.user.check_build(EXP_POT):
-            return
+        # if not self.mm.user.check_build(EXP_POT):
+        #     return
 
         now = int(time.time())
         if not self.update_exp_pot:
@@ -1883,6 +1883,7 @@ class User(ModelBase):
                     self.add_build(build_id, value['field_id'], save=False)
             self.save()
 
+    # @building
     def add_build(self, build_id, field_id, save=True):
         if build_id in self._build:
             return

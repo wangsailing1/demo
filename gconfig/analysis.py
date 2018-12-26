@@ -768,7 +768,6 @@ def int_list_to_dict(value):
 
 
 def carnival_random_translate(config, data):
-    print data,11111,config
     add_dict_list(config, 'dice_ratio', [data['uk'],data['ratio']])
     return config
 

@@ -50,7 +50,7 @@ def script_make(hm, data, mission):
     target_first_income = mission._FIRST_INCOME
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-            target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
+            target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1, 'style': data['cur_script']['style']},
             target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
             target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids, 'style': data['cur_script']['style']},
             target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income'],
@@ -76,7 +76,9 @@ def card_gacha(hm, data, mission):
     gacha_id = hm.get_argument('gacha_id', is_int=True)
     reward = game_config.coin_gacha[gacha_id]['reward']
     target_sort = mission._CARD_GACHA
-    return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1}}
+    num = len(data.get('reward', {}).get('cards', []))
+    return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1},
+            mission._CARD_NUM: {'target1': 0, 'value': num}}
 
 
 # 抓娃娃
@@ -202,11 +204,11 @@ def target_sort1(mm, mission_obj, target):
 
 # 艺人等级
 def target_sort2(mm, mission_obj, target):
-    value = []
+    info = []
     for card_id, value in mm.card.cards.iteritems():
         if value['lv'] >= target[0]:
-            value.append(card_id)
-    return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': value}}
+            info.append(card_id)
+    return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': info}}
 
 
 # 关卡通关
@@ -216,13 +218,16 @@ def target_sort7(mm, mission_obj, target):
     type_hard = 0
     stage = 0
     for value in config.values():
+        print 222222
         if target[0] in value['stage_id']:
-            chapter = value['chapter_id']
+            print 111111111,target[0],value['stage_id']
+            chapter = value['num']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
-    info = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+    info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
+    info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-                                         'star': info.get('star', 0)}}
+                                         'star': info1.get('star', 0)}}
 
 
 # 艺人数量
@@ -502,7 +507,10 @@ class DoMission(object):
         target_data = self.config[mission_id]['target']
         if self.config[mission_id]['sort'] in TYPE_MAPPING:
             type = TYPE_MAPPING[self.config[mission_id]['sort']]
-            script_type = game_config.script[value['target1']][type]
+            if type == 'style':
+                script_type = value['style']
+            else:
+                script_type = game_config.script[value['target1']][type]
             if (script_type == target_data[0] or not target_data[0]) and value['end_lv'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
@@ -546,7 +554,7 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            if value['stage_id'] >= target_data[0] and value['value'] > target_data[1]:
+            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= target_data[2]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:

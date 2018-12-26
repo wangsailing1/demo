@@ -509,6 +509,7 @@ mission_mapping = {
     'guide_mission': ('guide_mission', True),
     'random_mission': ('random_mission', True),
     'achieve_mission': ('achieve_mission', True),
+    'new_guide_mission': ('new_guide_mission', True),
 }
 
 build_mapping = {
@@ -550,5 +551,12 @@ gift_center_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'welfare_notice': ('welfare_notice', True),
 }
+
+business_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'business': ('business', True),
+    'business_times': ('business_times', True),
+}
+
 # 注册需要写到最下面
 register_handler()

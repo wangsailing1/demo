@@ -615,7 +615,7 @@ class ScriptLogic(object):
 
         # 总人气指数、人气计算常数、人气系数
         all_popularity_rate = game_config.common[34] / 100.0
-        popularity_constant = game_config.common[35] / 100.0
+        popularity_constant = game_config.common[35] or 0 / 100.0
         popularity_rate = game_config.common[36] / 100.0
         population_rate = game_config.common[50]  # 人口关注度系数
 

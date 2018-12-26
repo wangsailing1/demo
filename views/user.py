@@ -7,13 +7,14 @@ import datetime
 
 from gconfig import game_config
 from logics.user import UserLogic
-from tools.unlock_build import refresh_unlock_build, SLG_BIG_WORLD
+from tools.unlock_build import refresh_unlock_build
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from models.user import GSMessage
 from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
 from logics.mission import Mission
+from tools.gift import del_mult_goods
 
 
 def main(hm):
@@ -69,6 +70,7 @@ def main(hm):
     result['ceremony_remain_time'] = mm.block.get_remain_time()
     mission = Mission(mm)
     result['box_office'] = mission.mission_index(2)['box_office']
+    result['new_guide'] = mission.mission_index(7)['new_guide']
     result['phone_daily_times'] = mm.friend.phone_daily_times
     result['appointment_times'] = mm.friend.appointment_times
     # result['tourism_times'] = mm.friend.tourism_times
@@ -759,3 +761,33 @@ def user_info(hm):
             'cup_log_card': mm.block.cup_log_card,
             'cup_log_script': mm.block.cup_log_script}
     return 0, data
+
+
+def build(hm):
+    mm = hm.mm
+    build_id = hm.get_argument('build_id', is_int=True)
+    field_id = hm.get_argument('field_id', is_int=True)
+    if not build_id or not field_id:
+        return 4, {}  # 参数错误
+    build_status = mm.user.check_build_id(build_id)
+    if build_status and build_status != 2:
+        return build_status, {}
+    config = game_config.building[build_id]
+    if field_id != config['field_id']:
+        return 5, {}  # 地块错误
+    group_id = config['group']
+    unlock_config = game_config.homepage_button
+    unlock_lv = 0
+    for value in unlock_config.values():
+        if value['group'] == group_id:
+            unlock_lv = value['unlock_lvl']
+            break
+    if mm.user.level < unlock_lv:
+        return 6, {}  # 未达到解锁等级
+    cost = config['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc:
+        return rc, {}
+    mm.user.add_build(build_id, field_id)
+
+    return 0, {'group_id': group_id}

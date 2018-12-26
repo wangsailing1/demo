@@ -526,11 +526,39 @@ class Card(ModelBase):
 
         :param card_oid:
         :param num:
-        :return:
+        :return::
         """
+        if isinstance(card_oid, int):
+            card_oid = self.group_ids[card_oid]
         add_num = int(add_num)
         card_dict = card_dict or self.cards[card_oid]
         card_dict['popularity'] += add_num
+
+    def is_enough_popularity(self, card_oid, add_num, card_dict=None):
+        """添加卡牌人气
+
+        :param card_oid:
+        :param num:
+        :return::
+        """
+        if isinstance(card_oid, int):
+            card_oid = self.group_ids[card_oid]
+        add_num = int(add_num)
+        card_dict = card_dict or self.cards[card_oid]
+        return card_dict['popularity'] >= add_num
+
+    def delete_card_popularity(self, card_oid, add_num, card_dict=None):
+        """添加卡牌人气
+
+        :param card_oid:
+        :param num:
+        :return::
+        """
+        if isinstance(card_oid, int):
+            card_oid = self.group_ids[card_oid]
+        add_num = int(add_num)
+        card_dict = card_dict or self.cards[card_oid]
+        card_dict['popularity'] -= add_num
 
     def add_value(self, card_id, add_value_config, is_save=False):
         """
