@@ -50,8 +50,8 @@ def do_send_bdc_log_to_aliyun(log_contents, compress=True):
     req2 = PutLogsRequest(project, logstore, topic, source, log_items, compress=compress)
     res2 = client.put_logs(req2)
     # res2.log_print()
-    print 'spend_time: %s' % (time.time() - start)
-    print log_contents, compress
+    # print 'spend_time: %s' % (time.time() - start)
+    # print log_contents, compress
 
     # # check cursor time
     # res = client.get_end_cursor(project, logstore, 0)
