@@ -612,12 +612,12 @@ class DoMission(object):
                         isinstance(target[4], list) and tp in target[4]):
                 if info[0][0] == 8:  # 整卡 道具类型
                     star = game_config.card_basis[info[0][1]]['star_level']
-                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
+                    if star >= target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
                 else:
                     star = game_config.card_piece[info[0][1]]['star']
-                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
+                    if star >= target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
         # 获得剧本
