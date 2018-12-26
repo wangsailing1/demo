@@ -708,7 +708,7 @@ class DoMission(object):
         self.data = obj.data
         self.num = obj.num
         self.days = obj.days
-        self.config = game_config.carnival_mission
+        self.config = obj.config
 
     def add_count(self, mission_id, value):
 
@@ -819,6 +819,9 @@ class DoMission(object):
                 #     self.done.setdefault(self.days, []).append(mission_id)
                 #     self.num += self.config[mission_id]['reward']
                 #     self.data[mission_id] = 0
+        if self.__class__.__name__ == 'NewGuideMission':
+            if self.data[mission_id] >= target_data[1]:
+                self.data[self.config[mission_id]['next_id']] = 0
 
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
