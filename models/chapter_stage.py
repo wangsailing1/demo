@@ -56,7 +56,8 @@ class Chapter_stage(ModelBase):
             for type_hard, info in value.iteritems():
                 stage_id = max(info.keys() if info.keys else [0])
                 stage_config = config[chapter][type_hard]
-                if stage_id < len(stage_config['stage_id']) and stage_config['dialogue_id'][stage_id]:
+                stage_list = [i for i in stage_config['stage_id'] if i != -1]
+                if stage_id < len(stage_list) and stage_config['dialogue_id'][stage_id]:
                     dialogue_list.append(stage_config['dialogue_id'][stage_id])
         return dialogue_list
 
