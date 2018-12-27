@@ -437,8 +437,9 @@ class Mission(ModelBase):
         box_office_time = time.strftime('%T')
         is_save = False
         if not self.new_guide_data and not self.new_guide_done:
-            self.new_guide_data[1] = 0
-            self.check_new_guide_mission(1)
+            for i in range(1,4):
+                self.new_guide_data[i] = 0
+                self.check_new_guide_mission(i)
             is_save = True
         if self.date != today:
             self.date = today
