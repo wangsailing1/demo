@@ -708,7 +708,7 @@ class DoMission(object):
         self.data = obj.data
         self.num = obj.num
         self.days = obj.days
-        self.config = game_config.carnival_mission
+        self.config = obj.config
 
     def add_count(self, mission_id, value):
 
@@ -820,6 +820,7 @@ class DoMission(object):
                 #     self.num += self.config[mission_id]['reward']
                 #     self.data[mission_id] = 0
 
+
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
         if sort == GACHA[0]:
@@ -828,12 +829,12 @@ class DoMission(object):
                         isinstance(target[4], list) and tp in target[4]):
                 if info[0][0] == 8:  # 整卡 道具类型
                     star = game_config.card_basis[info[0][1]]['star_level']
-                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
+                    if star >= target[2] and (not target[3] or target[3] == GACHA_MAPPING[8]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
                 else:
                     star = game_config.card_piece[info[0][1]]['star']
-                    if star > target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
+                    if star >= target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
         else:
@@ -1000,7 +1001,7 @@ class NewGuideMission(DoMission):
 
     def start_next(self, mission_id):
         next_id = self.config[mission_id]['next_id']
-        if next_id:
+        if next_id and next_id not in self.data:
             self.data[next_id] = 0
             self.obj.check_new_guide_mission(next_id)
 
