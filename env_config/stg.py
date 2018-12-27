@@ -9,7 +9,7 @@ import inspect
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
-BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+BDC_LOG_SEND_TO_ALIYUN = False   # bdc日志开关，是否发往阿里云
 
 PLATFORM = 'stg'    # 平台标示
 URL_PARTITION = 'big_sale'
@@ -17,7 +17,7 @@ MASTER_HOST = '219.142.26.114:116'
 IN_MASTER_HOST = '192.168.1.52'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
-CHAT_IDS = [('219.142.26.114', 9996)]
+CHAT_IDS = [('219.142.26.138', 9996)]
 
 LANGUAGE = 'ch'
 CDN = 'cdncn.cjyx2.hi365.com'

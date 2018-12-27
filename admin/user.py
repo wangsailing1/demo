@@ -92,19 +92,22 @@ def update(req, **kwargs):
 
     # 调章节
     chapter_id, stage = [int(i) for i in chapter.split('-')]
-    stage = min(stage, 10)
+    config = game_config.get_chapter_mapping()
+    stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
+    all_stage = len(stage_list)
+    stage = min(stage, all_stage)
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]
     mm.chapter_stage.chapter = {}
     for k, v in chapter_config.iteritems():
         if k <= chapter_id and v['hard_type'] == 0:
             if k < chapter_id:
-                stage_max = 10
+                stage_max = all_stage
             else:
                 stage_max = stage
             if k not in mm.chapter_stage.chapter:
                 mm.chapter_stage.chapter[k] = {0: {}}
-                if stage_max == 10:
+                if stage_max == all_stage:
                     mm.chapter_stage.next_chapter.extend(v['next_chapter'])
             for stage_id in range(stage_max):
                 if v['stage_id'][stage_id]:
