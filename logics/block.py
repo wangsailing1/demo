@@ -126,7 +126,7 @@ class Block(object):
         data = {}
         info = self.mm.block.reward_data
         if not info:
-            return 11,{}  #没有奖励可领
+            return {}  #没有奖励可领
         cup = 0
         for k, v in info.iteritems():
             if k == 'big_sale_cup':
@@ -226,7 +226,8 @@ class Block(object):
                             if script_id not in self.block.cup_log_script:
                                 self.block.cup_log_script[script_id] = {}
                             self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
-                data['big_sale_cup'] = self.block.big_sale
+                if self.block.big_sale:
+                    data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         self.block.is_count = 1
         if is_save:
