@@ -94,14 +94,15 @@ def update(req, **kwargs):
     chapter_id, stage = [int(i) for i in chapter.split('-')]
     config = game_config.get_chapter_mapping()
     config_s = game_config.chapter_stage
-    stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
-    all_stage = len(stage_list)
-    stage = min(stage, all_stage)
+
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]
     mm.chapter_stage.chapter = {}
     for k, v in chapter_config.iteritems():
         if k <= chapter_id and v['hard_type'] == 0:
+            stage_list = [i for i in config[k][0]['stage_id'] if i != -1]
+            all_stage = len(stage_list)
+            stage = min(stage, all_stage)
             if k < chapter_id:
                 stage_max = all_stage
             else:
@@ -111,7 +112,8 @@ def update(req, **kwargs):
                 if stage_max == all_stage:
                     mm.chapter_stage.next_chapter.extend(v['next_chapter'])
             for stage_id in range(stage_max):
-                _sid = config[chapter_id][0]['stage_id'][stage_id]
+                _sid = config[k][0]['stage_id'][stage_id]
+                print k, stage_id, _sid
                 stage_config = config_s.get(_sid, {})
                 mm.fans_activity.add_can_unlock_activity(stage_config.get('fans_activity', 0))
                 if v['stage_id'][stage_id]:
