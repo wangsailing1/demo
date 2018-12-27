@@ -64,6 +64,8 @@ def congratulation(hm):
     gift = [[7, 0, game_config.common[32]]]
     reward = add_mult_gift(mm, gift)
     mm.block.award_ceremony = 2
+    if not mm.block.reward_data:
+        mm.block.has_ceremony = 0
     mm.block.save()
     return 0, {'reward': reward}
 
