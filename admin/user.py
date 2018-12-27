@@ -49,7 +49,6 @@ def init_actor_chat(req):
         return select(req, **{'msg': 'uid is not empty'})
 
     mm = ModelManager(uid)
-    mm.friend.actors = {}
     mm.friend.chat_over = {}
     mm.friend.phone_daily_times = 0
     mm.friend.phone_daily_log = {}
