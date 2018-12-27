@@ -130,6 +130,7 @@ def get_stat(mm):
     """
     return {
         'coin': mm.user.coin,
+        'dollar': mm.user.dollar,
         'silver': mm.user.silver,
         'diamond_free': mm.user.diamond_free,
         'diamond_charge': mm.user.diamond_charge,
