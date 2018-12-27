@@ -42,6 +42,23 @@ def select(req, **kwargs):
 
     return render(req, 'admin/user/index.html', **result)
 
+@require_permission
+def init_actor_chat(req):
+    uid = req.get_argument('uid', '')
+    if not uid:
+        return select(req, **{'msg': 'uid is not empty'})
+
+    mm = ModelManager(uid)
+    mm.friend.actors = {}
+    mm.friend.chat_over = {}
+    mm.friend.phone_daily_times = 0
+    mm.friend.phone_daily_log = {}
+    mm.friend.save()
+    msg = 'success'
+
+    return select(req, **{'msg': msg})
+
+
 
 @require_permission
 def update(req, **kwargs):
