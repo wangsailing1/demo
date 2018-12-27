@@ -113,7 +113,7 @@ def update(req, **kwargs):
             for stage_id in range(stage_max):
                 _sid = config[chapter_id][0]['stage_id'][stage_id]
                 stage_config = config_s.get(_sid, {})
-                mm.fans_activity.add_can_unlock_activity(stage_config.get('fans_activity', 0), is_save=True)
+                mm.fans_activity.add_can_unlock_activity(stage_config.get('fans_activity', 0))
                 if v['stage_id'][stage_id]:
                     mm.chapter_stage.chapter[k][0][stage_id+1] = {'fight_times': 0, 'star': 7}
                 else:
@@ -204,6 +204,7 @@ def update(req, **kwargs):
     mm.user.save()
     mm.carnival.save()
     mm.chapter_stage.save()
+    mm.fans_activity.save()
 
     msg = 'success'
 
