@@ -579,6 +579,7 @@ def _exp_change(user, **kwargs):
 
 
 def _device_register(hm, args, data, **kwargs):
+    return 
     user = hm.mm.user
     base_info = get_game_base_info(user)
 
