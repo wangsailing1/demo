@@ -191,7 +191,7 @@ def mission_args(hm, data, mission):
 # 购买体力
 def buy_point(hm, data, mission):
     mm = hm.mm
-    return {mission._SHOP: {'target1': 2, 'value': 1}}
+    return {mission._SHOP: {'target1': 1, 'value': 1}}
 
 
 # =================================需要自检的数值类任务func=================================
