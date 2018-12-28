@@ -13,8 +13,8 @@ BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
 
 PLATFORM = 'stg2'    # 平台标示
 URL_PARTITION = 'big_sale'
-MASTER_HOST = '10.10.2.4'
-IN_MASTER_HOST = '10.10.2.4'          # 内网地址 备份用
+MASTER_HOST = '101.251.250.2'
+IN_MASTER_HOST = '101.251.250.2'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
 CHAT_IDS = [('10.10.2.4', 6009)]
