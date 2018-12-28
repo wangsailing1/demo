@@ -109,7 +109,6 @@ def update(req, **kwargs):
     # 调章节
     chapter_id, stage = [int(i) for i in chapter.split('-')]
     config = game_config.get_chapter_mapping()
-    config_s = game_config.chapter_stage
 
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]
@@ -128,10 +127,6 @@ def update(req, **kwargs):
                 if stage_max == all_stage:
                     mm.chapter_stage.next_chapter.extend(v['next_chapter'])
             for stage_id in range(stage_max):
-                _sid = config[k][0]['stage_id'][stage_id]
-                print k, stage_id, _sid
-                stage_config = config_s.get(_sid, {})
-                mm.fans_activity.add_can_unlock_activity(stage_config.get('fans_activity', 0))
                 if v['stage_id'][stage_id]:
                     mm.chapter_stage.chapter[k][0][stage_id+1] = {'fight_times': 0, 'star': 7}
                 else:

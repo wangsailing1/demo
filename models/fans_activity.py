@@ -20,7 +20,7 @@ class FansActivity(ModelBase):
         self._attrs = {
             'activity': {},
             'unlocked_activity': [],
-            'can_unlock_activity': [],
+            # 'can_unlock_activity': [],
             'activity_log': {},  # {1:{'start_time':11,item_produce:{items:[],last_time:111},
             # gold_produce:{last_time:111},attention_produce:{last_time:111},},'cards':[]}
             'card_mapping': {},  # 记录卡牌所在活动
@@ -35,18 +35,18 @@ class FansActivity(ModelBase):
                 self.card_mapping[card_id] = [value, 0]
                 save = True
 
-        if not self.can_unlock_activity:
-            all_id = game_config.fans_activity.keys()
-            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
-            self.can_unlock_activity = list(set(all_id) - set(all_lock_id))
-            save = True
-        else:
-            all_id = game_config.fans_activity.keys()
-            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
-            can_unlock_id = list(set(all_id) - set(all_lock_id))
-            new_can_unlock_id = list(set(can_unlock_id) - set(self.can_unlock_activity))
-            if new_can_unlock_id:
-                self.can_unlock_activity.extend(new_can_unlock_id)
+        # if not self.can_unlock_activity:
+        #     all_id = game_config.fans_activity.keys()
+        #     all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        #     self.can_unlock_activity = list(set(all_id) - set(all_lock_id))
+        #     save = True
+        # else:
+        #     all_id = game_config.fans_activity.keys()
+        #     all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        #     can_unlock_id = list(set(all_id) - set(all_lock_id))
+        #     new_can_unlock_id = list(set(can_unlock_id) - set(self.can_unlock_activity))
+        #     if new_can_unlock_id:
+        #         self.can_unlock_activity.extend(new_can_unlock_id)
 
         if save:
             self.save()
@@ -120,11 +120,37 @@ class FansActivity(ModelBase):
         return all_items
 
     # 添加可解锁粉丝活动
-    def add_can_unlock_activity(self, activity_id, is_save=False):
-        if activity_id and activity_id not in self.can_unlock_activity:
-            self.can_unlock_activity.append(activity_id)
-            if is_save:
-                self.save()
+    # def add_can_unlock_activity(self, activity_id, is_save=False):
+    #     if activity_id and activity_id not in self.can_unlock_activity:
+    #         self.can_unlock_activity.append(activity_id)
+    #         if is_save:
+    #             self.save()
+
+    @property
+    def can_unlock_activity(self):
+        info = []
+        # 需要推图解锁的
+        config = game_config.get_chapter_mapping()
+        stage_config = game_config.chapter_stage
+        all_stage = self.mm.chapter_stage.chapter
+        for chapter_id ,value in all_stage.iteritems():
+            for type_hard, s_value in value.iteritems():
+                for stage_id in s_value.keys():
+                    stage = config[chapter_id][type_hard]['stage_id'][stage_id - 1]
+                    if stage:
+                        fans_id = stage_config[stage].get('fans_activity',0)
+                        if fans_id and fans_id not in info:
+                            info.append(fans_id)
+        # 不需要解锁条件的
+        all_id = game_config.fans_activity.keys()
+        all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        can_unlock_id = list(set(all_id) - set(all_lock_id))
+        new_can_unlock_id = list(set(can_unlock_id) - set(info))
+        info.extend(new_can_unlock_id)
+        return info
+
+
+
 
     def get_card_effect(self, cards):
         group_list = set()
