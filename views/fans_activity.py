@@ -83,7 +83,7 @@ def up_activity(hm):
         return 1, {}  # 活动等级已经最大
     if next_id not in mm.fans_activity.can_unlock_activity:
         return 2, {}  # 该活动尚不能解锁
-    next_config = game_config.fans_activity[next_id]
+    # next_config = game_config.fans_activity[next_id]
     build_id = game_config.fans_activity[next_id]['build_id']
     cost = game_config.building[build_id]['cost']
     # cost = next_config['unlock_cost']

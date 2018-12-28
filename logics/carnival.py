@@ -131,7 +131,7 @@ class Carnival(object):
         type = self.carnival.MISSIONMAPPING[tp]
         mission_obj = getattr(self.carnival, type)
         config = mission_obj.config
-        if mission_id in mission_obj.done.get(mission_obj.days, []) and not config['if_reuse']:
+        if mission_id in mission_obj.done.get(mission_obj.days, []) and not config[mission_id]['if_reuse']:
             return 1
         return 0
 
