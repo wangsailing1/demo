@@ -32,6 +32,8 @@ avg_dialogue = {
     'time_frame': ('time_frame', 'int_or_float_list'),
     'avg_bgm': ('avg_bgm', 'str'),
     'hero_zoom': ('hero_zoom', 'int_or_float_list'),
+    'hero_name': ('hero_name', 'str'),
+    'main_expression': ('main_expression', 'str'),
 }
 
 # 战斗内广告栏
@@ -264,6 +266,8 @@ tour_dialogue = {
     'time_frame': ('time_frame', 'int_or_float_list'),
     'avg_bgm': ('avg_bgm', 'str'),
     'hero_zoom': ('hero_zoom', 'int_or_float_list'),
+    'hero_name': ('hero_name', 'str'),
+    'main_expression': ('main_expression', 'str'),
 }
 
 explain = {

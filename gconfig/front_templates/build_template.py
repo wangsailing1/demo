@@ -36,4 +36,5 @@ field = {
     'can_build': ('can_build', 'int_list'),    # 可建建筑
     'sort': ('sort', 'int'),    #
     'scaling': ('scaling', 'float'),    #
+    'pose': ('pose', 'int_list'),
 }

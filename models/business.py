@@ -90,6 +90,9 @@ class Business(ModelBase):
             return False
         return self.recover_times < game_config.common[69]  # 恢复最大次数取配置
 
+    def get_all_done(self):
+        return not self.business_times and self.recover_times >= game_config.common[69]
+
     def business_recover_expire(self):
         """恢复倒计时"""
         if not game_config.business:

@@ -42,6 +42,22 @@ def select(req, **kwargs):
 
     return render(req, 'admin/user/index.html', **result)
 
+@require_permission
+def init_actor_chat(req):
+    uid = req.get_argument('uid', '')
+    if not uid:
+        return select(req, **{'msg': 'uid is not empty'})
+
+    mm = ModelManager(uid)
+    mm.friend.chat_over = {}
+    mm.friend.phone_daily_times = 0
+    mm.friend.phone_daily_log = {}
+    mm.friend.save()
+    msg = 'success'
+
+    return select(req, **{'msg': msg})
+
+
 
 @require_permission
 def update(req, **kwargs):
@@ -96,11 +112,15 @@ def update(req, **kwargs):
     stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
     all_stage = len(stage_list)
     stage = min(stage, all_stage)
+
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]
     mm.chapter_stage.chapter = {}
     for k, v in chapter_config.iteritems():
         if k <= chapter_id and v['hard_type'] == 0:
+            stage_list = [i for i in config[k][0]['stage_id'] if i != -1]
+            all_stage = len(stage_list)
+            stage = min(stage, all_stage)
             if k < chapter_id:
                 stage_max = all_stage
             else:
@@ -200,6 +220,7 @@ def update(req, **kwargs):
     mm.user.save()
     mm.carnival.save()
     mm.chapter_stage.save()
+    mm.fans_activity.save()
 
     msg = 'success'
 

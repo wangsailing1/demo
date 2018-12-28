@@ -426,7 +426,7 @@ def chapter_stage_auto_sweep(hm, args, data, **kwargs):
         'pve_type': type_hard,
         'pve_id': stage,            # chapter_id-stage_id
         'pve_name': name,
-        'team_id': -1,              # 组队id,  我们没有多人组队pve，队伍id就用-1代替
+        'team_id': 0,              # 组队id,  我们没有多人组队pve，队伍id就用0代替
         'iswin': iswin,             # 0 胜利 1 失败
         'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
         'complete_type': times,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类

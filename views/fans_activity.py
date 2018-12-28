@@ -4,7 +4,7 @@
 import time
 from gconfig import game_config
 from logics.fans_activity import FansActivity
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift, del_mult_goods
 
 
 # 首页
@@ -42,9 +42,14 @@ def unlock_activity(hm):
     config = game_config.fans_activity[activity_id]
     if not config['type']:
         return 5, {}  # 首次建筑的等级错误
-    cost = config['unlock_cost']
-    if mm.user.dollar < cost:
-        return 3, {}  # 美元不足
+
+    build_id = config['build_id']
+    cost = game_config.building[build_id]['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc != 0:
+        return rc, {}
+    # if mm.user.dollar < cost:
+    #     return 3, {}  # 美元不足
     if not activity_id:
         return 1, {}  # 没有活动
     if activity_id not in mm.fans_activity.can_unlock_activity:
@@ -57,7 +62,7 @@ def unlock_activity(hm):
     mm.fans_activity.activity[group] = activity_id
     mm.fans_activity.activity_log[activity_id] = {}
     mm.fans_activity.unlocked_activity.append(activity_id)
-    mm.user.dollar -= cost
+    # mm.user.dollar -= cost
     mm.user.add_build(config['build_id'],field_id)
     mm.user.save()
     mm.fans_activity.save()
@@ -78,10 +83,15 @@ def up_activity(hm):
         return 1, {}  # 活动等级已经最大
     if next_id not in mm.fans_activity.can_unlock_activity:
         return 2, {}  # 该活动尚不能解锁
-    next_config = game_config.fans_activity[next_id]
-    cost = next_config['unlock_cost']
-    if mm.user.dollar < cost:
-        return 3, {}  # 美元不足
+    # next_config = game_config.fans_activity[next_id]
+    build_id = game_config.fans_activity[next_id]['build_id']
+    cost = game_config.building[build_id]['cost']
+    # cost = next_config['unlock_cost']
+    # if mm.user.dollar < cost:
+    #     return 3, {}  # 美元不足
+    rc, _ = del_mult_goods(mm, cost)
+    if rc != 0:
+        return rc, {}
     if activity_id not in mm.fans_activity.activity_log:
         return 4, {}  # 活动错误
     if activity_id != mm.fans_activity.activity.get(group, 0):
@@ -92,8 +102,8 @@ def up_activity(hm):
     mm.fans_activity.activity_log[next_id] = old_data
     mm.fans_activity.unlocked_activity.append(next_id)
     mm.fans_activity.change_card_mapping(activity_id,next_id)
-    build_id = game_config.fans_activity[next_id]['build_id']
-    mm.user.dollar -= cost
+
+    # mm.user.dollar -= cost
     mm.user.up_build(build_id,is_save=True)
     mm.fans_activity.save()
     mm.user.save()
