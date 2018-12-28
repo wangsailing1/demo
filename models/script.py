@@ -294,6 +294,7 @@ class Script(ModelBase):
             'count': len(self.continued_script),
             'min_expire': min_expire,
             'has_reward': has_reward,
+            'continued_script': self.get_continued_script(),
         }
 
     def check_top_end_lv_card(self, cur_script):
