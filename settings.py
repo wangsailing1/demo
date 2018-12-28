@@ -29,7 +29,7 @@ DEFAULT_BACKEND_ADMIN = [   # 初始化后台管理员
 ]
 
 # 报错 钉钉通知地址
-DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=18313a7facae1b034a61512918d79d7bb35335ddbe95c997503f1c62b6adffdd'
+DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
 ############### 2019.12.11 英雄互娱新版 BI 接入系统相关参数，直接对接阿里云 ###############
 

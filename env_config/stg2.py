@@ -141,7 +141,7 @@ for k, i in enumerate(apps):
     SERVERS[i[0]] = {
         # 'server': 'http://%s/%s/' % (MASTER_HOST, i[0]),
         'server': 'http://%s/%s/' % (MASTER_HOST, URL_PARTITION),
-        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'k2IEKp2PbiQSOfu2MNOf'},
+        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'bDsWyXyyzMAHlafaC49m'},
         # 'long_addr': long_net_config.get(i[1], long_net_config.values()[0]),
         'cpp_addr': {'ip': "192.168.1.9", "port": "8000"},
         'net_name': i[1],
