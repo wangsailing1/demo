@@ -27,6 +27,8 @@ RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
 
+DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
+
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
 SLG_REQUESTRUN = {
