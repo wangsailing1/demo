@@ -52,6 +52,7 @@ class Script(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'newbie': True,         # 是否新用户首次拍片
             'sequel_script': [],  # 已获得的可拍摄的续集片子
             'continued_script': {},         # 持续收益的片子
             'style_log': [],                # 连续拍片类型，保留最近10个
@@ -545,7 +546,22 @@ class Script(ModelBase):
     def pre_filming(self):
         self.script_pool = {}
         self.sequel_script_pool = {}
-        can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.own_script]
+
+        # 新手引导剧本
+        first_scripts = []
+        common_scripts = []
+        for k, v in game_config.script.iteritems():
+            if v.get('first_script'):
+                first_scripts.append((k, v['rate']))
+            elif k in self.own_script:
+                common_scripts.append((k, v['rate']))
+
+        # can_use_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if k in self.own_script]
+        if self.newbie and first_scripts:
+            can_use_ids = first_scripts
+            self.newbie = False
+        else:
+            can_use_ids = common_scripts
         for i in xrange(self.POOL_SIZE):
             if not can_use_ids:
                 break
