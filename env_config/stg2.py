@@ -20,7 +20,7 @@ IN_MASTER_HOST = '101.251.250.2'          # 内网地址 备份用
 CHAT_IDS = [('10.10.2.4', 6009)]
 
 LANGUAGE = 'ch'
-CDN = 'cdncn.cjyx2.hi365.com'
+CDN = 'cdn.big-sale-stg2.hi365.com'
 CONFIG_RESOURCE_OPEN = True
 CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
@@ -63,7 +63,8 @@ apps = [
 
 # 前端热更资源地址
 # resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-resource = 'http://cdn.ksyun.hi365.com/resources/big_sale_stg2'
+
+resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
 # 前端热更配置地址
 config_resource = [
     # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
