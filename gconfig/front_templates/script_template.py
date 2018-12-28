@@ -9,6 +9,7 @@ Created on 2018-08-31
 script = {
     'uk': ('id', 'int'),  # 剧本id
     'name': ('name', 'int'),  # 名字
+    'first_script': ('first_script', 'int'),  # 是否首次剧本
     'type': ('type', 'int'),  # 种类1=电影 2=电视 3=综艺
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重

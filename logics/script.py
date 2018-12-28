@@ -469,6 +469,11 @@ class ScriptLogic(object):
 
         min_part = game_config.common[37] / 10.0
         result = self.calc_attention_by_step(1)
+
+        # 新手引导剧本指定 part_a part_b
+        if script_config.get('first_script'):
+            part_a = game_config.common[70]
+            part_b = game_config.common[71]
         return {
             'add_attr': add_attr,
             'part_a': max(min_part, part_a),
