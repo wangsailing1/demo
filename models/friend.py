@@ -484,6 +484,7 @@ class Friend(ModelBase):
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
         self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
+        self.add_newest_uid(group_id)
         if is_save:
             self.save()
 
