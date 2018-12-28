@@ -60,7 +60,8 @@ apps = [
 
 
 # 前端热更资源地址
-resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+resource = 'http://cdn.ksyun.hi365.com/resources/big_sale_stg2'
 # 前端热更配置地址
 config_resource = [
     # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
