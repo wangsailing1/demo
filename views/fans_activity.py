@@ -62,7 +62,7 @@ def unlock_activity(hm):
     mm.fans_activity.activity[group] = activity_id
     mm.fans_activity.activity_log[activity_id] = {}
     mm.fans_activity.unlocked_activity.append(activity_id)
-    mm.user.dollar -= cost
+    # mm.user.dollar -= cost
     mm.user.add_build(config['build_id'],field_id)
     mm.user.save()
     mm.fans_activity.save()
