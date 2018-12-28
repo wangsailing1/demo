@@ -50,6 +50,7 @@ script = {
     'stage_score': ('stage_score', 'int_list'),       # 推图分数
 
     'role_id': ('role_id', 'int_list'),     # 角色id
+    'first_script': ('first_script', 'int'),     # 是否为首次剧本
 
 }
 
