@@ -557,7 +557,7 @@ class Friend(ModelBase):
         #     info = self.tourism_log
         times = 0
         has_chat = []
-        maxtime = max(info.keys())
+        maxtime = max(info.keys()) if info else 0
         for key, value in info.iteritems():
             if not group_id and key == maxtime:
                 e_id = value['log'][-1] if len(value['log']) > 0 else 0
