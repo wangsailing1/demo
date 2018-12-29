@@ -37,6 +37,42 @@ def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
     return value >= target_value, value, target_value
 
 
+# 星级艺人总数
+def target_sort15(mm, reward_obj, target_data, mission_id, target_data1):
+    star, target_value = target_data[:2]
+    value = 0
+    for k, v in mm.card.cards.iteritems():
+        if v['star'] >= star:
+            value += 1
+    return value >= target_value, value, target_value
+
+
+# 星级剧本总数
+def target_sort16(mm, reward_obj, target_data, mission_id, target_data1):
+    star, target_value = target_data[:2]
+    value = 0
+    for script_id in mm.script.own_script:
+        script_config = game_config.script[script_id]
+        if script_config['star'] >= star:
+            value += 1
+    return value >= target_value, value, target_value
+
+
+# # 累计成就点 todo
+# def target_sort21(mm, reward_obj, target_data, mission_id, target_data1):
+#     pass
+
+
+# 艺人好感度  [好感度love数值， 达到要求好感度的卡牌数 ]
+def target_sort23(mm, reward_obj, target_data, mission_id, target_data1):
+    love_exp, target_value = target_data[:2]
+    value = 0
+    for k, v in mm.card.cards.iteritems():
+        if v['love_exp'] >= love_exp:
+            value += 1
+    return value >= target_value, value, target_value
+
+
 # 是否建造建筑,target对应的建筑groupID是否存在，若存在，则任务完成
 def target_sort26(mm, reward_obj, target_data, mission_id, target_data1):
     group_id = target_data[0]
