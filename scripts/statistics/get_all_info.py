@@ -294,6 +294,8 @@ def main():
     from scripts.statistics.bdc_snapshot import (
         bdc_user_info, bdc_charge_info, bdc_realtime_info, create_zip_file
     )
+    from celery_app.aliyun_bdc_log import send_bdc_log_to_aliyun
+
 
     all_loggers = dict(
         info_log=get_bi_logger_by_type('info'),
@@ -303,8 +305,10 @@ def main():
         equip_pieces_log=get_bi_logger_by_type('equip_pieces'),
         card_pieces_log=get_bi_logger_by_type('card_pieces'),
     )
+    bdc_user_info_contents = []
     act_uids = act_user.get_act_all_user(today=today)
     for uid in act_uids:
+        print uid
         try:
             mm = ModelManager(uid)
             u = mm.user
@@ -313,7 +317,13 @@ def main():
 
         for func in (info, bdc_user_info, card, equip, item, equip_pieces, card_pieces):
             try:
-                func(mm, **all_loggers)
+                data = func(mm, **all_loggers)
+                # 发bdc userinfo
+                if func.func_name == 'bdc_user_info':
+                    bdc_user_info_contents.append(data)
+                    if not len(bdc_user_info_contents) % 50:
+                        send_bdc_log_to_aliyun(bdc_user_info_contents)
+                        bdc_user_info_contents = []
             except:
                 traceback.print_exc()
                 continue
@@ -321,8 +331,11 @@ def main():
     bdc_charge_info(today=today)
     # bdc_realtime_info(today=today)
 
-    create_zip_file('userinfo', create_day)
-    create_zip_file('chargeinfo', create_day)
+    # create_zip_file('userinfo', create_day)
+    # create_zip_file('chargeinfo', create_day)
+
+    if bdc_user_info_contents:
+        send_bdc_log_to_aliyun(bdc_user_info_contents)
 
 
 if __name__ == "__main__":

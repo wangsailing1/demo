@@ -102,6 +102,8 @@ from gconfig import get_str_words
 
 BDC_EVENT_MAPPING = {
     ######## 非api接口，special_bdc_log 里自定义的动作类型 ########
+    'user_info': '10002',
+
     'account_login': '10004',
     'new_account': '10005',
     'role_logout': '10007',
@@ -208,7 +210,6 @@ def get_game_base_info(user, **kwargs):
         # 'rlv': user.level,
         # 'vip': user.vip,
 
-        'event_id': '',
         'event_uuid': str(uuid.uuid1()),
         'event_time': int(time.time()),
         'event_time2': time.strftime('%F'),
