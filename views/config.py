@@ -26,7 +26,7 @@ def resource_version(hm):
     if appid == '2':    # 和前端协定1:android,2:iOS
         version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource', 'ios')
     else:
-        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource')
+        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource', 'android')
 
     current_version = res_version
 
