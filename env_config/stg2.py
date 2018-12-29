@@ -10,6 +10,9 @@ import inspect
 DEBUG = False        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
 BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+# 日志平台类型  SERVER|SERVER_TEST 正式|测试
+BDC_PLATFORM = 'SERVER'
+
 
 PLATFORM = 'stg2'    # 平台标示
 URL_PARTITION = 'big_sale'
