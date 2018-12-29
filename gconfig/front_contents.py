@@ -155,6 +155,12 @@ script_mapping = {
 
 }
 
+king_of_song_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'pvp_rank': ('pvp_rank', True),
+    'pvp_robots': ('pvp_robots', True),
+}
+
 equip_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'equip': ('equip', True),
