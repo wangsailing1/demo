@@ -67,7 +67,7 @@ apps = [
 resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
 # 前端热更配置地址
 config_resource = [
-    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
     'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
 ]
 
