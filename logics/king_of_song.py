@@ -7,9 +7,12 @@ Created on 2018-12-03
 """
 
 import random
+import itertools
 
 from gconfig import game_config
 from lib.core.environ import ModelManager
+
+from lib.utils import weight_choice
 
 
 class KingOfSongLogics(object):
@@ -47,17 +50,222 @@ class KingOfSongLogics(object):
 
         is_robot = self.is_robot(target_uid)
         if is_robot:
-            target = ''
+            enemy_mm = None
         else:
-            target = ModelManager(target_uid)
+            enemy_mm = ModelManager(target_uid)
+
+        enemy_info = self.enemy[target_uid]
+
+        script_id = self.script_pool[0]
 
         data = {}
-        start = random.randint(1, 5)
+        tag_score = {}
+        all_pro = 0
+        script_config = game_config.script[script_id]
+        chapter_enemy = enemy_info['cards']
+        style = script_config['style']
 
+        enemy_align = enemy_info['cards']
+
+        # 角色、剧本得分
+        for role_id, card_id in enemy_align.iteritems():
+            # 计算擅长角色，擅长剧本得分
+            score = self.tag_score(script_id, role_id, card_id)
+            tag_score[card_id] = score
+            if enemy_mm:
+                all_pro += enemy_mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
+            else:
+                all_pro += 0
+
+        # 拍片演员得分
+        fight_data = {}
+        rounds = game_config.common.get(23, 2)
+        all_score = 0
+        for round_num in range(1, rounds + 1):
+            if round_num not in fight_data:
+                fight_data[round_num] = {}
+            for role_id, card_id in align.iteritems():
+
+                # 助战卡牌
+                if role_id in chapter_enemy:
+                    # 卡牌两个必触发属性伤害
+                    attr = game_config.script_role[role_id]['role_attr']
+                    hurts = {'more_attr': {},
+                             'attr': {}}
+                    for attr_id in attr:
+                        hurt = self.get_hurt(attr_id, card_id, tag_score[card_id], is_enemy=True)
+                        hurts['attr'][attr_id] = hurt
+                        all_score += hurt[0]
+                    fight_data[round_num][card_id] = hurts
+                    # 概率触发属性伤害
+                    hurts['more_attr'] = {}
+                    config = game_config.chapter_enemy[int(card_id)]
+                    rate = config['ex_special_rate']
+                    rate_ = random.randint(1, 10001) <= rate
+                    if rate_:
+                        more_attr = config['special_quality']
+                        more_attr = weight_choice(more_attr)
+                        hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
+                        hurts['more_attr'][more_attr[0]] = hurt
+                        all_score += hurt[0]
+                    fight_data[round_num][card_id] = hurts
+                    continue
+
+                # 卡牌两个必触发属性伤害
+                attr = game_config.script_role[role_id]['role_attr']
+                hurts = {'more_attr': {},
+                         'attr': {}}
+                for attr_id in attr:
+                    hurt = self.get_hurt(attr_id, card_id, tag_score[card_id])
+                    all_score += hurt[0]
+                    hurts['attr'][attr_id] = hurt
+                fight_data[round_num][card_id] = hurts
+                # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
+                card_info = self.mm.card.get_card(card_id)
+                config = game_config.card_basis[card_info['id']]
+                rate = config['ex_special_rate']
+                rate_ = random.randint(1, 10001) <= rate
+                if rate_:
+                    more_attr = config['special_quality']
+                    more_attr = weight_choice(more_attr)
+                    hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
+                    hurts['more_attr'][more_attr[0]] = hurt
+                    all_score += hurt[0]
+                else:
+                    hurts['more_attr'] = {}
+                fight_data[round_num][card_id] = hurts
+
+        m = game_config.common[10]
+        all_score = int(all_score * (1 + all_pro * 1.0 / m))
+        score_config = script_config['stage_score']
+        star = self.get_star(all_score, score_config)
         data['win'] = star >= 2
         data['gift'] = []
         data['fight_data'] = fight_data
         data['all_score'] = all_score
         data['star'] = star
         data['tag_score'] = tag_score
-        return 0, {}
+        if not data['win']:
+            return 0, data
+
+        gift = self.get_reward(stage_id, times=times, is_first=is_first)
+        data['gift'] = gift
+        return 0, data
+
+        data = {}
+        start = random.randint(1, 5)
+
+
+
+        #
+        # data['win'] = star >= 2
+        # data['gift'] = []
+        # data['fight_data'] = fight_data
+        # data['all_score'] = all_score
+        # data['star'] = star
+        # data['tag_score'] = tag_score
+        # return 0, {}
+
+
+    def do_fight(self, mm, script_id, align, is_enemy=True):
+
+        chapter_enemy = align
+        data = {}
+        tag_score = {}
+        all_pro = 0
+        script_config = game_config.script[script_id]
+        style = script_config['style']
+
+        # 角色、剧本得分
+        for role_id, card_id in align.iteritems():
+            # 计算擅长角色，擅长剧本得分
+            score = self.tag_score(script_id, role_id, card_id)
+            tag_score[card_id] = score
+            if mm:
+                all_pro += mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
+            else:
+                all_pro += 0
+
+        # 拍片演员得分
+        fight_data = {}
+        rounds = game_config.common.get(23, 2)
+        all_score = 0
+        for round_num in range(1, rounds + 1):
+            if round_num not in fight_data:
+                fight_data[round_num] = {}
+            for role_id, card_id in align.iteritems():
+                # 助战卡牌
+                if role_id in chapter_enemy:
+                    # 卡牌两个必触发属性伤害
+                    attr = game_config.script_role[role_id]['role_attr']
+                    hurts = {'more_attr': {},
+                             'attr': {}}
+                    for attr_id in attr:
+                        hurt = self.get_hurt(attr_id, card_id, tag_score[card_id], is_enemy=True)
+                        hurts['attr'][attr_id] = hurt
+                        all_score += hurt[0]
+                    fight_data[round_num][card_id] = hurts
+                    # 概率触发属性伤害
+                    hurts['more_attr'] = {}
+                    config = game_config.chapter_enemy[int(card_id)]
+                    rate = config['ex_special_rate']
+                    rate_ = random.randint(1, 10001) <= rate
+                    if rate_:
+                        more_attr = config['special_quality']
+                        more_attr = weight_choice(more_attr)
+                        hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id], is_enemy=True)
+                        hurts['more_attr'][more_attr[0]] = hurt
+                        all_score += hurt[0]
+                    fight_data[round_num][card_id] = hurts
+                    continue
+
+                # 卡牌两个必触发属性伤害
+                attr = game_config.script_role[role_id]['role_attr']
+                hurts = {'more_attr': {},
+                         'attr': {}}
+                for attr_id in attr:
+                    hurt = self.get_hurt(attr_id, card_id, tag_score[card_id])
+                    all_score += hurt[0]
+                    hurts['attr'][attr_id] = hurt
+                fight_data[round_num][card_id] = hurts
+                # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
+                card_info = self.mm.card.get_card(card_id)
+                config = game_config.card_basis[card_info['id']]
+                rate = config['ex_special_rate']
+                rate_ = random.randint(1, 10001) <= rate
+                if rate_:
+                    more_attr = config['special_quality']
+                    more_attr = weight_choice(more_attr)
+                    hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
+                    hurts['more_attr'][more_attr[0]] = hurt
+                    all_score += hurt[0]
+                else:
+                    hurts['more_attr'] = {}
+                fight_data[round_num][card_id] = hurts
+
+        m = game_config.common[10]
+        all_score = int(all_score * (1 + all_pro * 1.0 / m))
+        score_config = script_config['stage_score']
+        star = self.get_star(all_score, score_config)
+
+        return {
+            'all_score': all_score,
+            'fight_data': fight_data,
+        }
+
+    def tag_score(self, script_id, role_id, card_id, is_enemy=True):
+        return random.randint(1, 100)
+
+    def get_hurt(self, attr_id, card_id, tag_score, is_enemy=True):
+        return [random.randint(1, 100), False]
+
+    def get_star(self, all_score, score_config):
+        return random.randint(1, 3)
+
+        for level, score in enumerate(score_config, 1):
+            if level == 1 and all_score < score:
+                return level
+            elif level == len(score_config) and all_score >= score:
+                return level
+            elif score <= all_score < score_config[level]:
+                return level + 1
