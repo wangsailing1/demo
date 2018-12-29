@@ -8,7 +8,9 @@ from helper import utils
 import settings
 
 PLATFORM_NAME = 'twandrodikvgames'
-APP_ID = 'twcjyxlmandroid2'
+# APP_ID = 'popstar.cn.android'
+APP_ID = 'com.kvgame.bigsaleking.pub'
+
 SECRET_KEY = 'rntg1xbjb0q4reb7g4c8zupitbwglt91'
 VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
 TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
@@ -41,6 +43,12 @@ def login_verify(req, params=None, DEBUG=False):
             'session_id': req.get_argument('session_id', ''),
             'uid': req.get_argument('user_id', ''),
         }
+
+    # todo 先不做验证，等确定是接国内还是台湾的sdk服务
+    return {
+        'openid': params['uid'],
+        'openname': '',
+    }
 
     params['appid'] = APP_ID
 
