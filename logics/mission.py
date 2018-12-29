@@ -110,7 +110,7 @@ class Mission(object):
         if mission_id in mission_obj.done and mission_id not in mission_obj.data:
             status, value, need = -1, 1, 1
         else:
-            func = globals()['target_sort%s' % target_sort]
+            func = globals().get('target_sort%s' % target_sort)
             if not func:
                 target_sort = '_num'
                 func = globals()['target_sort%s' % target_sort]
