@@ -440,6 +440,14 @@ def upload_local_config(req):
         c.update_config(config, m, save=True)
         cv.update_version(config_name, m)
         done_list.append(config_name)
+
+        # 配置cdn文件
+        if settings.CONFIG_RESOURCE_OPEN:
+            filename = '%s%s_%s.json' % (settings.CONFIG_RESOURCE_PATH, config_name, m)
+            with open(filename, 'wb+') as f:
+                r = json.dumps(config, ensure_ascii=False, separators=(',', ':'), encoding='utf-8', default=to_json)
+                f.write(r)
+
     cv.save()
 
     return select(req, **{'msg': 'num: %s, done: ' % len(done_list) + ', '.join(done_list)})

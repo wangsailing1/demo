@@ -37,6 +37,14 @@ def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
     return value >= target_value, value, target_value
 
 
+# 是否建造建筑,target对应的建筑groupID是否存在，若存在，则任务完成
+def target_sort26(mm, reward_obj, target_data, mission_id, target_data1):
+    group_id = target_data[0]
+    value = 1 if group_id in mm.user.group_ids else 0
+    target_value = target_data[1]
+    return value >= target_value, value, target_value
+
+
 class Mission(object):
     def __init__(self, mm):
         self.mm = mm
@@ -102,9 +110,14 @@ class Mission(object):
         if mission_id in mission_obj.done and mission_id not in mission_obj.data:
             status, value, need = -1, 1, 1
         else:
-            if target_sort not in [1, 2, 5]:
+            func = globals().get('target_sort%s' % target_sort)
+            if not func:
                 target_sort = '_num'
-            func = globals()['target_sort%s' % target_sort]
+                func = globals()['target_sort%s' % target_sort]
+
+            # if target_sort not in [1, 2, 5]:
+            #     target_sort = '_num'
+            # func = globals()['target_sort%s' % target_sort]
             flag, value, need = func(self.mm, mission_obj, target_data, mission_id, target_data1)
             status = 1 if flag else 0
         return {

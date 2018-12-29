@@ -27,7 +27,7 @@ RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
 
-DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
+# DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
@@ -48,7 +48,7 @@ public = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 1, 'pass
 # 聊天
 chat_config = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 2, 'password': 'bDsWyXyyzMAHlafaC49m'}
 # celery
-celery_config = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 2, 'password': 'bDsWyXyyzMAHlafaC49m'}
+celery_config = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 14, 'password': 'bDsWyXyyzMAHlafaC49m'}
 
 # 每个app配置
 apps = [
@@ -67,7 +67,7 @@ apps = [
 resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
 # 前端热更配置地址
 config_resource = [
-    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
     'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
 ]
 
