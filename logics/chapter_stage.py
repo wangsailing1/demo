@@ -361,7 +361,7 @@ class Chapter_stage(object):
         if not card_id:
             gift = config[choice_stage]['reward']
             reward = {}
-            if gift:
+            if gift and now_stage not in self.chapter_stage.got_reward_dialogue:
                 self.chapter_stage.got_reward_dialogue.append(now_stage)
                 reward = add_mult_gift(self.mm, gift)
                 self.chapter_stage.save()
