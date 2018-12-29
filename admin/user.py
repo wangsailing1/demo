@@ -109,6 +109,9 @@ def update(req, **kwargs):
     # 调章节
     chapter_id, stage = [int(i) for i in chapter.split('-')]
     config = game_config.get_chapter_mapping()
+    stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
+    all_stage = len(stage_list)
+    stage = min(stage, all_stage)
 
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]

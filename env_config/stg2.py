@@ -7,25 +7,27 @@ import os
 import inspect
 
 # 每个env都需要有的全局变量
-DEBUG = True        # debug模式
+DEBUG = False        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
-BDC_LOG_SEND_TO_ALIYUN = False   # bdc日志开关，是否发往阿里云
+BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
 
-PLATFORM = 'stg'    # 平台标示
+PLATFORM = 'stg2'    # 平台标示
 URL_PARTITION = 'big_sale'
-MASTER_HOST = '219.142.26.114:116'
-IN_MASTER_HOST = '192.168.1.52'          # 内网地址 备份用
+MASTER_HOST = '101.251.250.2'
+IN_MASTER_HOST = '101.251.250.2'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
-CHAT_IDS = [('219.142.26.138', 9996)]
+CHAT_IDS = [('10.10.2.4', 6009)]
 
 LANGUAGE = 'ch'
-CDN = 'cdncn.cjyx2.hi365.com'
+CDN = 'cdn.big-sale-stg2.hi365.com'
 CONFIG_RESOURCE_OPEN = True
 CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
+
+DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
@@ -40,27 +42,29 @@ SLG_RESPONE = dict(SLG_REDIS_DEFAULT, db=3)
 
 
 # master配置
-master = {'host': '192.168.1.103', 'port': 6314, 'socket_timeout': 5, 'db': 0, 'password': 'k2IEKp2PbiQSOfu2MNOf'}
+master = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 0, 'password': 'bDsWyXyyzMAHlafaC49m'}
 # 公共配置
-public = {'host': '192.168.1.103', 'port': 6314, 'socket_timeout': 5, 'db': 1, 'password': 'k2IEKp2PbiQSOfu2MNOf'}
+public = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 1, 'password': 'bDsWyXyyzMAHlafaC49m'}
 # 聊天
-chat_config = {'host': '192.168.1.103', 'port': 6314, 'socket_timeout': 5, 'db': 2, 'password': 'k2IEKp2PbiQSOfu2MNOf'}
+chat_config = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 2, 'password': 'bDsWyXyyzMAHlafaC49m'}
 # celery
-celery_config = {'host': '192.168.1.103', 'port': 6314, 'socket_timeout': 5, 'db': 2, 'password': 'k2IEKp2PbiQSOfu2MNOf'}
+celery_config = {'host': '10.10.2.4', 'port': 6310, 'socket_timeout': 5, 'db': 2, 'password': 'bDsWyXyyzMAHlafaC49m'}
 
 # 每个app配置
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
-    ('t1', 'net1', '192.168.1.103', 6314, 3),
-    ('t2', 'net1', '192.168.1.103', 6314, 3),
-    ('t3', 'net1', '192.168.1.103', 6314, 3),
-    ('t4', 'net1', '192.168.1.103', 6314, 3),
-    ('t5', 'net1', '192.168.1.103', 6314, 3),
+    ('r1', 'net1', '10.10.2.4', 6301, 3),
+    ('r2', 'net1', '10.10.2.4', 6302, 3),
+    ('r3', 'net1', '10.10.2.4', 6303, 3),
+    ('r4', 'net1', '10.10.2.4', 6304, 3),
+    ('r5', 'net1', '10.10.2.4', 6305, 3),
 ]
 
 
 # 前端热更资源地址
-resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+
+resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
 # 前端热更配置地址
 config_resource = [
     # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
@@ -70,41 +74,41 @@ config_resource = [
 payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
-    'host': '192.168.1.51',
+    'host': '10.10.2.4',
     'user': 'root',
-    'passwd': 'Kaiqigu1',
+    'passwd': '2LDp4fo34YXTldpz2sSc',
     'db': 'big_sale_test',
     'table_prefix': 'payment',
 }
 
 SPEND_CONFIG = {
-    'host': '192.168.1.51',
+    'host': '10.10.2.4',
     'user': 'root',
-    'passwd': 'Kaiqigu1',
+    'passwd': '2LDp4fo34YXTldpz2sSc',
     'db': 'big_sale_test',
     'table_prefix': 'spend',
 }
 
 EARN_CONFIG = {
-    'host': '192.168.1.51',
+    'host': '10.10.2.4',
     'user': 'root',
-    'passwd': 'Kaiqigu1',
+    'passwd': '2LDp4fo34YXTldpz2sSc',
     'db': 'big_sale_test',
     'table_prefix': 'earn',
 }
 
 QUEST_CONFIG = {
-    'host': '192.168.1.51',
+    'host': '10.10.2.4',
     'user': 'root',
-    'passwd': 'Kaiqigu1',
+    'passwd': '2LDp4fo34YXTldpz2sSc',
     'db': 'big_sale_test',
     'table_prefix': 'quest',
 }
 
 GS_HOST = {
-    'host': '192.168.1.51',
+    'host': '10.10.2.4',
     'user': 'root',
-    'passwd': 'Kaiqigu1',
+    'passwd': '2LDp4fo34YXTldpz2sSc',
     'db': 'big_sale_test',
     'table_prefix': 'client_service',
 }
@@ -140,7 +144,7 @@ for k, i in enumerate(apps):
     SERVERS[i[0]] = {
         # 'server': 'http://%s/%s/' % (MASTER_HOST, i[0]),
         'server': 'http://%s/%s/' % (MASTER_HOST, URL_PARTITION),
-        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'k2IEKp2PbiQSOfu2MNOf'},
+        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'bDsWyXyyzMAHlafaC49m'},
         # 'long_addr': long_net_config.get(i[1], long_net_config.values()[0]),
         'cpp_addr': {'ip': "192.168.1.9", "port": "8000"},
         'net_name': i[1],
