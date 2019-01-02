@@ -303,7 +303,7 @@ def target_sort23(mm, mission_obj, target):
 
 # 建造任务
 def target_sort26(mm, mission_obj, target):
-    build_info = mm.user._build
+    build_info = mm.user.group_ids
     info = target[0] in build_info
     return {mission_obj._BUILD: {'target1': target[0], 'value': 1 if info else 0}}
 
