@@ -195,6 +195,12 @@ def buy_point(hm, data, mission):
     mm = hm.mm
     return {mission._SHOP: {'target1': 1, 'value': 1}}
 
+# 完成任务次数
+def mission_num(hm, data, mission):
+    mm = hm.mm
+    tp_id = hm.get_argument('tp_id', 0, is_int=True)
+    return {mission._MISSIONNUM: {'target1': tp_id, 'value': 1}}
+
 
 # 建筑任务 所有建筑都通过models.user里的add_build完成，直接用装饰器对add_build处理
 # def building(func):
@@ -319,6 +325,7 @@ GACHA = [3, 4]
 GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
 FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
 BUILD = 26  # 建筑
+MISSIONNUM = 27  # 任务完成次数
 
 
 class Mission(ModelBase):
@@ -367,6 +374,7 @@ class Mission(ModelBase):
         'user.buy_point': buy_point,  # 购买体力
         'fans_activity.unlock_activity': build,  # 建筑任务
         'user.build': build,  # 建筑任务
+        'mission.get_reward': mission_num,  # 建筑任务
         # 'mission.get_reward': mission_args,                           # 成就
 
     }
@@ -405,6 +413,7 @@ class Mission(ModelBase):
     _ONCE = 24  # 单次自制票房
     _FIRST_INCOME = 25  # 首映票房/收视
     _BUILD = 26  # 建筑任务
+    _MISSIONNUM = 27  # 完成任务次数
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
@@ -802,6 +811,14 @@ class DoMission(object):
         # 建筑任务
         elif self.config[mission_id]['sort'] == BUILD:
             if target_data[0] and target_data[0] == value['target1']:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        # 完成任务次数
+        elif self.config[mission_id]['sort'] == MISSIONNUM:
+            if not target_data[0] or (target_data[0] and target_data[0] == value['target1']):
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
