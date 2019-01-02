@@ -31,11 +31,11 @@ class Chapter_stage(object):
         stage_id = config[chapter][type_hard]['stage_id'][stage - 1]
         if not config:
             return 14, {}  # 配置错误
-        preincome = config[chapter][type_hard]['preincome']
+        preincome = config[chapter][type_hard].get('preincome', 0)
         top_income = self.mm.script.top_all.get('finished_summary', {}).get('income', 0)
         if preincome > top_income:
             return 31, {}  # 影片最大票房未达到要求
-        prelv = config[chapter][type_hard]['prelv']
+        prelv = config[chapter][type_hard].get('prelv', 0)
         if prelv > self.mm.user.level:
             return 32, {}  # 公司等级未达到要求
         if not stage_id:
