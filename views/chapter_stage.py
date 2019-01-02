@@ -7,7 +7,8 @@ from logics.chapter_stage import Chapter_stage
 def chapter_stage_index(hm):
     mm = hm.mm
     return 0, {'chapter': mm.chapter_stage.chapter,
-               'next_chapter': mm.chapter_stage.next_chapter}
+               'next_chapter': mm.chapter_stage.next_chapter,
+               'top_income': mm.script.top_all.get('finished_summary', {}).get('income', 0)}
 
 
 # 打副本
