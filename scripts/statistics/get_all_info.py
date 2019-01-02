@@ -103,7 +103,7 @@ def info(mm, **kwargs):
 
 
 def card(mm, **kwargs):
-    """ 英雄信息
+    """ 艺人信息
 
     :param mm:
     :return:
@@ -121,9 +121,9 @@ def card(mm, **kwargs):
         data = {
             'user_id': mm.uid,
             'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
-            'hero_aquire_time': card_aquire_time,
-            'hero_id': card_dict['id'],
-            'hero_oid': card_oid,
+            'card_aquire_time': card_aquire_time,
+            'card_id': card_dict['id'],
+            'card_oid': card_oid,
             'level': card_dict['lv'],
             'star': card_dict['star'],
             'evo': card_dict['evo'],
@@ -176,7 +176,7 @@ def equip(mm, **kwargs):
         #                '{refine_count}\t{create_date}'.format(**data))
 
 def card_pieces(mm, **kwargs):
-    """ 装备信息
+    """ 艺人碎片信息
 
     :param mm:
     :return:
@@ -202,7 +202,7 @@ def card_pieces(mm, **kwargs):
         #                '{refine_count}\t{create_date}'.format(**data))
 
 def equip_pieces(mm, **kwargs):
-    """ 装备信息
+    """ 装备碎片信息
 
     :param mm:
     :return:
