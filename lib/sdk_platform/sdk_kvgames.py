@@ -7,11 +7,19 @@ from helper import utils
 # from lib.utils.debug import print_log
 import settings
 
-PLATFORM_NAME = 'twandrodikvgames'
-APP_ID = 'twcjyxlmandroid2'
-SECRET_KEY = 'rntg1xbjb0q4reb7g4c8zupitbwglt91'
-VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
-TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
+PLATFORM_NAME = 'androdikvgames.cn'
+APP_ID = 'popstar.cn'
+
+SECRET_KEY = 'a2wuj96sx4yor6v3don6gpuszoolnkvx'
+
+# 台湾sdk
+# VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
+# TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
+
+# 大陆sdk
+VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
+TEST_VERIFT = 'http://219.142.26.114:9097/backend_account_check/'
+
 # 返回数据0是成功的数据，1是失败的数据
 RETURN_DATA = {
     0: 'success',
@@ -42,6 +50,12 @@ def login_verify(req, params=None, DEBUG=False):
             'uid': req.get_argument('user_id', ''),
         }
 
+    # todo 先不做验证，等确定是接国内还是台湾的sdk服务
+    return {
+        'openid': params['uid'],
+        'openname': '',
+    }
+
     params['appid'] = APP_ID
 
     sign = make_sign(params)
@@ -52,7 +66,7 @@ def login_verify(req, params=None, DEBUG=False):
         'sign': sign,
     })
 
-    if False:
+    if settings.KVGAME_SDK_DEBUG:
         http_code, content = http.post(TEST_VERIFT, query_data)
     else:
         http_code, content = http.post(VERIFY_SESSIONID_URI, query_data)

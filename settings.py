@@ -16,6 +16,7 @@ IMMEDIATE_DINGTALK_ERROR_MAIL = True
 PRODUCT_NAME = u'大卖王'
 PLATFORM = ''    # 平台标示
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
+KVGAME_SDK_DEBUG = True     # 凯奇谷自有sdk 是否走测试环境验证
 
 # 注册包名(只有iOS的, 现主要用于过滤其它游戏模拟iOS充值回调我们的请求)
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos', 'com.kaiqigu.cjyx2.cntzd']
