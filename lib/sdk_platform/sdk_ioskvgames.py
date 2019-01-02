@@ -27,7 +27,7 @@ APP_ID = {
 }
 
 if 'tw' in settings.URL_PARTITION or 'taiwan' in settings.URL_PARTITION:
-    if not settings.DEBUG:
+    if not settings.KVGAME_SDK_DEBUG:
         # 台湾版 正式地址
         VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/taiwan/backend_account_check/'
     else:
@@ -35,8 +35,8 @@ if 'tw' in settings.URL_PARTITION or 'taiwan' in settings.URL_PARTITION:
         VERIFY_SESSIONID_URI = 'http://apptest.tw.hi365.com/taiwan/backend_account_check/'
 else:
     # 国内
-    if settings.DEBUG:
-        VERIFY_SESSIONID_URI = 'http://192.168.1.31:9097/backend_account_check/'
+    if settings.KVGAME_SDK_DEBUG:
+        VERIFY_SESSIONID_URI = 'http://219.142.26.114:9097/backend_account_check/'
     else:
         VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
 
