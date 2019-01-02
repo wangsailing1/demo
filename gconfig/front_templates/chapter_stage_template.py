@@ -48,6 +48,8 @@ chapter = {
     'fight_reward3': ('fight_reward3', 'int_list'),  # 星级奖励3
     'star_num3': ('star_num3', 'int'),  # 奖励3需求星数
     'chapter_icon': ('chapter_icon', 'str'),  # 章节图标
+    'preincome': ('preincome', 'int'),  # 章节进入前提-最高票房
+    'prelv': ('prelv', 'int'),  # 章节进入前提-等级
 
 }
 
