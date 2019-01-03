@@ -28,7 +28,7 @@ class ItemLogic(object):
             return 1, {'update_item': {'item': self.item.items}}
 
         if cur_item_num < item_num:
-            return 2, {'update_item': {'item': self.item.items}}
+            return 'error_item', {'update_item': {'item': self.item.items}}
 
         is_use = item_config['is_use']
         if is_use == 0:

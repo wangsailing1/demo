@@ -97,10 +97,20 @@ def result_generator(rc, data, msg, mm):
     :param mm: ModelManager 对象管理类
     :return:
     """
+    data_sync = {}
+    if rc == 'error_item':
+        data_sync.update({'item': mm.item.items})
+    elif rc == 'error_equip':
+        data_sync.update({'equips': mm.equip.equips})
+    elif rc == 'error_piece':
+        data_sync.update({'card_pieces': mm.card.pieces})
+    elif rc == 'error_equip_piece':
+        data_sync.update({'equip_pieces': mm.equip.equip_pieces})
     r = {
         'data': data,
         'status': rc,
         'msg': msg,
+        'data_sync': data_sync,
         'server_time': int(time.time()),
         'user_status': user_status(mm),
     }

@@ -401,7 +401,7 @@ def del_goods(mm, goods_sort, goods_config):
             item_id = pkg[0]
             item_num = pkg[1]
             if not mm.equip.del_piece(item_id, item_num):
-                return 'error_piece', 0
+                return 'error_equip_piece', 0
         mm.equip.save()
     elif goods_sort == 11:  # 玩家经验
         return 'error_exp', 0
