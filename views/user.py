@@ -778,13 +778,14 @@ def build(hm):
         return 5, {}  # 地块错误
     group_id = config['group']
     unlock_config = game_config.homepage_button
-    unlock_lv = 0
-    for value in unlock_config.values():
-        if value['group'] == group_id:
-            unlock_lv = value['unlock_lvl']
-            break
-    if mm.user.level < unlock_lv:
-        return 6, {}  # 未达到解锁等级
+    # unlock_lv = 0
+    # for value in unlock_config.values():
+    #     if value['group'] == group_id:
+    #         unlock_lv = value['unlock_lvl']
+    #         break
+    stats = mm.user.can_unlock(build_id)
+    if stats:
+        return stats, {}  # 不能解锁
     cost = config['cost']
     rc, _ = del_mult_goods(mm, cost)
     if rc:
@@ -792,3 +793,27 @@ def build(hm):
     mm.user.add_build(build_id, field_id)
 
     return 0, {'group_id': group_id}
+
+def up_build(hm):
+    mm = hm.mm
+    build_id = hm.get_argument('build_id', is_int=True)
+    if not build_id:
+        return 4, {}  # 参数错误
+    build_status = mm.user.check_build_id(build_id)
+    if build_status and build_status != 3:
+        return build_status, {}
+    config = game_config.building[build_id]
+    next_id = config['next_id']
+    if not next_id:
+        return 5, {}  # 已到达最大等级
+    stats = mm.user.can_unlock(next_id)
+    if stats:
+        return stats, {}  # 不能解锁
+    next_config = game_config.building[next_id]
+    cost = next_config['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc:
+        return rc, {}
+    mm.user.up_build(next_id, is_save=True)
+    return 0, {'group_id': config['group']}
+

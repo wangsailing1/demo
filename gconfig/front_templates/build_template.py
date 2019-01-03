@@ -38,3 +38,12 @@ field = {
     'scaling': ('scaling', 'float'),    #
     'pose': ('pose', 'int_list'),
 }
+
+functional_building = {
+    'uk': ('id', 'int'),  # 地块id
+    'build_id': ('build_id', 'int'),  # 建筑ID
+    'lvlup_condition': ('lvlup_condition', 'int_list'),    # 升级条件
+    'effect_type': ('effect_type', 'int'),    # 建筑效果类型
+    'build_effect': ('build_effect', 'int_list'),    # 建筑效果
+}
+

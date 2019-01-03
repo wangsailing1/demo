@@ -325,6 +325,7 @@ class GameConfigMixIn(object):
         self.achieve_mission_mapping = {}
         self.free_reward_weight_mapping = {}
         self.rmb_reward_weight_mapping = {}
+        self.functional_building_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -417,6 +418,7 @@ class GameConfigMixIn(object):
         self.achieve_mission_mapping.clear()
         self.free_reward_weight_mapping.clear()
         self.rmb_reward_weight_mapping.clear()
+        self.functional_building_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2487,6 +2489,12 @@ class GameConfigMixIn(object):
                 self.rmb_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
         return self.rmb_reward_weight_mapping
 
+    def get_functional_building_mapping(self):
+        if not self.functional_building_mapping:
+            for i, j in self.functional_building.iteritems():
+                self.functional_building_mapping[j['build_id']] = j
+                self.functional_building_mapping[j['build_id']]['id'] = i
+        return self.functional_building_mapping
 
 
 
