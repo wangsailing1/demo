@@ -97,6 +97,8 @@ def result_generator(rc, data, msg, mm):
     :param mm: ModelManager 对象管理类
     :return:
     """
+
+    # 与前端同步数据
     data_sync = {}
     if rc == 'error_item':
         data_sync.update({'item': mm.item.items})
