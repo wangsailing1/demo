@@ -526,7 +526,9 @@ class Friend(ModelBase):
         chat_list = chat_config.get(group_id, {}).get(key_word, [])
         chat_choice = []
         for chat in chat_list:
-            if chat[2] <= like < chat[3]:
+            if chat[3] == -1:
+                chat_choice.append([chat[0], chat[1]])
+            elif chat[2] <= like < chat[3]:
                 chat_choice.append([chat[0], chat[1]])
         if not chat_choice:
             return 0
