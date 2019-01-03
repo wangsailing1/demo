@@ -383,15 +383,15 @@ def get_user_server_list(hm, account=None):
             'ks': sid,
             'mk': '',
         }
-    # todo 暂时屏蔽服务器自动选择
+    
     serve_active_time.sort(key=lambda x: x[1])
     current_server = serve_active_time[-1][0] if serve_active_time else ''
-    # server_list = get_server_list(server_list, current_server)
+    select_server = get_server_list(server_list, current_server)
 
     if not Account.check_exist(account):
         return 0, {  # 查无此人
             'server_list': server_list,
-            'current_server': '',
+            'current_server': select_server,
             'ks': sid,
             'mk': '',
         }
