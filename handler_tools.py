@@ -105,7 +105,7 @@ def result_generator(rc, data, msg, mm):
     elif rc == 'error_equip':
         data_sync.update({'equips': mm.equip.equips})
     elif rc == 'error_piece':
-        data_sync.update({'card_pieces': mm.card.pieces})
+        data_sync.update({'pieces': mm.card.pieces})
     elif rc == 'error_equip_piece':
         data_sync.update({'equip_pieces': mm.equip.equip_pieces})
     r = {
