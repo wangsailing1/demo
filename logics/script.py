@@ -969,7 +969,7 @@ class ScriptLogic(object):
                     continue
                 value = math.ceil(base_value * dps_rate / 10000.0)
                 # todo 建筑影响属性
-                # value = math.ceil(value * (self.mm.user.get_build_effect().get(attr, 0) + 10000) / 10000.0)
+                # value = math.ceil(value * (self.mm.user.build_effect.get(attr, 0) + 10000) / 10000.0)
                 if attr in role_effect:
                     role_effect[attr][0] += value
                 else:
