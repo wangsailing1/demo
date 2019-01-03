@@ -1967,10 +1967,11 @@ class User(ModelBase):
         effect = {}
         config = game_config.get_functional_building_mapping()
         for build_id in self._build:
-            if build_id in config:
-                build_effect = config[build_id]['build_effect']
-                for effect_type, effect_num in build_effect:
-                    effect[effect_type] = effect.get(effect_type, 0) + effect_num
+            if build_id not in config or (build_id in config and config[build_id]['effect_type'] != 1):
+                continue
+            build_effect = config[build_id]['build_effect']
+            for effect_type, effect_num in build_effect:
+                effect[effect_type] = effect.get(effect_type, 0) + effect_num
         return effect
 
 
