@@ -508,6 +508,7 @@ build_mapping = {
     'card_building': ('card_building', True),
     'building': ('building', True),
     'field': ('field', True),
+    'functional_building': ('functional_building', True),
 }
 
 guide_mapping = {

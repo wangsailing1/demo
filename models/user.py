@@ -1936,6 +1936,32 @@ class User(ModelBase):
             return -1
         return self.mm.fans_activity.activety_status(fans_activity_id)
 
+    def can_unlock(self, build_id):
+        if build_id in game_config.get_functional_building_mapping():
+            config = game_config.get_functional_building_mapping()[build_id]
+            lvlup_condition = config['lvlup_condition']
+            for tp, num in lvlup_condition:
+                if tp == 1:
+                    if self.level < num:
+                        return 101  # 未达到解锁等级
+        elif build_id in game_config.building:
+            config = game_config.building[build_id]
+            if self.level < config['unlock_lv']:
+                return 101 # 未达到解锁等级
+        else:
+            return 102 # 没有配置
+        return 0
+
+    def get_build_effect(self):
+        effect = {}
+        config = game_config.get_functional_building_mapping()
+        for build_id in self._build:
+            if build_id in config:
+                build_effect = config[build_id]['build_effect']
+                for effect_type, effect_num in build_effect:
+                    effect[effect_type] = effect.get(effect_type, 0) + effect_num
+        return effect
+
 
 class OnlineUsers(ModelTools):
     """
