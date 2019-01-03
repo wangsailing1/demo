@@ -789,5 +789,5 @@ def up_build(hm):
     if rc:
         return rc, {}
     mm.user.up_build(next_id, is_save=True)
-    return 0, {}
+    return 0, {'group_id': config['group']}
 
