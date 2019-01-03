@@ -152,7 +152,8 @@ def game_info(hm):
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
     info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
-                             'next_chapter': mm.chapter_stage.next_chapter}
+                             'next_chapter': mm.chapter_stage.next_chapter,
+                             'top_income': mm.script.top_all.get('finished_summary', {}).get('income', 0)}
 
     return 0, info
 
