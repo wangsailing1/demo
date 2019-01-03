@@ -21,7 +21,7 @@ MASTER_HOST = '101.251.250.2'
 IN_MASTER_HOST = '101.251.250.2'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
-CHAT_IDS = [('10.10.2.4', 6009)]
+CHAT_IDS = [('101.251.250.2', 6009)]
 
 LANGUAGE = 'ch'
 CDN = 'cdn.big-sale-stg2.hi365.com'
