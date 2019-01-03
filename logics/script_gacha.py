@@ -156,7 +156,7 @@ class ScriptGachaLogics(object):
         cost = build_config[build_id]['cost']
         rc, data = del_mult_goods(self.mm, cost)
         if rc:
-            return rc, data
+            return rc, {}
         self.gacha.building_level = next_lv
         self.mm.user.up_build(build_id, is_save=True)
         self.gacha.save()
