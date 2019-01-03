@@ -383,10 +383,10 @@ def get_user_server_list(hm, account=None):
             'ks': sid,
             'mk': '',
         }
-    
+
     serve_active_time.sort(key=lambda x: x[1])
     current_server = serve_active_time[-1][0] if serve_active_time else ''
-    select_server = get_server_list(server_list, current_server)
+    select_server = get_server_list(server_list, current_server)[0]['server']
 
     if not Account.check_exist(account):
         return 0, {  # 查无此人
@@ -403,7 +403,7 @@ def get_user_server_list(hm, account=None):
     special_bdc_log(uu, sort='account_login', **kwargs)
     return 0, {
         'server_list': server_list,
-        'current_server': current_server,
+        'current_server': select_server,
         'ks': sid,
         'mk': mk,
     }
