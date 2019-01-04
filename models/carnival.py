@@ -218,9 +218,7 @@ def target_sort7(mm, mission_obj, target):
     type_hard = 0
     stage = 0
     for value in config.values():
-        print 222222
         if target[0] in value['stage_id']:
-            print 111111111,target[0],value['stage_id']
             chapter = value['num']
             type_hard = value['hard_type']
             stage = value['stage_id'].index(target[0]) + 1
@@ -267,7 +265,7 @@ def target_sort23(mm, mission_obj, target):
         if value['love_exp'] >= target[0]:
             num += 1
     for g_id in mm.card.attr:
-        if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
+        if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target[0]:
             num += 1
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 

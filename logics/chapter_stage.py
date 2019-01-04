@@ -407,7 +407,7 @@ class Chapter_stage(object):
         }
 
     # 解锁章节
-    def unlock_chapter(self, chapter, type_hard, stage, save=False):
+    def unlock_chapter(self, chapter, type_hard, stage):
         config = game_config.get_chapter_mapping()
         stage_list = [i for i in config[chapter][type_hard]['stage_id'] if i != -1]
         all_stage = len(stage_list)
