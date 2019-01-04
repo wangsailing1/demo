@@ -47,11 +47,14 @@ def script_make(hm, data, mission):
     target_limit_actor = mission._LIMIT_ACTOR
     target_once = mission._ONCE
     target_first_income = mission._FIRST_INCOME
+    target_top_income = mission._TOPINCOME
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1, 'style': data['cur_script']['style']},
             target_sort_income: {'target1': 0, 'end_lv': end_lv,
                                  'value': data['cur_script']['finished_summary']['income']},
+            target_top_income: {'target1': data['cur_script']['finished_summary']['income'], 'end_lv': end_lv,
+                                 'value': 1},
             target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids,
                                  'style': data['cur_script']['style']},
             target_once: {'target1': script_id, 'end_lv': end_lv,
@@ -302,7 +305,7 @@ def target_sort23(mm, mission_obj, target):
         if value['love_exp'] >= target[0]:
             num += 1
     for g_id in mm.card.attr:
-        if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
+        if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target[0]:
             num += 1
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
@@ -326,6 +329,7 @@ GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
 FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
 BUILD = 26  # 建筑
 MISSIONNUM = 27  # 任务完成次数
+TOPINCOME = 28 # 单片最大票房次数
 
 
 class Mission(ModelBase):
@@ -414,6 +418,7 @@ class Mission(ModelBase):
     _FIRST_INCOME = 25  # 首映票房/收视
     _BUILD = 26  # 建筑任务
     _MISSIONNUM = 27  # 完成任务次数
+    _TOPINCOME = 28  # 单片最大收入
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
@@ -819,6 +824,14 @@ class DoMission(object):
         # 完成任务次数
         elif self.config[mission_id]['sort'] == MISSIONNUM:
             if not target_data[0] or (target_data[0] and target_data[0] == value['target1']):
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        # 单片最大票房次数
+        elif self.config[mission_id]['sort'] == TOPINCOME:
+            if target_data[0] <= value['target1']:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:

@@ -37,4 +37,6 @@ field = {
     'sort': ('sort', 'int'),    #
     'scaling': ('scaling', 'float'),    #
     'pose': ('pose', 'int_list'),
+    'build_scale': ('build_scale', 'float'),
+    'build_pos': ('build_pos', 'int_list'),
 }
