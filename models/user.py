@@ -37,6 +37,13 @@ BAN_INFO_MESSAGE = {
     'basic_end': u'如有疑问，请联系官方客服Q群：{}，感谢您的支持！',
 }
 
+# 建筑解锁条件（等级）
+def lvlup_condition_1(mm,num):
+    if mm.user.level < num:
+        return 101
+    return 0
+
+
 
 class User(ModelBase):
     """ 玩家类
@@ -1970,6 +1977,37 @@ class User(ModelBase):
         if not fans_activity_id:
             return -1
         return self.mm.fans_activity.activety_status(fans_activity_id)
+
+    def can_unlock(self, build_id):
+        if build_id in game_config.get_functional_building_mapping():
+            config = game_config.get_functional_building_mapping()[build_id]
+            lvlup_condition = config['lvlup_condition']
+            for tp, num in lvlup_condition:
+                func = globals()['lvlup_condition_%s' % tp]
+                stats = func(self.mm, num)
+                if stats:
+                    return stats
+        elif build_id in game_config.building:
+            config = game_config.building[build_id]
+            func = globals()['lvlup_condition_%s' % 1]  # 1 为等级限制
+            stats = func(self.mm, config['unlock_lv'])
+            if stats:
+                return stats
+        else:
+            return 201 # 没有配置
+        return 0
+
+    @property
+    def build_effect(self):
+        effect = {}
+        config = game_config.get_functional_building_mapping()
+        for build_id in self._build:
+            if build_id not in config or (build_id in config and config[build_id]['effect_type'] != 1):
+                continue
+            build_effect = config[build_id]['build_effect']
+            for effect_type, effect_num in build_effect:
+                effect[effect_type] = effect.get(effect_type, 0) + effect_num
+        return effect
 
 
 class OnlineUsers(ModelTools):
