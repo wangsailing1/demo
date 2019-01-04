@@ -39,7 +39,7 @@ SLG_REQUESTRUN = {
 # slg gm redis
 SLG_RESPONE = dict(SLG_REDIS_DEFAULT, db=3)
 
-
+DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 # master配置
 master = {'host': '192.168.1.103', 'port': 6311, 'socket_timeout': 5, 'db': 0, 'password': 'k2IEKp2PbiQSOfu2MNOf'}
 # 公共配置
