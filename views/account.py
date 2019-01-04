@@ -25,6 +25,7 @@ import hashlib
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from lib.utils.time_tools import str2timestamp
 import copy
+from lib.utils.mail import send_dingtalk
 
 
 def generate_mk(account):
@@ -593,3 +594,15 @@ def notice(hm):
             info[k]['des'] = content
             info[k]['name'] = name
     return 0, info
+
+
+def send_error(hm):
+    msg = hm.get_argument('message', '')
+
+    subject = '[%s ERROR MAIL] - %s' % (
+        settings.ENV_NAME, hm.get_argument('m_name', '[other method]'))
+    try:
+        send_dingtalk(settings.ERRDINGTALK_URL, subject, msg)
+    except:
+        pass
+    return 0, {}
