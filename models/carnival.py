@@ -267,7 +267,7 @@ def target_sort23(mm, mission_obj, target):
         if value['love_exp'] >= target[0]:
             num += 1
     for g_id in mm.card.attr:
-        if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
+        if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target[0]:
             num += 1
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
