@@ -41,6 +41,7 @@ RPC_SERVER_ADDR = ('localhost', 8000)
 
 
 DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=65b10b52e5038db8362f6d6334df207dccf95410a5e74c99e64ac5dc1152a761'
+ERRDINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
 
 # slg服务redis地址，用来查看slg在线人数等

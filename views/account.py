@@ -602,7 +602,7 @@ def send_error(hm):
     subject = '[%s ERROR MAIL] - %s' % (
         settings.ENV_NAME, hm.get_argument('m_name', '[other method]'))
     try:
-        send_dingtalk(settings.DINGTALK_URL, subject, msg)
+        send_dingtalk(settings.ERRDINGTALK_URL, subject, msg)
     except:
         pass
     return 0, {}
