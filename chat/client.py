@@ -130,7 +130,7 @@ class Client(object):
             try:
                 json_msg = json.loads(json_msg_str)
                 # 屏蔽字
-                if json_msg.get('msg'):
+                if json_msg.get('msg') and json_msg.get('kqgFlag') != 'system':
                     json_msg['msg'] = replace_sensitive(json_msg['msg'])
                 json_msg['dsign'] = int(time.time())
                 json_msg_str = json.dumps(json_msg)
