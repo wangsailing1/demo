@@ -116,6 +116,33 @@ class ScrollBar(ModelBase, TaskEventBase):
         # self.add_message(msg)
         return custom_msg
 
+    def send_scroll_notify(self):
+        config = game_config.scroll_bar
+        for k, value in config.iteritems():
+            if not self.get_scroll_notify_id(k):
+                msg = self.generate_msg('')
+                msg['msg'] = value['msg']
+                self.add_message(msg)
+                self.add_scroll_notify_id(k)
+                self.save()
+
+    @property
+    def log_redis(self):
+        return self.get_father_redis(self.server_name)
+
+    def get_key(self):
+        return self.make_key_cls('log', self.server_name)
+
+    def add_scroll_notify_id(self, notice_id):
+        key = self.get_key()
+        self.log_redis.hset(key, notice_id, 1)
+
+    def get_scroll_notify_id(self, notice_id):
+        key = self.get_key()
+        data = self.log_redis.hget(key, notice_id)
+        data = True if data else False
+        return data
+
     # ########################
     # 对应触发任务 start
     # ########################
