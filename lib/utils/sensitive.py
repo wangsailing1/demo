@@ -36,7 +36,7 @@ def replace_sensitive(word):
     :return:
     """
     for i, v in enumerate(WORDS):
-        if v in word:
+        if v in word and v not in [u'日', u'八九']:
             word = word.replace(v, u'**')
 
     return word
