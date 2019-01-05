@@ -551,6 +551,7 @@ toy_mapping = {
 gift_center_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'welfare_notice': ('welfare_notice', True),
+    'scroll_bar': ('scroll_bar', True),
 }
 
 business_mapping = {
