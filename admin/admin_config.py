@@ -167,13 +167,15 @@ menu_config = {
             {
             'name': u"送公会礼物道具",
             'sub': [('add_ggitem', u'赠送公会礼物道具', 0)],
-        }, {
-            'name': u"送觉醒道具",
-            'sub': [('add_aitem', u'赠送觉醒道具', 0)],
-        }, {
-            'name': u"送统帅碎片",
-            'sub': [('add_commander_part', u'赠统帅碎片', 0)],
-        }],
+        },
+        #     {
+        #     'name': u"送觉醒道具",
+        #     'sub': [('add_aitem', u'赠送觉醒道具', 0)],
+        # }, {
+        #     'name': u"送统帅碎片",
+        #     'sub': [('add_commander_part', u'赠统帅碎片', 0)],
+        # }
+        ],
         'equip': [{
             'name': u"送装备",
             'sub': [('add_equip', u'赠送装备', 0)],
@@ -187,14 +189,14 @@ menu_config = {
         'script': [
             {'name': u'送剧本', 'sub': [('add_script', u'赠送剧本 ', 0)]},
         ],
-        'gene': [{
-            'name': u"送基因",
-            'sub': [('add_gene', u'赠送基因', 0)],
-        }],
-        'gwentcard': [{
-            'name': u"送昆特牌",
-            'sub': [('add_gcard', u'赠送昆特牌', 0)],
-        }],
+        # 'gene': [{
+        #     'name': u"送基因",
+        #     'sub': [('add_gene', u'赠送基因', 0)],
+        # }],
+        # 'gwentcard': [{
+        #     'name': u"送昆特牌",
+        #     'sub': [('add_gcard', u'赠送昆特牌', 0)],
+        # }],
         'payment': [{
             'name': u"虚拟充值",
             'sub': [
@@ -227,10 +229,10 @@ menu_config = {
             'name': u"发送系统邮件",
             'sub': [('add_mail', u'发送系统邮件', 0)],
         }],
-        'other': [{
-            'name': u'斗技卡牌使用记录',
-            'sub': [('king_war_hero_use_info', u'斗技卡牌使用记录', 1)],
-        }],
+        # 'other': [{
+        #     'name': u'斗技卡牌使用记录',
+        #     'sub': [('king_war_hero_use_info', u'斗技卡牌使用记录', 1)],
+        # }],
         'scroll_msg': [{
             'name': u'跑马灯信息',
             'sub': [('scroll_msg', u'跑马灯信息', 1)],
