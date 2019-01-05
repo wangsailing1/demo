@@ -4,16 +4,17 @@
 <div style="color: red">{{msg}}</div>
 {% end %}
 <h3>发送系统跑马灯：</h3>
+<div style="color: red">{{ content }}</div>
 
 <form action="/{{url_partition}}/admin/scroll_msg/scroll_msg/" method="post">
 
-<p>服务器：</p>
+<p>服务器：(all：发送所有服，指定服务器用','隔开如d1,d2)</p>
 <div>
-    <input type="text" name="server" value="{{server}}" />
+    <input type="text" name="server" value="" />
 </div>
-<p>内容：</p>
+<p>内容：(40个汉字以内)</p>
 <div>
-    <textarea name="content" style="width:200px; height: 150px;">{{ content }}</textarea>
+    <textarea name="content" style="width:200px; height: 150px;"></textarea>
 </div>
 
 
