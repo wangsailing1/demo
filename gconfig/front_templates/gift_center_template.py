@@ -143,3 +143,8 @@ server_notice = {
     'mark': ('mark', 'int_list'),
     'show_time': ('show_time', 'unicode'),
 }
+
+scroll_bar = {
+    'uk': ('id', 'int'),                    # 公告id
+    'msg': ('msg', 'unicode'),            # 公告名称
+}

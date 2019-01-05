@@ -13,8 +13,8 @@ APP_ID = 'popstar.cn'
 SECRET_KEY = 'a2wuj96sx4yor6v3don6gpuszoolnkvx'
 
 # 台湾sdk
-# VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
-# TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
+VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
+TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
 
 # 大陆sdk
 VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
@@ -51,10 +51,10 @@ def login_verify(req, params=None, DEBUG=False):
         }
 
     # todo 先不做验证，等确定是接国内还是台湾的sdk服务
-    return {
-        'openid': params['uid'],
-        'openname': '',
-    }
+    # return {
+    #     'openid': params['uid'],
+    #     'openname': '',
+    # }
 
     params['appid'] = APP_ID
 
@@ -66,13 +66,19 @@ def login_verify(req, params=None, DEBUG=False):
         'sign': sign,
     })
 
-    if settings.KVGAME_SDK_DEBUG:
-        http_code, content = http.post(TEST_VERIFT, query_data)
-    else:
-        http_code, content = http.post(VERIFY_SESSIONID_URI, query_data)
+    http_code, content = http.post(VERIFY_SESSIONID_URI, query_data)
     if http_code != 200:
         return None
     result = json.loads(content)
+    if result['status'] == -6:
+        # 开发环境参数发到测试环境验证 status = -6
+        # print result
+        http_code, content = http.post(TEST_VERIFT, query_data)
+        if http_code != 200:
+            return None
+        result = json.loads(content)
+
+    # print result
     if int(result['status']) != 1:
         return None
 
@@ -218,4 +224,4 @@ def make_sign(params):
 
 
 if __name__ == '__main__':
-    print login_verify('', {'session_id': 'jqj8udixlwbu18nmkdxyao5v0dag7dei', 'uid': '10000144'})
+    print login_verify('', {'session_id': 'vfsyi8vvoi0mxkaghueowgykyhgu0u89', 'uid': '364'})
