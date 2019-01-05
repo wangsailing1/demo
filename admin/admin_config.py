@@ -16,7 +16,7 @@ menu_name = [
 
 select_sort = ['user', 'gwentcard', 'payment', 'long_connection', 'rank', 'user_name', 'other']
 operate_sort = ['card', 'hero', 'equip', 'script', 'item', 'commander_part', 'gene', 'approval_payment',
-                'gwentcard', 'mail', 'code', 'payment', 'gs', 'user', 'other']
+                'gwentcard', 'mail', 'code', 'payment', 'gs', 'user', 'other', 'scroll_msg']
 develop_sort = ['config', 'user']
 see_data_sort = ['server_overview', 'payment', 'data']
 questionnaire_sort = ['questionnaire']
@@ -230,6 +230,10 @@ menu_config = {
         'other': [{
             'name': u'斗技卡牌使用记录',
             'sub': [('king_war_hero_use_info', u'斗技卡牌使用记录', 1)],
+        }],
+        'scroll_msg': [{
+            'name': u'跑马灯信息',
+            'sub': [('scroll_msg', u'跑马灯信息', 1)],
         }],
         'code': [{
             'name': u"激活码",

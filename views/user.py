@@ -58,7 +58,6 @@ def main(hm):
     # 全服邮件
     mm.user.send_system_mail()
 
-    # mm.scroll_.send_scroll_notify()
 
     result = ul.main()
 
