@@ -155,6 +155,26 @@ def finished_summary(hm):
     return rc, data
 
 
+def debug_finished_summary(hm):
+    """票房总结 开发测试用"""
+    mm = hm.mm
+    script = mm.script
+    script_oid = hm.get_argument('oid')
+
+    cur_script = script.continued_script.get(script_oid)
+    if not cur_script:
+        return 1, {}
+
+    sl = ScriptLogic(mm)
+    data = {}
+    key = 'finished_summary'
+    data[key] = cur_script[key]
+
+    data['cur_script'] = cur_script
+    data['step'] = sl.get_step()
+    return 0, data
+
+
 def finished_analyse(hm):
     """票房分析"""
     mm = hm.mm
