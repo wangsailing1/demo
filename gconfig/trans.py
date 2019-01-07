@@ -145,7 +145,9 @@ def trans(sheet_title, mapping, sheet_iter, md5_obj, special_func_name):
 
     config = {}
     config['check_warning'] = []
-    for row_index, row in enumerate(sheet_iter):
+    for row_index, row in enumerate(sheet_iter, start=1):
+        # 在execl表格中的真实行号，加上注释与列名两行
+        real_index = row_index + 2
         data = {}
         row_data = [r.internal_value for r in row]
         if any(row_data) and not any(row_data[-50:]):     # 防止配置表后边有太多的空列
@@ -182,10 +184,10 @@ def trans(sheet_title, mapping, sheet_iter, md5_obj, special_func_name):
                         msg = check_reward_counts(v)
                         if msg:
                             config['check_warning'].append(('excel:%s row_index:%s field:%s value:%s msg:%s' %
-                                                            (sheet_title, row_index, field, row_data[index], msg)))
+                                                            (sheet_title, real_index, field, row_data[index], msg)))
                 except:
-                    raise TableColError('1excel:%s row_index:%s field:%s sheet_sort:%s value:%s msg:%s' %
-                                        (sheet_title, row_index, field, value, row_data[index], msg))
+                    raise TableColError('1 excel:%s row_index:%s field:%s sheet_sort:%s value:%s msg:%s' %
+                                        (sheet_title, real_index, field, value, row_data[index], msg))
             else:
                 sheets, (sheet_sort, mult_sheet_sort), check_func = value
                 args = []
