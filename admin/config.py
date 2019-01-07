@@ -67,6 +67,23 @@ config_types = {1: unicode('新服', 'utf-8'), 2: unicode('老服', 'utf-8'), 3:
 
 #     return flag, message
 
+
+def config_name_cmp(x, y):
+    """
+        # ('name': (None, True)),     # simple
+        # ('ban_ip', ('ban_ip', True)),
+    :param x:
+    :param y:
+    :return:
+    """
+    x_name = x[1][0] or x[0]
+    y_name = y[1][0] or y[0]
+    # 判断是否有配置
+    x_value = getattr(game_config, x_name, 0) and 1
+    y_value = getattr(game_config, y_name, 0) and 1
+    return cmp(x_value, y_value) or cmp(x_name, y_name)
+
+
 @require_permission
 def select(req, **kwargs):
     """
@@ -108,8 +125,10 @@ def select(req, **kwargs):
 
     msg = kwargs.get('msg', '')
 
+    sorted_config_mapping = sorted(front_mapping_config.iteritems(), cmp=config_name_cmp)
     return render(req, 'admin/config/index.html', **{
         'mapping_config': front_mapping_config,
+        'sorted_config_mapping': sorted_config_mapping,
         'config_key': config_key,
         'config_data': config_data,
         'config_refresh_flag': refresh_flag,
@@ -141,9 +160,10 @@ def front_select(req, **kwargs):
         config_data = getattr(front_game_config, config_key)
 
     msg = kwargs.get('msg', '')
-
+    sorted_config_mapping = sorted(front_mapping_config.iteritems(), cmp=config_name_cmp)
     return render(req, 'admin/config/front_index.html', **{
         'mapping_config': front_mapping_config,
+        'sorted_config_mapping': sorted_config_mapping,
         'config_key': config_key,
         'config_data': config_data,
         'last_update_time': last_update_time,
