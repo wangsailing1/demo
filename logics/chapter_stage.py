@@ -470,7 +470,7 @@ class Chapter_stage(object):
             if card_id in ['0']:
                 continue
             if card_id not in self.mm.card.cards:
-                return 31, {}  # 卡牌错误
+                return 37, {}  # 卡牌错误
             card_info = self.mm.card.get_card(card_id)
 
             for tp, need_num in need[k]:
