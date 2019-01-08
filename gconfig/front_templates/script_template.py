@@ -12,6 +12,7 @@ script = {
     'type': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重
+    'performance': ('performance', 'int'),  # 战斗表现
     'cost': ('cost', 'int'),  # 剧本消耗(美元)
     'paycheck_ratio': ('paycheck_ratio', 'int'),  # 片酬系数(百分之）
     'sequel_count': ('sequel_count', 'int'),  # 续作编号
