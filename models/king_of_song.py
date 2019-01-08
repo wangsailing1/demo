@@ -70,13 +70,22 @@ class KingOfSong(ModelBase):
         enemy = {}
         for i in range(1, 4):
             uid = 'robot_%s' % i
-            choice_cards = random.sample(game_config.card_basis, 3)
+            card_ids = game_config.card_basis.keys()
             name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
+            script_id = random.choice(game_config.script.keys())
+            script_config = game_config.script[script_id]
+
+            cards = {}
+            for role_id in script_config['role_id']:
+                card_id = random.choice(card_ids)
+                card_ids.remove(card_id)
+                cards[role_id] = card_id
             enemy[uid] = {
                 'user_name': name,
-                'script_id': random.choice(game_config.script.keys()),
-                'cards': {idx: card for idx, card in enumerate(choice_cards, 1)}
+                'script_id': script_id,
+                'cards': cards          # {role_id: card_id}
             }
+
         self.enemy = enemy
         return self.enemy
 

@@ -270,6 +270,7 @@ class User(ModelBase):
             'rebate_flag': False,  # 是否已返利
             '_build': {},  # 建筑信息
             'dialogue': [],  # 建筑信息
+            'skip_dialouge': 0,
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
