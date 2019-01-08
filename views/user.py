@@ -152,6 +152,7 @@ def game_info(hm):
     block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
+    info['skip_dialouge'] = mm.user.skip_dialouge
     info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
                              'next_chapter': mm.chapter_stage.next_chapter,
                              'top_income': mm.script.top_all.get('finished_summary', {}).get('income', 0)}

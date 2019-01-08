@@ -91,6 +91,7 @@ def update(req, **kwargs):
     server_dice_num = int(req.get_argument('server_dice_num'))
     dice_num = int(req.get_argument('dice_num'))
     chapter = req.get_argument('chapter')
+    skip_dialouge = int(req.get_argument('skip_dialouge'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -209,6 +210,7 @@ def update(req, **kwargs):
     #     mm.user.deduct_box_key(diff_box_key)
     # elif diff_box_key < 0:
     #     mm.user.add_box_key(-diff_box_key)
+    mm.user.skip_dialouge = skip_dialouge
     mm.user.script_license = script_license
     mm.carnival.server_dice_num = server_dice_num
     mm.carnival.dice_num = dice_num
