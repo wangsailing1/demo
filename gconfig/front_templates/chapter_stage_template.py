@@ -21,6 +21,16 @@ chapter_stage = {
     'lv_unlocked': ('lv_unlocked', 'int'),  # 等级限制
     'start_cost': ('start_cost', 'int'),  # 进入前扣除体力
     'end_cost': ('end_cost', 'int'),  # 结算时扣除体力
+    'type': ('type', 'int'),  # 关卡表现类型
+    'name': ('name', 'str'),  # 关卡名
+    'story': ('story', 'str'),  # 关卡描述
+    'background': ('background', 'str'),  # 背景图
+    'card_need': ('card_need', 'str'),  # 艺人要求
+    'music': ('music', 'str'),  # 拍摄音乐
+    'name1': ('name1', 'str'),  # 角色名
+    'dialog1': ('dialog1', 'str'),  # 角色台词
+    'name2': ('name2', 'str'),  # 角色名
+    'dialog2': ('dialog2', 'str'),  # 角色台词
 
 }
 
