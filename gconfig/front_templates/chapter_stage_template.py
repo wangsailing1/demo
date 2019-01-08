@@ -25,7 +25,7 @@ chapter_stage = {
     'name': ('name', 'str'),  # 关卡名
     'story': ('story', 'str'),  # 关卡描述
     'background': ('background', 'str'),  # 背景图
-    'card_need': ('card_need', 'str'),  # 艺人要求
+    'card_need': ('card_need', 'int_list'),  # 艺人要求
     'music': ('music', 'str'),  # 拍摄音乐
     'name1': ('name1', 'str'),  # 角色名
     'dialog1': ('dialog1', 'str'),  # 角色台词
