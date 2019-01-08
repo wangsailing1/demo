@@ -19,7 +19,7 @@ def chapter_stage_fight(hm):
     if not stage:
         return 1, {}  # 关卡参数错误
     chapter_stage = Chapter_stage(mm)
-    rc, data = chapter_stage.chapter_stage_fight(stage, type_hard, align=align)
+    rc, data = chapter_stage.chapter_stage_fight_new(stage, type_hard, align=align)
     return rc, data
 
 
@@ -49,6 +49,7 @@ def auto_sweep(hm):
     stage = hm.get_argument('stage', '')
     times = hm.get_argument('times', 1, is_int=True)
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
+    align = hm.get_argument('align', '')
     chapter_stage = Chapter_stage(mm)
-    rc, data = chapter_stage.chapter_stage_fight(stage, type_hard, auto=True, times=times)
+    rc, data = chapter_stage.chapter_stage_fight_new(stage, type_hard, auto=True, times=times, align=align)
     return rc, data
