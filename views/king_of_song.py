@@ -22,9 +22,23 @@ def index(hm):
     return rc, data
 
 
+def enemy_battle(hm):
+    """
+    对手拍片数据
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    enemy_uid = hm.get_argument('enemy_uid')
+
+    kl = KingOfSongLogics(mm)
+    rc, data = kl.enemy_battle(enemy_uid)
+    return rc, data
+
+
 def battle(hm):
     """
-    挑战对手
+    自己拍片数据
     :param hm:
     :return:
     """

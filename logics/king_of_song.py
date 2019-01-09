@@ -35,6 +35,23 @@ class KingOfSongLogics(object):
         }
         return 0, data
 
+    def enemy_battle(self, target_uid):
+        """对手拍片
+
+        :param target_uid:
+        :return:
+        """
+        king = self.mm.king_of_song
+        if target_uid not in king.enemy:
+            return 2, {}        # 不是可选对手
+
+        is_robot = self.is_robot(target_uid)
+        if is_robot:
+            enemy_mm = None
+        else:
+            enemy_mm = ModelManager(target_uid)
+
+
     def battle(self, role_card, script_id, target_uid):
         """
 
