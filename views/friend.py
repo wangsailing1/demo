@@ -37,6 +37,7 @@ def friends(hm):
     data['newest_friend'] = mm.friend.newest_friend
     data['phone_daily_remain'] = mm.friend.check_chat_end(type=1)[-1]
     data['appointment_remain'] = mm.friend.check_chat_end(type=2)[-1]
+    data['got_point_daily'] = mm.friend.got_point_daily
     # data['tourism_remain'] = mm.friend.check_chat_end(type=3)[-1]
 
 
