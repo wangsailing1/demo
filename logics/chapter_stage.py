@@ -524,7 +524,7 @@ class Chapter_stage(object):
             if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                 self.chapter_stage.next_chapter.extend(next_chapter)
         if is_first:
-            self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+            # self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
             self.mm.chapter_stage.done_chapter_log.append(stage_id)
         self.mm.user.save()
         self.chapter_stage.save()
