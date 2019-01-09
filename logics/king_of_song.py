@@ -35,7 +35,7 @@ class KingOfSongLogics(object):
         }
         return 0, data
 
-    def battle(self, role_card, target_uid):
+    def battle(self, role_card, script_id, target_uid):
         """
 
         :param align:
@@ -58,7 +58,8 @@ class KingOfSongLogics(object):
 
         enemy_info = king.enemy[target_uid]
 
-        script_id = king.script_pool[0]
+        if script_id not in king.script_pool:
+            return 3, {}        # 所选剧本存在
 
         data = {}
         tag_score = {}
