@@ -34,6 +34,7 @@ class KingOfSong(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'star': 0,                  # 当前赛季星级
             'last_date': '',            # 上次更新时间
             'battle_times': 0,          # 当天挑战次数
             'buy_times': 0,             # 购买次数
