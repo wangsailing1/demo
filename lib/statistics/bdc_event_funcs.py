@@ -386,12 +386,15 @@ def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
     chapter_id, stage_id = [int(i) for i in stage.split('-')]
     align = align.split('_')
     # {pos_id: card_id}
-    align = [(int(align[i * 2]), align[i * 2 + 1]) for i in range(len(align) / 2)]
-    align.sort(key=lambda x: x[0])
+    # align = [(int(align[i * 2]), align[i * 2 + 1]) for i in range(len(align) / 2)]
+    # align.sort(key=lambda x: x[0])
 
-    lineup = ';'.join([i[1] for i in align])
-    iswin = 0 if data.get('win', True) else 1
+    # lineup = ';'.join([i[1] for i in align])
+    # iswin = 0 if data.get('win', True) else 1
 
+    # 新推图 align 没有role_id, 直接是cardid1_cardid2, 结果rc 只要是0，就是胜利
+    lineup = ';'.join(align)
+    iswin = 1
     chapter_cfg = game_config.chapter[chapter_id]
     name = get_str_words(1, chapter_cfg['chapter_name'])
     content = {
@@ -416,10 +419,16 @@ def chapter_stage_auto_sweep(hm, args, data, **kwargs):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
 
     chapter_id, stage_id = [int(i) for i in stage.split('-')]
+    align = hm.get_argument('align', '')
+    align = align.split('_')
     # {pos_id: card_id}
 
-    lineup = ''
-    iswin = 0 if data.get('win', True) else 1
+    # lineup = ''
+    # iswin = 0 if data.get('win', True) else 1
+
+    # 新推图 align 没有role_id, 直接是cardid1_cardid2, 结果rc 只要是0，就是胜利
+    lineup = ';'.join(align)
+    iswin = 1
 
     chapter_cfg = game_config.chapter[chapter_id]
     name = get_str_words(1, chapter_cfg['chapter_name'])
