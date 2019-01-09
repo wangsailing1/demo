@@ -30,6 +30,8 @@ class KingOfSongLogics(object):
             'buy_times': king.buy_times,
             'enemy': king.enemy,
             'script_pool': king.script_pool,
+
+            'star': king.star,
         }
         return 0, data
 
