@@ -76,6 +76,8 @@ def trans_config(filename, sort, xl=None):
         sheet_iter = sheet.iter_rows()
         mapping = trans_header(sheet_title, sheet_iter, m, config_template)
         config = trans(sheet_title, mapping, sheet_iter, m, special_func_name)
+
+        m.update(repr(config))
         result.append((config_name, m.hexdigest(), config))
 
     return result

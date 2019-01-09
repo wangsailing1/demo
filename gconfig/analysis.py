@@ -661,8 +661,7 @@ def first_random_name(config, data):
 
 def dirtyword(config, data):
     dirtyword = data.get('uk')
-    add_dict_list(config, 'dirtyword', dirtyword)
-
+    add_dict(config, dirtyword, 1)
     return config
 
 
