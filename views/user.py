@@ -14,6 +14,7 @@ from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
 from logics.mission import Mission
+from logics.fans_activity import FansActivity
 
 
 def main(hm):
@@ -59,6 +60,9 @@ def main(hm):
 
     result = ul.main()
 
+    fa = FansActivity(mm)
+    _, fans_data = fa.fans_index()
+
     # 配置更新
     config_refresh, _, config_refresh_text = ConfigRefresh.check()
     result['config_refresh'] = 0 if mm.user.level < 6 else config_refresh
@@ -74,6 +78,7 @@ def main(hm):
     result['tourism_times'] = mm.friend.tourism_times
     result['seven_login'] = mm.seven_login.is_open()
     result['fans_activity_info'] = mm.fans_activity.fans_activity_info()
+    result['fans_activity_data'] = fans_data['activity_log']
 
     return 0, result
 
