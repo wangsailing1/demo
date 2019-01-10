@@ -45,7 +45,7 @@ class ItemLogic(object):
         elif is_use == 2:  # 金币
             reward = add_gift(self.mm, 1, [[0, use_effect]] * item_num, cur_data=reward)
         elif is_use == 3:  # 道具
-            reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
+            reward = add_mult_gift(self.mm, use_effect * item_num, cur_data=reward)
         # elif is_use == 4:  # 进阶材料
         #     reward = add_gift(self.mm, 7, use_effect * item_num, cur_data=reward)
         # elif is_use == 5:  # 采集物
