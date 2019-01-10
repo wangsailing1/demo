@@ -884,7 +884,7 @@ class ScriptLogic(object):
         cur_script['old_rank'] = [old_rank, old_score]
         cur_script['new_rank'] = [new_rank, new_score]
         cur_script['near_rank'] = [near_rank, near_score]
-        has_next = script.check_next_sequel(cur_script)
+        has_next = script.check_next_sequel(cur_script, all_income)
 
         card.save()
         script.save()
