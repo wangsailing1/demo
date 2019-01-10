@@ -342,6 +342,21 @@ class Mission(ModelBase):
             self._achieve_mission = Achieve(self)
         return self._achieve_mission
 
+    # 增加成就点
+    def add_achieve_point(self, point, save=False):
+        self.achieve += point
+        # 完成成就任务
+        a_id = self.get_achieve_id()
+        self.achieve_data[a_id] = self.achieve
+        if save:
+            self.save()
+
+    # 增加目标
+    def add_liveness(self, point, save=False):
+        self.liveness += point
+        if save:
+            self.save()
+
     def get_all_random_mission(self):
         if self.mm.user.level < 20:
             return
