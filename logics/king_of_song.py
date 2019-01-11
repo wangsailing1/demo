@@ -13,6 +13,7 @@ from gconfig import game_config
 from lib.core.environ import ModelManager
 
 from lib.utils import weight_choice
+from tools.gift import add_mult_gift
 
 
 class KingOfSongLogics(object):
@@ -42,27 +43,8 @@ class KingOfSongLogics(object):
         :return:
         """
         king = self.mm.king_of_song
-        if target_uid not in king.enemy:
-            return 2, {}        # 不是可选对手
-
-        is_robot = self.is_robot(target_uid)
-        if is_robot:
-            enemy_mm = None
-        else:
-            enemy_mm = ModelManager(target_uid)
-
-
-    def battle(self, role_card, script_id, target_uid):
-        """
-
-        :param align:
-        :param role_card:  [(role, card_id), (role, card_id)]
-        :return:
-        """
-        align = dict(role_card)
-        king = self.mm.king_of_song
-        if not king.left_battle_times() > 0:
-            return 1, {}        # 挑战次数不足
+        if king.enemy_fight_data:
+            return 1, {}        # 对手已经拍完
 
         if target_uid not in king.enemy:
             return 2, {}        # 不是可选对手
@@ -74,42 +56,58 @@ class KingOfSongLogics(object):
             enemy_mm = ModelManager(target_uid)
 
         enemy_info = king.enemy[target_uid]
+        enemy_align = enemy_info['cards']
+        enemy_fight_data = self.do_fight(enemy_mm, enemy_info['script_id'], enemy_align)
+
+        king.enemy_fight_data = enemy_fight_data
+        king.save()
+        return 0, {
+            'enemy_fight_data': enemy_fight_data,
+        }
+
+    def battle(self, script_id, role_card):
+        """
+
+        :param align:
+        :param role_card:  [(role, card_id), (role, card_id)]
+        :return:
+        """
+        align = dict(role_card)
+        king = self.mm.king_of_song
+        if not king.left_battle_times() > 0:
+            return 1, {}        # 挑战次数不足
 
         if script_id not in king.script_pool:
-            return 3, {}        # 所选剧本存在
+            return 3, {}        # 所选剧本不存在
+
+        if not king.enemy_fight_data:
+            return 4, {}        # 对手还未拍片
 
         data = {}
-        tag_score = {}
-        script_config = game_config.script[script_id]
-        enemy_align = enemy_info['cards']
 
         fight_data = self.do_fight(self.mm, script_id, align)
-        enemy_fight_data = self.do_fight(enemy_mm, enemy_info['script_id'], enemy_align)
+        enemy_fight_data = king.enemy_fight_data
 
         data['win'] = fight_data['all_score'] >= enemy_fight_data['all_score']
         data['gift'] = []
         data['self_fight_data'] = fight_data
         data['enemy_fight_data'] = enemy_fight_data
-        if not data['win']:
-            return 0, data
 
-        gift = self.get_reward(script_id)
+        rank_config = game_config.pvp_rank[king.rank]
+        if data['win']:
+            king.star += 1
+            gift = add_mult_gift(self.mm, rank_config['award_win'])
+        else:
+            king.star -= 1
+            gift = add_mult_gift(self.mm, rank_config['award_lose'])
+
         data['gift'] = gift
+
+        king.enemy_fight_data.clear()
+        king.refresh_scripts()
+        king.refresh_enemy()
+        king.save()
         return 0, data
-
-        data = {}
-        start = random.randint(1, 5)
-
-
-
-        #
-        # data['win'] = star >= 2
-        # data['gift'] = []
-        # data['fight_data'] = fight_data
-        # data['all_score'] = all_score
-        # data['star'] = star
-        # data['tag_score'] = tag_score
-        # return 0, {}
 
     def get_reward(self, script_id):
         return {}

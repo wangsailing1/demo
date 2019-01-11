@@ -43,12 +43,11 @@ def battle(hm):
     :return:
     """
     mm = hm.mm
-    enemy_uid = hm.get_argument('enemy_uid')
     script_id = hm.get_argument('script_id', is_int=True)
     role_card = hm.get_mapping_arguments('role_card', params_type=(int, str))
 
     kl = KingOfSongLogics(mm)
-    rc, data = kl.battle(role_card, script_id, target_uid=enemy_uid)
+    rc, data = kl.battle(script_id, role_card)
     return rc, data
 
 
