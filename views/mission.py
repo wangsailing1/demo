@@ -46,7 +46,7 @@ def get_reward(hm):
     if tp_id == 1:
         # mm.mission.liveness = mm_obj.config[mission_id]['liveness']
         liveness = mm_obj.config[mission_id]['liveness']
-        gift.append([102, 0, liveness])
+        gift.append([101, 0, liveness])
     # if tp_id == 3:
     #     if mm.mission.check_guide_over():
     #         mm.mission.get_all_random_mission()
@@ -54,7 +54,7 @@ def get_reward(hm):
     #         mm.mission.get_guide_mission()
     if tp_id == 6:
         achieve_point = mm_obj.config[mission_id]['achieve_point']
-        gift.append([101, 0, achieve_point])
+        gift.append([102, 0, achieve_point])
         # mm.mission.achieve += achieve_point
         # a_id = mm.mission.get_achieve_id()
         # mm_obj.data[a_id] = mm.mission.achieve

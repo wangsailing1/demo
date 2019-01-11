@@ -300,7 +300,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('popularity', {}), add_type, add_num)
         mm.card.save()
 
-    elif gift_sort == 101:  # 成就点
+    elif gift_sort == 102:  # 成就点
         for pkg in gift_config:
             add_num = pkg[1]
             if not add_num:
@@ -309,7 +309,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data, 'achieve', add_num)
         mm.mission.save()
 
-    elif gift_sort == 102:  # 目标点
+    elif gift_sort == 101:  # 目标点
         for pkg in gift_config:
             add_num = pkg[1]
             if not add_num:
