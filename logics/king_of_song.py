@@ -32,6 +32,7 @@ class KingOfSongLogics(object):
             'enemy': king.enemy,
             'script_pool': king.script_pool,
 
+            'enemy_fight_data': king.enemy_fight_data,
             'star': king.star,
         }
         return 0, data
@@ -88,10 +89,10 @@ class KingOfSongLogics(object):
             return 1, {}        # 挑战次数不足
 
         if script_id not in king.script_pool:
-            return 3, {'script_pool': king.script_pool}        # 所选剧本不存在
+            return 2, {'script_pool': king.script_pool}        # 所选剧本不存在
 
         if not king.enemy_fight_data:
-            return 4, {}        # 对手还未拍片
+            return 3, {}        # 对手还未拍片
 
         data = {}
 

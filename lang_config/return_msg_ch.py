@@ -596,6 +596,18 @@ code_msg = {
    },
 }
 
+pvp_msg = {
+    'king_of_song.enemy_battle': {
+        1: u'对手已经拍完',
+        2: u'不是可选对手',
+    },
+    'king_of_song.battle': {
+        1: u'挑战次数不足',
+        2: u'所选剧本不存在',
+        3: u'对手还未拍片',
+   }
+}
+
 toy_msg = {
     'toy.index': {
         1: u'活动未开启',
