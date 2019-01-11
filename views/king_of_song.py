@@ -22,19 +22,32 @@ def index(hm):
     return rc, data
 
 
-def battle(hm):
+def enemy_battle(hm):
     """
-    挑战对手
+    对手拍片数据
     :param hm:
     :return:
     """
     mm = hm.mm
     enemy_uid = hm.get_argument('enemy_uid')
+
+    kl = KingOfSongLogics(mm)
+    rc, data = kl.enemy_battle(enemy_uid)
+    return rc, data
+
+
+def battle(hm):
+    """
+    自己拍片数据
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
     script_id = hm.get_argument('script_id', is_int=True)
     role_card = hm.get_mapping_arguments('role_card', params_type=(int, str))
 
     kl = KingOfSongLogics(mm)
-    rc, data = kl.battle(role_card, script_id, target_uid=enemy_uid)
+    rc, data = kl.battle(script_id, role_card)
     return rc, data
 
 

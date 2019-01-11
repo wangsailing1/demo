@@ -13,6 +13,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 
 from gconfig import game_config, get_str_words
+from models.card import Card as CardM
 
 
 class KingOfSong(ModelBase):
@@ -35,11 +36,13 @@ class KingOfSong(ModelBase):
         self.uid = uid
         self._attrs = {
             'star': 0,                  # 当前赛季星级
+            'rank': 1,                  # 当前段位
             'last_date': '',            # 上次更新时间
             'battle_times': 0,          # 当天挑战次数
             'buy_times': 0,             # 购买次数
             'enemy': {},                # 可选对手uid列表 {uid: {'script_id': '', 'cards': {}}}
             'script_pool': [],          # 自己的可选剧本
+            'enemy_fight_data': {},     # 自己和对手的战斗分开接口计算，cache一下
         }
         super(KingOfSong, self).__init__(self.uid)
 
@@ -58,29 +61,32 @@ class KingOfSong(ModelBase):
     def left_battle_times(self):
         return self.MAX_TIMES + self.buy_times - self.battle_times
 
+    def choice_scripts(self, num=3):
+        rank_config = game_config.pvp_rank[self.rank]
+        script_pool = random.sample(rank_config['script'], num)
+        return script_pool
+
     def refresh_scripts(self):
-        script_pool = random.sample(game_config.script, 3)
-        self.script_pool = script_pool
-        return self.script_pool
+        self.script_pool = self.choice_scripts()
 
     def refresh_enemy(self):
-        if self.mm:
-            language_sort = self.mm.user.language_sort
-        else:
-            language_sort = 1
         enemy = {}
-        for i in range(1, 4):
+        robot_pool = [k for k, v in game_config.pvp_robots.items() if v['rank'] == self.rank]
+
+        # todo 筛选真人或者robot
+        for i in random.sample(robot_pool, 3):
             uid = 'robot_%s' % i
-            card_ids = game_config.card_basis.keys()
-            name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
-            script_id = random.choice(game_config.script.keys())
-            script_config = game_config.script[script_id]
+            robot_config = game_config.pvp_robots[i]
+            # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
+            name = robot_config['name']
+            script_id = random.choice(self.choice_scripts())
 
             cards = {}
-            for role_id in script_config['role_id']:
-                card_id = random.choice(card_ids)
-                card_ids.remove(card_id)
-                cards[role_id] = card_id
+            for i in robot_config['card']:
+                card_id, lv, love_lv = i[:3]
+                card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
+                cards[card_oid] = card_info
+
             enemy[uid] = {
                 'user_name': name,
                 'script_id': script_id,
