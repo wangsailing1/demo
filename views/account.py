@@ -279,11 +279,13 @@ def test_init(mm):
     :param mm:
     :return:
     """
+    # todo 暂时全部跳过引导，以后再改
+    mm.user.finish_guide()
     if not settings.DEBUG or not mm.user.account.startswith('test'):
         return
 
-    # 跳过新手引导
-    mm.user.finish_guide()
+    # # 跳过新手引导
+    # mm.user.finish_guide()
 
     # 战队等级
     level = game_config.initial_account.get('level')
