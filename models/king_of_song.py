@@ -47,6 +47,7 @@ class KingOfSong(ModelBase):
         super(KingOfSong, self).__init__(self.uid)
 
     def pre_use(self):
+        save = False
         today = time.strftime('%F')
         if self.last_date != today:
             self.last_date = today
@@ -55,8 +56,12 @@ class KingOfSong(ModelBase):
 
         if not self.enemy:
             self.refresh_enemy()
+            save = True
         if not self.script_pool:
             self.refresh_scripts()
+            save = True
+        if save:
+            self.save()
 
     def left_battle_times(self):
         return self.MAX_TIMES + self.buy_times - self.battle_times
