@@ -41,7 +41,8 @@ def get_reward(hm):
         return 3, {}  # 已领
     mm_obj = getattr(mm.mission, m_type)
     mm_obj.done_task(mission_id)
-    gift = mm_obj.config[mission_id]['reward']
+    gift = []
+    gift.extend(mm_obj.config[mission_id]['reward'])
     if tp_id == 1:
         # mm.mission.liveness = mm_obj.config[mission_id]['liveness']
         liveness = mm_obj.config[mission_id]['liveness']
