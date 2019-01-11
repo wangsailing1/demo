@@ -391,7 +391,7 @@ class Script(ModelBase):
             if group_info['cur_top_income'] > group_info['last_top_income']:
                 group_info['last_top_income'] = group_info['cur_top_income']
                 group_info['top_script'] = cur_script
-        return has_next
+        return has_next and next_id
 
     def check_top_income(self, film_info):
         script_id = film_info['id']

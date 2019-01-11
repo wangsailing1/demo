@@ -884,13 +884,12 @@ class ScriptLogic(object):
         cur_script['old_rank'] = [old_rank, old_score]
         cur_script['new_rank'] = [new_rank, new_score]
         cur_script['near_rank'] = [near_rank, near_score]
-        has_next = script.check_next_sequel(cur_script, all_income)
+        next_id = script.check_next_sequel(cur_script, all_income)
 
         card.save()
         script.save()
         self.mm.user.save()
-
-        return {
+        data = {
             'user_rank_up': 3,  # 用户排名上升
 
 
@@ -898,8 +897,10 @@ class ScriptLogic(object):
             'reward': reward,  # 获得的杀青奖励
             'income': all_income,  # 总票房
             'end_lv': end_lv,  # 票房评级
-            'has_next': has_next,
         }
+        if next_id:
+            data['next_id'] = next_id
+        return data
 
     def finished_analyse(self):
         """票房分析"""
