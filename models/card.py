@@ -325,9 +325,15 @@ class Card(ModelBase):
 
         return True
 
-    def get_card(self, card_oid, for_battle=False):
+    def get_card(self, card_oid):
         """获取卡牌详情 """
         card_info = dict(self.cards[card_oid])
+        battle_info = self.calc_card_battle_info(card_info)
+        return battle_info
+
+    @classmethod
+    def calc_card_battle_info(cls, card_info):
+        """计算卡牌战斗数据"""
         cur_lv = card_info['lv']
 
         card_config = game_config.card_basis[card_info['id']]
@@ -389,9 +395,9 @@ class Card(ModelBase):
             if not gift_config:
                 continue
             attr_id = game_config.card_love_gift_taste[gift_id]['attr']
-            if base_char_pro[self.PRO_IDX_MAPPING[attr_id]] > 0:
+            if base_char_pro[cls.PRO_IDX_MAPPING[attr_id]] > 0:
                 gift_attr = game_config.common.get(2, 10)
-                char_pro[self.PRO_IDX_MAPPING[attr_id]] += gift_attr
+                char_pro[cls.PRO_IDX_MAPPING[attr_id]] += gift_attr
                 pass
 
         # 擅长剧本，角色  先读配置 以后有擅长培养了 再改

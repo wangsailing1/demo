@@ -88,7 +88,7 @@ class KingOfSongLogics(object):
             return 1, {}        # 挑战次数不足
 
         if script_id not in king.script_pool:
-            return 3, {}        # 所选剧本不存在
+            return 3, {'script_pool': king.script_pool}        # 所选剧本不存在
 
         if not king.enemy_fight_data:
             return 4, {}        # 对手还未拍片
@@ -151,6 +151,7 @@ class KingOfSongLogics(object):
             if round_num not in fight_data:
                 fight_data[round_num] = {}
             for role_id, card_id in align:
+                card_info = self.mm.card.calc_card_battle_info(cards_info[card_id])
                 # 助战卡牌
                 if role_id in chapter_enemy:
                     # 卡牌两个必触发属性伤害
@@ -158,7 +159,7 @@ class KingOfSongLogics(object):
                     hurts = {'more_attr': {},
                              'attr': {}}
                     for attr_id in attr:
-                        hurt = self.get_hurt(attr_id, card_id, tag_score[card_id], is_enemy=True)
+                        hurt = self.get_hurt(attr_id, card_info, tag_score[card_id], is_enemy=True)
                         hurts['attr'][attr_id] = hurt
                         all_score += hurt[0]
                     fight_data[round_num][card_id] = hurts
@@ -181,19 +182,18 @@ class KingOfSongLogics(object):
                 hurts = {'more_attr': {},
                          'attr': {}}
                 for attr_id in attr:
-                    hurt = self.get_hurt(attr_id, card_id, tag_score[card_id])
+                    hurt = self.get_hurt(attr_id, card_info, tag_score[card_id])
                     all_score += hurt[0]
                     hurts['attr'][attr_id] = hurt
                 fight_data[round_num][card_id] = hurts
                 # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
-                card_info = cards_info[card_id]
                 config = game_config.card_basis[card_info['id']]
                 rate = config['ex_special_rate']
                 rate_ = random.randint(1, 10001) <= rate
                 if rate_:
                     more_attr = config['special_quality']
                     more_attr = weight_choice(more_attr)
-                    hurt = self.get_hurt(more_attr[0], card_id, tag_score[card_id])
+                    hurt = self.get_hurt(more_attr[0], card_info, tag_score[card_id])
                     hurts['more_attr'][more_attr[0]] = hurt
                     all_score += hurt[0]
                 else:
@@ -214,8 +214,31 @@ class KingOfSongLogics(object):
     def tag_score(self, script_id, role_id, card_id, is_enemy=True):
         return random.randint(1, 100)
 
-    def get_hurt(self, attr_id, card_id, tag_score, is_enemy=True):
-        return [random.randint(1, 100), False]
+    def get_hurt(self, attr_id, card_info, score, is_enemy=False):
+        is_crit = False
+
+        v = card_info['char_pro'][attr_id - 1]
+        # 计算普通
+        love_lv = card_info.get('love_lv', 0)
+        rate = game_config.card_love_level[love_lv]['dps_rate']
+        dps_rate = random.randint(rate[0], rate[1]) / 10000.0
+        hurt = max(int(v * dps_rate), 1)
+        # 是否暴击
+        if self.is_crit(card_info, score, is_enemy=is_enemy):
+            # 暴击伤害
+            hurt = self.crit_hurt(hurt, score)
+            is_crit = True
+        return [hurt, is_crit]
+
+    def crit_hurt(self, hurt, score):
+        crit = 1.1 + score / 100.0
+        hurt = int(hurt * crit)
+        return hurt
+
+    def is_crit(self, card_info, score, is_enemy=False):
+        crit_rate_base = game_config.card_basis[card_info['id']]['crit_rate_base']
+        crit_rate = crit_rate_base + score / 100
+        return crit_rate > random.randint(1, 10000)
 
     def get_star(self, all_score, score_config):
         return random.randint(1, 3)
