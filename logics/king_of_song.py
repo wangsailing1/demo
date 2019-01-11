@@ -56,13 +56,23 @@ class KingOfSongLogics(object):
             enemy_mm = ModelManager(target_uid)
 
         enemy_info = king.enemy[target_uid]
-        enemy_align = enemy_info['cards']
-        enemy_fight_data = self.do_fight(enemy_mm, enemy_info['script_id'], enemy_align)
+        cards = enemy_info['cards']
+        script_id = enemy_info['script_id']
+        script_config = game_config.script[script_id]
 
-        king.enemy_fight_data = enemy_fight_data
+        enemy_align = zip(script_config['role_id'], cards)
+
+        enemy_fight_data = self.do_fight(enemy_mm, enemy_info['script_id'], enemy_align, cards)
+        king.enemy_fight_data = {
+            'enemy_fight_data': enemy_fight_data,
+            'enemy_uid': target_uid,
+        }
         king.save()
         return 0, {
             'enemy_fight_data': enemy_fight_data,
+            'enemy': {
+                target_uid: king.enemy[target_uid]
+            }
         }
 
     def battle(self, script_id, role_card):
@@ -85,13 +95,15 @@ class KingOfSongLogics(object):
 
         data = {}
 
-        fight_data = self.do_fight(self.mm, script_id, align)
-        enemy_fight_data = king.enemy_fight_data
+        fight_data = self.do_fight(self.mm, script_id, align, self.mm.card.cards)
+        enemy_fight_data = king.enemy_fight_data.get('enemy_fight_data')
+        enemy_uid = king.enemy_fight_data.get('enemy_uid')
 
         data['win'] = fight_data['all_score'] >= enemy_fight_data['all_score']
         data['gift'] = []
         data['self_fight_data'] = fight_data
         data['enemy_fight_data'] = enemy_fight_data
+        data['enemy'] = {enemy_uid: king.enemy[enemy_uid]}
 
         rank_config = game_config.pvp_rank[king.rank]
         if data['win']:
@@ -112,7 +124,7 @@ class KingOfSongLogics(object):
     def get_reward(self, script_id):
         return {}
 
-    def do_fight(self, mm, script_id, align, is_enemy=True):
+    def do_fight(self, mm, script_id, align, cards_info, is_enemy=True):
 
         chapter_enemy = align
         data = {}
@@ -129,10 +141,7 @@ class KingOfSongLogics(object):
             # 计算擅长角色，擅长剧本得分
             score = self.tag_score(script_id, role_id, card_id)
             tag_score[card_id] = score
-            if mm:
-                all_pro += mm.card.get_card(card_id).get('style_pro').get(style, {}).get('lv', 0)
-            else:
-                all_pro += 0
+            all_pro += cards_info[card_id].get('style_pro').get(style, {}).get('lv', 0)
 
         # 拍片演员得分
         fight_data = {}
@@ -177,7 +186,7 @@ class KingOfSongLogics(object):
                     hurts['attr'][attr_id] = hurt
                 fight_data[round_num][card_id] = hurts
                 # 概率触发属性伤害 special_rate2 5娱乐 special_rate1 6艺术
-                card_info = self.mm.card.get_card(card_id)
+                card_info = cards_info[card_id]
                 config = game_config.card_basis[card_info['id']]
                 rate = config['ex_special_rate']
                 rate_ = random.randint(1, 10001) <= rate
