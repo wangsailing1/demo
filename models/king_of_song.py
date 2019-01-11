@@ -47,6 +47,7 @@ class KingOfSong(ModelBase):
         super(KingOfSong, self).__init__(self.uid)
 
     def pre_use(self):
+        save = False
         today = time.strftime('%F')
         if self.last_date != today:
             self.last_date = today
@@ -55,8 +56,12 @@ class KingOfSong(ModelBase):
 
         if not self.enemy:
             self.refresh_enemy()
+            save = True
         if not self.script_pool:
             self.refresh_scripts()
+            save = True
+        if save:
+            self.save()
 
     def left_battle_times(self):
         return self.MAX_TIMES + self.buy_times - self.battle_times
@@ -80,6 +85,7 @@ class KingOfSong(ModelBase):
             # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
             name = robot_config['name']
             script_id = random.choice(self.choice_scripts())
+            script_config = game_config.script[script_id]
 
             cards = {}
             for i in robot_config['card']:
@@ -87,10 +93,12 @@ class KingOfSong(ModelBase):
                 card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
                 cards[card_oid] = card_info
 
+            enemy_align = dict(zip(script_config['role_id'], cards))
             enemy[uid] = {
                 'user_name': name,
                 'script_id': script_id,
-                'cards': cards          # {role_id: card_id}
+                'cards': cards,          # {role_id: card_id}
+                'align': enemy_align,
             }
 
         self.enemy = enemy
