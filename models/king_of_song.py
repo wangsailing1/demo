@@ -80,6 +80,7 @@ class KingOfSong(ModelBase):
             # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
             name = robot_config['name']
             script_id = random.choice(self.choice_scripts())
+            script_config = game_config.script[script_id]
 
             cards = {}
             for i in robot_config['card']:
@@ -87,10 +88,12 @@ class KingOfSong(ModelBase):
                 card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
                 cards[card_oid] = card_info
 
+            enemy_align = dict(zip(script_config['role_id'], cards))
             enemy[uid] = {
                 'user_name': name,
                 'script_id': script_id,
-                'cards': cards          # {role_id: card_id}
+                'cards': cards,          # {role_id: card_id}
+                'align': enemy_align,
             }
 
         self.enemy = enemy
