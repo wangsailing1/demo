@@ -300,9 +300,13 @@ class UserLogic(object):
         mission = Mission(mm)
         data['dailymission'] = mission.mission_red_dot()   #每日任务红点
         if mission.mission_red_dot(type = 'guide') or mission.mission_red_dot(type = 'randmission'):
-            data['randomemission'] = True  # 业绩目标红点
+            data['randomemission'] = True  # 随机任务红点
         else:
             data['randomemission'] = False
+        if mission.mission_red_dot(type = 'achieve_mission'):
+            data['achieve_mission'] = True  # 业绩目标红点
+        else:
+            data['achieve_mission'] = False
 
         # 英雄和装备的红点
         if not module_name or module_name in ['hero', 'gene']:

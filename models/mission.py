@@ -24,18 +24,26 @@ def func(hm, data, mission):
 """
 
 
+# # 推图
+# def chapter_stage_args(hm, data, mission):
+#     type_hard = hm.get_argument('type_hard', 0, is_int=True)
+#     stage_id = data.get('stage_id', 0)
+#     star = data.get('star', 0)
+#     target_sort_first = mission._CHAPTER_FIRST
+#     target_sort_num = mission._CHAPTER_NUM
+#     return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
+#                                 'star': star},
+#             target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
+#                               'star': star}, }
+
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
     stage_id = data.get('stage_id', 0)
-    star = data.get('star', 0)
     target_sort_first = mission._CHAPTER_FIRST
     target_sort_num = mission._CHAPTER_NUM
-    return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
-                                'star': star},
-            target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
-                              'star': star}, }
-
+    return {target_sort_first: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},
+            target_sort_num: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},}
 
 # 拍摄（type，style，income）
 def script_make(hm, data, mission):
@@ -250,6 +258,23 @@ def target_sort2(mm, mission_obj, target):
             info.append(card_id)
     return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': info}}
 
+#
+# # 关卡通关
+# def target_sort7(mm, mission_obj, target):
+#     config = game_config.chapter
+#     chapter = 0
+#     type_hard = 0
+#     stage = 0
+#     for value in config.values():
+#         if target[0] in value['stage_id']:
+#             chapter = value['num']
+#             type_hard = value['hard_type']
+#             stage = value['stage_id'].index(target[0]) + 1
+#     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
+#     info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+#     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
+#                                          'star': info1.get('star', 0)}}
+
 
 # 关卡通关
 def target_sort7(mm, mission_obj, target):
@@ -265,7 +290,7 @@ def target_sort7(mm, mission_obj, target):
     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
     info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-                                         'star': info1.get('star', 0)}}
+                                         }}
 
 
 # 艺人数量
@@ -568,6 +593,21 @@ class Mission(ModelBase):
             self._achieve_mission = Achieve(self)
         return self._achieve_mission
 
+    # 增加成就点
+    def add_achieve_point(self, point, save=False):
+        self.achieve += point
+        # 完成成就任务
+        a_id = self.get_achieve_id()
+        self.achieve_data[a_id] = self.achieve
+        if save:
+            self.save()
+
+    # 增加目标
+    def add_liveness(self, point, save=False):
+        self.liveness += point
+        if save:
+            self.save()
+
     def get_all_random_mission(self):
         if not self.random_data:
             for _ in xrange(4):
@@ -778,17 +818,19 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= \
-                    target_data[2]:
+            # if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= \
+            #         target_data[2]:
+            if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
                     self.data[mission_id] = value['value']
 
         elif self.config[mission_id]['sort'] == NUM_CHAPTER:
-            star = value.get('star', 0)
+            # star = value.get('star', 0)
             type_hard = value['target1']
-            if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+            # if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
+            if type_hard == target_data[0] and value['value'] > 0:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:

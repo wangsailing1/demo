@@ -115,6 +115,7 @@ class FriendLogic(object):
         return 0, {
             'reward': reward,
             'received_gift': self.friend.received_gift,
+            'got_point_daily':self.friend.got_point_daily,
         }
 
     def receive_gift_all(self):
@@ -129,6 +130,7 @@ class FriendLogic(object):
         return 0, {
             'reward': reward,
             'received_gift': self.friend.received_gift,
+            'got_point_daily': self.friend.got_point_daily,
         }
 
     def messages_info(self):

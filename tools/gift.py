@@ -300,6 +300,24 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('popularity', {}), add_type, add_num)
         mm.card.save()
 
+    elif gift_sort == 102:  # 成就点
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_achieve_point(add_num)
+            add_dict(data, 'achieve', add_num)
+        mm.mission.save()
+
+    elif gift_sort == 101:  # 目标点
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_liveness(add_num)
+            add_dict(data, 'liveness', add_num)
+        mm.mission.save()
+
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]
