@@ -81,7 +81,8 @@ def user_status(mm):
         'script_license': mm.user.script_license,
         'license_recover_expire':mm.user.license_recover_expire(),
         'remain_recover_times': mm.user.remain_recover_times(),
-        'build_info':mm.user.group_ids,
+        'build_info': mm.user.group_ids,
+        'build_effect': {i: j for i, j in mm.user.build_effect.iteritems() if i in [7, 9]},
     }
     return data
 

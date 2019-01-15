@@ -1964,14 +1964,37 @@ class User(ModelBase):
 
     @property
     def build_effect(self):
+        """
+        1:战斗属性加成（[type,rate],属性，加成百分比）
+        2:公司事务恢复速度（秒）
+        3:外出拍摄金币收益（万分比）
+        4:全服金榜额外金币（group_rank，绝对值）
+        5:世界循环赛额外收益 （block_rank, 万分比）
+        6:抽取剧本cd减少（秒）
+        7:储藏室食品栏数量
+        8:持续收益增加比例（万分比）
+        9:艺人会所艺人数量上限
+        :return: 
+        """
         effect = {}
         config = game_config.get_functional_building_mapping()
+        # 艺人会所艺人上限与食品栏上限初始值
+        effect[7] = game_config.common[76]
+        effect[9] = game_config.common[75]
         for build_id in self._build:
-            if build_id not in config or (build_id in config and config[build_id]['effect_type'] != 1):
+            if build_id not in config:
                 continue
             build_effect = config[build_id]['build_effect']
-            for effect_type, effect_num in build_effect:
-                effect[effect_type] = effect.get(effect_type, 0) + effect_num
+            b_effect_type = config[build_id]['effect_type']
+            if b_effect_type == 1:
+                if b_effect_type not in effect:
+                    effect[b_effect_type] = {}
+                for effect_type, effect_num in build_effect:
+                    effect[b_effect_type][effect_type] = effect.get(b_effect_type, {}).get(effect_type, 0) + effect_num
+            elif b_effect_type in [7, 9]:
+                effect[b_effect_type] = build_effect
+            else:
+                effect[b_effect_type] += effect.get(b_effect_type, 0) + build_effect
         return effect
 
 
