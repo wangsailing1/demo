@@ -180,9 +180,11 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             item_num = pkg[1]
             if not item_num:
                 continue
-            mm.item.add_item(item_id, item_num)
-            add_dict(data.setdefault('item', {}), item_id, item_num)
+            stats = mm.item.add_item(item_id, item_num)
+            if not stats:
+                add_dict(data.setdefault('item', {}), item_id, item_num)
         mm.item.save()
+        mm.mail.save()
     elif gift_sort == 6:  # 装备（资产）
         for pkg in gift_config:
             equip_id = pkg[0]
