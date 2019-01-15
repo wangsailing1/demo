@@ -36,6 +36,11 @@ class KingOfSong(ModelBase):
         self.uid = uid
         self._attrs = {
             'star': 0,                  # 当前赛季星级
+            'rank': 1,                  # 当前区间
+            'continue_win_times': 0,    # 连胜次数
+
+            'task_reward': [],
+
             'rank': 1,                  # 当前段位
             'last_date': '',            # 上次更新时间
             'battle_times': 0,          # 当天挑战次数
@@ -49,6 +54,9 @@ class KingOfSong(ModelBase):
     def pre_use(self):
         save = False
         today = time.strftime('%F')
+        if self.star < 0:
+            self.star = 0
+
         if self.last_date != today:
             self.last_date = today
             self.battle_times = 0
@@ -62,6 +70,40 @@ class KingOfSong(ModelBase):
             save = True
         if save:
             self.save()
+
+    def add_star(self):
+        rank_up = False
+        if self.continue_win_times:
+            # 连胜状态 多加一颗star
+            self.star += 1
+
+        self.star += 1
+        rank_config = game_config.pvp_rank[self.rank]
+        # 晋级赛 达到区间晋级要求后，再胜1场区间+1（不奖励星星）
+        if rank_config['star'] and self.star > rank_config['star']:
+            if self.rank + 1 in game_config.pvp_rank:
+                self.rank += 1
+                self.star = 0
+                rank_up = True
+
+        self.continue_win_times += 1
+        return rank_up
+
+    def deduct_star(self):
+        rank_down = False
+        self.star -= 1
+        last_rank_config = game_config.pvp_rank.get(self.rank - 1)
+        # 淘汰赛 达到区间降级临界时，再败1场区间-1（不扣星星）
+        if self.star < 0:
+            if last_rank_config:
+                self.star = last_rank_config['star'] - 1
+                self.rank -= 1
+                rank_down = True
+            else:
+                self.star = 0
+
+        self.continue_win_times = 0
+        return rank_down
 
     def left_battle_times(self):
         return self.MAX_TIMES + self.buy_times - self.battle_times

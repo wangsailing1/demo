@@ -6,7 +6,9 @@ Created on 2018-12-03
 @author: sm
 """
 
+import math
 import random
+import bisect
 import itertools
 
 from gconfig import game_config
@@ -26,6 +28,7 @@ class KingOfSongLogics(object):
     def index(self):
         king = self.mm.king_of_song
         data = {
+            'version': '',
             'battle_times': king.battle_times,
             'left_times': king.left_battle_times(),
             'buy_times': king.buy_times,
@@ -34,6 +37,8 @@ class KingOfSongLogics(object):
 
             'enemy_fight_data': king.enemy_fight_data,
             'star': king.star,
+            'rank': king.rank,
+            'continue_win_times': king.continue_win_times,
         }
         return 0, data
 
@@ -96,31 +101,98 @@ class KingOfSongLogics(object):
 
         data = {}
 
-        fight_data = self.do_fight(self.mm, script_id, align, self.mm.card.cards)
+        fight_data = self.do_fight(self.mm, script_id, align, self.mm.card.cards, is_enemy=False)
         enemy_fight_data = king.enemy_fight_data.get('enemy_fight_data')
         enemy_uid = king.enemy_fight_data.get('enemy_uid')
 
-        data['win'] = fight_data['all_score'] >= enemy_fight_data['all_score']
         data['gift'] = []
         data['self_fight_data'] = fight_data
         data['enemy_fight_data'] = enemy_fight_data
         data['enemy'] = {enemy_uid: king.enemy[enemy_uid]}
 
-        rank_config = game_config.pvp_rank[king.rank]
-        if data['win']:
-            king.star += 1
-            gift = add_mult_gift(self.mm, rank_config['award_win'])
+        # 我方总评分：
+        # 如果分差>=1且<=1.2,RANDBETWEEN(我方最低+1,我方最高)，
+        # 否则，RANDBETWEEN(我方最低,我方最高)
+
+        # 敌方总评分：
+        # 如果分差>=1,则RANDBETWEEN(敌方最低，min（我方评分-1，敌方最高）
+        # 否则，RANDBETWEEN(敌方最低，敌方最高）
+
+        # 分差 = 我方输出结果/敌方输出结果
+        score_rate = fight_data['all_score'] * 100.0 / enemy_fight_data['all_score']
+
+        # 评分计算
+        sorted_rate = sorted(game_config.singerking_rate.iteritems(), key=lambda x: x[0])
+        idx = bisect.bisect_left([i[0] for i in sorted_rate], score_rate)
+        if idx >= len(sorted_rate):
+            idx = -1
+        rate_config = sorted_rate[idx][1]
+
+        # 我方总评分
+        if 100 <= score_rate <= 120:
+            myscore_min = rate_config['myscore_min'] + 1
         else:
-            king.star -= 1
+            myscore_min = rate_config['myscore_min']
+        self_rating = random.randint(myscore_min, rate_config['myscore_max'])
+
+        # 敌方总评分
+        if score_rate >= 1:
+            left, right = rate_config['enemyscore_min'], min(self_rating - 1, rate_config['enemyscore_max'])
+            enemy_rating = random.randint(*sorted([left, right]))
+        else:
+            enemy_rating = random.randint(rate_config['enemyscore_min'], rate_config['enemyscore_max'])
+
+        data['self_judge_rating'] = self.get_judge_rating(self_rating)
+        data['enemy_judge_rating'] = self.get_judge_rating(enemy_rating)
+        is_win = data['win'] = self_rating >= enemy_rating
+
+        rank_config = game_config.pvp_rank[king.rank]
+        if is_win:
+            rank_up = king.add_star()
+            gift = add_mult_gift(self.mm, rank_config['award_win'])
+            data['rank_up'] = rank_up
+        else:
+            rank_down = king.deduct_star()
             gift = add_mult_gift(self.mm, rank_config['award_lose'])
+            data['rank_down'] = rank_down
 
         data['gift'] = gift
+        data['rank'] = king.rank
+        data['continue_win_times'] = king.continue_win_times
 
         king.enemy_fight_data.clear()
         king.refresh_scripts()
         king.refresh_enemy()
         king.save()
         return 0, data
+
+    @staticmethod
+    def get_judge_rating(all_score):
+        """
+        评委评分
+        :param all_score:
+        :param is_enemy:
+        :return:
+        """
+        # 已知总评分求评委分数（无论敌我评分均使用此规则）
+        # 评委1：向下取整（评委评分/3）
+        # 评委2：如果总评分-评委1-1>=10,RANDBETWEEN(总评分-评委1-10,10)
+        #   否则，RANDBETWEEN(1，总评分-评委1-1）
+        # 评委3：总评分-评委1-评委2
+        # 输出时，三个评委顺序随机打乱一下
+
+        all_score = int(all_score * 100)
+        s1 = all_score / 3
+        if all_score - s1 - 1 >= 10:
+            s2 = random.randint(*sorted([all_score - s1 - 10, 10]))
+        else:
+            s2 = random.randint(1, all_score - s1 - 1)
+        s3 = all_score - s1 - s2
+
+        rating = [s1, s2, s3]
+        print rating
+        random.shuffle(rating)
+        return [i / 100.0 for i in rating]
 
     def get_reward(self, script_id):
         return {}
@@ -146,8 +218,9 @@ class KingOfSongLogics(object):
 
         # 角色、剧本得分
         for role_id, card_id in align:
+            card_info = self.mm.card.calc_card_battle_info(cards_info[card_id])
             # 计算擅长角色，擅长剧本得分
-            score = self.tag_score(script_id, role_id, card_id)
+            score = self.tag_score(script_id, role_id, card_info)
             tag_score[card_id] = score
             all_pro += cards_info[card_id].get('style_pro').get(style, {}).get('lv', 0)
 
@@ -219,8 +292,22 @@ class KingOfSongLogics(object):
             'tag_score': tag_score,
         }
 
-    def tag_score(self, script_id, role_id, card_id, is_enemy=True):
-        return random.randint(1, 100)
+    def tag_score(self, script_id, role_id, card_info):
+        score = 0
+        card_tag = self.mm.card.card_tag(card_info)
+
+        tag_role = game_config.script_role[role_id]['tag_role']
+        script_config = game_config.script[script_id]
+        tag_script = script_config['tag_script']
+        for tag in tag_role:
+            if tag in card_tag['tag_role']:
+                tag_num = card_tag['tag_role'][tag]
+                score += game_config.tag_score.get(tag_num, {}).get('score', 0)
+        for tag in tag_script:
+            if tag in card_tag['tag_script']:
+                tag_num = card_tag['tag_script'][tag]
+                score += game_config.tag_score.get(tag_num, {}).get('score', 0)
+        return score
 
     def get_hurt(self, attr_id, card_info, score, is_enemy=False):
         is_crit = False

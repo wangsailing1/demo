@@ -8,8 +8,7 @@ pvp_rank = {
     'icon':             ('icon',            'int'),         # 段位图标
     'script':           ('script',          'int_list'),    # 可选作品库
     'card_num':         ('card_num',        'int'),         # 剧本上阵人数
-    'star_up':          ('star_up',         'int'),         # 晋级临界值
-    'star_down':          ('star_down',     'int'),         # 降级临界值
+    'star':             ('star',            'int'),         # 升降级临界值
     'award_win':          ('award_win',     'int_list'),    # 胜利1场奖励
     'award_lose':         ('award_lose',    'int_list'),    # 失败1场奖励
     'award_tast':         ('award_tast',    'int_list'),    # 胜场奖励
@@ -22,4 +21,12 @@ pvp_robots = {
     'lv':               ('lv',          'int'),         # 显示等级
     'name':             ('name',        'unicode'),     # 显示名字
     'card':             ('card',        'int_list'),    # 拥有艺人
+}
+
+singerking_rate = {
+    'uk':               ('raterange',          'int'),         # 分差范围
+    'myscore_min':      ('myscore_min',        'int'),         #
+    'myscore_max':      ('myscore_max',        'int'),         #
+    'enemyscore_min':   ('enemyscore_min',     'int'),         #
+    'enemyscore_max':   ('enemyscore_max',     'int'),         #
 }
