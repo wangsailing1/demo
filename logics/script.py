@@ -898,8 +898,10 @@ class ScriptLogic(object):
             'income': all_income,  # 总票房
             'end_lv': end_lv,  # 票房评级
         }
-        if next_id:
-            data['next_id'] = next_id
+        # 当前可用续集
+        group_id = script_config['group']
+        if group_id in script.group_sequel:
+            data['next_id'] = script.group_sequel[group_id]
         return data
 
     def finished_analyse(self):
