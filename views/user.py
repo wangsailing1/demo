@@ -798,9 +798,8 @@ def build(hm):
     rc, _ = del_mult_goods(mm, cost)
     if rc:
         return rc, {}
-    mm.user.add_build(build_id, field_id)
-
-    return 0, {'group_id': group_id}
+    mm.user.add_build(build_id,field_id)
+    return 0, {'build_effect': mm.user.build_effect}
 
 def up_build(hm):
     mm = hm.mm
@@ -823,5 +822,6 @@ def up_build(hm):
     if rc:
         return rc, {}
     mm.user.up_build(next_id, is_save=True)
-    return 0, {'group_id': config['group']}
+    return 0, {'group_id': config['group'],
+               'build_effect': mm.user.build_effect}
 

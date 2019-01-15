@@ -84,6 +84,7 @@ def user_status(mm):
         'build_info': mm.user.group_ids,
         'card_box': mm.card.card_box,
         'timezone': time.timezone / -3600,
+        'build_effect': {i: j for i, j in mm.user.build_effect.iteritems() if i in [7, 9]},
     }
     return data
 

@@ -9,6 +9,7 @@ __author__ = 'sm'
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils import add_dict
+from gconfig import game_config
 
 
 class Item(ModelBase):
@@ -82,6 +83,17 @@ class Item(ModelBase):
         :return:
         """
         self.box_item_times[box_item_id] = self.box_item_times.get(box_item_id, 1) + num
+
+    def all_food(self):
+        config = game_config.use_item
+        all_num = 0
+        for id, num in self.items.iteritems():
+            if config[id]['type'] == 2:
+                all_num += num
+        return all_num
+
+    def check_food_enough(self, add_num=0):
+        return self.all_food() + add_num > self.mm.user.build_effect[7]
 
 
 class GradeItem(ModelBase):

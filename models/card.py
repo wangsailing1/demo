@@ -623,8 +623,10 @@ class Card(ModelBase):
         return can_use_card
 
     def can_add_new_card(self):
-        config = game_config.card_building
-        max_num = config[self.card_building_level]['card_limit']
+        return True
+        # config = game_config.card_building
+        # max_num = config[self.card_building_level]['card_limit']
+        max_num = self.mm.user.build_effect.get(9, 10)
         return max_num + self.card_box > len(self.get_can_use_card())
 
 
