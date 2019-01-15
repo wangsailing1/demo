@@ -89,6 +89,7 @@ return_msg_config = {
     'error_honor_coin': u'荣誉币不足',
     'error_guild_add_max': u'今日添加成员已达上限，无法添加成员',
     'error_popularity': u'人气不足',
+    'error_food_enough': u'食品仓库已满',
 }
 
 account_msg = {

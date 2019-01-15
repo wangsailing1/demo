@@ -43,7 +43,9 @@ class MailLogic(object):
 
         if self.mail.get_mail_status(mail_id) == 2:
             return 3, {}    # 邮件已领取
-
+        stats = self.mm.item.check_item_enough(gift)
+        if stats:
+            return stats, {}
         reward = add_mult_gift(self.mm, gift)
 
         self.mail.set_mail_status(mail_id, status=2)
@@ -151,6 +153,9 @@ class MailLogic(object):
         for k, v in mail_dict.iteritems():
             if self.mail.get_mail_status(k) == 2:
                 continue  # 邮件已领取
+            stats = self.mm.item.check_item_enough(v['gift'])
+            if stats:
+                continue
             reward_config += v['gift']
             self.mail.mail[k]['gift'] = []
             self.mail.set_mail_status(k, status=2)
