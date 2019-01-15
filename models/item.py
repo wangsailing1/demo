@@ -92,8 +92,8 @@ class Item(ModelBase):
                 all_num += num
         return all_num
 
-    def check_food_enough(self):
-        return self.all_food() >= self.mm.user.build_effect[7]
+    def check_food_enough(self, add_num=0):
+        return self.all_food() + add_num > self.mm.user.build_effect[7]
 
 
 class GradeItem(ModelBase):

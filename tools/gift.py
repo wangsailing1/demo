@@ -55,6 +55,18 @@ def add_gift_by_weights(mm, gift_sort, gift_config, cur_data=None):
     _gift_config = weight_choice(gift_config)
     return add_gift(mm, gift_sort, [_gift_config[:-1]], cur_data=cur_data)
 
+def check_item_enough(func):
+    def wrapper(mm,gift_config,*args,**kwargs):
+        config =game_config.use_item
+        add_food_num = 0
+        for item in gift_config:
+            if item[0] == 3 and config[item[1]]['type'] == 2:
+                add_food_num += item[2]
+        if mm.item.check_food_enough(add_food_num):
+            return 'error_food_enough'
+        data = func(mm,gift_config,*args,**kwargs)
+        return data
+    return wrapper
 
 def add_mult_gift(mm, gift_config, cur_data=None):
     """ 获取统一多项奖励
