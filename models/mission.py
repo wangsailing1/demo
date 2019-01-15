@@ -929,6 +929,7 @@ class Achieve(DoMission):
         """初始化
         """
         super(DoMission, self).__init__()
+        self.mm = obj.mm
         self.uid = obj.uid
         self.done = obj.achieve_done
         self.data = obj.achieve_data
