@@ -9,7 +9,7 @@ __author__ = 'sm'
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils import add_dict
-from gconfig import game_config
+from gconfig import game_config, get_str_words
 
 
 class Item(ModelBase):
@@ -48,8 +48,20 @@ class Item(ModelBase):
         """
         item_num = int(item_num)
         if item_id == self.REEL_ITEM and self.get_item(item_id) >= self.MAX_REEL_NUM:   # 时间胶囊(卷轴)道具获得上限
-            return
-        add_dict(self.items, item_id, item_num)
+            return 0
+        gift = [[5, item_id, item_num]]
+        stats = self.check_item_enough(gift)
+        if stats:
+            # todo 发邮件
+            config = game_config.explain
+            content = get_str_words(self.mm.user.language_sort, config[11]['describe'])
+            title = get_str_words(self.mm.user.language_sort, config[12]['describe'])
+            mail_dict = self.mm.mail.generate_mail(content, title=title, gift=gift)
+            self.mm.mail.add_mail(mail_dict)
+            return stats
+        else:
+            add_dict(self.items, item_id, item_num)
+            return 0
 
     def del_item(self, item_id, item_num):
         """ 删除道具
@@ -91,6 +103,16 @@ class Item(ModelBase):
             if config[id]['type'] == 2:
                 all_num += num
         return all_num
+
+    def check_item_enough(self, gift):
+        config = game_config.use_item
+        add_food_num = 0
+        item = gift[0]
+        if item[0] == 5 and config[item[1]]['type'] == 2:
+            add_food_num += item[2]
+            if self.check_food_enough(add_food_num):
+                return 'error_food_enough'
+        return 0
 
     def check_food_enough(self, add_num=0):
         return self.all_food() + add_num > self.mm.user.build_effect[7]
