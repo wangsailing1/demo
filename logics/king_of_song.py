@@ -183,7 +183,6 @@ class KingOfSongLogics(object):
         # 评委3：总评分-评委1-评委2
         # 输出时，三个评委顺序随机打乱一下
 
-        all_score = int(all_score * 100)
         s1 = all_score / 3
         if all_score - s1 - 1 >= 10:
             s2 = random.randint(*sorted([all_score - s1 - 10, 10]))
@@ -192,9 +191,9 @@ class KingOfSongLogics(object):
         s3 = all_score - s1 - s2
 
         rating = [s1, s2, s3]
-        print rating
+        # print rating
         random.shuffle(rating)
-        return [i / 100.0 for i in rating]
+        return [i for i in rating]
 
     def get_reward(self, script_id):
         return {}
