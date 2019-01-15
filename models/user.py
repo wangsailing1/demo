@@ -1984,7 +1984,7 @@ class User(ModelBase):
         for build_id in self._build:
             if build_id not in config:
                 continue
-            build_effect = config[build_id]['build_effect']
+            build_effect = config[build_id]['build_effect'] if config[build_id]['build_effect'] else 0
             b_effect_type = config[build_id]['effect_type']
             if b_effect_type == 1:
                 if b_effect_type not in effect:
@@ -1994,7 +1994,7 @@ class User(ModelBase):
             elif b_effect_type in [7, 9]:
                 effect[b_effect_type] = build_effect
             else:
-                effect[b_effect_type] += effect.get(b_effect_type, 0) + build_effect
+                effect[b_effect_type] = effect.get(b_effect_type, 0) + build_effect
         return effect
 
 
