@@ -39,6 +39,6 @@ functional_building = {
     'build_id': ('build_id', 'int'),  # 建筑ID
     'lvlup_condition': ('lvlup_condition', 'int_list'),    # 升级条件
     'effect_type': ('effect_type', 'int'),    # 建筑效果类型
-    'build_effect': ('build_effect', 'int_list'),    # 建筑效果
+    'build_effect': ('build_effect', 'int_list_or_int'),    # 建筑效果
 }
 
