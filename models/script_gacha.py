@@ -82,7 +82,9 @@ class ScriptGacha(ModelBase):
         times = self.coin_recover_times
         if times >= len(gacha_cd):
             times = -1
-        return gacha_cd[times] * 60
+        build_effect = self.mm.user.build_effect
+        effect_time = build_effect.get(6, 0)
+        return gacha_cd[times] * 60 - effect_time
 
     def recover_expire(self):
         """恢复倒计时"""

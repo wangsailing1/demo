@@ -353,6 +353,13 @@ class Chapter_stage(object):
 
         if is_first:
             gift['first_reward'] = (stage_config['first_reward'])
+        # 建筑影响
+        build_effect = self.mm.user.build_effect
+        effect_income = build_effect.get(3, 0)
+        for _, info in gift.iteritems():
+            for _gift in info:
+                if _gift[0] in [1, 4]:
+                    _gift[2] += int(_gift[2] * effect_income / 10000.0)
 
         return gift
 

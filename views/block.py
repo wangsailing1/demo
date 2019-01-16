@@ -87,7 +87,13 @@ def get_daily_reward(hm):
     config = game_config.dan_grading_list
     if not config:
         return 2, {}  # 配置错误
-    gift = config.get(mm.block.block_num, {}).get('daily_rewards', [])
+    gift = []
+    gift.extend(config.get(mm.block.block_num, {}).get('daily_rewards', []))
+    build_effect = mm.user.build_effect
+    effect_income = build_effect.get(5, 0)
+    for _gift in gift:
+        if _gift[0] in [1,4]:
+            _gift[2] += int(_gift[2] * effect_income / 10000.0)
     reward = add_mult_gift(mm, gift)
     mm.block.reward_daily = now
     mm.block.save()
