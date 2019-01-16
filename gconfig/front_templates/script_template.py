@@ -91,7 +91,7 @@ script_type_style = {
 script_role = {
     'uk': ('id', 'int'),  # 角色id
     'name': ('name', 'int'),  # name
-    'class': ('class', 'int'),  # 角色类型1=主角 2=配角 3=反派
+    'class': ('class', 'str'),  # 角色类型1=主角 2=配角 3=反派
     'story': ('story', 'int'),  # 角色描述
     'dialog': ('dialog', 'int'),  # 角色台词
     'tag_role': ('tag_role', 'int_list'),  # 角色标签
