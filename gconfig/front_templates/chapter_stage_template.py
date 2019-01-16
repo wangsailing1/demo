@@ -32,6 +32,8 @@ chapter_stage = {
     'name2': ('name2', 'str'),  # 角色名
     'dialog2': ('dialog2', 'str'),  # 角色台词
     'icon': ('icon', 'str'),  # 剧本图标
+    'tag': ('tag', 'str'),  # 标签
+
 
 }
 
