@@ -785,7 +785,7 @@ def build(hm):
     if field_id != config['field_id']:
         return 5, {}  # 地块错误
     group_id = config['group']
-    unlock_config = game_config.homepage_button
+    # unlock_config = game_config.homepage_button
     # unlock_lv = 0
     # for value in unlock_config.values():
     #     if value['group'] == group_id:
@@ -799,7 +799,8 @@ def build(hm):
     if rc:
         return rc, {}
     mm.user.add_build(build_id,field_id)
-    return 0, {'build_effect': mm.user.build_effect}
+    return 0, {'build_effect': mm.user.build_effect,
+               'group_id': group_id}
 
 def up_build(hm):
     mm = hm.mm
