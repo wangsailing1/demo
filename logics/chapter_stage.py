@@ -349,9 +349,9 @@ class Chapter_stage(object):
         config = game_config.avg_dialogue
         card_config = game_config.card_basis
         card_id = config[choice_stage]['hero_id']
-        if now_stage not in config:
+        if now_stage not in config or choice_stage not in config:
             return 11, {}  # 剧情关配置错误
-        if choice_stage not in config[now_stage]['option_team']:
+        if not config[choice_stage]['is_end'] and choice_stage not in config[now_stage]['option_team']:
             return 12, {}  # 剧情选择错误
         if not card_id:
             return 0, {
