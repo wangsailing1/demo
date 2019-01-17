@@ -6,6 +6,7 @@ from gconfig import game_config
 from models.ranking_list import BlockRank
 from models.block import get_date_before
 from tools.unlock_build import CEREMONY_SORT
+import copy
 
 
 def check_unlock(func):
@@ -87,8 +88,7 @@ def get_daily_reward(hm):
     config = game_config.dan_grading_list
     if not config:
         return 2, {}  # 配置错误
-    gift = []
-    gift.extend(config.get(mm.block.block_num, {}).get('daily_rewards', []))
+    gift = copy.deepcopy((config.get(mm.block.block_num, {}).get('daily_rewards', [])))
     build_effect = mm.user.build_effect
     effect_income = build_effect.get(5, 0)
     for _gift in gift:
