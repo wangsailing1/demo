@@ -269,7 +269,7 @@ class User(ModelBase):
             'last_add_gs_msg': 0,  # gs客服消息时间
             'rebate_flag': False,  # 是否已返利
             '_build': {},  # 建筑信息
-            'dialogue': [],  # 建筑信息
+            'dialogue': [],  # 剧情信息
             'skip_dialouge': 0,
         }
         self._cache = {}
