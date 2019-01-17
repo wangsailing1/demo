@@ -290,6 +290,9 @@ def get_reward(hm):
         if value['rank'][0] <= rank <= value['rank'][1]:
             gift = value['daily_reward']
     mm.block.rank_reward_got = gift
+    build_effect = mm.user.build_effect
+    effect_coin = build_effect.get(4, 0)
+    gift.append([1, 0, effect_coin])
     reward = add_mult_gift(mm, gift)
     mm.block.save()
     return 0, {'reward':reward,

@@ -83,7 +83,9 @@ class Business(ModelBase):
         for _, v in config.iteritems():
             if v['time'][0] <= self.recover_times <= v['time'][1]:
                 return v['cd'] * 60
-        return config[max(config.keys())]['cd'] * 60
+        build_effect = self.mm.user.build_effect
+        effect_time = build_effect.get(2, 0)
+        return config[max(config.keys())]['cd'] * 60 - effect_time
 
     def can_recover_business_times(self):
         if self.business_times >= game_config.common[68]:

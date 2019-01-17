@@ -348,14 +348,16 @@ class ScriptLogic(object):
         # {role_id: {attr: value}}
         card_effect = cur_script['card_effect']
         style_effect = cur_script['style_effect']
-
+        # 建筑额外加成
+        build_effect = self.mm.user.build_effect
+        effect_attr = build_effect.get(1, {})
         attrs = {}  # 拍摄结果
         for per_effect in [card_effect, style_effect]:
             for _, info in per_effect['effect'].iteritems():
                 for attr, value in info.iteritems():
                     if isinstance(value, list):
                         value = value[0]
-                    attrs[attr] = attrs.get(attr, 0) + value
+                    attrs[attr] = attrs.get(attr, 0) + int(value * (1 + effect_attr.get(attr, 0) / 100.0))
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
@@ -1138,9 +1140,12 @@ class ScriptLogic(object):
         if div:
             last_dollar = div * script_info['continued_income_unit']
             continued_start = now - mod
-
+        # 建筑影响
+        build_effect = self.mm.user.build_effect
+        effect_income = build_effect.get(8, 0)
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
+        last_dollar += int(last_dollar * effect_income / 10000.0)
         script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
         if now <= continued_start or script_info['continued_expire'] - continued_start < 60:
