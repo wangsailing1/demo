@@ -29,7 +29,7 @@ def get_dialogue_reward(hm):
     mm = hm.mm
     now_stage = int(hm.get_argument('now_stage', ''))
     choice_stage = int(hm.get_argument('choice_stage', ''))
-    card_id = int(hm.get_argument('card_id', 0, is_int=True))
+    card_id = hm.get_argument('card_id', 0, is_int=True)
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.get_dialogue_reward(now_stage, choice_stage, card_id)
     return rc, data
