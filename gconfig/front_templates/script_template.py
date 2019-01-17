@@ -223,6 +223,7 @@ media_comment = {
     'pos_id': ('pos_id', 'int'),           # 出现位置
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
     'grade_wave_range': ('grade_wave_range', 'int_list'),       # 显示评分波动范围(已放大100倍）
+    'type': ('type', 'int'),
 }
 
 
@@ -232,6 +233,7 @@ audi_comment = {
     'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+    'type': ('type', 'int'),
 }
 
 
@@ -240,6 +242,7 @@ barrage = {
     'uk': ('id', 'int'),
     'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
+    'type': ('type', 'int'),
 }
 
 
