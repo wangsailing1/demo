@@ -14,6 +14,7 @@ guide = {
     'next': ('next', 'int'),  # 下一步
     'drama': ('drama', 'int_list'),  # 触发对话
     'des': ('des', 'unicode'),  # 说明文档
+    'jump': ('jump', 'int'),  # 跳转
 }
 
 guide_team = {
