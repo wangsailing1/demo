@@ -193,7 +193,7 @@ class KingOfSongLogics(object):
         rating = [s1, s2, s3]
         # print rating
         random.shuffle(rating)
-        return [i for i in rating]
+        return rating
 
     def get_reward(self, script_id):
         return {}
