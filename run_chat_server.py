@@ -6,6 +6,7 @@ monkey.patch_all()
 
 import os
 import sys
+import traceback
 import signal
 import psutil
 import socket
@@ -26,7 +27,9 @@ from chat.client import Client, ClientManager
 from chat.content import ContentFactory
 from lib.utils.encoding import force_str
 from lib.utils import sid_generate, get_timestamp_from_sid
+from lib.utils.zip_date import dencrypt_data, encrypt_data
 from lib.core.environ import ModelManager
+from lib.db import get_redis_client
 from models.user import User as UserM
 
 # HOST = settings.SERVERS[settings.SERVICE_NAME]['chat_ip']
@@ -70,6 +73,52 @@ except:
 
 def get_datetime_str():
     return time.strftime('%F %T')
+
+
+def get_channel_redis():
+    r = get_redis_client(settings.chat_config)
+    return r
+
+
+def get_pub_sub():
+    r = get_channel_redis()
+    return r.pubsub()
+
+
+def handle_channel_message(message):
+    pid = os.getpid()
+    data = dencrypt_data(message['data'])
+    print pid, message, data
+    if message['type'] == 'message':
+        try:
+            chat_info = data['chat_info']
+            if pid == data['pid']:
+                print 'owner message, chat_info: ', chat_info
+                return
+        except Exception, e:
+            tb = traceback.format_exc()
+            print e.message, tb
+            return
+
+        # todo 发送给client
+
+
+channel_name = 'chat_message'
+
+
+def send_to_other_server(chat_info):
+    data = {
+        'chat_info': chat_info,
+        'pid': os.getpid()
+    }
+    r = get_channel_redis()
+    r.publish(channel_name, encrypt_data(data))
+
+
+# 通过redis pubsub 与其它chat server通信
+ps = get_pub_sub()
+ps.subscribe(channel_name, **{channel_name: handle_channel_message})
+ps.run_in_thread()
 
 
 client_manager = ClientManager()
