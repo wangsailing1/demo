@@ -855,7 +855,9 @@ class ScriptLogic(object):
         ticket_rate = 10000.0 * all_income / ticket_line
 
         # 票房评级
-        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()]
+        sequel_count = script_config['sequel_count']
+        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()
+                       if sequel_count >= v['level_sequel_count']]
         end_lv_rate.sort(key=lambda x: x[0])
         idx = bisect.bisect_left([i[1] for i in end_lv_rate], ticket_rate)
         if idx >= len(end_lv_rate):

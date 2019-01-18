@@ -112,6 +112,7 @@ script_end_level = {
     'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
     'next_attention': ('next_attention', 'int'),
+    'level_sequel_count': ('level_sequel_count', 'int'),    # 可获取该档次的续作编号
 
 }
 
