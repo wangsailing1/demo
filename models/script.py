@@ -745,27 +745,33 @@ class Script(ModelBase):
 
         style = script_config['style']
         type = script_config['type']
-        event_buff = 0
+        global_buff = random_buff = 0
 
         random_event = self.get_random_event()
         global_event = self.get_global_event()
-        all_effect = []
         if random_event:
             event_config = game_config.random_event[random_event]
-            all_effect.extend(event_config['effect'])
+            for tp, stp, buff in event_config['effect']:
+                if tp and tp != type:
+                    continue
+                if stp and stp != style:
+                    continue
+                random_buff += buff
+
         if global_event:
             event_config = game_config.global_market[global_event]
-            all_effect.extend(event_config['effect'])
-
-        for tp, stp, buff in all_effect:
-            if tp and tp != type:
-                continue
-            if stp and stp != style:
-                continue
-            event_buff += buff
+            for tp, stp, buff in event_config['effect']:
+                if tp and tp != type:
+                    continue
+                if stp and stp != style:
+                    continue
+                global_buff += buff
 
         # print 'event_effect: ', all_effect, type, style
-        return event_buff
+        return {
+            'global_buff': global_buff,
+            'random_buff': random_buff,
+        }
 
     @classmethod
     def generate_all_type_income_key(cls):

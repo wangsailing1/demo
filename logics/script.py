@@ -407,8 +407,8 @@ class ScriptLogic(object):
 
         # 增加事件和全球影响事件buff
         # 属性 = 属性 * （1 + 影响比例）（最大5%）
-        event_buff = script.check_event_effect()
-        event_buff = min(event_buff, 5)
+        event_effect = script.check_event_effect()
+        event_buff = min(sum(event_effect.values()), 5)
 
         base_a = 0
         pro_count = 0
@@ -477,6 +477,7 @@ class ScriptLogic(object):
             part_a = game_config.common[70]
             part_b = game_config.common[71]
         return {
+            'event_effect': event_effect,       # 全球事件效果
             'add_attr': add_attr,
             'part_a': max(min_part, part_a),
             'part_b': max(min_part, part_b),
