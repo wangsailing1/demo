@@ -553,11 +553,8 @@ class BlockRank(AllRank):
     # 计算玩家所属组
     def get_group(self, uid=None):
         rank = self.fredis.zrank(self._key_date, uid)
-        if rank == 0:
-            return 1
-        if rank % 100 or not rank % 100 and rank / 100:
-            return rank / 100 + 1
-        return rank / 100
+        return rank / 100 + 1
+
 
     # 记录最大的有人街区
     def set_max_block(self, block_num):
