@@ -385,7 +385,7 @@ class Chapter_stage(object):
                 'old_value': {}
             }
 
-        if card_id not in card_config:
+        if card_id not in card_config and not config[choice_stage]['is_end']:
             return 13, {}  # 卡牌id错误
         group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
