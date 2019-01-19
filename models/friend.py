@@ -584,11 +584,13 @@ class Friend(ModelBase):
         data = {}
         open_stage = game_config.common.get(78, [1, 1])
         if open_stage[1] not in self.mm.chapter_stage.chapter.get(open_stage[0], {}).get(0, {}):
+            data['lock'] = True
             data['phone_daily_remain_times'] = 0
             data['appointment_remain_times'] = 0
             data['phone_daily_remain'] = ()
             data['appointment_remain'] = ()
             return data
+        data['lock'] = False
         data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
