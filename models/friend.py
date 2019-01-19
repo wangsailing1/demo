@@ -582,6 +582,9 @@ class Friend(ModelBase):
 
     def get_times(self):
         data = {}
+        open_stage = game_config.common.get(78, [1, 1])
+        if open_stage[1] not in self.mm.chapter_stage.chapter.get(open_stage[0], {}).get(0, {}):
+            return data
         data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
