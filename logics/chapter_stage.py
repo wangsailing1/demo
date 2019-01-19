@@ -387,7 +387,10 @@ class Chapter_stage(object):
 
         if card_id not in card_config and not config[choice_stage]['is_end']:
             return 13, {}  # 卡牌id错误
-        group_id = card_config[card_id]['group']
+        if card_id not in card_config and config[choice_stage]['is_end']:
+            group_id = 0
+        else:
+            group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
         old_value.setdefault('like', 0)
         reward = {}
