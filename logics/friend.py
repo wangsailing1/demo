@@ -886,6 +886,9 @@ class FriendLogic(object):
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
         config = game_config.phone_dialogue
         if not chapter_id:  # 日常对话
+            open_stage = game_config.common.get(78, [1,1])
+            if open_stage[1] not in self.mm.chapter_stage.chapter.get(open_stage[0],{}).get(0, {}):
+                return 21, {} # 过普通十关后才能闲聊
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
             if now_stage and not choice_id:
