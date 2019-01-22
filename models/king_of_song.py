@@ -7,6 +7,7 @@ Created on 2018-12-03
 """
 
 import time
+import datetime
 import random
 
 from lib.db import ModelBase
@@ -27,6 +28,7 @@ class KingOfSong(ModelBase):
     }
     """
 
+    OPEN_DAY = (1, 25)      # 每月1至25号开启
     MAX_TIMES = 5
 
     def __init__(self, uid=None):
@@ -35,13 +37,15 @@ class KingOfSong(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'season': '',               # 当前赛季
+            'last_season_info': [],     # 上赛季信息 [season, rank]
+
             'star': 0,                  # 当前赛季星级
-            'rank': 1,                  # 当前区间
+            'rank': 1,                  # 当前段位
+            'rank_win_times': {},       # 每个段位胜利次数
+            'rank_reward_log': [],      # 领取过的段位排行奖励
             'continue_win_times': 0,    # 连胜次数
 
-            'task_reward': [],
-
-            'rank': 1,                  # 当前段位
             'last_date': '',            # 上次更新时间
             'battle_times': 0,          # 当天挑战次数
             'buy_times': 0,             # 购买次数
@@ -53,12 +57,22 @@ class KingOfSong(ModelBase):
 
     def pre_use(self):
         save = False
-        today = time.strftime('%F')
-        if self.star < 0:
-            self.star = 0
 
-        if self.last_date != today:
-            self.last_date = today
+        today = datetime.datetime.now()
+        season = today.strftime('%Y-%m')
+        if self.season != season:
+            self.last_season_info = [self.season, self.rank]
+            self.season = season
+
+            self.star = 0
+            self.rank = 1
+            self.rank_win_times = {}
+            self.rank_reward_log = []
+            self.continue_win_times = 0
+
+        today_str = time.strftime('%F')
+        if self.last_date != today_str:
+            self.last_date = today_str
             self.battle_times = 0
             self.buy_times = 0
 
@@ -73,6 +87,8 @@ class KingOfSong(ModelBase):
 
     def add_star(self):
         rank_up = False
+        self.rank_win_times[self.rank] = self.rank_win_times.get(self.rank, 0) + 1
+
         if self.continue_win_times:
             # 连胜状态 多加一颗star
             self.star += 1

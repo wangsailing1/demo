@@ -8,6 +8,7 @@ Created on 2018-12-03
 
 import math
 import random
+import datetime
 import bisect
 import itertools
 
@@ -25,10 +26,22 @@ class KingOfSongLogics(object):
     def is_robot(self, uid):
         return 'robot' in uid
 
+    def open_info(self):
+        king = self.mm.king_of_song
+        today = datetime.datetime.now()
+        return {
+            'open': king.OPEN_DAY[0] <= today.day <= king.OPEN_DAY[1],
+            'open_day': king.OPEN_DAY
+        }
+
     def index(self):
         king = self.mm.king_of_song
+        season_award = self.check_last_season_award()
+        open_info = self.open_info()
+
         data = {
-            'version': '',
+            'season': king.season,
+            'season_award': season_award,
             'battle_times': king.battle_times,
             'left_times': king.left_battle_times(),
             'buy_times': king.buy_times,
@@ -39,8 +52,23 @@ class KingOfSongLogics(object):
             'star': king.star,
             'rank': king.rank,
             'continue_win_times': king.continue_win_times,
+            'rank_win_times': king.rank_win_times,          # 每个区间胜利次数 {}
+            'rank_reward_log': king.rank_reward_log,        # 区间奖励领取次数
         }
+        data.update(open_info)
         return 0, data
+
+    def check_last_season_award(self):
+        season_award = {}
+        king = self.mm.king_of_song
+        if king.last_season_info:
+            season, rank = king.last_season_info
+            rank_config = game_config.pvp_rank[rank]
+            season_award = add_mult_gift(self.mm, rank_config['award_end'], season_award)
+            king.last_season_info = []
+            king.save()
+
+        return season_award
 
     def enemy_battle(self, target_uid):
         """对手拍片
@@ -48,6 +76,10 @@ class KingOfSongLogics(object):
         :param target_uid:
         :return:
         """
+        open_info = self.open_info()
+        if not open_info['open']:
+            return -1, open_info
+
         king = self.mm.king_of_song
         if king.enemy_fight_data:
             return 1, {}        # 对手已经拍完
@@ -88,6 +120,10 @@ class KingOfSongLogics(object):
         :param role_card:  [(role, card_id), (role, card_id)]
         :return:
         """
+        open_info = self.open_info()
+        if not open_info['open']:
+            return -1, open_info
+
         align = dict(role_card)
         king = self.mm.king_of_song
         if not king.left_battle_times() > 0:
@@ -162,6 +198,7 @@ class KingOfSongLogics(object):
         data['star'] = king.star
         data['old_rank'] = old_rank
         data['continue_win_times'] = king.continue_win_times
+        data.update(open_info)
 
         king.enemy_fight_data.clear()
         king.refresh_scripts()
@@ -347,3 +384,30 @@ class KingOfSongLogics(object):
                 return level
             elif score <= all_score < score_config[level]:
                 return level + 1
+
+    def get_rank_award(self, rank):
+        king = self.mm.king_of_song
+        rank_config = game_config.pvp_rank.get(rank)
+        if not rank_config:
+            return -1, {}
+
+        if rank in king.rank_reward_log:
+            return 1, {}       # 已领取过此奖励
+
+        win_times = 0
+        for k, v in king.rank_win_times.items():
+            if rank >= k:
+                win_times += v
+
+        if win_times < game_config.common[77]:
+            return 2, {}        # 胜场次数不足
+
+        reward = add_mult_gift(self.mm, rank_config['award_tast'])
+        king.rank_reward_log.append(rank)
+        king.save()
+
+        _, data = self.index()
+        data['reward'] = reward
+        return 0, data
+
+
