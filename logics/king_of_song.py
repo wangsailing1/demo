@@ -159,6 +159,7 @@ class KingOfSongLogics(object):
 
         data['gift'] = gift
         data['rank'] = king.rank
+        data['star'] = king.star
         data['old_rank'] = old_rank
         data['continue_win_times'] = king.continue_win_times
 
@@ -285,9 +286,9 @@ class KingOfSongLogics(object):
         m = game_config.common[10]
         all_score = int(all_score * (1 + all_pro * 1.0 / m))
         score_config = script_config['stage_score']
-        star = self.get_star(all_score, score_config)
+        battle_star = self.get_star(all_score, score_config)
         return {
-            'star': star,
+            'battle_star': battle_star,
             'all_score': all_score,
             'fight_data': fight_data,
             'tag_score': tag_score,
