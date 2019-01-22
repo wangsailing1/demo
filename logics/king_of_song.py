@@ -184,6 +184,7 @@ class KingOfSongLogics(object):
 
         rank_config = game_config.pvp_rank[king.rank]
         old_rank = king.rank
+        old_star = king.star
         if is_win:
             rank_up = king.add_star()
             gift = add_mult_gift(self.mm, rank_config['award_win'])
@@ -197,6 +198,7 @@ class KingOfSongLogics(object):
         data['rank'] = king.rank
         data['star'] = king.star
         data['old_rank'] = old_rank
+        data['old_star'] = old_star
         data['continue_win_times'] = king.continue_win_times
         data.update(open_info)
 
