@@ -61,3 +61,10 @@ def buy_battle_times(hm):
     kl = KingOfSongLogics(mm)
     rc, data = kl.buy_battle_times()
     return rc, data
+
+
+def get_rank_award(hm):
+    rank = hm.get_argument('rank', is_int=True)
+    kl = KingOfSongLogics(hm.mm)
+    rc, data = kl.get_rank_award(rank)
+    return rc, data
