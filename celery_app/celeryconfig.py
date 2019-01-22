@@ -19,8 +19,11 @@ BROKER_URL = 'redis://:%s@%s:%s/%d' % (
     redis_config.get('password', ''), redis_config.get('host', ''),
     redis_config.get('port', 6300), redis_config.get('db', 0)
 )
+
+# BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
 CELERY_RESULT_PERSISTENT = False
-CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_RESULT_BACKEND = ''
 
 CELERY_TASK_SERIALIZER = 'json'         # json|pickle|yaml|msgpack
 CELERY_RESULT_SERIALIZER = 'json'       # 读取任务结果一般性能要求不高，所以使用了可读性更好的JSON
