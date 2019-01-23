@@ -111,6 +111,8 @@ class Rest(object):
         self.mm.user.deduct_diamond(need_diamondcost)
         self.obj.rest_log[pos]['status'] = 1
         self.obj.rest_log[pos]['last_recover_time'] = int(time.time())
+        card_info[self.attrtype] = max_num
+        self.mm.card.save()
         self.obj.save()
         self.mm.user.save()
         _, data = self.rest_index()

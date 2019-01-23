@@ -48,6 +48,7 @@ class Card(ModelBase):
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
     PRO_IDX_MAPPING = {pro_id: pro_id - 1 for pro_id in xrange(1, len(CHAR_PRO_NAME) + 1)}
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
+    RESTMAPPING = {1: 'physical', 2: 'mood'}
 
 
     _need_diff = ('cards', 'pieces', 'attr')
@@ -638,6 +639,23 @@ class Card(ModelBase):
         # max_num = config[self.card_building_level]['card_limit']
         max_num = self.mm.user.build_effect.get(9, 10)
         return max_num + self.card_box > len(self.get_can_use_card())
+
+    def get_rest_effect(self,card_id):
+        card_info = self.cards[card_id]
+        effect = {}
+        card_config = game_config.card_basis[card_info['id']]
+        rest_config = game_config.rest
+        for type, attr in self.RESTMAPPING.iteritems():
+            num = card_info[attr]
+            max_num = card_config[attr]
+            rate = int(num * 100 / max_num)
+            print rate
+            for _ ,value in rest_config.iteritems():
+                if value['type'] == type and value['rank'][0] <= rate <= value['rank'][1]:
+                    effect[attr] = value['effect']
+                    break
+        return effect
+
 
 
 ModelManager.register_model('card', Card)
