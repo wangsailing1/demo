@@ -48,3 +48,12 @@ def done_now(hm):
     rest = Rest(mm, sort)
     rc, data = rest.done_now(pos)
     return rc, data
+
+def buy_extra_pos(hm):
+    mm = hm.mm
+    sort = hm.get_argument('sort', 0, is_int=True)
+    if not sort:
+        return 1, {}  # 参数错误
+    rest = Rest(mm, sort)
+    rc, data = rest.buy_extra_pos()
+    return rc, data

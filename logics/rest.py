@@ -3,14 +3,17 @@
 import time
 from gconfig import game_config
 
+
 class Rest(object):
     MAPPING = {1: 'rest_restaurant', 2: 'rest_bar', 3: 'rest_hospital'}
     ATTRMAPPING = {1: 'physical', 2: 'mood', 3: 'health'}
+    SORTCOMMONMAPING = {1: 83, 2: 84, 3: 85}
 
     def __init__(self, mm=None, sort=1):
         self.mm = mm
         self.obj = getattr(self.mm, self.MAPPING[sort])
         self.attrtype = self.ATTRMAPPING[sort]
+        self.sort = sort
 
     def rest_index(self):
         build_id = self.obj.get_build_id()
@@ -45,10 +48,9 @@ class Rest(object):
         now_num = card_info.get(self.attrtype, 0)
         if now_num >= max_num:
             return 19, {}  # 艺人状态良好，不需休息
-        recover_time_type = '%s_%s'%(self.attrtype,'recovery')
-        cost_type = '%s_%s'%(self.attrtype,'cost')
+        recover_time_type = '%s_%s' % (self.attrtype, 'recovery')
+        cost_type = '%s_%s' % (self.attrtype, 'cost')
         recover_time = card_config[recover_time_type]
-
 
         per_dollar = card_config[cost_type]
         config = game_config.get_functional_building_mapping()
@@ -118,4 +120,17 @@ class Rest(object):
         _, data = self.rest_index()
         return 0, data
 
-
+    def buy_extra_pos(self):
+        config = game_config.common
+        need_diamond_list = config[self.SORTCOMMONMAPING[self.sort]]
+        if self.obj.extra_pos >= len(need_diamond_list):
+            return 11, {}  # 已购买到最大
+        need_diamond = need_diamond_list[self.obj.extra_pos]
+        if not self.mm.user.is_diamond_enough(need_diamond):
+            return 18, {}  # 钻石不足
+        self.mm.user.deduct_diamond(need_diamond)
+        self.obj.extra_pos += 1
+        self.obj.save()
+        self.mm.user.save()
+        _, data = self.rest_index()
+        return 0, data
