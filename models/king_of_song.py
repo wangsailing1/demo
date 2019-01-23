@@ -39,6 +39,7 @@ class KingOfSong(ModelBase):
         self._attrs = {
             'season': '',               # 当前赛季
             'last_season_info': [],     # 上赛季信息 [season, rank]
+            'season_reward_log': [],    # 赛季奖励记录
 
             'star': 0,                  # 当前赛季星级
             'rank': 1,                  # 当前段位
