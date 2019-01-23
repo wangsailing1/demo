@@ -407,3 +407,32 @@ def get_server_days(server_id):
     server_open_time = serverM.get_server_config(server_id).get('open_time')
     now = int(time.time())
     return timestamp_different_days(server_open_time, now) + 1
+
+
+
+# 获取日期
+def get_date_by_split_time(dt='00:00:00'):
+    """
+    按指定时间作为日期的分割
+    :param dt: 
+    :return: 2018-01-01
+    """
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time >= dt:
+        now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+    return now
+
+
+# 获取前一天日期
+def get_date_before_by_split_time(dt='00:00:00'):
+    """
+    按指定时间作为日期的分割
+    :param dt: 
+    :return: 2018-01-01
+    """
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time < dt:
+        now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
+    return now
