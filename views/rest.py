@@ -16,7 +16,7 @@ def card_rest(hm):
     pos = hm.get_argument('pos', 0, is_int=True)
     card = hm.get_argument('card','')
     if not sort:
-        return 1, {}  # 建筑错误
+        return 1, {}  # 参数错误
     if not pos:
         return 2, {}  # 请选择位置
     if not card:
@@ -30,7 +30,7 @@ def get_rest_card(hm):
     sort = hm.get_argument('sort', 0, is_int=True)
     pos = hm.get_argument('pos', 0, is_int=True)
     if not sort:
-        return 1, {}  # 建筑错误
+        return 1, {}  # 参数错误
     if not pos:
         return 2, {}  # 请选择位置
     rest = Rest(mm, sort)
@@ -42,7 +42,7 @@ def done_now(hm):
     sort = hm.get_argument('sort', 0, is_int=True)
     pos = hm.get_argument('pos', 0, is_int=True)
     if not sort:
-        return 1, {}  # 建筑错误
+        return 1, {}  # 参数错误
     if not pos:
         return 2, {}  # 请选择位置
     rest = Rest(mm, sort)

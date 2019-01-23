@@ -13,6 +13,9 @@ class Rest(object):
         self.attrtype = self.ATTRMAPPING[sort]
 
     def rest_index(self):
+        build_id = self.obj.get_build_id()
+        if not build_id:
+            return 17, {}  # 尚未拥有建筑
         data = {}
         data['extra_pos'] = self.obj.extra_pos
         data['max_pos'] = self.obj.get_max_pos()
@@ -38,11 +41,15 @@ class Rest(object):
             return 17, {}  # 尚未拥有建筑
         card_info = self.mm.card.cards[card]
         card_config = game_config.card_basis[card_info['id']]
+        max_num = card_config[self.attrtype]
+        now_num = card_info.get(self.attrtype, 0)
+        if now_num >= max_num:
+            return 19, {}  # 艺人状态良好，不需休息
         recover_time_type = '%s_%s'%(self.attrtype,'recovery')
         cost_type = '%s_%s'%(self.attrtype,'cost')
         recover_time = card_config[recover_time_type]
-        max_num = card_config[self.attrtype]
-        now_num = card_info.get(self.attrtype, 0)
+
+
         per_dollar = card_config[cost_type]
         config = game_config.get_functional_building_mapping()
         effect = config.get(build_id, {}).get('build_effect', [1, 0])[1]
@@ -69,6 +76,9 @@ class Rest(object):
             return 12, {}  # 位置没有艺人休息
         if not self.obj.rest_log.get(pos, {}).get('status', 0):
             return 13, {}  # 艺人尚在休息中
+        build_id = self.obj.get_build_id()
+        if not build_id:
+            return 17, {}  # 尚未拥有建筑
         self.obj.rest_log.pop(pos)
         self.obj.save()
         _, data = self.rest_index()
@@ -85,6 +95,8 @@ class Rest(object):
         card_info = self.mm.card.cards[card]
         card_config = game_config.card_basis[card_info['id']]
         build_id = self.obj.get_build_id()
+        if not build_id:
+            return 17, {}  # 尚未拥有建筑
         cost_type = '%s_%s' % (self.attrtype, 'diamondcost')
         per_diamondcost = card_config[cost_type]
         config = game_config.get_functional_building_mapping()
