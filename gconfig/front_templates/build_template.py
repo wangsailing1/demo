@@ -49,3 +49,9 @@ functional_building = {
     'build_effect': ('build_effect', 'int_list_or_int'),    # 建筑效果
 }
 
+rest = {
+    'uk': ('ID', 'int'),  # id
+    'type': ('type', 'int'),  # 类型
+    'rank': ('rank', 'int_list'),    # 区间
+    'effect': ('effect', 'int'),    # 影响效果
+}

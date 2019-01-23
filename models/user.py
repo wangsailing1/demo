@@ -2029,6 +2029,8 @@ class User(ModelBase):
                     effect[b_effect_type][effect_type] = effect.get(b_effect_type, {}).get(effect_type, 0) + effect_num
             elif b_effect_type in [7, 9]:
                 effect[b_effect_type] = build_effect
+            elif b_effect_type == 10:
+                effect[b_effect_type] = build_effect
             else:
                 effect[b_effect_type] = effect.get(b_effect_type, 0) + build_effect
         return effect
