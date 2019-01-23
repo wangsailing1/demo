@@ -15,7 +15,7 @@ class Rest(object):
     def rest_index(self):
         data = {}
         data['extra_pos'] = self.obj.extra_pos
-        data['max_pop'] = self.obj.get_max_pos()
+        data['max_pos'] = self.obj.get_max_pos()
         data['log'] = self.obj.rest_log
 
         return 0, data
@@ -69,7 +69,7 @@ class Rest(object):
             return 12, {}  # 位置没有艺人休息
         if not self.obj.rest_log.get(pos, {}).get('status', 0):
             return 13, {}  # 艺人尚在休息中
-        self.obj.rest_log[pos] = {}
+        self.obj.rest_log.pop(pos)
         self.obj.save()
         _, data = self.rest_index()
         return 0, data
