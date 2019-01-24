@@ -472,12 +472,12 @@ class Chapter_stage(object):
                 data['chapter'] = self.chapter_stage.chapter
                 return 0, data
             next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-            if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+            if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                 self.chapter_stage.next_chapter.extend(next_chapter)
             self.chapter_stage.chapter[chapter][type_hard][stage] = {}
             if not auto:
                 next_chapter = self.unlock_chapter(chapter, type_hard, stage)
-                if next_chapter and not set(next_chapter) - set(self.chapter_stage.next_chapter):
+                if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                     self.chapter_stage.next_chapter.extend(next_chapter)
             data['next_chapter'] = self.chapter_stage.next_chapter
             data['chapter'] = self.chapter_stage.chapter
