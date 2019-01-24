@@ -66,8 +66,10 @@ class Rest(object):
             'status': 0,
             'end_time': now + recover_time * (max_num - now_num),
         }
+        card_info['rest_field'] = self.sort
         self.obj.save()
         self.mm.user.save()
+        self.mm.card.save()
         _, data = self.rest_index()
         return 0, data
 
@@ -81,8 +83,10 @@ class Rest(object):
         build_id = self.obj.get_build_id()
         if not build_id:
             return 17, {}  # 尚未拥有建筑
+        self.mm.card.cards[self.obj.rest_log[pos]['card_id']]['rest_field'] = 0
         self.obj.rest_log.pop(pos)
         self.obj.save()
+        self.mm.card.save()
         _, data = self.rest_index()
         return 0, data
 
