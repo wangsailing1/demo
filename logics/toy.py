@@ -196,7 +196,7 @@ def send_rank_reward(server):
                 gift = value['reward']
                 title = value['mail_title']
                 content = value['mail_content']
-                lan = MUITL_LAN(mm.user.language_sort)
+                lan = MUITL_LAN[mm.user.language_sort]
                 title = game_config.get_language_config(lan)[title]
                 content = game_config.get_language_config(lan)[content] % rank
                 msg = mm.mail.generate_mail(content, title=title, gift=gift)
