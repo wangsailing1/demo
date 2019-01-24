@@ -525,6 +525,7 @@ build_mapping = {
     'building': ('building', True),
     'field': ('field', True),
     'functional_building': ('functional_building', True),
+    'rest': ('rest', True),
 }
 
 guide_mapping = {

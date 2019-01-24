@@ -53,6 +53,18 @@ card_basis = {
     'last_lv': ('last_lv', 'int'),  # 艺术/娱乐触发权重
     'adle_action': ('adle_action', 'str'),  #
     'ui': ('ui', 'int'),  # ui
+    'physical': ('physical', 'int'),  # 艺人体力上限
+    'physical_recovery': ('physical_recovery', 'int'),  # 艺人恢复速度（秒/点）
+    'mood': ('mood', 'int'),  # 艺人心情
+    'mood_recovery': ('mood_recovery', 'int'),  # 艺人心情恢复速度（秒/点）
+    'health': ('health', 'int'),  # 艺人健康
+    'health_recovery': ('health_recovery', 'int'),  # 艺人健康恢复速度（秒/点）
+    'physical_cost': ('physical_cost', 'int'),  # 体力回复价格(元/点)
+    'physical_diamondcost': ('physical_diamondcost', 'int'),  # 体力回复钻石价格
+    'mood_cost': ('mood_cost', 'int'),  # 心情回复价格(元/点)
+    'mood_diamondcost': ('mood_diamondcost', 'int'),  # 心情回复钻石价格
+    'health_cost': ('health_cost', 'int'),  # 健康回复价格(元/点)
+    'health_diamondcost': ('health_diamondcost', 'int'),  # 健康回复钻石价格
 
 }
 

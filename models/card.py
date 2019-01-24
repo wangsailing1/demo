@@ -48,6 +48,7 @@ class Card(ModelBase):
     # 策划配置的属性与 程序属性列表下标对应，配置表里从1开始计数，程序数组从0开始计数
     PRO_IDX_MAPPING = {pro_id: pro_id - 1 for pro_id in xrange(1, len(CHAR_PRO_NAME) + 1)}
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
+    RESTMAPPING = {1: 'physical', 2: 'mood'}
 
 
     _need_diff = ('cards', 'pieces', 'attr')
@@ -115,7 +116,10 @@ class Card(ModelBase):
             'style_income': {},  # 拍片类型票房
             'style_film_num': {},  # 拍片类型数量
             'type_income':{}, #拍片种类票房
-            'type_film_num':{} #拍片种类次数
+            'type_film_num':{}, #拍片种类次数
+            'physical': card_config.get('physical', 1),  # 体力
+            'mood': card_config.get('mood', 1),   # 心情
+            'health': card_config.get('health', 1),  # 健康
 
         }
         for style_id in game_config.script_style.keys():
@@ -164,8 +168,9 @@ class Card(ModelBase):
             self.init_card()
 
         for k, v in self.cards.iteritems():
+            card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
-                card_config = game_config.card_basis[v['id']]
+
                 v['name'] = get_str_words('1', card_config['name'])
 
             v.setdefault('popularity', 0)
@@ -203,6 +208,12 @@ class Card(ModelBase):
                 v['type_income'] = {}
             if 'type_film_num' not in v:
                 v['type_film_num'] = {}
+            if 'physical' not in v:
+                v['physical'] = card_config.get('physical', 1)
+            if 'mood' not in v:
+                v['mood'] = card_config.get('mood', 1)
+            if 'health' not in v:
+                v['health'] = card_config.get('health', 1)
 
             v.setdefault('is_cold', False)
 
@@ -628,6 +639,33 @@ class Card(ModelBase):
         # max_num = config[self.card_building_level]['card_limit']
         max_num = self.mm.user.build_effect.get(9, 10)
         return max_num + self.card_box > len(self.get_can_use_card())
+
+    def get_rest_effect(self,card_id):
+        card_info = self.cards[card_id]
+        effect = {}
+        card_config = game_config.card_basis[card_info['id']]
+        rest_config = game_config.rest
+        for type, attr in self.RESTMAPPING.iteritems():
+            num = card_info[attr]
+            max_num = card_config[attr]
+            rate = int(num * 100 / max_num)
+            print rate
+            for _ ,value in rest_config.iteritems():
+                if value['type'] == type and value['rank'][0] <= rate <= value['rank'][1]:
+                    effect[attr] = value['effect']
+                    break
+        return effect
+
+    def get_all_rest_card(self):
+        info = {}
+        for card in self.mm.rest_restaurant.get_rest_cards():
+            info[card] = 1
+        for card in  self.mm.rest_bar.get_rest_cards():
+            info[card] = 2
+        for card in self.mm.rest_hospital.get_rest_cards():
+            info[card] = 3
+        return info
+
 
 
 ModelManager.register_model('card', Card)
