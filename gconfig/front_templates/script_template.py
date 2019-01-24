@@ -63,7 +63,7 @@ script_style_suit = {
     'desc1': ('desc1', 'int'),  # desc
     'desc2': ('desc2', 'int'),  # desc
     'icon': ('icon', 'str'),  # icon
-    'icon2': ('icon2', 'str'),  # icon
+    'icon2': ('icon2', 'str_list'),  # icon
 
 }
 
