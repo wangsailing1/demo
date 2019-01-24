@@ -167,7 +167,8 @@ def pay_apply(mm, obj, charge_config):
             mm.red_bag.pay_trigger(product_id, amount)
 
         # mm.user.record_privilege_gift(charge_config=charge_config)
-        mm.user.add_vip_exp(add_vip_exp, is_save=True)
+        mm.user.add_vip_exp(add_vip_exp, is_save=False)
+        mm.user.save()
 
         # 购买商品日期记录，用于刷新次数
         mm.user_payment.add_buy_log(product_id)
