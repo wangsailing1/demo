@@ -62,7 +62,7 @@ class Rest(ModelBase):
         pos_num = config.get(build_id, {}).get('build_effect', [1, 0])[0]
         return pos_num + self.extra_pos
 
-    def get_rest_card(self):
+    def get_rest_cards(self):
         cards = []
         for pos, info in self.rest_log.iteritems():
             if info:

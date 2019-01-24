@@ -656,6 +656,16 @@ class Card(ModelBase):
                     break
         return effect
 
+    def get_all_rest_card(self):
+        info = {}
+        for card in self.mm.rest_restaurant.get_rest_cards():
+            info[card] = 1
+        for card in  self.mm.rest_bar.get_rest_cards():
+            info[card] = 2
+        for card in self.mm.rest_hospital.get_rest_cards():
+            info[card] = 3
+        return info
+
 
 
 ModelManager.register_model('card', Card)

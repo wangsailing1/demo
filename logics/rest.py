@@ -33,11 +33,11 @@ class Rest(object):
             return 12, {}  # 位置有艺人休息中
         if card not in self.mm.card.cards:
             return 13, {}  # 未拥有此卡牌
-        if card in self.mm.rest_restaurant.get_rest_card():
+        if card in self.mm.rest_restaurant.get_rest_cards():
             return 14, {}  # 卡牌已在餐厅中
-        if card in self.mm.rest_bar.get_rest_card():
+        if card in self.mm.rest_bar.get_rest_cards():
             return 15, {}  # 卡牌已在酒吧中
-        if card in self.mm.rest_hospital.get_rest_card():
+        if card in self.mm.rest_hospital.get_rest_cards():
             return 16, {}  # 卡牌已在医院中
         build_id = self.obj.get_build_id()
         if not build_id:
