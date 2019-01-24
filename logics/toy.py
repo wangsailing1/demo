@@ -178,10 +178,10 @@ class Toy(object):
 
 
 def send_rank_reward(server):
-    _, version = get_version_by_active_id(active_id=1)
+    _, version = get_version_by_active_id(active_id=2001)
     if version:
         return
-    _, version = get_version_by_active_id(active_id=1, differ_time=3600)
+    _, version = get_version_by_active_id(active_id=2001, differ_time=3600)
     if not version:
         return
     toy = MToy.get('%s1234567' % server)
