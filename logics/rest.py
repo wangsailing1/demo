@@ -84,8 +84,8 @@ class Rest(object):
             return 11, {}  # 位置尚未开启
         if not self.obj.rest_log.get(pos, {}):
             return 12, {}  # 位置没有艺人休息
-        if not self.obj.rest_log.get(pos, {}).get('status', 0):
-            return 13, {}  # 艺人尚在休息中
+        # if not self.obj.rest_log.get(pos, {}).get('status', 0):
+        #     return 13, {}  # 艺人尚在休息中
         build_id = self.obj.get_build_id()
         if not build_id:
             return 17, {}  # 尚未拥有建筑
