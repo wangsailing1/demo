@@ -34,6 +34,8 @@ class FansActivity(object):
                     continue
                 if card_id not in self.mm.card.cards:
                     return 11, {}  # 卡牌错误
+                if card_id in self.mm.card.get_all_rest_card():
+                    return 19, {}  # 有卡牌休息中
                 card_info = self.mm.card.get_card(card_id)
                 need = config['card_need']
                 for tp, need_num in need[k]:

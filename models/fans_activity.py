@@ -206,6 +206,13 @@ class FansActivity(ModelBase):
                         return 2
         return 1
 
+    def get_fans_cards(self):
+        cards = []
+        for id, value in self.activity_log.iteritems():
+            for card_id in value['cards']:
+                cards.append(card_id)
+        return cards
+
 
 
 

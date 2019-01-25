@@ -171,21 +171,32 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
+        need_physical = game_config.common[81]
+        need_mood = game_config.common[82]
         for role, card_id in role_card:
             if role not in role_ids:
                 return 2, {}
             if card_id in used_card:
                 return 3, {}
+            if card_id in self.mm.card.get_all_rest_card():
+                return 5, {}  # 有卡牌休息中
             if role in used_role:
                 return 3, {}
 
             card_info = card.cards[card_id]
+
+            if card_info['physical'] < need_physical:
+                return 6, {}  # 艺人体力不足，请先休息
+            if card_info['mood'] < need_mood:
+                return 7, {}  # 艺人心情糟糕，请先休息
             card_config = game_config.card_basis[card_info['id']]
             cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
 
             used_card.add(card_id)
             used_role.add(role)
             cur_script['card'][role] = card_id
+            card_info['physical'] -= need_physical
+            card_info['mood'] -= need_mood
 
         if not used_role:
             return 4, {}
@@ -201,6 +212,7 @@ class ScriptLogic(object):
 
         script.save()
         user.save()
+        card.save()
         rc, data = self.index()
         data.update(effect)
         return rc, data
@@ -1021,7 +1033,7 @@ class ScriptLogic(object):
                     script_score += game_config.tag_score[tag_quality]['score']
             match_script[card_oid] = script_score
 
-            card_info = card.get_card(card_oid)
+            card_info = card.get_card(card_oid,is_battle=True)
             love_lv = card_info['love_lv']
             love_config = game_config.card_love_level[love_lv]
             card_config = game_config.card_basis[card_info['id']]

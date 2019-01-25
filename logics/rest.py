@@ -39,10 +39,16 @@ class Rest(object):
             return 15, {}  # 卡牌已在酒吧中
         if card in self.mm.rest_hospital.get_rest_cards():
             return 16, {}  # 卡牌已在医院中
+        if card in self.mm.fans_activity.get_fans_card():
+            return 20, {}  # 卡牌正在进行粉丝活动
+        if card in self.mm.script.get_used_cards():
+            return 21, {}  # 卡牌正在拍摄中
         build_id = self.obj.get_build_id()
         if not build_id:
             return 17, {}  # 尚未拥有建筑
         card_info = self.mm.card.cards[card]
+        if card_info['health'] <= 0:
+            return 22, {}  # 艺人健康值不足
         card_config = game_config.card_basis[card_info['id']]
         max_num = card_config[self.attrtype]
         now_num = card_info.get(self.attrtype, 0)
@@ -51,11 +57,11 @@ class Rest(object):
         recover_time_type = '%s_%s' % (self.attrtype, 'recovery')
         cost_type = '%s_%s' % (self.attrtype, 'cost')
         recover_time = card_config[recover_time_type]
-
+        recover_num = min(max_num - now_num, card_info['health']) if self.sort != 3 else max_num - now_num
         per_dollar = card_config[cost_type]
         config = game_config.get_functional_building_mapping()
         effect = config.get(build_id, {}).get('build_effect', [1, 0])[1]
-        need_dollar = int((max_num - now_num) * per_dollar * (100 - effect) / 100.0)
+        need_dollar = int((recover_num) * per_dollar * (100 - effect) / 100.0)
         if not self.mm.user.is_dollar_enough(need_dollar):
             return 18, {}  # 美元不足
         self.mm.user.deduct_dollar(need_dollar)
@@ -64,7 +70,7 @@ class Rest(object):
             'card_id': card,
             'last_recover_time': now,
             'status': 0,
-            'end_time': now + recover_time * (max_num - now_num),
+            'end_time': now + recover_time * recover_num,
         }
         card_info['rest_field'] = self.sort
         self.obj.save()
@@ -109,15 +115,18 @@ class Rest(object):
 
         max_num = card_config[self.attrtype]
         now_num = card_info.get(self.attrtype, 0)
+        recover_num = min(max_num - now_num, card_info['health']) if self.sort != 3 else max_num - now_num
         effect = config.get(build_id, {}).get('build_effect', [1, 0])[1]
-        need_diamondcost = int((max_num - now_num) * per_diamondcost * (100 - effect) / 100.0)
+        need_diamondcost = int((recover_num) * per_diamondcost * (100 - effect) / 100.0)
 
         if not self.mm.user.is_diamond_enough(need_diamondcost):
             return 18, {}  # 钻石不足
         self.mm.user.deduct_diamond(need_diamondcost)
         self.obj.rest_log[pos]['status'] = 1
         self.obj.rest_log[pos]['last_recover_time'] = int(time.time())
-        card_info[self.attrtype] = max_num
+        card_info[self.attrtype] += recover_num
+        if self.sort != 3:
+            card_info['health'] -= recover_num
         self.mm.card.save()
         self.obj.save()
         self.mm.user.save()

@@ -861,5 +861,12 @@ class Script(ModelBase):
             'debuff': debuff,
         }
 
+    # 获取正在拍片的艺人
+    def get_used_cards(self):
+        cards = []
+        for role_id, card_id in self.cur_script.get('card',{}).iteritems():
+            cards.append(card_id)
+        return cards
+
 
 ModelManager.register_model('script', Script)
