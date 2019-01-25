@@ -55,11 +55,11 @@ class Rest(object):
         recover_time_type = '%s_%s' % (self.attrtype, 'recovery')
         cost_type = '%s_%s' % (self.attrtype, 'cost')
         recover_time = card_config[recover_time_type]
-
+        recover_num = min(max_num - now_num, card_info['health']) if self.sort != 3 else max_num - now_num
         per_dollar = card_config[cost_type]
         config = game_config.get_functional_building_mapping()
         effect = config.get(build_id, {}).get('build_effect', [1, 0])[1]
-        need_dollar = int((max_num - now_num) * per_dollar * (100 - effect) / 100.0)
+        need_dollar = int((recover_num) * per_dollar * (100 - effect) / 100.0)
         if not self.mm.user.is_dollar_enough(need_dollar):
             return 18, {}  # 美元不足
         self.mm.user.deduct_dollar(need_dollar)
@@ -68,7 +68,7 @@ class Rest(object):
             'card_id': card,
             'last_recover_time': now,
             'status': 0,
-            'end_time': now + recover_time * (max_num - now_num),
+            'end_time': now + recover_time * recover_num,
         }
         card_info['rest_field'] = self.sort
         self.obj.save()
