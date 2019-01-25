@@ -209,7 +209,7 @@ class FansActivity(ModelBase):
     def get_fans_cards(self):
         cards = []
         for id, value in self.activity_log.iteritems():
-            for card_id in value['cards']:
+            for card_id in value.get('cards',[]):
                 cards.append(card_id)
         return cards
 
