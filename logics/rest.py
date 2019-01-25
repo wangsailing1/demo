@@ -39,7 +39,7 @@ class Rest(object):
             return 15, {}  # 卡牌已在酒吧中
         if card in self.mm.rest_hospital.get_rest_cards():
             return 16, {}  # 卡牌已在医院中
-        if card in self.mm.fans_activity.get_fans_card():
+        if card in self.mm.fans_activity.get_fans_cards():
             return 20, {}  # 卡牌正在进行粉丝活动
         if card in self.mm.script.get_used_cards():
             return 21, {}  # 卡牌正在拍摄中
