@@ -288,7 +288,7 @@ def get_reward(hm):
     gift = []
     for id, value in config.iteritems():
         if value['rank'][0] <= rank <= value['rank'][1]:
-            gift = value['daily_reward']
+            gift.extend(value['daily_reward'])
     mm.block.rank_reward_got = gift
     build_effect = mm.user.build_effect
     effect_coin = build_effect.get(4, 0)
