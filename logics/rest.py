@@ -47,6 +47,8 @@ class Rest(object):
         if not build_id:
             return 17, {}  # 尚未拥有建筑
         card_info = self.mm.card.cards[card]
+        if card_info['health'] <= 0:
+            return 22, {}  # 艺人健康值不足
         card_config = game_config.card_basis[card_info['id']]
         max_num = card_config[self.attrtype]
         now_num = card_info.get(self.attrtype, 0)
@@ -113,15 +115,18 @@ class Rest(object):
 
         max_num = card_config[self.attrtype]
         now_num = card_info.get(self.attrtype, 0)
+        recover_num = min(max_num - now_num, card_info['health']) if self.sort != 3 else max_num - now_num
         effect = config.get(build_id, {}).get('build_effect', [1, 0])[1]
-        need_diamondcost = int((max_num - now_num) * per_diamondcost * (100 - effect) / 100.0)
+        need_diamondcost = int((recover_num) * per_diamondcost * (100 - effect) / 100.0)
 
         if not self.mm.user.is_diamond_enough(need_diamondcost):
             return 18, {}  # 钻石不足
         self.mm.user.deduct_diamond(need_diamondcost)
         self.obj.rest_log[pos]['status'] = 1
         self.obj.rest_log[pos]['last_recover_time'] = int(time.time())
-        card_info[self.attrtype] = max_num
+        card_info[self.attrtype] += recover_num
+        if self.sort != 3:
+            card_info['health'] -= recover_num
         self.mm.card.save()
         self.obj.save()
         self.mm.user.save()
