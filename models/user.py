@@ -1903,6 +1903,7 @@ class User(ModelBase):
         self.save()
 
     def init_build(self):
+
         for k,v in self._build.iteritems():
             if 'pos' in v:
                 self._build = {}
@@ -1912,6 +1913,10 @@ class User(ModelBase):
             for build_id, value in game_config.building.iteritems():
                 if value['default']:
                     self.add_build(build_id, value['field_id'], save=False)
+            self.save()
+        if 1901 not in self._build:
+            for i in [1901,2001,2101]:
+                self.add_build(i, 0, save=False)
             self.save()
 
     # @building
