@@ -14,8 +14,8 @@ def check_unlock(func):
         mm = hm.mm
         if not mm.user.check_build(CEREMONY_SORT):
             return 'error_unlock', {}
-        if not mm.block.has_ceremony:
-            return 'error_no_ceremony', {}
+        # if not mm.block.has_ceremony:
+        #     return 'error_no_ceremony', {}
 
         return func(hm)
 
