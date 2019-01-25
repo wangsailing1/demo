@@ -47,7 +47,7 @@ class Rest(object):
         if not build_id:
             return 17, {}  # 尚未拥有建筑
         card_info = self.mm.card.cards[card]
-        if card_info['health'] <= 0:
+        if card_info['health'] <= 0 and self.sort != 3:
             return 22, {}  # 艺人健康值不足
         card_config = game_config.card_basis[card_info['id']]
         max_num = card_config[self.attrtype]
