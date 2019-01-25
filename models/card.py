@@ -336,10 +336,15 @@ class Card(ModelBase):
 
         return True
 
-    def get_card(self, card_oid):
+    def get_card(self, card_oid,is_battle=False):
         """获取卡牌详情 """
         card_info = dict(self.cards[card_oid])
         battle_info = self.calc_card_battle_info(card_info)
+        if is_battle:
+            rest_effect = self.get_rest_effect(card_oid).values()
+            for effect in rest_effect:
+                battle_info['char_pro'] = [int(i * (effect + 100) / 100.0) for i in battle_info['char_pro']]
+                battle_info['all_char_pro'] = [int(i * (effect + 100) / 100.0) for i in battle_info['all_char_pro']]
         return battle_info
 
     @classmethod
