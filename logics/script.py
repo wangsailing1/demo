@@ -185,16 +185,18 @@ class ScriptLogic(object):
 
             card_info = card.cards[card_id]
 
-            if card_info['physical'] < need_physical:
-                return 6, {}  # 艺人体力不足，请先休息
-            if card_info['mood'] < need_mood:
-                return 7, {}  # 艺人心情糟糕，请先休息
+            # if card_info['physical'] < need_physical:
+            #     return 6, {}  # 艺人体力不足，请先休息
+            # if card_info['mood'] < need_mood:
+            #     return 7, {}  # 艺人心情糟糕，请先休息
             card_config = game_config.card_basis[card_info['id']]
             cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
 
             used_card.add(card_id)
             used_role.add(role)
             cur_script['card'][role] = card_id
+            need_physical = min(need_physical, card_info['physical'])
+            need_mood = min(need_mood, card_info['mood'])
             card_info['physical'] -= need_physical
             card_info['mood'] -= need_mood
 
