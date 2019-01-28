@@ -61,12 +61,16 @@ class KingOfSongLogics(object):
     def check_last_season_award(self):
         season_award = {}
         king = self.mm.king_of_song
-        if king.last_season_info:
-            season, rank = king.last_season_info
-            rank_config = game_config.pvp_rank[rank]
-            season_award = add_mult_gift(self.mm, rank_config['award_end'], season_award)
-            king.last_season_info = []
-            king.save()
+        open_info = self.open_info()
+        if king.last_season_info or not open_info['open']:
+            season, rank = king.last_season_info or (king.season, king.rank)
+            if season not in king.season_reward_log:
+                rank_config = game_config.pvp_rank[rank]
+                season_award = add_mult_gift(self.mm, rank_config['award_end'], season_award)
+                king.last_season_info = []
+                king.season_reward_log.append(season)
+                king.season_reward_log = king.season_reward_log[-2:]
+                king.save()
 
         return season_award
 

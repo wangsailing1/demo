@@ -9,6 +9,7 @@ Created on 2018-12-03
 import time
 import datetime
 import random
+import itertools
 
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
@@ -30,6 +31,7 @@ class KingOfSong(ModelBase):
 
     OPEN_DAY = (1, 25)      # 每月1至25号开启
     MAX_TIMES = 5
+    ENEMY_COUNT = 3
 
     def __init__(self, uid=None):
         """
@@ -39,6 +41,7 @@ class KingOfSong(ModelBase):
         self._attrs = {
             'season': '',               # 当前赛季
             'last_season_info': [],     # 上赛季信息 [season, rank]
+            'season_reward_log': [],    # 赛季奖励记录
 
             'star': 0,                  # 当前赛季星级
             'rank': 1,                  # 当前段位
@@ -135,29 +138,51 @@ class KingOfSong(ModelBase):
     def refresh_enemy(self):
         enemy = {}
         robot_pool = [k for k, v in game_config.pvp_robots.items() if v['rank'] == self.rank]
+        rank_config = game_config.pvp_rank[self.rank]
 
-        # todo 筛选真人或者robot
-        for i in random.sample(robot_pool, 3):
-            uid = 'robot_%s' % i
-            robot_config = game_config.pvp_robots[i]
-            # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
-            name = robot_config['name']
-            script_id = random.choice(self.choice_scripts())
-            script_config = game_config.script[script_id]
+        rank_obj = self.mm.get_obj_tools('level_rank')
+        level = self.mm.user.level
+        uids = rank_obj.nearby_score(max(1, level - 10), level+5, start=0, num=20)
 
-            cards = {}
-            for i in robot_config['card']:
-                card_id, lv, love_lv = i[:3]
-                card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
-                cards[card_oid] = card_info
+        for tp, uids in [('user', uids), ('robot', robot_pool)]:
+            random.shuffle(uids)
+            for i in uids:
+                if tp == 'user':
+                    if i == self.uid:
+                        continue
+                    uid = i
+                    enemy_mm = self.mm.get_mm(i)
+                    name = enemy_mm.user.name
+                    cards = {}
+                    for card_oid, card_info in sorted(enemy_mm.card.cards.iteritems(), key=lambda x: x[1]['lv']):
+                        cards[card_oid] = card_info
+                        if len(cards) >= rank_config['card_num']:
+                            break
+                    if not cards:
+                        continue
+                else:
+                    uid = 'robot_%s' % i
+                    robot_config = game_config.pvp_robots[i]
+                    # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
+                    name = robot_config['name']
+                    cards = {}
+                    for i in robot_config['card']:
+                        card_id, lv, love_lv = i[:3]
+                        card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
+                        cards[card_oid] = card_info
 
-            enemy_align = dict(zip(script_config['role_id'], cards))
-            enemy[uid] = {
-                'user_name': name,
-                'script_id': script_id,
-                'cards': cards,          # {role_id: card_id}
-                'align': enemy_align,
-            }
+                script_id = random.choice(self.choice_scripts())
+                script_config = game_config.script[script_id]
+
+                enemy_align = dict(zip(script_config['role_id'], cards))
+                enemy[uid] = {
+                    'user_name': name,
+                    'script_id': script_id,
+                    'cards': cards,  # {role_id: card_id}
+                    'align': enemy_align,
+                }
+                if len(enemy) >= self.ENEMY_COUNT:
+                    break
 
         self.enemy = enemy
         return self.enemy
