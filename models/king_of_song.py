@@ -147,6 +147,9 @@ class KingOfSong(ModelBase):
         for tp, uids in [('user', uids), ('robot', robot_pool)]:
             random.shuffle(uids)
             for i in uids:
+                if len(enemy) >= self.ENEMY_COUNT:
+                    break
+
                 if tp == 'user':
                     if i == self.uid:
                         continue
@@ -181,8 +184,6 @@ class KingOfSong(ModelBase):
                     'cards': cards,  # {role_id: card_id}
                     'align': enemy_align,
                 }
-                if len(enemy) >= self.ENEMY_COUNT:
-                    break
 
         self.enemy = enemy
         return self.enemy
