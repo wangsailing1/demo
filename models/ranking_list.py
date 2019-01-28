@@ -59,15 +59,15 @@ class AllRank(ModelTools):
         """
         return self.fredis.zrevrange(self._key, start, end, withscores=withscores, score_cast_func=score_cast_func)
 
-    def get_rank_user(self, start, end, withscores=False, score_cast_func=round_float_or_str):
+    def nearby_score(self, min, max, start=None, num=None, withscores=False, score_cast_func=round_float_or_str):
         """
-        获取指定rank值范围内的玩家
+        获取指定score值范围内的玩家
         :param start:
         :param end:
         :param withscores:
         :return:
         """
-        return self.fredis.zrangebyscore(self._key, start, end, withscores=withscores, score_cast_func=score_cast_func)
+        return self.fredis.zrangebyscore(self._key, min, max, withscores=withscores, score_cast_func=score_cast_func)
 
     def get_score(self, uid, score_cast_func=round_float_or_str):
         """
@@ -609,9 +609,9 @@ class BlockRank(AllRank):
         """
         return self.fredis.zrevrange(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
 
-    def get_rank_user(self, start, end, withscores=False, score_cast_func=round_float_or_str):
+    def nearby_score(self, min, max, start=None, num=None, withscores=False, score_cast_func=round_float_or_str):
         """
-        获取指定rank值范围内的玩家
+        获取指定score值范围内的玩家
         :param start:
         :param end:
         :param withscores:
