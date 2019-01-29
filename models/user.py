@@ -1917,9 +1917,9 @@ class User(ModelBase):
                 if value['default']:
                     self.add_build(build_id, value['field_id'], save=False)
             self.save()
-        if 1901 not in self._build:
-            for i in [1901,2001,2101]:
-                self.add_build(i, 0, save=False)
+        for i in [1901, 2001, 2101]:
+            if self._build.get(i, {}).get('field_id', 1) == 0:
+                self._build.pop(i)
             self.save()
 
     # @building
