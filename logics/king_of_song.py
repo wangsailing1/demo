@@ -34,9 +34,12 @@ class KingOfSongLogics(object):
             'open_day': king.OPEN_DAY
         }
 
-    def index(self):
+    def index(self, check_season_award=False):
         king = self.mm.king_of_song
-        season_award = self.check_last_season_award()
+        # 从view层index接口进来检查赛季奖励
+        season_award = {}
+        if check_season_award:
+            season_award = self.check_last_season_award()
         open_info = self.open_info()
 
         data = {

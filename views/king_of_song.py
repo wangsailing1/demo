@@ -18,7 +18,7 @@ def index(hm):
     """
     mm = hm.mm
     kl = KingOfSongLogics(mm)
-    rc, data = kl.index()
+    rc, data = kl.index(check_season_award=True)
     return rc, data
 
 
