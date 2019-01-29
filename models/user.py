@@ -199,7 +199,7 @@ class User(ModelBase):
             'silver': 0,
             'dollar': 0,  # 美元
             'script_income': 0,  # 拍片总票房
-            'script_license': game_config.common[20],  # 拍片许可证
+            'script_license': self.max_license(),  # 拍片许可证
             'license_update_time': int(time.time()),  # 拍片许可证恢复时间
             'license_recover_times': 0,  # 许可证当日恢复次数
             'used_license_times': 0,  # 许可证当日使用次数
@@ -429,7 +429,7 @@ class User(ModelBase):
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
                 is_save = True
-                if self.script_license >= game_config.common[20]:
+                if self.script_license >= self.max_license():
                     if data > self.license_update_time:
                         self.license_recover_times = 0
                     self.license_update_time = now
@@ -461,8 +461,11 @@ class User(ModelBase):
             times = -1
         return cd[times] * 60
 
+    def max_license(self):
+        return game_config.common[20]
+
     def can_recover_license_times(self):
-        if self.script_license >= game_config.common[20]:
+        if self.script_license >= self.max_license():
             return False
         gacha_cd = game_config.script_license.get('cd', [])
         return self.license_recover_times < len(gacha_cd)

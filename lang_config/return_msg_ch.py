@@ -254,7 +254,8 @@ card_msg = {
 
 gacha_msg = {
     'gacha.get_gacha': {
-        2: u'cd中'
+        2: u'cd中',
+        3: u'可抽卡次数不足'
     },
     'gacha.receive': {
         1: u"没有此艺人",

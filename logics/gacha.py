@@ -45,6 +45,10 @@ class GachaLogics(object):
             'coin_pool': self.gacha.coin_pool,  # 探寻到的3个gacha_id
             'coin_time': self.gacha.coin_time,  # 探寻时间
             'coin_times': self.gacha.coin_times,           # 探寻次数
+            'coin_update_time': self.gacha.coin_update_time,        # gacha恢复时间
+            'coin_recover_times': self.gacha.coin_recover_times,    # gacha当日恢复次数
+            'remain_gacha_times': self.gacha.remain_gacha_times,    # gacha剩余次数
+
             'coin_lv': self.gacha.coin_lv,           # 探寻等级
             'coin_receive': self.gacha.coin_receive,  # 接受的gacha id
             'coin_pool_expire': self.gacha.coin_pool_expire(),
@@ -66,8 +70,10 @@ class GachaLogics(object):
         sort = 0
 
         if sort == 0:
-            if self.gacha.coin_pool_expire():
-                return 2, {}
+            if self.gacha.remain_gacha_times <= 0:
+                return 3, {}
+            # if self.gacha.coin_pool_expire():
+            #     return 2, {}
             cost_type = 'coin'
             gacha_pool, _ = self.get_coin_gacha()
             if not gacha_pool:

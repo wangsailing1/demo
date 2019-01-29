@@ -36,6 +36,10 @@ class Gacha(ModelBase):
             'today_coin_times': 0,
             'coin_lv': 1,
 
+            'coin_update_time': int(time.time()),  # gacha恢复时间
+            'coin_recover_times': 0,  # gacha当日恢复次数
+            'remain_gacha_times': 10,      # 剩余gacha次数
+
             'coin_pool': [],  # 探寻到的3个gacha_id
             'coin_time': 0,  # 探寻时间 按钮刷新
             'coin_receive': [],  # 接受的gacha id
