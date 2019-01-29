@@ -34,7 +34,8 @@ avg_dialogue = {
     'hero_zoom': ('hero_zoom', 'int_or_float_list'),
     'hero_name': ('hero_name', 'str'),
     'main_expression': ('main_expression', 'str'),
-    'box_center': ('box_center', 'int'),
+    'box_center': ('box_center', 'int_list'),
+    'cg_picture': ('cg_picture', 'str'),
 }
 
 # 战斗内广告栏
