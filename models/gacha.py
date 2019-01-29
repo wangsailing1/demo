@@ -93,6 +93,9 @@ class Gacha(ModelBase):
         # self.coin_lv = next_lv
 
     def get_gacha_red_dot(self):
+        """
+        :return: [是否能抽取，抽取倒计时]
+        """
         return [not self.coin_pool_expire(), self.coin_pool_expire()]
 
     def get_can_up_red_hot(self):
