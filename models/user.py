@@ -210,6 +210,8 @@ class User(ModelBase):
             'role': 0,
             'vip': 0,
             'vip_exp': 0,
+            'company_vip_exp': 0,
+            'company_vip': 0,
             'active_time': 0,
             'online_time': 0,
             'login_days': [],

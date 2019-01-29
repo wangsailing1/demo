@@ -224,6 +224,7 @@ user_config_mapping = {
     'tag_score': ('tag_score', True),
     'player_level': ('player_level', True),
     'vip': ('vip', True),
+    'vip_company': ('vip_company', True),
     'initial_account': ('initial_account', False),
     'main_hero': ('main_hero', True),
     'action_exp': ('action_exp', True),

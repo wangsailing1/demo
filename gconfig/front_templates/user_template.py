@@ -60,6 +60,33 @@ initial_account = ({
                        'card': ('card', 'list_4'),  # 英雄
                    }, 'initial_account')
 
+# vip_company
+vip_company = {
+    'uk': ('vip_company', 'int'),  # VIP等级
+    'exp': ('exp', 'int'),  # 升至下级所需经验
+    'name': ('name', 'int'),
+    'icon': ('icon', 'str'),    # Vip等级图标
+    'des': ('des', 'int'),      # 特权描述
+    'vip_gift_icon': ('vip_gift_icon', 'str'),      # vip礼包为空时显示的图标
+    'vip_gift_des': ('vip_gift_des', 'str'),        # vip礼包为空时显示的图标tips
+    'reward': ('reward', 'int_list'),               # Vip特权奖励礼包（免费送）
+    'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),      # 免费招募次数积累上限
+    'buy_point': ('buy_point', 'int'),                              # 购买体力次数上限
+    'if_catcher': ('if_catcher', 'int'),                              # 是否解锁娃娃机
+    'if_super_catcher': ('if_super_catcher', 'int'),                  # 是否解锁超级娃娃机
+    'bussiness_gold': ('bussiness_gold', 'int'),                              # 明星活动金币收益+N%
+    'bussiness_exp': ('bussiness_exp', 'int'),                              # 明星活动公司经验收益+M%
+    'task_cd': ('task_cd', 'int'),                              # 随机任务刷新时间变快N分钟
+    'buy_gold': ('buy_gold', 'int'),                              # 兑换金币次数+N
+    'if_skip_story': ('if_skip_story', 'int'),                              # 可使用跳过剧情功能
+    'if_skip_battle': ('if_skip_battle', 'int'),                              # 可使用跳过票房功能
+    'card_max': ('card_max', 'int'),                              # 可拥有艺人上限数量+N
+    'extra_script': ('extra_script', 'int'),                              # 续作拍摄上限+N档
+    'more_license': ('more_ license', 'int'),                              # 秘书每天申请许可证数量+L
+    'buy_pvp': ('buy_pvp', 'int'),                              # 谁是歌手每日购买次数上限
+
+}
+
 # VIP
 vip = {
     'uk': ('vip', 'int'),  # VIP等级

@@ -54,6 +54,8 @@ def user_status(mm):
         'silver': user.silver,
         'vip': user.vip,
         'vip_exp': user.vip_exp,
+        'company_vip_exp': user.company_vip_exp,
+        'company_vip': user.company_vip,
         'guild_id': user.guild_id,
         'guild_name': guild_name,
         'unlock_build': user.unlock_build,
