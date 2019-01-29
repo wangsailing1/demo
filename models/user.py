@@ -23,6 +23,7 @@ from lib.utils import sid_generate
 from lib.utils import get_last_refresh_time
 from tools.user import VipInfo
 from models import server as serverM
+from models import vip_company
 from lib.utils.time_tools import relative_activity_remain_time
 from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
@@ -199,7 +200,7 @@ class User(ModelBase):
             'silver': 0,
             'dollar': 0,  # 美元
             'script_income': 0,  # 拍片总票房
-            'script_license': self.max_license(),  # 拍片许可证
+            'script_license': game_config.common[20],  # 拍片许可证
             'license_update_time': int(time.time()),  # 拍片许可证恢复时间
             'license_recover_times': 0,  # 许可证当日恢复次数
             'used_license_times': 0,  # 许可证当日使用次数
@@ -406,9 +407,12 @@ class User(ModelBase):
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
-            if not self.can_recover_license_times():
-                self.license_recover_times = 0
-                self.license_update_time = data
+            # 如果前一天有遗留未完成恢复, 直接完成, 今天的重新开始计算
+            if self.can_recover_license_times():
+                if not self.inited:
+                    self.script_license += 1
+            self.license_recover_times = 0
+            self.license_update_time = now
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -425,31 +429,22 @@ class User(ModelBase):
             is_save = True
 
         # 许可证恢复
-
-        recover_need_time = self.license_recover_need_time()
-        if recover_need_time:
+        if self.can_recover_license_times():
+            recover_need_time = self.license_recover_need_time()
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
                 is_save = True
-                if self.script_license >= self.max_license():
-                    if data > self.license_update_time:
-                        self.license_recover_times = 0
-                    self.license_update_time = now
-                    break
                 self.script_license += 1
                 self.license_recover_times += 1
-                check_time = self.license_update_time
                 self.license_update_time += recover_need_time
-                if check_time < data <= self.license_update_time:
-                    self.license_recover_times = 0
 
                 recover_need_time = self.license_recover_need_time()
                 if not recover_need_time:
                     break
                 div, mod = divmod(now - self.license_update_time, recover_need_time)
 
-            if not self.can_recover_license_times():
-                self.license_update_time = now
+        if not self.can_recover_license_times():
+            self.license_update_time = now
 
         if is_save:
             self.save()
@@ -464,7 +459,8 @@ class User(ModelBase):
         return cd[times] * 60
 
     def max_license(self):
-        return game_config.common[20]
+        more_license = vip_company.more_license(self)
+        return game_config.common[20] + more_license
 
     def can_recover_license_times(self):
         if self.script_license >= self.max_license():

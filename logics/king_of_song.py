@@ -17,6 +17,7 @@ from lib.core.environ import ModelManager
 
 from lib.utils import weight_choice
 from tools.gift import add_mult_gift
+from models import vip_company
 
 
 class KingOfSongLogics(object):
@@ -419,4 +420,14 @@ class KingOfSongLogics(object):
         data['reward'] = reward
         return 0, data
 
+    def buy_battle_times(self):
+        # todo 扣钱
+        buy_pvp = vip_company.buy_pvp(self.mm.user)
+        king = self.mm.king_of_song
+        if king.buy_times >= buy_pvp:
+            return 1, {}
 
+        king.buy_times += 1
+        king.save()
+        rc, data = self.index()
+        return rc, data

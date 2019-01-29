@@ -37,7 +37,7 @@ print_log = print_log_maker(1)
 
 
 def get_stack_info(level=5):
-    data = []
+    data = ['\n']
     for i in xrange(1, level):
         f = sys._getframe(i)
         rv = (os.path.normcase(f.f_code.co_filename), f.f_code.co_name, str(f.f_lineno))

@@ -278,7 +278,6 @@ class UserLogic(object):
         data = {}
         mm = self.mm
         for m in module_list:
-            print m
             args = red_dot_func.get(m, ())
             module = getattr(mm, args[0], None) if args else None
             func_name = args[1] if len(args) > 1 and args[1] else 'get_red_dot'

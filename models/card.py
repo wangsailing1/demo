@@ -170,52 +170,7 @@ class Card(ModelBase):
         for k, v in self.cards.iteritems():
             card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
-
                 v['name'] = get_str_words('1', card_config['name'])
-
-            v.setdefault('popularity', 0)
-
-            if 'train_times' not in v:
-                v['train_times'] = 0
-            if 'train_ext_pro' not in v:
-                v['train_ext_pro'] = [0] * len(self.PRO_IDX_MAPPING)
-
-            if 'love_exp' not in v:
-                v['love_exp'] = 0
-                v['love_lv'] = 0
-
-            if 'gift_count' not in v:
-                v['gift_count'] = 0
-
-            if 'love_gift_pro' not in v:
-                v['love_gift_pro'] = {}
-            if 'equips' not in v:
-                v['equips'] = []
-            if 'equips_used' not in v:
-                v['equips_used'] = {}
-
-            if 'style_pro' not in v or not v['style_pro']:
-                v['style_pro'] = {}
-                for style_id in game_config.script_style.keys():
-                    v['style_pro'][style_id] = {'exp': 0, 'lv': 0}
-
-            if 'style_income' not in v:
-                v['style_income'] = {}
-            if 'style_film_num' not in v:
-                v['style_film_num'] = {}
-
-            if 'type_income' not in v:
-                v['type_income'] = {}
-            if 'type_film_num' not in v:
-                v['type_film_num'] = {}
-            if 'physical' not in v:
-                v['physical'] = card_config.get('physical', 1)
-            if 'mood' not in v:
-                v['mood'] = card_config.get('mood', 1)
-            if 'health' not in v:
-                v['health'] = card_config.get('health', 1)
-
-            v.setdefault('is_cold', False)
 
     def init_card(self):
         return
