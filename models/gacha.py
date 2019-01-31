@@ -126,7 +126,7 @@ class Gacha(ModelBase):
     def add_coin_times(self, times=1):
         self.today_coin_times += times
         self.coin_times += times
-        self.coin_left_times -= times
+        self.coin_left_times = max(0, self.coin_left_times - times)
         # next_times = self.coin_times + times
         # next_lv = self.coin_lv
         #
