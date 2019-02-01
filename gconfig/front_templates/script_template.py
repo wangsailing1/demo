@@ -254,6 +254,7 @@ random_event = {
     'effect': ('effect', 'int_list'),  # 影响 [type, style, buff_percent]
     'weight': ('weight', 'int'),  # 权重
     'des1': ('des1', 'str'),  # 描述
+    'des2': ('des2', 'str'),  # 描述
 }
 
 
