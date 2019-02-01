@@ -464,7 +464,7 @@ class Carnival(ModelBase):
             end = int(config['close'].split(' ')[0])
             if start <= server_days <= end:
                 return server_days
-            return 0
+            return -server_days
         elif tp == 2:
             start = str2timestamp(config['open'])
             end = str2timestamp(config['close'])

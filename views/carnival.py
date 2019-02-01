@@ -9,6 +9,8 @@ def index(hm):
     carvical_open = mm.carnival.server_carvical_open(tp=tp)
     if not carvical_open:
         return 1, {}  # 活动已关闭
+    if carvical_open < 0:
+        return 1, {'custom_msg':u'开服第%s天'%(-carvical_open)}  # 活动已关闭
     carnival = Carnival(mm)
     rc, data = carnival.index(tp=tp)
     return rc, data
