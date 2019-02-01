@@ -113,6 +113,9 @@ def update(req, **kwargs):
     stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
     all_stage = len(stage_list)
     stage = min(stage, all_stage)
+    if stage == 1 and stage not in mm.chapter_stage.chapter[chapter_id][0]:
+        chapter_id -= 1
+        stage = len([i for i in config[chapter_id][0]['stage_id'] if i != -1])
 
     chapter_config = game_config.chapter
     mm.chapter_stage.next_chapter = [1]
