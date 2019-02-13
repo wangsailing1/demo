@@ -195,6 +195,7 @@ charge = {
     'name': ('name', 'int'),  # 名字
     'icon': ('icon', 'str'),  # 图
     'charge_condition': ('charge_condition', 'str'),  # 图
+    'gift': ('gift', 'int_list'),  # 图
 }
 
 month_privilege = {
