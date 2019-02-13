@@ -194,8 +194,8 @@ charge = {
     'price_dollar': ('price_dollar', 'float'),  # 所需美元
     'name': ('name', 'int'),  # 名字
     'icon': ('icon', 'str'),  # 图
-    'charge_condition': ('charge_condition', 'str'),  # 图
-    'gift': ('gift', 'int_list'),  # 图
+    'charge_condition': ('charge_condition', 'str'),  #
+    'gift': ('gift', 'int_list'),  #
 }
 
 month_privilege = {
