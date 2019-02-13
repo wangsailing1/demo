@@ -27,8 +27,8 @@ def chapter_stage_fight(hm):
 # 剧情奖励
 def get_dialogue_reward(hm):
     mm = hm.mm
-    now_stage = int(hm.get_argument('now_stage', ''))
-    choice_stage = int(hm.get_argument('choice_stage', ''))
+    now_stage = hm.get_argument('now_stage', 0, is_int=True)
+    choice_stage = hm.get_argument('choice_stage', 0, is_int=True)
     card_id = hm.get_argument('card_id', 0, is_int=True)
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.get_dialogue_reward(now_stage, choice_stage, card_id)
@@ -38,7 +38,7 @@ def get_dialogue_reward(hm):
 # 解锁艺人聊天
 def open_actor_chat(hm):
     mm = hm.mm
-    now_stage = int(hm.get_argument('now_stage', ''))
+    now_stage = hm.get_argument('now_stage', 0, is_int=True)
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.open_actor_chat(now_stage)
     return rc, {'actor': data}
