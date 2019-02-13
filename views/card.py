@@ -149,6 +149,7 @@ def up_card_building(hm):
     rc, data = cl.up_card_building()
     return rc, data
 
+
 def add_card_box(hm):
     mm = hm.mm
     cost = game_config.common[6]
@@ -158,7 +159,20 @@ def add_card_box(hm):
     mm.user.deduct_diamond(cost)
     mm.user.save()
     mm.card.save()
-    return 0, {'card_box':mm.card.card_box}
+    return 0, {'card_box': mm.card.card_box}
 
 
-
+def add_card_popularity(hm):
+    mm = hm.mm
+    count = hm.get_argument('count', 1, is_int=True)
+    card_id = hm.get_argument('card_id', '')
+    # todo max取值
+    max_num = 10
+    if count > max_num:
+        return 1, {}  # 数量不足
+    if card_id not in mm.card.cards:
+        return 2, {}  # 未拥有此卡牌
+    mm.card.add_card_popularity(card_id, count)
+    # todo 减数值
+    mm.card.save()
+    return 0, {}
