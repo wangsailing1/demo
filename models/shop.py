@@ -85,7 +85,21 @@ class Shop(ModelBase):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
+
+    def get_good_by_vip(self,goods):
+        config = game_config.shop_goods
+        goods_vip = {}
+        for pos, good in goods.iteritems():
+            if pos not in goods_vip:
+                goods_vip[pos] = []
+            for good_id, weight in good:
+                show_vip = config[good_id]['show_vip']
+                if self.mm.user.vip >= show_vip:
+
+                    goods_vip[pos].append([good_id, weight])
+        return goods_vip
 
     def get_price(self, price, shop_config):
         """
@@ -168,7 +182,8 @@ class MysticalShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
     def get_refresh_time(self):
         config = game_config.mystical_store_cd
@@ -244,7 +259,8 @@ class GiftShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
 
 # 资源
@@ -304,7 +320,8 @@ class ResourceShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
 
 class PeriodShop(Shop):
@@ -364,7 +381,8 @@ class PeriodShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
     def get_refresh_time(self):
         """
