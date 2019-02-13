@@ -22,6 +22,7 @@ shop_goods = {
     'tag_id':       ('tag_id',          'int'),                                         # 热卖标签
     'soldout_time': ('soldout_time',    'str'),                                         # 下架时间
     'register_time':('register_time',   'str'),                                         # 上架时间
+    'show_vip':     ('show_vip',        'int'),                                         # 出现vip等级
 }
 
 shop_id = {
