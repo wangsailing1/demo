@@ -38,7 +38,10 @@ class Director(ModelBase):
             'directors': {}, # 所有导演
             'director_box': 0,  # 导演格子
             'web_times': 0,  # 网站招聘次数
-            'web_last_time': 0,
+            'web_recover_time': 0,  # 网站招聘刷新时间
+            'introduce_times': 0,  # 熟人介绍次数
+            'introduce_recove_times': 0,  # 熟人介绍刷新时间
+            'headhunter_times': 0,  # 猎头招聘次数
         }
 
     @classmethod
@@ -69,3 +72,6 @@ class Director(ModelBase):
         director_oid, director_dict = self.generate_director(director_id,lv=init_lv)
         self.directors[director_oid] = director_dict
         return director_oid
+
+    def pre_use(self):
+        pass
