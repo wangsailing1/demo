@@ -569,5 +569,12 @@ business_mapping = {
     'business_times': ('business_times', True),
 }
 
+director_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'director': ('director', True),
+    'director_gacha': ('director_gacha', True),
+    'director_gacha_cost': ('director_gacha_cost', True),
+}
+
 # 注册需要写到最下面
 register_handler()
