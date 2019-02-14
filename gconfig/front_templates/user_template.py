@@ -67,8 +67,8 @@ vip_company = {
     'name': ('name', 'int'),
     'icon': ('icon', 'str'),    # Vip等级图标
     'des': ('des', 'int'),      # 特权描述
-    'vip_gift_icon': ('vip_gift_icon', 'str'),      # vip礼包为空时显示的图标
-    'vip_gift_des': ('vip_gift_des', 'str'),        # vip礼包为空时显示的图标tips
+    'vip_gift_icon': ('vip_gift_icon', 'str_list'),      # vip礼包为空时显示的图标
+    'vip_gift_des': ('vip_gift_des', 'str_list'),        # vip礼包为空时显示的图标tips
     'reward': ('reward', 'int_list'),               # Vip特权奖励礼包（免费送）
     'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),      # 免费招募次数积累上限
     'buy_point': ('buy_point', 'int'),                              # 购买体力次数上限
