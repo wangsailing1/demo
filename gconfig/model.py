@@ -326,6 +326,7 @@ class GameConfigMixIn(object):
         self.free_reward_weight_mapping = {}
         self.rmb_reward_weight_mapping = {}
         self.functional_building_mapping = {}
+        self.director_gacha_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -419,6 +420,7 @@ class GameConfigMixIn(object):
         self.free_reward_weight_mapping.clear()
         self.rmb_reward_weight_mapping.clear()
         self.functional_building_mapping.clear()
+        self.director_gacha_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2496,6 +2498,16 @@ class GameConfigMixIn(object):
                 self.functional_building_mapping[j['build_id']]['id'] = i
         return self.functional_building_mapping
 
+    def get_director_gacha_mapping(self):
+        if not self.director_gacha_mapping:
+            for i, j in self.director_gacha.iteritems():
+                if j['gacha_id'] not in self.director_gacha_mapping:
+                    self.director_gacha_mapping[j['gacha_id']] = []
+                if not j['weight']:
+                    continue
+                self.director_gacha_mapping[j['gacha_id']].append([i, j['weight']])
+        return self.director_gacha_mapping
+                
 
 
 class GameConfig(GameConfigMixIn):

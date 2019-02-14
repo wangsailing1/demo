@@ -21,6 +21,6 @@ director_gacha = {
 
 director_gacha_cost = {
     'uk':       ('id', 'int'),                          # 编号
-    'cost':     ('cost', 'int_list'),                   # 招聘书消耗
-    'cd':       ('cd', 'int_list'),                     # 招聘库id
+    'cost':     ('cost', 'int_list'),                   # 招聘消耗
+    'cd':       ('cd', 'int_list'),                     # 冷却时间
 }

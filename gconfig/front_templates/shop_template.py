@@ -39,7 +39,11 @@ mystical_store_cd = {
 # 神秘商店刷新消耗
 price_ladder = {
     'uk':                   ('id',                  'int'),      # 商品编号
-    'mystical_store_cost':  ('mystical_store_cost', 'int'),     # 出现等级
+    'mystical_store_cost':  ('mystical_store_cost', 'int'),     # 神秘商店手动刷新价格（钻石）
+    'pvp_cost':  ('pvp_cost', 'int'),     # 谁是歌王额外次数的价格（买一下给5次）
+    'director_cost':  ('director_cost', 'int'),     # 导演阵位解锁消耗钻石(没配表示达到次数上限））
+    'director_gacha_buy':  ('director_gacha_buy', 'int'),     # 钻石购买导演招聘次数
+    'skill_cost':  ('skill_cost', 'int'),     # 技能训练位置扩充价格（没配表示达到次数上限）
 }
 
 # 限时商店

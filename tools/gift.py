@@ -316,6 +316,18 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             add_dict(data.setdefault('popularity', {}), add_type, add_num)
         mm.card.save()
 
+    elif gift_sort == 21:  # 导演
+        for pkg in gift_config:
+            director_id = pkg[0]
+            director_num = pkg[1]
+            if not director_num:
+                continue
+            status = mm.director.add_director(director_id)
+            if not status:
+                continue
+            data.setdefault('directors', []).append(status)
+        mm.director.save()
+
     elif gift_sort == 102:  # 成就点
         for pkg in gift_config:
             add_num = pkg[1]
@@ -537,13 +549,12 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if mm.item.get_item(item_id) < item_num:
                 return False
-    elif gift_sort == 4:  # 灵魂石
+    elif gift_sort == 4:  # 美元
         for pkg in gift_config:
-            stone_id = pkg[0]
             stone_num = pkg[1]
             if not stone_num:
                 continue
-            if mm.hero.get_stone(stone_id) < stone_num:
+            if not mm.user.is_dollar_enough(stone_num):
                 return False
     # elif gift_sort == 5:  # 采集物
     #     for pkg in gift_config:
