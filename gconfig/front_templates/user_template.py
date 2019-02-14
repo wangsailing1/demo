@@ -84,6 +84,11 @@ vip_company = {
     'extra_script': ('extra_script', 'int'),                              # 续作拍摄上限+N档
     'more_license': ('more_license', 'int'),                              # 秘书每天申请许可证数量+L
     'buy_pvp': ('buy_pvp', 'int'),                              # 谁是歌手每日购买次数上限
+    'scriptgacha_maxnum': ('scriptgacha_maxnum', 'int'),                              # 抽剧本可积攒的次数上限
+    'chapterstage_fastten': ('chapterstage_fastten', 'int'),                              # 快速工作10场
+    'script_reselectiontimes': ('script_reselectiontimes', 'int'),                              # 重新选择自制拍摄剧本次数
+    'avgdatetimes': ('avgdatetimes', 'int'),                              # 约会次数
+    'phonecalltimes': ('phonecalltimes', 'int'),                              # 手机聊天次数
 
 }
 
