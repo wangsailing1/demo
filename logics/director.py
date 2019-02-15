@@ -32,7 +32,7 @@ class Director(object):
             return 12, {}  # 配置错误
         if not has_mult_goods(self.mm, config['cost']):
             return 13, {}  # 道具不足
-        director_id = config['director'][1]
+        director_id = config['director'][0][1]
         if director_id in self.director.all_director:
             return 14, {}  # 已经拥有这个导演
         del_mult_goods(self.mm, config['cost'])
