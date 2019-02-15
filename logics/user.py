@@ -256,6 +256,7 @@ class UserLogic(object):
             'has_new_dialogue': ('chapter_stage', 'get_chapter_red_dot'),  # 新剧情聊天
             'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
             'business': ('business', 'get_red_dot'),  # 公司事务
+            'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
         }
 
         # 特殊的几个红点,todo
