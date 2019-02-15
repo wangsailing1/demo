@@ -174,7 +174,7 @@ def add_card_popularity(hm):
         return 2, {}  # 未拥有此卡牌
     mm.card.add_card_popularity(card_id, count)
     # todo 减数值
-    add_exp = count * game_config.common(89)
+    add_exp = int(count * game_config.common(89))
     mm.user.add_company_vip_exp(add_exp, is_save=True)
     mm.card.save()
     return 0, {}
