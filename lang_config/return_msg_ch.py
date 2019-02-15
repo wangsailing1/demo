@@ -735,6 +735,48 @@ rest_msg = {
     },
 }
 
+director_msg = {
+    'director.get_gacha': {
+        2: u'道具不足',
+        13: u'已达最大次数',
+        11: u'cd恢复中',
+        12: u'该组导演你已全部招至麾下',
+    },
+    'director.get_gacha_id': {
+        1: u'id错误',
+        13: u'道具不足',
+        11: u'选择导演未在列表',
+        12: u'配置错误',
+        14: u'已经拥有这个导演',
+    },
+    'director.up_level': {
+        1: u'导演id错误',
+        11: u'未拥有这个导演',
+    },
+    'director.work': {
+        1: u'导演id错误',
+        2: u'位置错误',
+        11: u'未拥有这个导演',
+        12: u'位置尚未开启',
+        13: u'已经有导演坐镇',
+        14: u'已经有导演坐镇',
+    },
+    'director.rest': {
+        1: u'导演id错误',
+        11: u'未拥有这个导演',
+        12: u'该导演已经在休息了',
+    },
+    'director.unlock_pos': {
+        1: u'位置错误',
+        13: u'钻石不足',
+        11: u'位置已经开启',
+        12: u'请顺序开启',
+    },
+    'director.buy_more_gacha_times': {
+        13: u'钻石不足',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
