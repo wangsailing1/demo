@@ -22,6 +22,7 @@ class Item(ModelBase):
 
     REEL_ITEM = 20071   # 时间胶囊(卷轴)道具id
     MAX_REEL_NUM = 20   # 时间胶囊(卷轴)最大数量
+    PERFUME = 800038   # 香水id
 
     def __init__(self, uid):
         self.uid = uid
