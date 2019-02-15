@@ -14,8 +14,9 @@ from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
 from logics.mission import Mission
-from tools.gift import del_mult_goods
+from tools.gift import del_mult_goods, add_mult_gift
 from logics.fans_activity import FansActivity
+
 
 
 def main(hm):
@@ -822,7 +823,25 @@ def up_build(hm):
     rc, _ = del_mult_goods(mm, cost)
     if rc:
         return rc, {}
+    if config['group'] == 22:
+        mm.user.company_vip += 1
     mm.user.up_build(next_id, is_save=True)
     return 0, {'group_id': config['group'],
                'build_effect': mm.user.build_effect}
+
+
+def get_company_vip_reward(hm):
+    mm = hm.mm
+    company_vip = hm.get_argument('company_vip', 1, is_int=True)
+    config = game_config.vip_company
+    if company_vip not in config:
+        return 3, {}  # vip等级错误
+    if company_vip > mm.user.company_vip:
+        return 1, {}  # vip等级未达到
+    if company_vip in mm.user.company_vip_reward:
+        return 2, {}  # 礼包已领取
+    reward = add_mult_gift(mm,config[company_vip]['reward'])
+    mm.user.company_vip_reward.append(company_vip)
+    mm.user.save()
+    return 0, {'reward': reward}
 

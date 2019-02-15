@@ -213,6 +213,7 @@ class User(ModelBase):
             'vip_exp': 0,
             'company_vip_exp': 0,
             'company_vip': 0,
+            'company_vip_reward': [], # 已领取的vip礼包
             'active_time': 0,
             'online_time': 0,
             'login_days': [],
@@ -1387,6 +1388,46 @@ class User(ModelBase):
         }
         special_bdc_log(self, sort='exp_change', **kwargs)
         special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='VIP'))
+
+    # 增加company_vip经验
+    def add_company_vip_exp(self,add_exp, is_save=False):
+        if not add_exp:
+            return False
+        next_exp = self.company_vip_exp + add_exp
+        # next_level = self.company_vip
+        config = game_config.vip_company
+        # while True:
+        #     if next_level + 1 not in config:
+        #         break
+        #     if next_exp >= config[next_level]['need_exp']:
+        #         next_level += 1
+        #         continue
+        #     break
+
+        self.company_vip_exp = next_exp
+        # self.company_vip = next_level
+        if is_save:
+            self.save()
+
+    # 公司凝聚力是否达到升级要求红点
+    def get_company_vip_red_dot(self):
+        config = game_config.building
+        if 22 not in self.group_ids:
+            return True
+        next_id = config[self.group_ids[22]['build_id']]['next_id']
+        if not next_id:
+            return False
+        need_company_vip = config[next_id].get('pre_condition', 100)
+        if self.company_vip_exp >= need_company_vip:
+            return True
+        return False
+
+    # 可以领取的company_vip礼包
+    @property
+    def can_get_company_vip_reward(self):
+        reward_list = range(1, self.company_vip + 1)
+        return list(set(reward_list) - set(self.company_vip_reward))
+
 
     def add_player_exp(self, add_exp):
         """ 增加战队经验
