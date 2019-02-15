@@ -37,6 +37,9 @@ class Director(object):
             return 14, {}  # 已经拥有这个导演
         del_mult_goods(self.mm, config['cost'])
         reward = add_mult_gift(self.mm, config['director'])
+        director_oids = reward['directors']
+        for director_oid in director_oids:
+            self.director.directors[director_oid]['source'] = gacha_type
         # gacha_pool.remove(gacha_id)
         return 0, {'reward': reward}
 

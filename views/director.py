@@ -43,7 +43,6 @@ def get_gacha_id(hm):
 
 
 # 导演升级
-
 def up_level(hm):
     mm = hm.mm
     director_id = hm.get_argument('director_id', '')
