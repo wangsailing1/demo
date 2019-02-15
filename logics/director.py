@@ -40,8 +40,9 @@ class Director(object):
         director_oids = reward['directors']
         for director_oid in director_oids:
             self.director.directors[director_oid]['source'] = gacha_type
-        # gacha_pool.remove(gacha_id)
-        return 0, {'reward': reward}
+        rc, data = self.index()
+        data['reward'] = reward
+        return rc, data
 
 
     def up_level(self, director_id):
