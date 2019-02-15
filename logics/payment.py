@@ -170,7 +170,6 @@ def pay_apply(mm, obj, charge_config):
 
         # mm.user.record_privilege_gift(charge_config=charge_config)
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
-        mm.user.add_company_vip_exp(order_rmb)
         mm.user.save()
 
         # 购买商品日期记录，用于刷新次数
