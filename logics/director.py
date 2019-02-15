@@ -81,7 +81,8 @@ class Director(object):
         pool = self.director.refresh_gacha(gacha_type)
         if not pool:
             return 12, {}  # 该组导演你已全部招至麾下
-        return 0, {'gacha_pool':pool}
+        rc, data = self.index()
+        return rc, data
 
 
     def unlock_pos(self, pos):
