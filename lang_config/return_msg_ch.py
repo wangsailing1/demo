@@ -198,6 +198,11 @@ user_msg = {
         101: u'未达到解锁等级',
         201: u'没有配置',
     },
+    'user.get_company_vip_reward': {
+        1: u'vip等级未达到',
+        2: u'礼包已领取',
+        4: u'vip等级错误',
+    },
 }
 
 card_msg = {
