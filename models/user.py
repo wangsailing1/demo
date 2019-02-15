@@ -274,6 +274,7 @@ class User(ModelBase):
             '_build': {},  # 建筑信息
             'dialogue': [],  # 剧情信息
             'skip_dialouge': 0,
+            'cohesion': 0,  # 公司凝聚力
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -1387,6 +1388,30 @@ class User(ModelBase):
         }
         special_bdc_log(self, sort='exp_change', **kwargs)
         special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='VIP'))
+
+
+    def add_company_vip_exp(self,add_exp, is_save=False):
+        if not add_exp:
+            return False
+        cur_exp = self.company_vip_exp
+        next_exp = self.company_vip_exp + add_exp
+        cur_level = self.company_vip
+        next_level = self.company_vip
+        config = game_config.vip_company
+        while True:
+            if next_level + 1 not in config:
+                break
+            if next_exp >= config[next_level]['need_exp']:
+                next_level += 1
+                continue
+            break
+
+        self.company_vip_exp = next_exp
+        self.company_vip = next_level
+        if is_save:
+            self.save()
+
+
 
     def add_player_exp(self, add_exp):
         """ 增加战队经验
