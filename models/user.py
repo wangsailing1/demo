@@ -1751,9 +1751,10 @@ class User(ModelBase):
         获取体力最大购买次数
         :return:
         """
-        privilege_obj = self.mm.get_event('privilege')
-        max_point_buy_times = privilege_obj.max_point_buy_times()
-        return max_point_buy_times
+        # privilege_obj = self.mm.get_event('privilege')
+        # max_point_buy_times = privilege_obj.max_point_buy_times()
+        # return max_point_buy_times
+        return vip_company.buy_point(self)
 
     def finish_guide(self):
         """
