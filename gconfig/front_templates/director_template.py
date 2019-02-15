@@ -8,6 +8,7 @@ director = {
     'star': ('star', 'int'),                    # 星级
     'att':  ('att', 'int'),                     # 初始知道能力
     'tag':  ('tag', 'int_list'),                # 擅长标签
+    'icon':  ('icon', 'str'),                   # icon
     'pro':  (('pro1', 'pro2','pro3','pro4','pro5','pro6',), ('int', 'mult_force_num_list')),    # 属性加成
 }
 
