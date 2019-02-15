@@ -166,15 +166,19 @@ def add_card_popularity(hm):
     mm = hm.mm
     count = hm.get_argument('count', 1, is_int=True)
     card_id = hm.get_argument('card_id', '')
-    # todo max取值
-    max_num = 10
+    max_num = mm.item.get_item(mm.item.PERFUME)
     if count > max_num:
         return 1, {}  # 数量不足
     if card_id not in mm.card.cards:
         return 2, {}  # 未拥有此卡牌
-    mm.card.add_card_popularity(card_id, count)
-    # todo 减数值
+    add_num = game_config.use_item.get(mm.item.PERFUME, {}).get('use_effect', 1) * count
+    mm.card.add_card_popularity(card_id, add_num)
+    mm.item.del_item(mm.item.PERFUME, count)
     add_exp = int(count * game_config.common(89))
     mm.user.add_company_vip_exp(add_exp, is_save=True)
     mm.card.save()
-    return 0, {}
+    mm.item.save()
+    return 0, {
+        'card_info': mm.card.cards[card_id],
+        'company_vip_exp': mm.user.company_vip_exp
+    }
