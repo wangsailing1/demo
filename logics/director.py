@@ -32,9 +32,12 @@ class Director(object):
             return 12, {}  # 配置错误
         if not has_mult_goods(self.mm, config['cost']):
             return 13, {}  # 道具不足
+        director_id = config['director'][2]
+        if director_id in self.director.all_director:
+            return 14, {}  # 已经拥有这个导演
         del_mult_goods(self.mm, config['cost'])
         reward = add_mult_gift(self.mm, config['director'])
-        gacha_pool.remove(gacha_id)
+        # gacha_pool.remove(gacha_id)
         return 0, {'reward': reward}
 
 
@@ -68,7 +71,7 @@ class Director(object):
             return 11, {}  # 未拥有这个导演
         director_dict = self.director.directors[director_id]
         if not director_dict['pos']:
-            return 14, {}  # 该导演已经在休息了
+            return 12, {}  # 该导演已经在休息了
         director_dict['pos'] = 0
         self.director.save()
         return 0, {'pos': self.director.all_director_pos}
