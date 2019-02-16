@@ -92,6 +92,7 @@ def update(req, **kwargs):
     dice_num = int(req.get_argument('dice_num'))
     chapter = req.get_argument('chapter')
     skip_dialouge = int(req.get_argument('skip_dialouge'))
+    company_vip_exp = int(req.get_argument('company_vip_exp'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -106,6 +107,7 @@ def update(req, **kwargs):
     else:
         mm.user.exp = exp
     mm.user.name = name
+    mm.user.company_vip_exp = company_vip_exp
 
     # 调章节
     chapter_id, stage = [int(i) for i in chapter.split('-')]
