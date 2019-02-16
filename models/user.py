@@ -153,6 +153,7 @@ class User(ModelBase):
     REFRESH_TIME1 = '05:00:00'  # 刷新时间
     SERVER_OPENING_AWARD_EXPIRE = 7  # 开服奖励有效期 天数
     ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
+    INIT_VIP_BUILD_ID = 2201
 
     # 和前端协定1:android,2:iOS
     APPID_OS_MAPPING = {
