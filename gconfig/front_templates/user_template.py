@@ -89,6 +89,7 @@ vip_company = {
     'script_reselectiontimes': ('script_reselectiontimes', 'int'),                              # 重新选择自制拍摄剧本次数
     'avgdatetimes': ('avgdatetimes', 'int'),                              # 约会次数
     'phonecalltimes': ('phonecalltimes', 'int'),                              # 手机聊天次数
+    'title': ('title', 'str'),                             # 标题
 
 }
 
