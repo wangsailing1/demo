@@ -90,6 +90,7 @@ vip_company = {
     'avgdatetimes': ('avgdatetimes', 'int'),                              # 约会次数
     'phonecalltimes': ('phonecalltimes', 'int'),                              # 手机聊天次数
     'title': ('title', 'str'),                             # 标题
+    'half': ('half', 'str'),                             # 
 
 }
 
