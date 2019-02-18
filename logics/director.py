@@ -14,11 +14,13 @@ class Director(object):
 
     def index(self):
         data = {
-            'directors': self.director.directors,
+            # 'directors': self.director.directors,
             'director_box': self.director.director_box,
             'web_remain_time': self.director.remain_time(1),
             'introduce_remain_time': self.director.remain_time(2),
-            'remian_times': self.director.total_gacha_times - self.director.total_times,
+            'total_times': self.director.total_gacha_times,
+            'add_times': self.director.add_gacha_times,
+            'gacha_pool':self.director.gacha_pool
         }
         return 0, data
 
@@ -31,10 +33,17 @@ class Director(object):
             return 12, {}  # 配置错误
         if not has_mult_goods(self.mm, config['cost']):
             return 13, {}  # 道具不足
+        director_id = config['director'][0][1]
+        if director_id in self.director.all_director:
+            return 14, {}  # 已经拥有这个导演
         del_mult_goods(self.mm, config['cost'])
         reward = add_mult_gift(self.mm, config['director'])
-        gacha_pool.remove(gacha_id)
-        return 0, {'reward': reward}
+        director_oids = reward['directors']
+        for director_oid in director_oids:
+            self.director.directors[director_oid]['source'] = gacha_type
+        rc, data = self.index()
+        data['reward'] = reward
+        return rc, data
 
 
     def up_level(self, director_id):
@@ -45,7 +54,8 @@ class Director(object):
 
         director_dict['lv'] += 1
         self.director.save()
-        return 0, {director_id: director_dict}
+        rc, data = self.index()
+        return rc, data
 
     def work(self,director_id, pos):
         if director_id not in self.director.directors:
@@ -59,7 +69,8 @@ class Director(object):
             return 14, {}  # 该导演已经坐镇
         director_dict['pos'] = pos
         self.director.save()
-        return 0, {'pos': self.director.all_director_pos}
+        rc, data = self.index()
+        return rc, data
 
 
     def rest(self, director_id):
@@ -67,10 +78,11 @@ class Director(object):
             return 11, {}  # 未拥有这个导演
         director_dict = self.director.directors[director_id]
         if not director_dict['pos']:
-            return 14, {}  # 该导演已经在休息了
+            return 12, {}  # 该导演已经在休息了
         director_dict['pos'] = 0
         self.director.save()
-        return 0, {'pos': self.director.all_director_pos}
+        rc, data = self.index()
+        return rc, data
 
     def get_gacha(self, gacha_type):
         if self.director.total_times >= self.director.total_gacha_times:
@@ -80,7 +92,8 @@ class Director(object):
         pool = self.director.refresh_gacha(gacha_type)
         if not pool:
             return 12, {}  # 该组导演你已全部招至麾下
-        return 0, {'gacha_pool':pool}
+        rc, data = self.index()
+        return rc, data
 
 
     def unlock_pos(self, pos):

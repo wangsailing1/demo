@@ -380,6 +380,9 @@ class User(ModelBase):
         now = int(time.time())
         today = time.strftime('%F')
         week = time.strftime('%W')
+        if not self.company_vip:
+            self.company_vip = 1
+            is_save= True
         # 刷新体力
         div, mod = divmod(now - self.action_point_updatetime, game_config.common[59])
         if not self.is_point_max() and div > 0:
