@@ -18,7 +18,8 @@ class Director(object):
             'director_box': self.director.director_box,
             'web_remain_time': self.director.remain_time(1),
             'introduce_remain_time': self.director.remain_time(2),
-            'remian_times': self.director.total_gacha_times - self.director.total_times,
+            'total_times': self.director.total_gacha_times,
+            'add_times': self.director.add_gacha_times,
             'gacha_pool':self.director.gacha_pool
         }
         return 0, data
