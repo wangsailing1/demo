@@ -14,7 +14,7 @@ class Director(object):
 
     def index(self):
         data = {
-            'directors': self.director.directors,
+            # 'directors': self.director.directors,
             'director_box': self.director.director_box,
             'web_remain_time': self.director.remain_time(1),
             'introduce_remain_time': self.director.remain_time(2),
@@ -53,7 +53,8 @@ class Director(object):
 
         director_dict['lv'] += 1
         self.director.save()
-        return 0, {director_id: director_dict}
+        rc, data = self.index()
+        return rc, data
 
     def work(self,director_id, pos):
         if director_id not in self.director.directors:
@@ -67,7 +68,8 @@ class Director(object):
             return 14, {}  # 该导演已经坐镇
         director_dict['pos'] = pos
         self.director.save()
-        return 0, {'pos': self.director.all_director_pos}
+        rc, data = self.index()
+        return rc, data
 
 
     def rest(self, director_id):
@@ -78,7 +80,8 @@ class Director(object):
             return 12, {}  # 该导演已经在休息了
         director_dict['pos'] = 0
         self.director.save()
-        return 0, {'pos': self.director.all_director_pos}
+        rc, data = self.index()
+        return rc, data
 
     def get_gacha(self, gacha_type):
         if self.director.total_times >= self.director.total_gacha_times:
