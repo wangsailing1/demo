@@ -213,7 +213,7 @@ class User(ModelBase):
             'vip': 0,
             'vip_exp': 0,
             'company_vip_exp': 0,
-            'company_vip': 0,
+            'company_vip': 1,
             'company_vip_reward': [], # 已领取的vip礼包
             'active_time': 0,
             'online_time': 0,

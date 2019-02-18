@@ -75,9 +75,10 @@ vip_company = {
     'if_catcher': ('if_catcher', 'int'),                              # 是否解锁娃娃机
     'if_super_catcher': ('if_super_catcher', 'int'),                  # 是否解锁超级娃娃机
     'bussiness_gold': ('bussiness_gold', 'int'),                              # 明星活动金币收益+N%
-    'bussiness_exp': ('bussiness_exp', 'int'),                              # 明星活动公司经验收益+M%
+    # 'bussiness_exp': ('bussiness_exp', 'int'),                              # 明星活动公司经验收益+M%
     'task_cd': ('task_cd', 'int'),                              # 随机任务刷新时间变快N分钟
-    'buy_gold': ('buy_gold', 'int'),                              # 兑换金币次数+N
+    # 'buy_gold': ('buy_gold', 'int'),                              # 兑换金币次数+N
+    'shop_num': ('shop_num', 'int'),                              # 商店限购物品个数+N
     'if_skip_story': ('if_skip_story', 'int'),                              # 可使用跳过剧情功能
     'if_skip_battle': ('if_skip_battle', 'int'),                              # 可使用跳过票房功能
     'card_max': ('card_max', 'int'),                              # 可拥有艺人上限数量+N
