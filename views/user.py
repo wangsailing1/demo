@@ -824,7 +824,9 @@ def up_build(hm):
     rc, _ = del_mult_goods(mm, cost)
     if rc:
         return rc, {}
-    if config['group'] == 22 and build_id != mm.user.INIT_VIP_BUILD_ID:
+    if config['group'] == 22:
+        if not mm.user.get_company_vip_red_dot():
+            return 6, {}  # 未达到升级条件
         mm.user.company_vip += 1
     mm.user.up_build(next_id, is_save=True)
     return 0, {'group_id': config['group'],

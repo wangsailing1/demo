@@ -1415,13 +1415,13 @@ class User(ModelBase):
 
     # 公司凝聚力是否达到升级要求红点
     def get_company_vip_red_dot(self):
-        config = game_config.building
+        config = game_config.vip_company
         if 22 not in self.group_ids:
             return True
-        next_id = config[self.group_ids[22]['build_id']]['next_id']
-        if not next_id:
+        next_lv = self.company_vip + 1
+        if not next_lv:
             return False
-        need_company_vip = config[next_id].get('pre_condition', 100)
+        need_company_vip = config[next_lv].get('exp', 100)
         if self.company_vip_exp >= need_company_vip:
             return True
         return False
