@@ -8,9 +8,9 @@ from helper import utils
 import settings
 
 PLATFORM_NAME = 'androdikvgames.cn'
-APP_ID = 'popstar.cn'
+APP_ID = 'popstar'
 
-SECRET_KEY = 'a2wuj96sx4yor6v3don6gpuszoolnkvx'
+SECRET_KEY = 'b4c9ab67bec00df240119825f8cd1c05'
 
 # 台湾sdk
 VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'

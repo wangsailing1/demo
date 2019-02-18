@@ -153,7 +153,7 @@ resource = ''  # 前端热更地址
 config_resource = []    # 前端配置热更地址
 
 # 提供查询支付回调的平台
-notify_url_platform = ('vivo', 'jinli', '360', 'lenovo', 'oppo', 'youku', 'yy', 'lewan', 'xmwan', 'uc', 'meizu', 'hero')
+notify_url_platform = ('kvgames', 'vivo', 'jinli', '360', 'lenovo', 'oppo', 'youku', 'yy', 'lewan', 'xmwan', 'uc', 'meizu', 'hero')
 currency_map_charge = {'RMB': 'CN', 'USD': 'TW', 'TWD': 'TWD'}
 payment_callback_url = ''       # 支付回调地址
 
