@@ -55,10 +55,10 @@ def bussiness_gold(user, *args, **kwargs):
     return game_config.vip_company[vip]['bussiness_gold']
 
 
-def bussiness_exp(user, *args, **kwargs):
-    """明星活动公司经验收益+M%"""
-    vip = user.company_vip
-    return game_config.vip_company[vip]['bussiness_exp']
+# def bussiness_exp(user, *args, **kwargs):
+#     """明星活动公司经验收益+M%"""
+#     vip = user.company_vip
+#     return game_config.vip_company[vip]['bussiness_exp']
 
 
 def shop_num(user, *args, **kwargs):
@@ -73,10 +73,10 @@ def task_cd(user, *args, **kwargs):
     return game_config.vip_company[vip]['task_cd']
 
 
-def buy_gold(user, *args, **kwargs):
-    """兑换金币次数+N"""
-    vip = user.company_vip
-    return game_config.vip_company[vip]['buy_gold']
+# def buy_gold(user, *args, **kwargs):
+#     """兑换金币次数+N"""
+#     vip = user.company_vip
+#     return game_config.vip_company[vip]['buy_gold']
 
 
 def if_skip_story(user, *args, **kwargs):
