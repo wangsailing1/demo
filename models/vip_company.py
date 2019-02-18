@@ -10,7 +10,7 @@ from gconfig import game_config
 
 
 def init_vip_coin_gacha_count():
-    return game_config.vip_company[0]['vip_coin_gacha_count']
+    return game_config.vip_company[1]['vip_coin_gacha_count']
 
 
 def vip_coin_gacha_count(user, *args, **kwargs):
