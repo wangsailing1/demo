@@ -89,6 +89,9 @@ class KingOfSong(ModelBase):
             self.save()
 
     def add_star(self):
+        """
+        :return: 下一次再加星是否升级
+        """
         rank_up = False
         self.rank_win_times[self.rank] = self.rank_win_times.get(self.rank, 0) + 1
 
@@ -99,25 +102,35 @@ class KingOfSong(ModelBase):
         self.star += 1
         rank_config = game_config.pvp_rank[self.rank]
         # 晋级赛 达到区间晋级要求后，再胜1场区间+1（不奖励星星）
-        if rank_config['star'] and self.star > rank_config['star']:
-            if self.rank + 1 in game_config.pvp_rank:
+        if rank_config['star'] and self.rank + 1 in game_config.pvp_rank:
+            # 提前判断下次再加星是否升级
+            if self.star + 1 > rank_config['star']:
+                rank_up = True
+
+            if self.star > rank_config['star']:
                 self.rank += 1
                 self.star = 0
-                rank_up = True
 
         self.continue_win_times += 1
         return rank_up
 
     def deduct_star(self):
+        """
+        :return: 下一次再减星是否降级
+        """
         rank_down = False
         self.star -= 1
         last_rank_config = game_config.pvp_rank.get(self.rank - 1)
+        # 提前判断下次再加星是否升级
+        if last_rank_config:
+            if self.star - 1 < 0:
+                rank_down = True
+
         # 淘汰赛 达到区间降级临界时，再败1场区间-1（不扣星星）
         if self.star < 0:
             if last_rank_config:
                 self.star = last_rank_config['star'] - 1
                 self.rank -= 1
-                rank_down = True
             else:
                 self.star = 0
 
