@@ -605,8 +605,8 @@ class Friend(ModelBase):
             data['appointment_remain'] = ()
             return data
         data['lock'] = False
-        data['phone_daily_remain_times'] = self.mm.get_max_phone_times() - self.phone_daily_times
-        data['appointment_remain_times'] = self.mm.get_max_avgdate_times() - self.appointment_times
+        data['phone_daily_remain_times'] = self.get_max_phone_times() - self.phone_daily_times
+        data['appointment_remain_times'] = self.get_max_avgdate_times() - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
         data['phone_daily_remain'] = self.check_chat_end()[-1]
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
