@@ -8,6 +8,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 import settings
+from models.vip_company import scriptgacha_maxnum
 
 
 class ScriptGacha(ModelBase):
@@ -65,7 +66,7 @@ class ScriptGacha(ModelBase):
                 self.coin_update_time = now
 
     def coin_gacha_times_limit(self):
-        return game_config.common[41]
+        return game_config.common[41] + scriptgacha_maxnum(self.mm.user)
 
     def can_recover_coin_times(self):
         gacha_cd = game_config.script_gacha_cd.get('cd', [])

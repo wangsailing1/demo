@@ -22,6 +22,7 @@ from tools.pay import (
 )
 from tools.gift import add_mult_gift, del_mult_goods, add_gift
 from tools.unlock_build import check_build
+from models.vip_company import shop_num
 
 
 class AllShopLogics(object):
@@ -190,7 +191,8 @@ class ShopLogics(object):
 
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
-        if goods['times'] + num > shop_config['sell_max'] and shop_config['sell_max'] != -1:
+        company_vip_num = self.get_company_vip_num(good_id)
+        if goods['times'] + num > shop_config['sell_max'] + company_vip_num and shop_config['sell_max'] != -1:
             return 4, {}
 
         sell_sort = shop_config['sell_sort']
@@ -220,6 +222,14 @@ class ShopLogics(object):
         # 给bdc eventinfo用
         data["_bdc_event_info"] = {'cost': cost, 'goods_id': good_id, 'num': 1}
         return rc, data
+
+    def get_company_vip_num(self, goods_id):
+        company_vip_goods = shop_num(self.mm.user)
+        for good_id,num in company_vip_goods:
+            if good_id == goods_id:
+                return num
+        return 0
+
 
     def sell(self, items):
         """
