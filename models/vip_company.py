@@ -48,7 +48,7 @@ def if_super_catcher(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['if_super_catcher']
 
-
+# todo 功能生效
 def bussiness_gold(user, *args, **kwargs):
     """明星活动金币收益+N%"""
     vip = user.company_vip
@@ -66,7 +66,7 @@ def shop_num(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['shop_num']
 
-
+# todo 功能生效
 def task_cd(user, *args, **kwargs):
     """随机任务刷新时间变快N分钟"""
     vip = user.company_vip
@@ -96,7 +96,7 @@ def card_max(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['card_max']
 
-
+# todo 功能生效
 def extra_script(user, *args, **kwargs):
     """续作拍摄上限+N档"""
     vip = user.company_vip
@@ -108,13 +108,13 @@ def scriptgacha_maxnum(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['scriptgacha_maxnum']
 
-
+# todo 功能生效
 def chapterstage_fastten(user, *args, **kwargs):
     """快速工作10场"""
     vip = user.company_vip
     return game_config.vip_company[vip]['chapterstage_fastten']
 
-
+# todo 功能生效
 def script_reselectiontimes(user, *args, **kwargs):
     """重新选择自制拍摄剧本次数"""
     vip = user.company_vip

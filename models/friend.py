@@ -10,6 +10,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
+from models import vip_company
 
 
 class Friend(ModelBase):
@@ -494,11 +495,21 @@ class Friend(ModelBase):
             if is_save:
                 self.save()
 
+    # 获取手机聊天上限次数
+    def get_max_phone_times(self):
+        common_config = game_config.common
+        return common_config[24] + vip_company.phonecalltimes(self.mm.user)
+
+    # 获取约会上限次数
+    def get_max_avgdate_times(self):
+        common_config = game_config.common
+        return common_config[44] + vip_company.avgdatetimes(self.mm.user)
+
     def get_chat_choice(self, group_id, type=1):
         chat_config = game_config.phone_daily_dialogue
         times = self.phone_daily_times
-        common_config = game_config.common
-        max_times = common_config[24]
+
+        max_times = self.get_max_phone_times()
         like_need = 0
         point_need = 0
         pre_str = 'daily_dialogue'
@@ -594,8 +605,8 @@ class Friend(ModelBase):
             data['appointment_remain'] = ()
             return data
         data['lock'] = False
-        data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
-        data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
+        data['phone_daily_remain_times'] = self.mm.get_max_phone_times() - self.phone_daily_times
+        data['appointment_remain_times'] = self.mm.get_max_avgdate_times() - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
         data['phone_daily_remain'] = self.check_chat_end()[-1]
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]

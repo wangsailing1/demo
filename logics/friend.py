@@ -903,7 +903,7 @@ class FriendLogic(object):
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
                 return 17, {}  # 已选择过对话
-            if self.friend.phone_daily_times >= game_config.common[24] and config[now_stage]['is_end']:
+            if self.friend.phone_daily_times >= self.friend.get_max_phone_times() and config[now_stage]['is_end']:
                 return 13, {}  # 次数超出
             old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
             old_value.setdefault('like', 0)
@@ -981,7 +981,7 @@ class FriendLogic(object):
         if type == 2:
             chat_log = self.friend.appointment_log.get(times_, {}).get('log', {})
             times = self.friend.appointment_times
-            max_times = game_config.common[44]
+            max_times = self.friend.get_max_avgdate_times()
         # elif type == 3:
         #     chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
         #     times = self.friend.tourism_times
@@ -990,6 +990,8 @@ class FriendLogic(object):
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
             return 17, {}  # 已选择过对话
+
+        # todo 上限暂时屏蔽
         # if times >= max_times:
         #     return 13, {}  # 次数超出
         cost = config[choice_id]['cost']

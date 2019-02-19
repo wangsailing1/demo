@@ -19,6 +19,7 @@ from lib.core.environ import ModelManager
 
 from gconfig import game_config
 from gconfig import get_str_words
+from models import vip_company
 
 
 class Card(ModelBase):
@@ -597,7 +598,7 @@ class Card(ModelBase):
         return True
         # config = game_config.card_building
         # max_num = config[self.card_building_level]['card_limit']
-        max_num = self.mm.user.build_effect.get(9, 10)
+        max_num = self.mm.user.build_effect.get(9, 10) + vip_company.card_max(self.mm.user)
         return max_num + self.card_box > len(self.get_can_use_card())
 
     def get_rest_effect(self,card_id):

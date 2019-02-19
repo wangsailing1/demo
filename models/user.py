@@ -276,6 +276,7 @@ class User(ModelBase):
             '_build': {},  # 建筑信息
             'dialogue': [],  # 剧情信息
             'skip_dialouge': 0,
+            'skip_battle': 0,
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -383,6 +384,14 @@ class User(ModelBase):
         if not self.company_vip:
             self.company_vip = 1
             is_save= True
+        if not self.skip_dialouge:
+            if vip_company.if_skip_story(self):
+                self.skip_dialouge = vip_company.if_skip_story(self)
+                is_save = True
+        if not self.skip_battle:
+            if vip_company.if_skip_battle(self):
+                self.skip_battle = vip_company.if_skip_battle(self)
+                is_save = True
         # 刷新体力
         div, mod = divmod(now - self.action_point_updatetime, game_config.common[59])
         if not self.is_point_max() and div > 0:
