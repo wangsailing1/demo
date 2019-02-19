@@ -630,6 +630,9 @@ pvp_msg = {
         1: u'已领取过此奖励',
         2: u'胜场次数不足',
     },
+    'king_of_song.buy_battle_times': {
+        1: u'当日购买次数已到上限',
+    },
 
 }
 
