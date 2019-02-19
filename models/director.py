@@ -146,6 +146,23 @@ class Director(ModelBase):
         return all_directors
 
 
+    def get_director_info(self,director_dict):
+        if isinstance(director_dict, str):
+            director_dict = self.directors[director_dict]
+        config = game_config.director[director_dict['id']]
+        pro_base = config['pro']
+        att_base = config['att']
+        # todo 导演升级属性加成
+        pro = [i * 1 for i in pro_base]
+        att = att_base * 1
+
+
+        director_dict['pro'] = pro
+        director_dict['att'] = att
+        return director_dict
+
+
+
     def refresh_gacha(self, tp):
 
         gacha_config = game_config.get_director_gacha_mapping().get(tp)
