@@ -23,7 +23,7 @@ class ScriptGacha(ModelBase):
         self._attrs = {
             'refresh_date': '',         # 登录日期
 
-            'coin_left_times': self.coin_gacha_times_limit(),         # 普通抽剩余次数
+            'coin_left_times': game_config.common[41],         # 普通抽剩余次数
             'coin_update_time': int(time.time()),           # 普通抽次数刷新时间
             'coin_recover_times': 0,                        # 当日恢复了几次
 
