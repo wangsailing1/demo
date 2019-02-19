@@ -174,7 +174,8 @@ def add_card_popularity(hm):
     add_num = game_config.use_item.get(mm.item.PERFUME, {}).get('use_effect', 1) * count
     mm.card.add_card_popularity(card_id, add_num)
     mm.item.del_item(mm.item.PERFUME, count)
-    add_exp = int(count * game_config.common(89))
+
+    add_exp = int(count * game_config.common[89])
     mm.user.add_company_vip_exp(add_exp, is_save=True)
     mm.card.save()
     mm.item.save()
