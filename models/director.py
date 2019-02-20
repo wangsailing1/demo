@@ -2,8 +2,6 @@
 
 __author__ = 'ljm'
 
-
-
 import time
 
 from lib.db import ModelBase
@@ -58,7 +56,7 @@ class Director(ModelBase):
         return '%s-%s-%s' % (director_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_director(cls, director_id, director_config=None, lv=1,pos=0):
+    def generate_director(cls, director_id, director_config=None, lv=1, pos=0):
         """
         生成导演信息
         :param director_id: 
@@ -73,14 +71,14 @@ class Director(ModelBase):
         director_dict = {
             'id': director_id,  # 配置id
             'oid': director_oid,  # 唯一id
-            'star': director_config.get('star', 1),   # 星级
-            'lv': lv,   # 等级
+            'star': director_config.get('star', 1),  # 星级
+            'lv': lv,  # 等级
             'pos': pos,
         }
 
         return director_oid, director_dict
 
-    def add_director(self,director_id,lv=None):
+    def add_director(self, director_id, lv=None):
         """
         添加导演
         :param director_id: 
@@ -90,7 +88,7 @@ class Director(ModelBase):
         init_lv = lv or 1
         if director_id in self.all_director:
             return False
-        director_oid, director_dict = self.generate_director(director_id,lv=init_lv)
+        director_oid, director_dict = self.generate_director(director_id, lv=init_lv)
         self.directors[director_oid] = director_dict
         return director_oid
 
@@ -105,8 +103,6 @@ class Director(ModelBase):
             self.introduce_recover_time = int(time.time())
             self.add_gacha_times = 0
             self.save()
-
-
 
     @property
     def total_times(self):
@@ -138,7 +134,6 @@ class Director(ModelBase):
         director_pos = self.all_director_pos.keys()
         return list(set(all_pos) - set(director_pos))
 
-
     def recover_need_time(self, tp):
         """
         gacha cd时间
@@ -146,8 +141,8 @@ class Director(ModelBase):
         :return: 
         """
         gacha_cd = game_config.director_gacha_cost[tp]['cd']
-        gacha_type = '%s_times'%(self.TYPEMAPPING[tp])
-        times = getattr(self,gacha_type)
+        gacha_type = '%s_times' % (self.TYPEMAPPING[tp])
+        times = getattr(self, gacha_type)
         if times == 0:
             return 0
         if times >= len(gacha_cd):
@@ -190,8 +185,7 @@ class Director(ModelBase):
             all_directors.append(j['id'])
         return all_directors
 
-
-    def get_director_info(self,director_dict):
+    def get_director_info(self, director_dict):
         """
         :param director_dict: 
         :return: {
@@ -203,20 +197,19 @@ class Director(ModelBase):
              'pro': [0, 1, 0, 0, 0, 0],  # 属性加成值
              u'star': 1
         """
-        if isinstance(director_dict, str):
+        if isinstance(director_dict, basestring):
             director_dict = self.directors[director_dict]
         config = game_config.director[director_dict['id']]
         pro_base = config['pro']
         att_base = config['att']
         lv = director_dict['lv']
-        param_config = game_config.director_lv.get(lv,{})
+        param_config = game_config.director_lv.get(lv, {})
         att = int(att_base * (param_config.get('att_param', 0) / 10000.0 + 1))
         pro_param = param_config.get('pro_param', 0) / 10000.0
         pro = [int(i * (pro_param + 1)) for i in pro_base]
         director_dict['pro'] = pro
         director_dict['att'] = att
         return director_dict
-
 
     def refresh_gacha(self, tp):
         """
@@ -240,33 +233,76 @@ class Director(ModelBase):
                 gahca_id = weight_choice(g_pool)
             gacha.append(gahca_id[0])
         self.gacha_pool[tp] = gacha
-        times = getattr(self,'%s_times' % (self.TYPEMAPPING[tp])) + 1
-        setattr(self,'%s_times' % (self.TYPEMAPPING[tp]), times)
-        setattr(self,'%s_recover_time' % (self.TYPEMAPPING[tp]), int(time.time()))
+        times = getattr(self, '%s_times' % (self.TYPEMAPPING[tp])) + 1
+        setattr(self, '%s_times' % (self.TYPEMAPPING[tp]), times)
+        setattr(self, '%s_recover_time' % (self.TYPEMAPPING[tp]), int(time.time()))
 
         return gacha
 
-    def director_skill_effect(self,directing_id, script_id):
+    def director_skill_effect(self, directing_id, script_id):
         """
         导演组技能效果
         :param directing_id: 指导方针id
                 script_id: 剧本id
         :return: 
+        {'pro': [0, 1, 1, 0, 0, 0],
+         'skill_effect': {1: 30,
+                          3: 30,
+                          4: 30,
+                          5: 30,
+                          'skill_pro': [30, 0, 30, 30, 30, 0]}}
+        skill_pro 对应艺人属性格式
+        skill_effect key对应影响类型
+            1全体艺人演技加成
+            2全体艺人歌艺加成
+            3全体艺人气质加成
+            4全体艺人动感加成
+            5全体艺人艺术加成
+            6全体艺人娱乐加成
+            7增加首映票房万分比
+            8增加持续收益万分比
+            9增加后续收益万分比
+            10增加点赞获取万分比
+            11增加人气数值
+            12随机减少角色要求数量
         """
+        result = {}
         config = game_config.directing_policy
+        director_config = game_config.director
         director_skillid = config[directing_id]['director_skillid']
+        skill_config = game_config.director_skill
+        script_tag = game_config.script[script_id]['tag_script']
+        director_att = 0
+        director_pro = [0, 0, 0, 0, 0, 0]
+        for pos, directer_oid in self.all_director_pos.iteritems():
+            d_config = director_config[self.directors[directer_oid]['id']]
+            d_tag = d_config['tag']
+            director_dict = self.get_director_info(directer_oid)
+            tag_effect = 1 if len(set(d_tag) - set(script_tag)) == len(set(d_tag)) else 0
+            d_att = director_dict['att']
+            d_pro = director_dict['pro']
+            d_att = int(d_att * 0.85) if tag_effect else d_att
+            director_att += d_att
+            director_pro = [director_pro[i] + d_pro[i] for i in range(6)]
         skills = []
         for skill_id, weight in director_skillid:
-            if weight <= random.randint(1,10000):
+            if weight >= random.randint(1, 10000):
                 skills.append(skill_id)
+        skill_effect = {'skill_pro': [0, 0, 0, 0, 0, 0]}
+        if director_att:
+            for skill_id in skills:
+                s_config = skill_config[skill_id]
+                if s_config['skill_type'] <= 6:
+                    skill_effect['skill_pro'][s_config['skill_type'] - 1] += int(
+                    (1 + director_att * 1.0 / s_config['dskill_param']) * s_config['value'])
+                if s_config['skill_type'] not in skill_effect:
+                    skill_effect[s_config['skill_type']] = 0
+                skill_effect[s_config['skill_type']] += int(
+                    (1 + director_att * 1.0 / s_config['dskill_param']) * s_config['value'])
+        result['pro'] = director_pro
+        result['skill_effect'] = skill_effect
 
-        return
-
-
-
-
+        return result
 
 
 ModelManager.register_model('director', Director)
-
-
