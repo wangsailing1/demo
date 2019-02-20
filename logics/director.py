@@ -49,8 +49,12 @@ class Director(object):
         if director_id not in self.director.directors:
             return 11, {}  # 未拥有这个导演
         director_dict = self.director.directors[director_id]
-        # todo 判断消耗
-
+        config = game_config.director_lv
+        cur_lv = director_dict['lv']
+        cost = config[cur_lv]['level_cost']
+        if not has_mult_goods(self.mm, cost):
+            return 12, {}  # 道具不足
+        del_mult_goods(self.mm, cost)
         director_dict['lv'] += 1
         self.director.save()
         rc, data = self.index()
