@@ -180,6 +180,9 @@ class Card(ModelBase):
             card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
                 v['name'] = get_str_words('1', card_config['name'])
+            if not v.get('skill'):
+                v['skill'] = {}
+                v['skill_exp'] = 0
 
         # 刷新训练室状态
         self.change_training_room_status(is_save=True)
