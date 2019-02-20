@@ -51,11 +51,14 @@ class Director(object):
         director_dict = self.director.directors[director_id]
         config = game_config.director_lv
         cur_lv = director_dict['lv']
+        next_lv = cur_lv + 1
+        if next_lv not in config:
+            return 12, {}  # 等级已达最大值
         cost = config[cur_lv]['level_cost']
         if not has_mult_goods(self.mm, cost):
-            return 12, {}  # 道具不足
+            return 13, {}  # 道具不足
         del_mult_goods(self.mm, cost)
-        director_dict['lv'] += 1
+        director_dict['lv'] = next_lv
         self.director.save()
         rc, data = self.index()
         return rc, data

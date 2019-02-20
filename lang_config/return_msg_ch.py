@@ -752,6 +752,8 @@ director_msg = {
     'director.up_level': {
         1: u'导演id错误',
         11: u'未拥有这个导演',
+        12: u'等级已达最大值',
+        13: u'道具不足',
     },
     'director.work': {
         1: u'导演id错误',
