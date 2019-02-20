@@ -99,6 +99,10 @@ class Director(ModelBase):
 
     @property
     def all_director_pos(self):
+        """
+        
+        :return: {}
+        """
         result = {}
         for director_id, info in self.directors.iteritems():
             if info['pos']:
@@ -107,12 +111,21 @@ class Director(ModelBase):
 
     @property
     def empty_pos(self):
+        """
+        闲置的导演位置
+        :return: [1, 2]
+        """
         all_pos = range(1, self.director_box + 1)
         director_pos = self.all_director_pos.keys()
         return list(set(all_pos) - set(director_pos))
 
 
     def recover_need_time(self, tp):
+        """
+        gacha cd时间
+        :param tp: 
+        :return: 
+        """
         gacha_cd = game_config.director_gacha_cost[tp]['cd']
         gacha_type = '%s_times'%(self.TYPEMAPPING[tp])
         times = getattr(self,gacha_type)
@@ -125,6 +138,11 @@ class Director(ModelBase):
         return gacha_cd[times] * 60
 
     def remain_time(self, tp):
+        """
+        gacha恢复剩余时间
+        :param tp: 
+        :return: 
+        """
         if tp == 3:
             return 0
         now = int(time.time())
@@ -140,6 +158,10 @@ class Director(ModelBase):
 
     @property
     def all_director(self):
+        """
+        :return: 
+            [13, 12]
+        """
         all_directors = []
         for i, j in self.directors.iteritems():
             all_directors.append(j['id'])
@@ -147,20 +169,30 @@ class Director(ModelBase):
 
 
     def get_director_info(self,director_dict):
+        """
+        :param director_dict: 
+        :return: {
+            'att': 3,
+             u'id': 12,
+             u'lv': 2,
+             u'oid': u'12-1550160540-DsuaSs',
+             u'pos': 0,
+             'pro': [0, 1, 0, 0, 0, 0],  # 属性加成值
+             u'star': 1
+        """
         if isinstance(director_dict, str):
             director_dict = self.directors[director_dict]
         config = game_config.director[director_dict['id']]
         pro_base = config['pro']
         att_base = config['att']
-        # todo 导演升级属性加成
-        pro = [i * 1 for i in pro_base]
-        att = att_base * 1
-
-
+        lv = director_dict['lv']
+        param_config = game_config.director_lv.get(lv,{})
+        att = int(att_base * (param_config.get('att_param', 0) / 10000.0 + 1))
+        pro_param = param_config.get('pro_param', 0) / 10000.0
+        pro = [int(i * (pro_param + 1)) for i in pro_base]
         director_dict['pro'] = pro
         director_dict['att'] = att
         return director_dict
-
 
 
     def refresh_gacha(self, tp):
@@ -185,6 +217,8 @@ class Director(ModelBase):
         setattr(self,'%s_recover_time' % (self.TYPEMAPPING[tp]), int(time.time()))
 
         return gacha
+
+
 
 ModelManager.register_model('director', Director)
 
