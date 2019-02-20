@@ -31,7 +31,7 @@ director_lv = {
     'uk':               ('lv', 'int'),                              # 导演等级
     'att_param':        ('att_param', 'int'),                       # 执导能力加成万分比
     'cost_param':       ('cost_param', 'int'),                      # 消耗美元加成万分比
-    'level_cost':       ('level_cost', 'int'),                      # 升级花费
+    'level_cost':       ('level_cost', 'int_list'),                 # 升级花费
     'pro_param':        ('pro_param', 'int'),                       # 属性加成万分比
 }
 

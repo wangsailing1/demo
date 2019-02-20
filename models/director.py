@@ -13,6 +13,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from gconfig import get_str_words
 from lib.utils import weight_choice
+import random
 
 
 class Director(ModelBase):
@@ -58,6 +59,14 @@ class Director(ModelBase):
 
     @classmethod
     def generate_director(cls, director_id, director_config=None, lv=1,pos=0):
+        """
+        生成导演信息
+        :param director_id: 
+        :param director_config: 
+        :param lv: 
+        :param pos: 
+        :return: 
+        """
         director_oid = cls._make_oid(director_id)
         director_config = director_config or game_config.director[director_id]
 
@@ -72,6 +81,12 @@ class Director(ModelBase):
         return director_oid, director_dict
 
     def add_director(self,director_id,lv=None):
+        """
+        添加导演
+        :param director_id: 
+        :param lv: 
+        :return:  director_oid
+        """
         init_lv = lv or 1
         if director_id in self.all_director:
             return False
@@ -95,13 +110,17 @@ class Director(ModelBase):
 
     @property
     def total_times(self):
+        """
+        总招聘次数
+        :return: 
+        """
         return self.web_times + self.headhunter_times + self.introduce_times
 
     @property
     def all_director_pos(self):
         """
-        
-        :return: {}
+        所有位置信息
+        :return: {pos:director_id}
         """
         result = {}
         for director_id, info in self.directors.iteritems():
@@ -154,6 +173,10 @@ class Director(ModelBase):
 
     @property
     def total_gacha_times(self):
+        """
+        招聘次数上限
+        :return: 
+        """
         return self.add_gacha_times + game_config.common[86]
 
     @property
@@ -196,6 +219,11 @@ class Director(ModelBase):
 
 
     def refresh_gacha(self, tp):
+        """
+        刷新gacha
+        :param tp: 
+        :return: 
+        """
 
         gacha_config = game_config.get_director_gacha_mapping().get(tp)
         gacha = []
@@ -217,6 +245,25 @@ class Director(ModelBase):
         setattr(self,'%s_recover_time' % (self.TYPEMAPPING[tp]), int(time.time()))
 
         return gacha
+
+    def director_skill_effect(self,directing_id, script_id):
+        """
+        导演组技能效果
+        :param directing_id: 指导方针id
+                script_id: 剧本id
+        :return: 
+        """
+        config = game_config.directing_policy
+        director_skillid = config[directing_id]['director_skillid']
+        skills = []
+        for skill_id, weight in director_skillid:
+            if weight <= random.randint(1,10000):
+                skills.append(skill_id)
+
+        return
+
+
+
 
 
 
