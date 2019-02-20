@@ -579,5 +579,12 @@ director_mapping = {
     'directing_policy': ('directing_policy', True),
 }
 
+skill_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_skill_unlock': ('card_skill_unlock', True),
+    'card_skill_level': ('card_skill_level', True),
+    'card_skill': ('card_skill', True),
+}
+
 # 注册需要写到最下面
 register_handler()

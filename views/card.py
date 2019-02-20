@@ -183,3 +183,93 @@ def add_card_popularity(hm):
         'card_info': mm.card.cards[card_id],
         'company_vip_exp': mm.user.company_vip_exp
     }
+
+
+def skill_level_up(hm):
+    cl = CardLogic(hm.mm)
+    card_oid = hm.get_argument('card_oid', '')
+    skill_id = hm.get_argument('skill_id', 0, is_int=True)
+    rc, data = cl.skill_level_up(card_oid, skill_id)
+    return rc, data
+
+
+def train_card(hm):
+    card_oid = hm.get_argument('card_oid', '')
+    if not hm.mm.card.cards.get(card_oid):
+        return 1, {}  # 未拥有该卡牌
+
+    cl = CardLogic(hm.mm)
+    rc, data = cl.train_card(card_oid)
+    return rc, data
+
+
+def use_exp_item(hm):
+    card_oid = hm.get_argument('card_oid', '')
+    item_id = hm.get_argument('item_num', '')
+    item_num = hm.get_argument('item_num', '')
+    cl = CardLogic(hm.mm)
+    rc, data = cl.use_exp_item(card_oid, item_id, item_num)
+    return rc, data
+
+
+def training_room_index(hm):
+    mm = hm.mm
+    return 0, mm.card.get_training_room_status()
+
+
+def finish_train(hm):
+    mm = hm.mm
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not training_position_id:
+        return 1, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 2, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.finish_train(training_position_id)
+    return rc, data
+
+
+def train_speed_up(hm):
+    mm = hm.mm
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not training_position_id:
+        return 1, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 2, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.train_speed_up(training_position_id)
+    return rc, data
+
+
+def add_train_place(hm):
+    mm = hm.mm
+    cl = CardLogic(mm)
+    rc, data = cl.add_train_place()
+    return rc, data
+
+
+def choice_train_card(hm):
+    mm = hm.mm
+    return 0, mm.card.choice_train_card()
+
+
+def train(hm):
+    mm = hm.mm
+    card_oid = hm.get_argument('card_oid', '')
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not mm.card.cards.get(card_oid):
+        return 1, {}  # 未拥有该卡牌
+
+    if not training_position_id:
+        return 2, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 3, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.train(card_oid, training_position_id)
+    return rc, data

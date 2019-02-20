@@ -69,7 +69,11 @@ class Card(ModelBase):
             'attr': {},
             'card_building_level': 1,
             'card_box': 0,
-
+            'training_room': {
+                1: {
+                    'status': 0   # 0 表示可使用，1 表示训练完成，2 表示正在训练中
+                },
+            },
         }
         self._group_ids = {}
         super(Card, self).__init__(self.uid)
@@ -121,8 +125,13 @@ class Card(ModelBase):
             'physical': card_config.get('physical', 1),  # 体力
             'mood': card_config.get('mood', 1),   # 心情
             'health': card_config.get('health', 1),  # 健康
-
+            'skill': {},  # 技能
+            'skill_exp': 0,  # 技能经验
         }
+
+        if lv != 1:
+            cls.unlock_skill(card_oid)
+
         for style_id in game_config.script_style.keys():
             card_dict['style_pro'][style_id] = {'exp': 0, 'lv': 0}
 
@@ -172,6 +181,9 @@ class Card(ModelBase):
             card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
                 v['name'] = get_str_words('1', card_config['name'])
+
+        # 刷新训练室状态
+        self.change_training_room_status(is_save=True)
 
     def init_card(self):
         return
@@ -627,6 +639,124 @@ class Card(ModelBase):
             info[card] = 3
         return info
 
+    def unlock_skill(self, card_oid, is_save=False):
+        card_info = self.cards[card_oid]
+        card_id = card_info['id']
+        lv = card_info['lv']
+        skills = card_info['skill']
+        unlock_config = game_config.card_skill_unlock
+        skill_list = game_config.card_basis[card_id]['skill']
 
+        for id in range(1, len(skill_list)+1):
+            if skill_list[id-1] in skills:
+                continue
+
+            unlock_lv = unlock_config[id]['lv']
+            if lv >= unlock_lv:
+                skills[skill_list[id-1]] = {'lv': 1}
+
+        if is_save:
+            self.save()
+
+    def change_training_room_status(self, is_save=False):
+        training_room = self.training_room
+        build_effect = self.mm.user.build_effect[11]
+        training_times = game_config.common[87]*60 - build_effect[0]
+        now_time = int(time.time())
+
+        for key, info in training_room.items():
+            status = info.get('status')
+            if status == 2:
+                start_train_time = info['start_train_time']  # 时间戳
+                have_train_time = now_time - start_train_time
+                if have_train_time >= training_times:
+                    info['status'] = 1
+
+        if is_save:
+            self.save()
+
+    def get_training_room_status(self):
+        training_room = self.training_room
+        training_room_status = {}
+        build_effect = self.mm.user.build_effect[11]
+        need_training_time = game_config.common[87] * 60 - build_effect[0]
+        now_time = int(time.time())
+
+        for key, info in training_room.items():
+            training_room_status[key] = {}
+            training_room_status[key]['card_oid'] = info.get('card_oid', '')
+            training_room_status[key]['status'] = info['status']
+            if info['status'] != 2:
+                continue
+
+            start_train_time = info['start_train_time']  # 时间戳
+            have_train_time = now_time - start_train_time
+            remain_time = need_training_time - have_train_time
+            training_room_status[key]['remain_time'] = remain_time if remain_time >= 0 else 0
+
+        return training_room_status
+
+    def choice_train_card(self):
+        result = []
+        training_card_list = []
+        for training_info in self.training_room.values():
+            if training_info['status'] == 0:
+                continue
+            training_card_list.append(training_info['card_oid'])
+
+        for card_oid, card_info in self.cards.items():
+            if card_oid in training_card_list:
+                continue
+
+            if self.is_all_max_lv(card_oid):
+                continue
+
+            result.append(card_oid)
+
+        return {'card_oid': result}
+
+    def is_all_max_lv(self, card_oid):
+        card_info = self.cards[card_oid]
+        card_id = card_info['id']
+        skill_list = game_config.card_basis[card_id]['skill']
+        unlock_skill_list = card_info['skill'].keys()
+
+        skill_exp_info = game_config.card_skill_level
+        max_lv = sorted(skill_exp_info.keys())[-1]
+        if set(skill_list) != set(unlock_skill_list):
+            return False
+
+        result = True
+        for value in card_info['skill'].values():
+            if value['lv'] != max_lv:
+                result = False
+
+        return result
+
+
+    def is_skill_exp_enough(self, card_oid, extra_exp=0):
+        card_info = self.cards[card_oid]
+        card_id = card_info['id']
+        skill_list = game_config.card_basis[card_id]['skill']
+        skill_exp_info = game_config.card_skill_level
+        max_lv = sorted(skill_exp_info.keys())[-1]
+        skill_exp = card_info['skill_exp']
+        need_skill_exp = 0
+
+        for skill_id in skill_list:
+            skill_info = card_info['skill'].get(skill_id)
+            if skill_info:
+                skill_lv = skill_info['lv']
+            else:
+                skill_lv = 1
+            quality = game_config.card_skill[skill_id]['quality']
+            for lv in range(skill_lv, max_lv):
+                skill_up_exp = skill_exp_info[lv]['exp'][quality - 1]
+                need_skill_exp += skill_up_exp
+
+        if need_skill_exp <= skill_exp + extra_exp:
+            return True
+        else:
+            return False
 
 ModelManager.register_model('card', Card)
