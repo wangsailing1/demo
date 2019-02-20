@@ -574,6 +574,9 @@ director_mapping = {
     'director': ('director', True),
     'director_gacha': ('director_gacha', True),
     'director_gacha_cost': ('director_gacha_cost', True),
+    'director_lv': ('director_lv', True),
+    'director_skill': ('director_skill', True),
+    'directing_policy': ('directing_policy', True),
 }
 
 # 注册需要写到最下面
