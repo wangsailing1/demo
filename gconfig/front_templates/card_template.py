@@ -65,7 +65,7 @@ card_basis = {
     'mood_diamondcost': ('mood_diamondcost', 'int'),  # 心情回复钻石价格
     'health_cost': ('health_cost', 'int'),  # 健康回复价格(元/点)
     'health_diamondcost': ('health_diamondcost', 'int'),  # 健康回复钻石价格
-
+    'skill': ('skill', 'int_list'),  # 技能
 }
 
 card_level = {

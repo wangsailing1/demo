@@ -63,6 +63,8 @@ class CardLogic(object):
         if not card.add_card_exp(card_oid, add_exp, card_dict):
             return 3, {}
 
+        self.mm.card.unlock_skill(card_oid)
+
         card.save()
         user.deduct_coin(cost_coin)
         user.save()
@@ -445,6 +447,168 @@ class CardLogic(object):
         return 0, {}
 
 
+    def skill_level_up(self, card_oid, skill_id):
+        if card_oid not in self.mm.card.cards:
+            return 1, {}    # 未拥有该卡牌
+        card_info = self.mm.card.cards[card_oid]
+        skill_list = game_config.card_basis[card_info['id']]['skill']
+        if skill_id not in skill_list:
+            return 2, {}    # 该角色没有该技能
+        if skill_id not in card_info['skill']:
+            return 3, {}    # 技能未解锁
+
+        skill_info = card_info["skill"][skill_id]
+        lv = skill_info['lv']
+        skill_exp_info = game_config.card_skill_level
+        max_lv = sorted(skill_exp_info.keys())[-1]
+
+        if lv == max_lv:
+            return 4, {}    # 已达到最高等级
+
+        quality = game_config.card_skill[skill_id]['quality']
+        skill_exp = card_info['skill_exp']
+        need_exp = skill_exp_info[lv]['exp'][quality-1]
+
+        if need_exp > skill_exp:
+            return 5, {}  # 技能经验不足，请安排训练或使用药品补充
+
+        skill_info['lv'] = lv + 1
+        card_info['skill_exp'] = skill_exp - need_exp
+        self.mm.card.save()
+
+        return 0, {}
 
 
+    def train_card(self, card_oid):
+        '''
+        艺人升级技能经验不足时，训练
+        '''
+        train_card_list = []
+        available_train_position = []
+        for key, value in self.mm.card.training_room.items():
+            status = value['status']
+            if status == 0:
+                available_train_position.append(key)
+            else:
+                train_card_list.append(value['card_oid'])
 
+        if card_oid in train_card_list:
+            return 2, {}  # 已经在训练中
+
+        if not available_train_position:
+            return 3, {}  # 没有训练空位
+
+        if self.mm.card.is_all_max_lv(card_oid):
+            return 4, {}  # 技能已满
+
+        if self.mm.card.is_skill_exp_enough(card_oid):
+            return 5, {}  # 艺人经验已足够，可升到满级
+
+        train_position_id = sorted(available_train_position)[0]
+        train_position = self.mm.card.training_room[train_position_id]
+        train_position['status'] = 2
+        train_position['card_oid'] = card_oid
+        train_position['start_train_time'] = time.time()
+        self.mm.card.save()
+
+        return 0, {}  # 已安排艺人训练
+
+    def use_exp_item(self, card_oid, item_id, item_num=1):
+        if not self.mm.card.cards.get(card_oid):
+            return 1, {}  # 未拥有该卡牌
+
+        if not item_id:
+            return 2, {}  # item_id未传值
+
+        max_num = self.mm.item.get_item(item_id)
+        if item_num >= max_num:
+            item_num = max_num
+
+        item_exp = game_config.use_item[item_id]['use_effect'] * item_num
+        if self.mm.card.is_skill_exp_enough(card_oid):
+            return 3, {}  # 艺人经验已足够，可升到满级
+
+        self.mm.item.del_item(item_id, item_num)
+        self.mm.card.cards['skill_exp'] += item_exp
+        self.mm.item.save()
+        self.mm.card.save()
+        return 0, {}
+
+
+    def finish_train(self, training_position_id):
+        training_position = self.mm.card.training_room[training_position_id]
+        if training_position['status'] != 1:
+            return 3, {}  # 训练中
+
+        build_effect = self.mm.user.build_effect[11]
+        gain_skill_exp = game_config.common[90] + build_effect[1]
+        card_oid = training_position['card_oid']
+        self.mm.card.cards[card_oid]['skill_exp'] += gain_skill_exp
+        training_position['status'] = 0
+        self.mm.card.save()
+        return 0, {}
+
+
+    def train_speed_up(self, training_position_id):
+        training_position = self.mm.card.training_room[training_position_id]
+        if training_position['status'] != 2:
+            return 3, {}  # 该训练位不在训练中
+
+        now_time = int(time.time())
+        start_train_time = training_position['start_train_time']
+        have_train_time = now_time - start_train_time
+        build_effect = self.mm.user.build_effect[11]
+        need_training_time = game_config.common[87] * 60 - build_effect[0]
+        max_diamonds = game_config.common[88]
+        remain_time = need_training_time - have_train_time
+        remain_time = remain_time if remain_time >= 0 else 0
+
+        need_diamonds = int((remain_time / need_training_time) * max_diamonds)
+        if not self.mm.user.is_diamond_enough(need_diamonds):
+            return 4, {}  # 钻石不足
+
+        self.mm.user.deduct_diamond(need_diamonds)
+        training_position['status'] = 1
+        self.mm.user.save()
+        self.mm.card.save()
+        return 0, {}
+
+    def add_train_place(self):
+        max_position_id = sorted(self.mm.card.training_room.keys())[-1]
+
+        cost = game_config.price_ladder[max_position_id]['skill_cost']
+        if not self.mm.user.is_diamond_enough(cost):
+            return 1, {}  # 钻石不足
+
+        self.mm.user.deduct_diamond(cost)
+        self.mm.card.training_room[max_position_id+1] = {'status': 0}
+        self.mm.user.save()
+        self.mm.card.save()
+        return 0, {}
+
+    def train(self, card_oid, training_position_id):
+        training_position = self.mm.card.training_room[training_position_id]
+        if training_position['status'] != 0:
+            return 4, {}  # 该训练位正在被使用
+
+        if self.mm.card.is_all_max_lv(card_oid):
+            return 5, {}  # 此艺人技能已全满级，不用再次训练！
+
+        if self.mm.card.is_skill_exp_enough(card_oid):
+            return 6, {}  # 艺人经验已足够，可升到满级
+
+        training_position['status'] = 2
+        training_position['card_oid'] = card_oid
+        training_position['start_train_time'] = time.time()
+
+        self.mm.card.save()
+        return 0, {}  # 已安排艺人训练
+
+    def is_skill_valid(self, skill_id, the_system, formation, play_type):
+        pass
+        # skill_info = game_config.card_skill[skill_id]
+        # triggersystem = skill_info['triggersystem']
+        # triggercondition = skill_info['triggercondition']
+        # triggercondition_logic = skill_info['triggercondition_logic']
+        # if the_system != triggersystem:
+        #     return False
