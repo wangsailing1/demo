@@ -17,8 +17,8 @@ VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
 TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
 
 # 大陆sdk
-VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
-TEST_VERIFT = 'http://219.142.26.114:9097/backend_account_check/'
+# VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
+# TEST_VERIFT = 'http://219.142.26.114:9097/backend_account_check/'
 
 # 返回数据0是成功的数据，1是失败的数据
 RETURN_DATA = {
