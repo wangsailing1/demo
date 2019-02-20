@@ -659,7 +659,9 @@ class Card(ModelBase):
 
     def change_training_room_status(self, is_save=False):
         training_room = self.training_room
-        build_effect = self.mm.user.build_effect[11]
+        build_effect = self.mm.user.build_effect.get(11)
+        if not build_effect:
+            return
         training_times = game_config.common[87]*60 - build_effect[0]
         now_time = int(time.time())
 
