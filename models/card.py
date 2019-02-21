@@ -51,7 +51,7 @@ class Card(ModelBase):
     RESTMAPPING = {1: 'physical', 2: 'mood'}
 
 
-    _need_diff = ('cards', 'pieces', 'attr')
+    _need_diff = ('cards', 'pieces', 'attr', 'training_room')
 
     # 新用户给的卡牌
     INIT_CARDS = [1, 2, 3, 4, 5]
