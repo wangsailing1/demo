@@ -129,9 +129,6 @@ class Card(ModelBase):
             'skill_exp': 0,  # 技能经验
         }
 
-        if lv != 1:
-            cls.unlock_skill(card_oid)
-
         for style_id in game_config.script_style.keys():
             card_dict['style_pro'][style_id] = {'exp': 0, 'lv': 0}
 
@@ -181,6 +178,9 @@ class Card(ModelBase):
             card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
                 v['name'] = get_str_words('1', card_config['name'])
+            if not v.get('skill'):
+                v['skill'] = {}
+                v['skill_exp'] = 0
 
         # 刷新训练室状态
         self.change_training_room_status(is_save=True)
@@ -265,6 +265,10 @@ class Card(ModelBase):
                                                  mm=self.mm,
                                                  popularity=popularity,
                                                  )
+
+        if lv != 1:
+            self.unlock_skill(card_oid)
+
         self.mm.card_book.add_book(group_id)
         self.mm.friend.new_actor(group_id,is_save=True)
         self.cards[card_oid] = card_dict
