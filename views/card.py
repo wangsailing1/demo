@@ -198,8 +198,8 @@ def train_card(hm):
 
 def use_exp_item(hm):
     card_oid = hm.get_argument('card_oid', '')
-    item_id = hm.get_argument('item_id', '')
-    item_num = hm.get_argument('item_num', '')
+    item_id = hm.get_argument('item_id', '', is_int=True)
+    item_num = hm.get_argument('item_num', '', is_int=True)
     cl = CardLogic(hm.mm)
     rc, data = cl.use_exp_item(card_oid, item_id, item_num)
     return rc, data
