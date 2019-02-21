@@ -524,12 +524,15 @@ class CardLogic(object):
         if item_num >= max_num:
             item_num = max_num
 
+        if max_num == 0:
+            return 'error_item', {}  # 道具不足
+
         item_exp = game_config.use_item[item_id]['use_effect'] * item_num
         if self.mm.card.is_skill_exp_enough(card_oid):
             return 3, {}  # 艺人经验已足够，可升到满级
 
         self.mm.item.del_item(item_id, item_num)
-        self.mm.card.cards['skill_exp'] += item_exp
+        self.mm.card.cards[card_oid]['skill_exp'] += item_exp
         self.mm.item.save()
         self.mm.card.save()
         return 0, {}

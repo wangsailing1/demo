@@ -52,7 +52,7 @@ class Card(ModelBase):
     RESTMAPPING = {1: 'physical', 2: 'mood'}
 
 
-    _need_diff = ('cards', 'pieces', 'attr')
+    _need_diff = ('cards', 'pieces', 'attr', 'training_room')
 
     # 新用户给的卡牌
     INIT_CARDS = [1, 2, 3, 4, 5]
@@ -266,12 +266,13 @@ class Card(ModelBase):
                                                  popularity=popularity,
                                                  )
 
-        if lv != 1:
-            self.unlock_skill(card_oid)
-
         self.mm.card_book.add_book(group_id)
         self.mm.friend.new_actor(group_id,is_save=True)
         self.cards[card_oid] = card_dict
+
+        if lv != 1:
+            self.unlock_skill(card_oid)
+
         return card_oid
 
     def has_card(self, card_oid):
