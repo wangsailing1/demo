@@ -29,4 +29,5 @@ card_skill = {
     'skilltarget_id': ('skilltarget_id', 'int_list'),  # 技能受众id
     'computing_method': ('computing_method', 'int'),  # 效果计算方式
     'skilllevel_value': ('skilllevel_value', 'int_list'),  # 技能各级效果数值
+    'skill_maxlv': ('skill_maxlv', 'int'),  # 技能等级上限
 }
