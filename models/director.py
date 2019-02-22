@@ -274,6 +274,8 @@ class Director(ModelBase):
         script_tag = game_config.script[script_id]['tag_script']
         director_att = 0
         director_pro = [0, 0, 0, 0, 0, 0]
+
+        # 导演执导能力，属性加成
         for pos, directer_oid in self.all_director_pos.iteritems():
             d_config = director_config[self.directors[directer_oid]['id']]
             d_tag = d_config['tag']
@@ -284,10 +286,14 @@ class Director(ModelBase):
             d_att = int(d_att * 0.85) if tag_effect else d_att
             director_att += d_att
             director_pro = [director_pro[i] + d_pro[i] for i in range(6)]
+
+        # 生效技能
         skills = []
         for skill_id, weight in director_skillid:
             if weight >= random.randint(1, 10000):
                 skills.append(skill_id)
+
+        # 技能加成
         skill_effect = {'skill_pro': [0, 0, 0, 0, 0, 0]}
         if director_att:
             for skill_id in skills:
@@ -301,6 +307,7 @@ class Director(ModelBase):
                     (1 + director_att * 1.0 / s_config['dskill_param']) * s_config['value'])
         result['pro'] = director_pro
         result['skill_effect'] = skill_effect
+        result['skills'] = skills
 
         return result
 
