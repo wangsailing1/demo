@@ -214,7 +214,7 @@ def use_exp_item(hm):
 
 def training_room_index(hm):
     mm = hm.mm
-    return 0, mm.card.get_training_room_status()
+    return 0, mm.card.training_room
 
 
 def finish_train(hm):
