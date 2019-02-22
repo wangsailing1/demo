@@ -21,10 +21,10 @@ card_skill = {
     'name': ('name', 'str'),  # 技能名称
     'des': ('des', 'str'),  # 技能描述
     'quality': ('quality', 'int'),  # 技能品质
-    'triggersystem': ('triggersystem', 'int'),  # 触发系统
+    'triggersystem': ('triggersystem', 'int_list'),  # 触发系统
     'triggercondition': ('triggercondition', 'int_list'),  # 技能触发条件
     'triggercondition_logic': ('triggercondition_logic', 'int'),  # 技能触发条件逻辑
-    'skilltype': ('skilltype', 'int'),  # 技能效果类型
+    'skilltype': ('skilltype', 'int_list'),  # 技能效果类型
     'skilltarget_type': ('skilltarget_type', 'int'),  # 技能受众类型
     'skilltarget_id': ('skilltarget_id', 'int_list'),  # 技能受众id
     'computing_method': ('computing_method', 'int'),  # 效果计算方式
