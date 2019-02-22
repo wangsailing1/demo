@@ -307,6 +307,7 @@ class Director(ModelBase):
                     (1 + director_att * 1.0 / s_config['dskill_param']) * s_config['value'])
         result['pro'] = director_pro
         result['skill_effect'] = skill_effect
+        result['skills'] = skills
 
         return result
 
