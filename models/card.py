@@ -754,5 +754,73 @@ class Card(ModelBase):
         end_train_time = start_time_stamp + training_times
         return int(end_train_time)
 
+    def get_skill_effect(self, skill_id, skill_lv, model_type, align, script_id, sex_type, profession_class, profession_type, accept_skill_card):
+        '''
+        :param skill_id: 技能id
+        :param skill_lv: 技能等级
+        :param model_type: 触发系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param align: 队友组id列表
+        :param script_id: 剧本类型id
+        :param sex_type: 角色性别，0没要求、2男、1女
+        :param profession_class: 角色类型，0没要求、2偶像、1实力
+        :param profession_type: 角色分类，2青春、1成熟
+        :param accept_skill_card: 被使用技能的卡牌的group id
+        :return: {}
+        '''
+        def is_skill_valid(skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
+            skill_info = game_config.card_skill[skill_id]
+            if model_type not in skill_info['triggersystem']:
+                return False
+
+            def is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+                condition_type = condition[0]
+                condition_id = condition[1]
+                if condition_type == 1 or \
+                        condition_type == 2 and condition_id in align or \
+                        condition_type == 3 and condition_id == script_id or \
+                        condition_type == 6 and condition_id == profession_type:
+                    return True
+
+                if condition_type == 4:
+                    if condition_id == 0 or condition_id == sex_type:
+                        return True
+
+                if condition_type == 5:
+                    if condition_id == 0 or condition_id == profession_class:
+                        return True
+
+                return False
+
+            triggercondition_logic = skill_info.get('triggercondition_logic')
+            if not triggercondition_logic:
+                triggercondition = skill_info['triggercondition']
+                return is_match_condition(triggercondition[0], align, script_id, sex_type, profession_class, profession_type)
+
+            if triggercondition_logic == 1:
+                # result = True
+                for condition in skill_info['triggercondition']:
+                    if not is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+                        return False
+                return True
+
+            for condition in skill_info['triggercondition']:
+                if is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+                    return True
+            return False
+
+        if not is_skill_valid(skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
+            return {}
+
+        skill_info = game_config.card_skill[skill_id]
+        if skill_info['skilltarget_type'] == 2 and accept_skill_card not in skill_info['skilltarget_id']:
+            return {}
+
+        result = {}
+        skill_type = skill_info['skilltype']
+        result[skill_type] = {}
+        result[skill_type]['skilltarget_type'] = skill_info['skilltarget_type']
+        result[skill_type]['computing_method'] = skill_info['computing_method']
+        result[skill_type]['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
+        return result
 
 ModelManager.register_model('card', Card)
