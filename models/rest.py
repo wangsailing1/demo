@@ -118,7 +118,6 @@ class RestHospital(Rest):
         health = card_info['health']
         health_max = card_config['health']
         num = min((now - last_recover_time) / recover_time, health_max - health)
-        card_info['health'] -= num
         card_info['health'] += num
         if card_info['health'] >= health_max:
             info['status'] = 1
