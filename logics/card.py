@@ -460,7 +460,7 @@ class CardLogic(object):
         skill_info = card_info["skill"][skill_id]
         lv = skill_info['lv']
         skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
+        max_lv = game_config.card_skill[skill_id]['skill_maxlv']
 
         if lv == max_lv:
             return 4, {}    # 已达到最高等级
@@ -615,11 +615,50 @@ class CardLogic(object):
         self.mm.card.save()
         return 0, {}  # 已安排艺人训练
 
-    def is_skill_valid(self, skill_id, model_type, align, script_id):
-        pass
-        # skill_info = game_config.card_skill[skill_id]
-        # triggersystem = skill_info['triggersystem']
-        # triggercondition = skill_info['triggercondition']
-        # triggercondition_logic = skill_info['triggercondition_logic']
-        # if the_system != triggersystem:
-        #     return False
+    def is_skill_valid(self, skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
+        '''
+        :param skill_id: 技能id
+        :param model_type: 触发系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param align: 队友组id列表
+        :param script_id: 剧本类型id
+        :param sex_type: 角色性别，0没要求、2男、1女
+        :param profession_class: 角色类型，0没要求、2偶像、1实力
+        :param profession_type: 角色分类，2青春、1成熟
+        :return:
+        '''
+        skill_info = game_config.card_skill[skill_id]
+        if skill_info['triggersystem'] != model_type:
+            return 0, {"trigger": 0}  # 0 表示不生效
+
+        def is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+            condition_type = condition[0]
+            condition_id = condition[1]
+            if condition_type == 1 or \
+                    condition_type == 2 and condition_id in align or \
+                    condition_type == 3 and condition_id == script_id or \
+                    condition_type == 6 and condition_id == profession_type:
+                return True
+
+            if condition_type == 4:
+                if condition_id == 0 or condition_id == sex_type:
+                    return True
+
+            if condition_type == 5:
+                if condition_id == 0 or condition_id == profession_class:
+                    return True
+
+            return False
+
+        triggercondition_logic = skill_info.get('triggercondition_logic')
+        if not triggercondition_logic:
+            triggercondition = skill_info['triggercondition']
+            if len(triggercondition) != 1:
+                return 1, {}  # 配置文件异常
+
+        if triggercondition_logic == 1:
+            return
+
+    # triggercondition = skill_info['triggercondition']
+    # triggercondition_logic = skill_info['triggercondition_logic']
+    # if the_system != triggersystem:
+    #     return False
