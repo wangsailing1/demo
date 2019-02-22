@@ -508,7 +508,7 @@ class CardLogic(object):
         train_position = self.mm.card.training_room[train_position_id]
         train_position['status'] = 2
         train_position['card_oid'] = card_oid
-        train_position['start_train_time'] = time.time()
+        train_position['end_train_time'] = self.mm.card.get_end_train_time(time.time())
         self.mm.card.save()
 
         return 0, {}  # 已安排艺人训练
@@ -558,12 +558,11 @@ class CardLogic(object):
             return 3, {}  # 该训练位不在训练中
 
         now_time = int(time.time())
-        start_train_time = training_position['start_train_time']
-        have_train_time = now_time - start_train_time
+        end_train_time = training_position['end_train_time']
+        remain_time = end_train_time - now_time
         build_effect = self.mm.user.build_effect[11]
         need_training_time = game_config.common[87] * 60 - build_effect[0]
         max_diamonds = game_config.common[88]
-        remain_time = need_training_time - have_train_time
         remain_time = remain_time if remain_time >= 0 else 0
 
         need_diamonds = int((remain_time / need_training_time) * max_diamonds)
@@ -602,7 +601,7 @@ class CardLogic(object):
 
         training_position['status'] = 2
         training_position['card_oid'] = card_oid
-        training_position['start_train_time'] = time.time()
+        training_position['end_train_time'] = self.mm.card.get_end_train_time(time.time())
 
         self.mm.card.save()
         return 0, {}  # 已安排艺人训练
