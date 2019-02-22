@@ -246,16 +246,23 @@ class Director(ModelBase):
                 script_id: 剧本id
         :return: 
         {'pro': [0, 1, 1, 0, 0, 0],  # 导演自己加成属性
-             'skill_12_effect': {1: {'profession_type': 1, 'sex_type': 2},  # 效果12生效后的 角色要求
-              2: {'profession_class': 2, 'sex_type': 2},
-              3: {'sex_type': 2},
-              4: {'sex_type': 1},
-              6: {'profession_class': 2, 'profession_type': 2}},
-             'skill_effect': {1: 30,
-              2: 30,
-              4: 30,
-              5: 30,
-              'skill_pro': [30, 30, 0, 30, 30, 0]},  # 技能加成属性 把skill_effect里<=6的值改成通用格式后的值
+             'skill_12_effect': {1: {'profession_type': 1, 'sex_type': 2},  # role_id:{} 效果12生效后的 角色要求
+                                  2: {'profession_class': 2, 'sex_type': 2},  
+                                  3: {'sex_type': 2},
+                                  4: {'sex_type': 1},
+                                  6: {'profession_class': 2, 'profession_type': 2}},
+             'skill_effect': {1: 30,  # key 是skill_effect id
+                          2: 30,
+                          4: 30,
+                          5: 30,
+                          6: 30,
+                          7: 30,
+                          8: 30,
+                          9: 30,
+                          10: 30,
+                          11: 30,
+                          12: 30,
+                          'skill_pro': [30, 30, 0, 30, 30, 0]},  # 技能加成属性 把skill_effect里<=6的值改成通用格式后的值
              'skills': [1, 2, 4, 5]}  # 生效技能
         skill_pro 对应艺人属性格式
         skill_effect key对应影响类型
