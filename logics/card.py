@@ -599,6 +599,15 @@ class CardLogic(object):
         if self.mm.card.is_skill_exp_enough(card_oid):
             return 6, {}  # 艺人经验已足够，可升到满级
 
+        training_card_list = []
+        for training_info in self.mm.card.training_room.values():
+            if training_info['status'] == 0:
+                continue
+            training_card_list.append(training_info['card_oid'])
+
+        if card_oid in training_card_list:
+            return 7, {}  # 艺人正在训练中
+
         training_position['status'] = 2
         training_position['card_oid'] = card_oid
         training_position['end_train_time'] = self.mm.card.get_end_train_time(time.time())
@@ -606,7 +615,7 @@ class CardLogic(object):
         self.mm.card.save()
         return 0, {}  # 已安排艺人训练
 
-    def is_skill_valid(self, skill_id, the_system, formation, play_type):
+    def is_skill_valid(self, skill_id, model_type, align, script_id):
         pass
         # skill_info = game_config.card_skill[skill_id]
         # triggersystem = skill_info['triggersystem']
