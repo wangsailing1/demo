@@ -711,14 +711,13 @@ class Card(ModelBase):
         skill_list = game_config.card_basis[card_id]['skill']
         unlock_skill_list = card_info['skill'].keys()
 
-        skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
         if set(skill_list) != set(unlock_skill_list):
             return False
 
         result = True
-        for value in card_info['skill'].values():
-            if value['lv'] != max_lv:
+        for skill_id, skill_info in card_info['skill'].items():
+            max_lv = game_config.card_skill[skill_id]['skill_maxlv']
+            if skill_info['lv'] != max_lv:
                 result = False
 
         return result
@@ -729,7 +728,6 @@ class Card(ModelBase):
         card_id = card_info['id']
         skill_list = game_config.card_basis[card_id]['skill']
         skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
         skill_exp = card_info['skill_exp']
         need_skill_exp = 0
 
@@ -739,6 +737,7 @@ class Card(ModelBase):
                 skill_lv = skill_info['lv']
             else:
                 skill_lv = 1
+            max_lv = game_config.card_skill[skill_id]['skill_maxlv']
             quality = game_config.card_skill[skill_id]['quality']
             for lv in range(skill_lv, max_lv):
                 skill_up_exp = skill_exp_info[lv]['exp'][quality - 1]
