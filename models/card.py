@@ -701,7 +701,7 @@ class Card(ModelBase):
             remain_time = need_training_time - have_train_time
             training_room_status[key]['remain_time'] = remain_time if remain_time >= 0 else 0
 
-        return training_room_status
+        return {"training_room": training_room_status}
 
     def choice_train_card(self):
         result = []
