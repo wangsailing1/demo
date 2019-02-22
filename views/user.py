@@ -164,6 +164,7 @@ def game_info(hm):
     info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
                              'next_chapter': mm.chapter_stage.next_chapter,
                              'top_income': mm.script.top_all.get('finished_summary', {}).get('income', 0)}
+    info['training_room'] = mm.card.training_room
 
     return 0, info
 

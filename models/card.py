@@ -178,7 +178,7 @@ class Card(ModelBase):
             card_config = game_config.card_basis[v['id']]
             if not v.get('name'):
                 v['name'] = get_str_words('1', card_config['name'])
-            if not v.get('skill'):
+            if 'skill' not in v:
                 v['skill'] = {}
                 v['skill_exp'] = 0
 
@@ -668,40 +668,23 @@ class Card(ModelBase):
         build_effect = self.mm.user.build_effect.get(11)
         if not build_effect:
             return
-        training_times = game_config.common[87]*60 - build_effect[0]
-        now_time = int(time.time())
 
         for key, info in training_room.items():
             status = info.get('status')
+
+            if info.get('start_train_time'):
+                info.pop('start_train_time')
+                info['status'] = 0
+                status = 0
+
             if status == 2:
-                start_train_time = info['start_train_time']  # 时间戳
-                have_train_time = now_time - start_train_time
-                if have_train_time >= training_times:
+                end_train_time = info['end_train_time']  # 时间戳
+                remain_time = end_train_time - int(time.time())
+                if remain_time <= 0:
                     info['status'] = 1
 
         if is_save:
             self.save()
-
-    def get_training_room_status(self):
-        training_room = self.training_room
-        training_room_status = {}
-        build_effect = self.mm.user.build_effect[11]
-        need_training_time = game_config.common[87] * 60 - build_effect[0]
-        now_time = int(time.time())
-
-        for key, info in training_room.items():
-            training_room_status[key] = {}
-            training_room_status[key]['card_oid'] = info.get('card_oid', '')
-            training_room_status[key]['status'] = info['status']
-            if info['status'] != 2:
-                continue
-
-            start_train_time = info['start_train_time']  # 时间戳
-            have_train_time = now_time - start_train_time
-            remain_time = need_training_time - have_train_time
-            training_room_status[key]['remain_time'] = remain_time if remain_time >= 0 else 0
-
-        return training_room_status
 
     def choice_train_card(self):
         result = []
@@ -728,14 +711,13 @@ class Card(ModelBase):
         skill_list = game_config.card_basis[card_id]['skill']
         unlock_skill_list = card_info['skill'].keys()
 
-        skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
         if set(skill_list) != set(unlock_skill_list):
             return False
 
         result = True
-        for value in card_info['skill'].values():
-            if value['lv'] != max_lv:
+        for skill_id, skill_info in card_info['skill'].items():
+            max_lv = game_config.card_skill[skill_id]['skill_maxlv']
+            if skill_info['lv'] != max_lv:
                 result = False
 
         return result
@@ -746,7 +728,6 @@ class Card(ModelBase):
         card_id = card_info['id']
         skill_list = game_config.card_basis[card_id]['skill']
         skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
         skill_exp = card_info['skill_exp']
         need_skill_exp = 0
 
@@ -756,6 +737,7 @@ class Card(ModelBase):
                 skill_lv = skill_info['lv']
             else:
                 skill_lv = 1
+            max_lv = game_config.card_skill[skill_id]['skill_maxlv']
             quality = game_config.card_skill[skill_id]['quality']
             for lv in range(skill_lv, max_lv):
                 skill_up_exp = skill_exp_info[lv]['exp'][quality - 1]
@@ -765,5 +747,12 @@ class Card(ModelBase):
             return True
         else:
             return False
+
+    def get_end_train_time(self, start_time_stamp):
+        build_effect = self.mm.user.build_effect[11]
+        training_times = game_config.common[87] * 60 - build_effect[0]
+        end_train_time = start_time_stamp + training_times
+        return int(end_train_time)
+
 
 ModelManager.register_model('card', Card)

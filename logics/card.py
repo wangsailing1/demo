@@ -460,7 +460,7 @@ class CardLogic(object):
         skill_info = card_info["skill"][skill_id]
         lv = skill_info['lv']
         skill_exp_info = game_config.card_skill_level
-        max_lv = sorted(skill_exp_info.keys())[-1]
+        max_lv = game_config.card_skill[skill_id]['skill_maxlv']
 
         if lv == max_lv:
             return 4, {}    # 已达到最高等级
@@ -508,7 +508,7 @@ class CardLogic(object):
         train_position = self.mm.card.training_room[train_position_id]
         train_position['status'] = 2
         train_position['card_oid'] = card_oid
-        train_position['start_train_time'] = time.time()
+        train_position['end_train_time'] = self.mm.card.get_end_train_time(time.time())
         self.mm.card.save()
 
         return 0, {}  # 已安排艺人训练
@@ -558,12 +558,11 @@ class CardLogic(object):
             return 3, {}  # 该训练位不在训练中
 
         now_time = int(time.time())
-        start_train_time = training_position['start_train_time']
-        have_train_time = now_time - start_train_time
+        end_train_time = training_position['end_train_time']
+        remain_time = end_train_time - now_time
         build_effect = self.mm.user.build_effect[11]
         need_training_time = game_config.common[87] * 60 - build_effect[0]
         max_diamonds = game_config.common[88]
-        remain_time = need_training_time - have_train_time
         remain_time = remain_time if remain_time >= 0 else 0
 
         need_diamonds = int((remain_time / need_training_time) * max_diamonds)
@@ -600,18 +599,69 @@ class CardLogic(object):
         if self.mm.card.is_skill_exp_enough(card_oid):
             return 6, {}  # 艺人经验已足够，可升到满级
 
+        training_card_list = []
+        for training_info in self.mm.card.training_room.values():
+            if training_info['status'] == 0:
+                continue
+            training_card_list.append(training_info['card_oid'])
+
+        if card_oid in training_card_list:
+            return 7, {}  # 艺人正在训练中
+
         training_position['status'] = 2
         training_position['card_oid'] = card_oid
-        training_position['start_train_time'] = time.time()
+        training_position['end_train_time'] = self.mm.card.get_end_train_time(time.time())
 
         self.mm.card.save()
         return 0, {}  # 已安排艺人训练
 
-    def is_skill_valid(self, skill_id, the_system, formation, play_type):
-        pass
-        # skill_info = game_config.card_skill[skill_id]
-        # triggersystem = skill_info['triggersystem']
-        # triggercondition = skill_info['triggercondition']
-        # triggercondition_logic = skill_info['triggercondition_logic']
-        # if the_system != triggersystem:
-        #     return False
+    def is_skill_valid(self, skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
+        '''
+        :param skill_id: 技能id
+        :param model_type: 触发系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param align: 队友组id列表
+        :param script_id: 剧本类型id
+        :param sex_type: 角色性别，0没要求、2男、1女
+        :param profession_class: 角色类型，0没要求、2偶像、1实力
+        :param profession_type: 角色分类，2青春、1成熟
+        :return:
+        '''
+        skill_info = game_config.card_skill[skill_id]
+        if skill_info['triggersystem'] != model_type:
+            return False
+
+        def is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+            condition_type = condition[0]
+            condition_id = condition[1]
+            if condition_type == 1 or \
+                    condition_type == 2 and condition_id in align or \
+                    condition_type == 3 and condition_id == script_id or \
+                    condition_type == 6 and condition_id == profession_type:
+                return True
+
+            if condition_type == 4:
+                if condition_id == 0 or condition_id == sex_type:
+                    return True
+
+            if condition_type == 5:
+                if condition_id == 0 or condition_id == profession_class:
+                    return True
+
+            return False
+
+        triggercondition_logic = skill_info.get('triggercondition_logic')
+        if not triggercondition_logic:
+            triggercondition = skill_info['triggercondition']
+            return is_match_condition(triggercondition[0], align, script_id, sex_type, profession_class, profession_type)
+
+        if triggercondition_logic == 1:
+            # result = True
+            for condition in skill_info['triggercondition']:
+                if not is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+                    return False
+            return True
+
+        for condition in skill_info['triggercondition']:
+            if is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
+                return True
+        return False
