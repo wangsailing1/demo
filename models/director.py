@@ -245,12 +245,18 @@ class Director(ModelBase):
         :param directing_id: 指导方针id
                 script_id: 剧本id
         :return: 
-        {'pro': [0, 1, 1, 0, 0, 0],
-         'skill_effect': {1: 30,
-                          3: 30,
-                          4: 30,
-                          5: 30,
-                          'skill_pro': [30, 0, 30, 30, 30, 0]}}
+        {'pro': [0, 1, 1, 0, 0, 0],  # 导演自己加成属性
+             'skill_12_effect': {1: {'profession_type': 1, 'sex_type': 2},  # 效果12生效后的 角色要求
+              2: {'profession_class': 2, 'sex_type': 2},
+              3: {'sex_type': 2},
+              4: {'sex_type': 1},
+              6: {'profession_class': 2, 'profession_type': 2}},
+             'skill_effect': {1: 30,
+              2: 30,
+              4: 30,
+              5: 30,
+              'skill_pro': [30, 30, 0, 30, 30, 0]},  # 技能加成属性 把skill_effect里<=6的值改成通用格式后的值
+             'skills': [1, 2, 4, 5]}  # 生效技能
         skill_pro 对应艺人属性格式
         skill_effect key对应影响类型
             1全体艺人演技加成
@@ -271,7 +277,8 @@ class Director(ModelBase):
         director_config = game_config.director
         director_skillid = config[directing_id]['director_skillid']
         skill_config = game_config.director_skill
-        script_tag = game_config.script[script_id]['tag_script']
+        script_config = game_config.script[script_id]
+        script_tag = script_config['tag_script']
         director_att = 0
         director_pro = [0, 0, 0, 0, 0, 0]
 
@@ -308,8 +315,44 @@ class Director(ModelBase):
         result['pro'] = director_pro
         result['skill_effect'] = skill_effect
         result['skills'] = skills
+        result['skill_12_effect'] = self.director_skill_effect12(script_id,skill_effect.get(12, 0))
 
         return result
+
+    def director_skill_effect12(self, script_id, skill_effect):
+        """
+        导演技能效果12 生效
+        script_id :1
+        skill_effect: 1  # 导演技能效果里 12 的值
+        :return: 
+        """
+        roles = game_config.script[script_id]['role_id']
+        tps = ['sex_type', 'profession_class', 'profession_type']
+        config = game_config.script_role
+        role_class = {}
+        for role_id in roles:
+            if role_id not in role_class:
+                role_class[role_id] = {}
+            for tp in tps:
+                if config[role_id].get(tp, 0):
+                    role_class[role_id][tp] = config[role_id].get(tp, 0)
+        for _ in range(skill_effect):
+            ct = 0
+            for role, value in role_class.iteritems():
+                if sum(value.values()):
+                    ct = 1
+                    break
+            if not ct:
+                break
+            role_id = 0
+            while not role_id:
+                role_id = random.choice(roles)
+                if not sum(role_class[role_id].values()):
+                    role_id = 0
+            r_tp = random.choice(role_class[role_id].keys())
+            role_class[role_id].pop(r_tp)
+        return role_class
+
 
 
 ModelManager.register_model('director', Director)
