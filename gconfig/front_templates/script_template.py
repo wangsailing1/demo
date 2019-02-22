@@ -51,7 +51,7 @@ script = {
     'stage_score': ('stage_score', 'int_list'),       # 推图分数
 
     'role_id': ('role_id', 'int_list'),     # 角色id
-    'directing_policy': ('directing_policy', 'int'),     # 执导方针
+    'directing_policy': ('directing_policy', 'int_list'),     # 执导方针
 
 }
 
