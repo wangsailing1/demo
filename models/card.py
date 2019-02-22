@@ -668,11 +668,15 @@ class Card(ModelBase):
         build_effect = self.mm.user.build_effect.get(11)
         if not build_effect:
             return
-        training_times = game_config.common[87]*60 - build_effect[0]
-        now_time = int(time.time())
 
         for key, info in training_room.items():
             status = info.get('status')
+
+            if info.get('start_train_time'):
+                info.pop('start_train_time')
+                info['status'] = 0
+                status = 0
+
             if status == 2:
                 end_train_time = info['end_train_time']  # 时间戳
                 remain_time = end_train_time - int(time.time())
