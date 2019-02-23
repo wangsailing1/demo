@@ -291,6 +291,7 @@ card_msg = {
     },
     'card.add_train_place': {
         1: u'钻石不足',
+        2: u'已达到最大训练位',
     },
     'card.train': {
         1: u'未拥有该卡牌',

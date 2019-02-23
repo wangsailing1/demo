@@ -577,6 +577,9 @@ class CardLogic(object):
 
     def add_train_place(self):
         max_position_id = sorted(self.mm.card.training_room.keys())[-1]
+        max_train_place = game_config.common[91]
+        if max_position_id >= max_train_place:
+            return 2, {}  # 已达到最大训练位
 
         cost = game_config.price_ladder[max_position_id]['skill_cost']
         if not self.mm.user.is_diamond_enough(cost):
