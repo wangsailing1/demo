@@ -30,4 +30,5 @@ card_skill = {
     'computing_method': ('computing_method', 'int'),  # 效果计算方式
     'skilllevel_value': ('skilllevel_value', 'int_list'),  # 技能各级效果数值
     'skill_maxlv': ('skill_maxlv', 'int'),  # 技能等级上限
+    'icon': ('icon', 'str'),  # 技能图标
 }
