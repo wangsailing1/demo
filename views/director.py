@@ -21,12 +21,13 @@ def get_gacha(hm):
     mm = hm.mm
     gacha_type = hm.get_argument('gacha_type', 1, is_int=True)
     config = game_config.director_gacha_cost[gacha_type]
-    rc = has_mult_goods(mm, config['cost'])
-    if not rc:
-        return rc, {}  # 道具不足
     director = Director(mm)
+    rc, _ = del_mult_goods(mm, config['cost'])
+    if rc:
+        return rc, {}
+
     rc, data = director.get_gacha(gacha_type)
-    del_mult_goods(mm, config['cost'])
+
     mm.director.save()
     return rc, data
 
