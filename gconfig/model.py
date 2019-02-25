@@ -327,6 +327,7 @@ class GameConfigMixIn(object):
         self.rmb_reward_weight_mapping = {}
         self.functional_building_mapping = {}
         self.director_gacha_mapping = {}
+        self.add_recharge_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -421,6 +422,7 @@ class GameConfigMixIn(object):
         self.rmb_reward_weight_mapping.clear()
         self.functional_building_mapping.clear()
         self.director_gacha_mapping.clear()
+        self.add_recharge_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2507,7 +2509,16 @@ class GameConfigMixIn(object):
                     continue
                 self.director_gacha_mapping[j['gacha_id']].append([i, j['weight']])
         return self.director_gacha_mapping
-                
+
+    # 累充mapping
+    def get_add_recharge_mapping(self):
+        if not self.add_recharge_mapping:
+            for i, j in self.add_recharge.iteritems():
+                if j['version'] not in self.add_recharge_mapping:
+                    self.add_recharge_mapping[j['version']] = {}
+                self.add_recharge_mapping[j['version']][i] = j
+        return self.add_recharge_mapping
+
 
 
 class GameConfig(GameConfigMixIn):

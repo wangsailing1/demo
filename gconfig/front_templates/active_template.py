@@ -406,10 +406,10 @@ first_recharge = {
     'price_CN': ('price_CN', 'int'),      # 所需rmb
     'price_TW': ('price_TW', 'float'),    # 所需美元
     'name': ('name', 'unicode'),    # 名字
-    'time': ('time', 'int'),        # 领取倒计时
+    # 'time': ('time', 'int'),        # 领取倒计时
     'gift': ('gift', 'list_3'),     # 领取奖励
-    'story': ('story', 'unicode'),  # 描述
-    # 'type': ('type', 'int'),      # 类型 0是任意金额，1是累计的，2是单笔的
+    # 'story': ('story', 'unicode'),  # 描述
+    'type': ('type', 'int'),      # 类型 0是任意金额，1是累计的，2是单笔的
 }
 
 
@@ -960,4 +960,14 @@ active = {
     'param1':           ('param1',          'int'),     # 参数1
     'param2':           ('param2',          'int'),     # 参数2
     'param3':           ('param3',          'int'),     # 参数3
+}
+
+# 累充活动
+add_recharge = {
+    'uk':               ('id',              'int'),         # 序号
+    'version':          ('version',  'int'),                # 版本号
+    'type':             ('type',     'int'),                # 充值类型
+    'number':           ('number',     'int'),              # 充值类型
+    'reward':           ('reward',          'int_list'),    # 奖励[类型，id，数量]
+    'des':              ('des',          'str'),            # des
 }

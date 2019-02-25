@@ -396,6 +396,7 @@ active_mapping = {
     'sign_first_week': ('sign_first_week', True),
     'sign_daily_normal': ('sign_daily_normal', True),
     'active': ('active', True),
+    'add_recharge': ('add_recharge', True),
 }
 
 daily_activity_mapping = {

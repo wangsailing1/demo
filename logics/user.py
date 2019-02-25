@@ -103,7 +103,7 @@ class UserLogic(object):
         activity_status = {
             'first_charge_open': self.mm.user_payment.get_first_charge(),  # 首充活动标志
             'first_charge_pop': self.mm.user_payment.get_first_charge_pop(),  # 首充弹板
-            'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
+            # 'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
             'level_limit_gift': self.mm.user.level_gift,  # 限时等级礼包
         }
         result['activity_status'] = activity_status
@@ -226,7 +226,7 @@ class UserLogic(object):
             # 'doomsday_hunt': ('doomsday_hunt', ),
             # 'clone': ('clone', ),
 
-            # 'first_charge': ('user_payment', 'first_charge_alert'),
+            'first_charge': ('user_payment', 'first_charge_alert'),
             # 'limit_hero': ('limit_hero', 'is_alert'),
             # 'server_limit_hero': ('server_limit_hero', 'is_alert'),
             # 'team_skill': ('team_skill', 'get_red_dot'),

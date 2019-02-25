@@ -65,7 +65,7 @@ def first_charge(hm):
         'charge_done': charge_done,   # 已领过奖励的id
         'price': price,             # 已充值金额
         'currency': currency,       # 货币
-        'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
+        # 'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
     }
 
     return 0, data
@@ -110,6 +110,44 @@ def get_first_charge(hm):
         'first_charge': mm.user_payment.first_charge_alert()
     }
     result.update(first_charge(hm)[1])
+
+    return 0, result
+
+
+def add_recharge_index(hm):
+    mm = hm.mm
+
+    return 0, {'add_recharge': mm.user_payment.add_recharge_done,
+               'remain_time':mm.user_payment.get_add_recharge_remain_time()}
+
+def get_add_recharge(hm):
+    mm = hm.mm
+
+    reward_id = hm.get_argument('reward_id', is_int=True)
+
+    if reward_id <= 0:
+        return 'error_100', {}
+
+    add_recharge_config = game_config.add_recharge.get(reward_id)
+    if not add_recharge_config:
+        return 'error_config', {}
+
+    if mm.user_payment.get_add_recharge_status(reward_id) == 2:
+        return 1, {}  # 奖励已领取
+
+    if mm.user_payment.get_add_recharge_status(reward_id) == 0:
+        return 3, {}  # 未达到条件
+
+    mm.user_payment.add_add_recharge_done(reward_id)
+    reward = add_mult_gift(mm, add_recharge_config['reward'])
+
+    mm.user_payment.save()
+
+    result = {
+        'reward': reward,
+        'add_charge': mm.user_payment.get_add_recharge_red_dot()
+    }
+    result.update(add_recharge_index(hm)[1])
 
     return 0, result
 

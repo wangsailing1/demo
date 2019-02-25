@@ -176,8 +176,8 @@ def pay_apply(mm, obj, charge_config):
         mm.user_payment.add_buy_log(product_id)
 
         # 首充礼包
-        # mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
-
+        mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
+        mm.user_payment.add_add_recharge(price_dict={1:order_diamond,2:order_rmb})
         # # 超值签到
         # mm.pay_sign.set_pay_sign_status(order_money+gift_diamond, product_id)
 
