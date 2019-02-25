@@ -78,6 +78,7 @@ class UserPayment(ModelBase):
 
             self.add_recharge_version = add_recharge_version
             self.add_recharge_done = {}
+            self.add_recharge_price = 0
             is_save = True
             if mail_save:
                 self.mm.mail.save()
