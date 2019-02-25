@@ -10,6 +10,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils.active_inreview_tools import get_version_by_active_id
 from lib.utils.time_tools import str2timestamp
+from return_msg_config import i18n_msg
 
 
 class UserPayment(ModelBase):
@@ -64,14 +65,22 @@ class UserPayment(ModelBase):
         is_save = False
         _, add_recharge_version = get_version_by_active_id(active_id=self.ADD_RECHARGE_ID)
         if add_recharge_version != self.add_recharge_version:
-            # todo 自动发未领取的充值礼包
+            config = game_config.add_recharge
+            mail_save = False
             for recharge_id, status in self.add_recharge_done.iteritems():
                 if status == 1:
+                    gift = config[recharge_id]['reward']
+                    mail_dict = self.mm.mail.generate_mail(i18n_msg.get(44, self.mm.user.language_sort),
+                                                           title=i18n_msg.get('add_recharge',
+                                                                              self.mm.user.language_sort), gift=gift)
+                    self.mm.mail.add_mail(mail_dict)
+                    mail_save = True
 
-                    pass
             self.add_recharge_version = add_recharge_version
             self.add_recharge_done = {}
             is_save = True
+            if mail_save:
+                self.mm.mail.save()
 
         # if self.week['pay_dt']:
         #     pay_dt = datetime.datetime.strptime(self.week['pay_dt'], '%Y-%m-%d %H:%M:%S')
