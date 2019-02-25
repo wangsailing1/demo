@@ -42,18 +42,13 @@ def index(hm):
     return 0, result
 
 
-def first_charge(hm):
+def first_recharge(hm):
     """
     首充index
     :param hm:
     :return:
     """
     mm = hm.mm
-
-    charge_done = {}
-    for i, j in game_config.first_recharge.iteritems():
-        status = mm.user_payment.get_first_charge_status(i)
-        charge_done[i] = status
 
     if 'tw' in settings.ENV_NAME:
         currency = 'USD'
@@ -62,8 +57,8 @@ def first_charge(hm):
     price = round(mm.user_payment.charge_price / currencys.get(currency, 1), 2)
 
     data = {
-        'charge_done': charge_done,   # 已领过奖励的id
-        'price': price,             # 已充值金额
+        'charge_done': mm.user_payment.first_charge_done,   # 已领过奖励的id
+        # 'price': price,             # 已充值金额
         'currency': currency,       # 货币
         # 'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
     }
@@ -118,7 +113,9 @@ def add_recharge_index(hm):
     mm = hm.mm
 
     return 0, {'add_recharge': mm.user_payment.add_recharge_done,
-               'remain_time':mm.user_payment.get_add_recharge_remain_time()}
+               'remain_time':mm.user_payment.get_add_recharge_remain_time(),
+               'version': mm.user_payment.add_recharge_version,
+               'price': mm.user_payment.add_recharge_price}
 
 def get_add_recharge(hm):
     mm = hm.mm
