@@ -335,6 +335,10 @@ script_msg = {
         6: u'艺人体力不足，请先休息',
         7: u'艺人心情糟糕，请先休息',
     },
+    'script.set_directing_id': {
+        2: u'本片无此指导方针',
+        3: u'请上阵导演',
+    },
     'script.upgrade_continued_level': {
         1: u'没有该剧本',
         2: u'已是最大等级',

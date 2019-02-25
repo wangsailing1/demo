@@ -133,7 +133,7 @@ class ScriptLogic(object):
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
-        # # 检查是否有导演模块，拆分到 set_director_id 接口里做
+        # # 检查是否有导演模块，拆分到 set_directing_id 接口里做
         # if not directing_id and self.mm.director.all_director_pos:
         #     film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
 
