@@ -103,7 +103,7 @@ class ScriptLogic(object):
         rc, data = self.index()
         return rc, data
 
-    def filming(self, script_id, name, is_sequel=False):
+    def filming(self, script_id, name, directing_id=None, is_sequel=False):
         """拍片
 
         :param script_id:
@@ -133,6 +133,10 @@ class ScriptLogic(object):
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
+        # 检查是否有导演模块
+        if not directing_id and self.mm.director.all_director_pos:
+            film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
+
         script.cur_script = film
         film['cost'] = cost
 

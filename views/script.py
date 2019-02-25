@@ -47,10 +47,11 @@ def filming(hm):
     mm = hm.mm
     name = hm.get_argument('name')  # 名字
     script_id = hm.get_argument('script_id', is_int=True)  # 剧本id
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
     is_sequel = hm.get_argument('is_sequel', is_int=True)  # 是否续集 0 否 1 是
 
     sl = ScriptLogic(mm)
-    rc, data = sl.filming(script_id, name, is_sequel)
+    rc, data = sl.filming(script_id, name, directing_id, is_sequel)
     return rc, data
 
 
