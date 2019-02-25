@@ -765,7 +765,12 @@ class Card(ModelBase):
         :param profession_class: 角色类型，0没要求、2偶像、1实力
         :param profession_type: 角色分类，2青春、1成熟
         :param accept_skill_card: 被使用技能的卡牌的group id
-        :return: {}
+        :return: {
+            'skilltype': list  # 技能效果类型
+            'skilltarget_type': int  # 技能受众类型
+            'computing_method': int  # 效果计算方法
+            'skilllevel_value': int  # 技能效果数值
+        }
         '''
         def is_skill_valid(skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
             skill_info = game_config.card_skill[skill_id]
@@ -816,11 +821,10 @@ class Card(ModelBase):
             return {}
 
         result = {}
-        skill_type = skill_info['skilltype']
-        result[skill_type] = {}
-        result[skill_type]['skilltarget_type'] = skill_info['skilltarget_type']
-        result[skill_type]['computing_method'] = skill_info['computing_method']
-        result[skill_type]['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
+        result['skilltype'] = skill_info['skilltype']
+        result['skilltarget_type'] = skill_info['skilltarget_type']
+        result['computing_method'] = skill_info['computing_method']
+        result['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
         return result
 
 ModelManager.register_model('card', Card)
