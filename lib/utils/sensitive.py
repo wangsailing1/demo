@@ -26,7 +26,7 @@ def is_sensitive(word):
         word = word.replace(' ', '')
     for v in WORDS:
         if str_or_unicode:
-            if v in word:
+            if v and v in word:
                 return True
         elif isinstance(word, (list, tuple)):
             for m, n in enumerate(word, 1):
