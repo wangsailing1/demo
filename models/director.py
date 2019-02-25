@@ -249,15 +249,9 @@ class Director(ModelBase):
         config = game_config.script[script_id]['directing_policy']
         if not config:
             return []
-        directing = []
         if len(config) <= 3:
             return config
-        while len(directing) < 3:
-            directing_id = random.choice(config)
-            while directing_id in directing:
-                directing_id = random.choice(config)
-            directing.append(directing_id)
-        return directing
+        return random.sample(config, 3)
 
     def director_skill_effect(self, directing_id, script_id):
         """
