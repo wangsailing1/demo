@@ -133,10 +133,11 @@ class ScriptLogic(object):
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
-        # 检查是否有导演模块
-        if not directing_id and self.mm.director.all_director_pos:
-            film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
+        # # 检查是否有导演模块，拆分到 set_director_id 接口里做
+        # if not directing_id and self.mm.director.all_director_pos:
+        #     film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
 
+        film['directing_ids'] = self.mm.director.get_directing_id(script_id)
         script.cur_script = film
         film['cost'] = cost
 
@@ -150,6 +151,35 @@ class ScriptLogic(object):
         user.add_attention(3, att)
         script.save()
         user.save()
+
+        rc, data = self.index()
+        return rc, data
+
+    def set_directing_id(self, directing_id):
+        """
+
+        :param directing_id:
+        :return:
+        """
+
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        directing_ids = cur_script['directing_ids']
+        if not directing_ids:
+            return self.index()
+
+        if directing_id not in directing_ids:
+            return 2, {}        # 本片无此指导方针
+
+        # 检查是否有导演模块
+        if not self.mm.director.all_director_pos:
+            return 3, {}        # 请上阵导演
+
+        cur_script['director_effect'] = self.mm.director.director_skill_effect(directing_id, cur_script['id'])
+        script.save()
 
         rc, data = self.index()
         return rc, data

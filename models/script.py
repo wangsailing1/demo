@@ -607,7 +607,8 @@ class Script(ModelBase):
         script_config = game_config.script[script_id]
         type_config = game_config.script_type_style[script_config['type']]
         data = {
-            'director': {},          # 拍片时候是否有上导演，在logics层检查director模块 director_skill_effect 方法
+            'director_effect': {},          # 拍片时候是否有上导演，在logics层检查director模块 director_skill_effect 方法
+            'directing_ids': [],             # 导演执导方针
             'cost': 0,  # 拍摄消耗的美金
             'length': random.randint(*type_config['length']),  # 剧集时间/集数
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青

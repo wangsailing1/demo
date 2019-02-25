@@ -55,6 +55,20 @@ def filming(hm):
     return rc, data
 
 
+def set_directing_id(hm):
+    """
+    设置指导方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.set_directing_id(directing_id)
+    return rc, data
+
+
 def set_card(hm):
     """
     选演员上阵
