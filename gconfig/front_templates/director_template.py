@@ -48,5 +48,6 @@ director_skill = {
 directing_policy  = {
     'uk':                       ('id', 'int'),                          # 导演等级
     'director_skillid':         ('director_skillid', 'int_list'),       # 技能类型
+    'name':                     ('name', 'str'),                        # 技能名
     'des':                      ('des', 'str'),                         # 属性加成万分比
 }
