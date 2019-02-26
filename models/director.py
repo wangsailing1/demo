@@ -149,7 +149,7 @@ class Director(ModelBase):
             times = -1
         else:
             times -= 1
-        return gacha_cd[times] * 60
+        return gacha_cd[times] * 60 - self.mm.user.build_effect.get(14, [0, 0])[0]
 
     def remain_time(self, tp):
         """
@@ -172,7 +172,7 @@ class Director(ModelBase):
         招聘次数上限
         :return: 
         """
-        return self.add_gacha_times + game_config.common[86]
+        return self.add_gacha_times + game_config.common[86] + self.mm.user.build_effect.get(14, [0, 0])[1]
 
     @property
     def all_director(self):
