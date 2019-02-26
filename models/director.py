@@ -246,12 +246,9 @@ class Director(ModelBase):
         """
         if not self.all_director_pos:
             return []
-        config = game_config.script[script_id]['directing_policy']
-        if not config:
-            return []
-        if len(config) <= 3:
-            return config
-        return random.sample(config, 3)
+        config = game_config.script[script_id].get('directing_policy',[])
+        num = min(len(config),3)
+        return random.sample(config, num)
 
     def director_skill_effect(self, directing_id, script_id):
         """
