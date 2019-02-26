@@ -111,6 +111,8 @@ def get_first_charge(hm):
 
 def add_recharge_index(hm):
     mm = hm.mm
+    if mm.user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
 
     return 0, {'add_recharge': mm.user_payment.add_recharge_done,
                'remain_time':mm.user_payment.get_add_recharge_remain_time(),
@@ -119,6 +121,8 @@ def add_recharge_index(hm):
 
 def get_add_recharge(hm):
     mm = hm.mm
+    if mm.user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
 
     reward_id = hm.get_argument('reward_id', is_int=True)
 
