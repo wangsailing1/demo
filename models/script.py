@@ -217,6 +217,9 @@ class Script(ModelBase):
             continued_lv_config = game_config.script_continued_level[continued_lv]
 
             continued_income = continued_lv_config['parm'] * all_income / 100
+            # 计算导演加成
+            continued_income = self.calc_director_effect(9, continued_income)
+
             continued_time = game_config.common[19]
             continued_income_unit = continued_income / continued_time
 
@@ -272,6 +275,27 @@ class Script(ModelBase):
             elif info['finished_summary']['income'] > data[group_id]['finished_summary']['income']:
                 data[group_id] = info
         return data
+
+    def calc_director_effect(self, sort, value):
+        """
+        计算导演对拍片各个阶段的效果
+
+        :param sort:
+                    7 首映票房万分比
+                    8 每日上映收益万分比
+                    9 下映后持续收益万分比
+                    10 点赞数获取万分比
+                    11 关注度数值， 选完导演后直接增加关注度
+                    12 随机减少角色要求数量
+        :param value:
+        :return:
+        """
+        # 计算导演加成
+        director_effect = self.cur_script.get('director_effect')
+        if director_effect:
+            rate = director_effect['skill_effect'].get(sort, 0)
+            value = int(value * (1 + rate / 10000.0))
+        return value
 
     def script_continued_summary(self):
         """持续收入片子信息统计

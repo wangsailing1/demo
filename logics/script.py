@@ -734,6 +734,9 @@ class ScriptLogic(object):
 
         z = game_config.common[9]
         first_income = script_config['output'] * (1 + attention_lv / 10.0) * (part_a + part_b) / 2 / z
+        # 计算导演加成
+        first_income = self.mm.script.calc_director_effect(7, first_income)
+
         first_income = int(first_income)
         # 如果作品类型是电视剧、综艺节目, 让前端算 区分展示单位
         # if script_config['type'] != 1:
@@ -779,7 +782,9 @@ class ScriptLogic(object):
         score = min(round(score, 2), game_config.common[43])
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
-        return {'score': score, 'like': int(score * like_rate)}
+        like = int(score * like_rate)
+        like = self.mm.script.calc_director_effect(10, like)
+        return {'score': score, 'like': like}
 
     def calc_audience_judge(self):
         """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
@@ -849,6 +854,9 @@ class ScriptLogic(object):
 
         rate = game_config.common[18]
         curve = [first_income * i / rate for i in curve_config['curve_rate']]
+        # 计算导演加成
+        curve = [self.mm.script.calc_director_effect(8, i) for i in curve]
+
         curve = [int(i) for i in curve]
         return {
             'curve_id': curve_id,
@@ -1159,6 +1167,9 @@ class ScriptLogic(object):
         all_income = finished_summary['income']
 
         continued_income = continued_lv_config['parm'] * all_income / 100
+        # 计算导演加成
+        continued_income = self.mm.script.calc_director_effect(9, continued_income)
+
         continued_time = game_config.common[19]
         continued_income_unit = continued_income / continued_time
 
