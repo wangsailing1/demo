@@ -113,7 +113,7 @@ class OnePieceLogic(object):
             print self.one_piece_config
             free_reward = self.one_piece_config['free_reward']
             _gift_config = weight_choice(free_reward)
-            gifts = [_gift_config[:3]]
+            gifts = copy.deepcopy([_gift_config[:3]])
             reward = add_mult_gift(self.mm, gifts)
             one_piece_rate_id = random.randint(5, 8)
 
@@ -235,7 +235,7 @@ class OnePieceLogic(object):
 
         result = weight_choice(reward)[:2]
 
-        return result
+        return copy.deepcopy(result)
 
     def is_server_score(self):
         """ 是否满足全服积分需求
