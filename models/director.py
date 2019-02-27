@@ -347,7 +347,7 @@ class Director(ModelBase):
         roles = game_config.script[script_id]['role_id']
         tps = ['sex_type', 'profession_class', 'profession_type']
         config = game_config.script_role
-        role_class = {}
+        role_class = {'effect':{}}
         for role_id in roles:
             if role_id not in role_class:
                 role_class[role_id] = {}
@@ -369,6 +369,9 @@ class Director(ModelBase):
                     role_id = 0
             r_tp = random.choice(role_class[role_id].keys())
             role_class[role_id].pop(r_tp)
+            if role_id not in role_class['effect']:
+                role_class['effect'][role_id] = []
+            role_class['effect'][role_id].append(r_tp)
         return role_class
 
 

@@ -427,13 +427,15 @@ class Chapter_stage(object):
     # 解锁艺人对话
     def open_actor_chat(self, now_stage):
         config = game_config.avg_dialogue[now_stage]
+        info = {}
         if config['is_end']:
             phone_unlock = config['phone_unlock']
             if not phone_unlock:
                 return 0, {}
-            self.mm.friend.trigger_new_chat(phone_unlock, is_save=True)
+            info = self.mm.friend.trigger_new_chat(phone_unlock, is_save=True)
         fl = FriendLogic(self.mm)
         rc, data = fl.actor_chat_index()
+        data['new_chat'] = info
         return rc, data
 
     # 新战斗
