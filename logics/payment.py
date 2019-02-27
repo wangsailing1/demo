@@ -116,8 +116,8 @@ def pay_apply(mm, obj, charge_config):
         double_pay = obj['double_pay']
         open_gift = charge_config.get('open_gift', 0)
         add_vip_exp = charge_config.get('level_exp', 0)
-        act_id = obj.get('act_id', 0)
-        act_item_id = obj.get('act_item_id', 0)
+        act_id = obj.get('act_id', 0)   # 活动id
+        act_item_id = obj.get('act_item_id', 0) # 活动充值项id
 
         if double_pay:
             amount = order_diamond * 2 + gift_diamond + over_diamond
