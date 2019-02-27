@@ -934,11 +934,11 @@ class UserLogic(object):
         if level_gift_dict['status'] == 0:
             return 2, {}    # 充值才能获得
 
-        if not self.user.is_diamond_enough(config['coin']):
-            return 'error_diamond', {}
+        # if not self.user.is_diamond_enough(config['coin']):
+        #     return 'error_diamond', {}
 
         self.user.level_gift.pop(lv)
-        self.user.deduct_diamond(config['coin'])
+        # self.user.deduct_diamond(config['coin'])
 
         reward = add_mult_gift(self.mm, config['reward'])
 
