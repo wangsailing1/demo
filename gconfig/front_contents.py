@@ -586,5 +586,11 @@ skill_mapping = {
     'card_skill': ('card_skill', True),
 }
 
+egg_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'egg_item': ('egg_item', True),
+    'egg_diamond': ('egg_diamond', True),
+}
+
 # 注册需要写到最下面
 register_handler()

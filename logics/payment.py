@@ -6,6 +6,7 @@ import time
 import math
 import json
 import urllib
+import traceback
 
 import settings
 from models.payment import *
@@ -18,6 +19,8 @@ from gconfig import MUITL_LAN, charge_scheme_func
 from lib.sdk_platform.sdk_hero import save_player_charger_log
 from lib.sdk_platform.helper import http
 from lib import utils
+from logics.egg import Egg
+from lib.utils.debug import print_log
 
 COIN_RATE = {
     'CN': 1.0 / 8,
@@ -127,6 +130,14 @@ def pay_apply(mm, obj, charge_config):
         add_diamond = mm.user_payment.add_pay(open_gift, price=order_money, order_diamond=order_diamond, order_rmb=order_rmb, product_id=product_id, can_open_gift=can_open_gift)
         if add_diamond:
             mm.user.add_diamond(int(add_diamond))
+
+        # 砸金蛋
+        egg = Egg(mm)
+        try:
+            egg.add_payment_and_item_times(order_diamond)
+        except:
+            print_log(traceback.format_exc())
+
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
         if server_type == 1:
