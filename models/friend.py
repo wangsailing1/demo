@@ -444,6 +444,7 @@ class Friend(ModelBase):
         self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
         if is_save:
             self.save()
+        return {group_id:config['dialogue_id']}
 
     def new_actor(self,group_id,is_save=False):
         if group_id not in self.actors:
