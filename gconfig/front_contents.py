@@ -587,5 +587,14 @@ skill_mapping = {
     'card_skill': ('card_skill', True),
 }
 
+one_piece_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'one_piece': ('one_piece', True),
+    'one_piece_rate': ('one_piece_rate', True),
+    'one_piece_exchange': ('one_piece_exchange', True),
+    'one_piece_rank_reward': ('one_piece_rank_reward', True),
+    'one_piece_reduce': ('one_piece_reduce', True),
+}
+
 # 注册需要写到最下面
 register_handler()
