@@ -37,7 +37,7 @@ def open_egg(hm):
 
     data = egg.index()
     data['reward'] = reward['gift']
-    data['refresh_flog'] = reward['refresh_flog']
+    # data['refresh_flog'] = reward['refresh_flog']
     data['reward_log'] = mm.egg.get_log()
     return 0, data
 
