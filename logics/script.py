@@ -202,6 +202,9 @@ class ScriptLogic(object):
             return 2, {}  # 已选完角色
 
         cost = 0
+        # 导演对角色的限制
+        director_skill_effect = cur_script['director_effect'].get('skill_12_effect', {})
+
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
@@ -218,12 +221,20 @@ class ScriptLogic(object):
                 return 3, {}
 
             card_info = card.cards[card_id]
+            card_config = game_config.card_basis[card_info['id']]
 
             # if card_info['physical'] < need_physical:
             #     return 6, {}  # 艺人体力不足，请先休息
             # if card_info['mood'] < need_mood:
             #     return 7, {}  # 艺人心情糟糕，请先休息
-            card_config = game_config.card_basis[card_info['id']]
+
+            # 检查导演限制
+            if role in director_skill_effect:
+                for check_type, check_value in director_skill_effect[role].iteritems():
+                    if check_value and check_value != card_config[check_type]:
+                        # check_type: profession_class | sex_type | profession_type
+                        return 'error_%s' % check_type, {}
+
             cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
 
             used_card.add(card_id)
@@ -479,6 +490,8 @@ class ScriptLogic(object):
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
                      / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
             d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            d = script.calc_director_effect(pro_id, d)
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -513,6 +526,8 @@ class ScriptLogic(object):
                      / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            d = script.calc_director_effect(pro_id, d)
             base_b += d
 
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)

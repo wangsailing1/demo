@@ -8,6 +8,7 @@ Created on 2018-09-04
 
 import time
 import copy
+import math
 import random
 import itertools
 import settings
@@ -276,25 +277,37 @@ class Script(ModelBase):
                 data[group_id] = info
         return data
 
-    def calc_director_effect(self, sort, value):
+    def calc_director_effect(self, sort, value=0):
         """
         计算导演对拍片各个阶段的效果
 
         :param sort:
+                    1~6 六种属性的数值加成
+
                     7 首映票房万分比
                     8 每日上映收益万分比
                     9 下映后持续收益万分比
-                    10 点赞数获取万分比
+                    10 点赞数获取万分比         ps: 向上取整
                     11 关注度数值， 选完导演后直接增加关注度
-                    12 随机减少角色要求数量
+                    12 随机减少角色要求数量      ps： 在导演模块里已经处理完了
         :param value:
         :return:
         """
         # 计算导演加成
         director_effect = self.cur_script.get('director_effect')
         if director_effect:
-            rate = director_effect['skill_effect'].get(sort, 0)
-            value = int(value * (1 + rate / 10000.0))
+            if sort in [1, 2, 3, 4, 5, 6]:
+                add_value = director_effect['skill_effect'].get(sort, 0)
+                value += add_value
+            elif sort in [7, 8, 9, 10]:
+                rate = director_effect['skill_effect'].get(sort, 0)
+                if sort == 10:
+                    value = int(math.ceil(value * (1 + rate / 10000.0)))
+                else:
+                    value = int(value * (1 + rate / 10000.0))
+            elif sort == 11:
+                add_value = director_effect['skill_effect'].get(sort, 0)
+                value += add_value
         return value
 
     def script_continued_summary(self):

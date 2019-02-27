@@ -334,6 +334,9 @@ script_msg = {
         5: u'有卡牌休息中',
         6: u'艺人体力不足，请先休息',
         7: u'艺人心情糟糕，请先休息',
+        'error_profession_class': u'艺人实力不符',
+        'error_sex_type': u'艺人性别不符',
+        'error_profession_type': u'艺人青春成熟度不符',
     },
     'script.set_directing_id': {
         2: u'本片无此指导方针',
