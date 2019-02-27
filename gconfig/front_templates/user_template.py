@@ -512,12 +512,11 @@ level_mail = {
 
 # 等级限时礼包
 level_gift = {
-    'uk': ('level', 'int'),  # 等级
-    'reward': ('reward', 'list_3'),  # 奖励
-    'coin': ('coin', 'int'),  # 钻石购买
-    'buy': ('buy', 'int'),  # 充值id
-    'des': ('des', 'unicode'),  # 描述
-    'des2': ('des2', 'unicode'),  # 描述
+    'uk':       ('level', 'int'),       # 等级
+    'reward':   ('reward', 'list_3'),   # 奖励
+    'time':     ('time', 'int'),        # 时长
+    'type':     ('type', 'int'),        # 充值类型
+    'des':      ('des', 'str'),     # 描述
 }
 
 # 新服活动时间配置

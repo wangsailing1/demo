@@ -201,7 +201,8 @@ class UserPayment(ModelBase):
         double_data.append(product_id)
         self.save()
 
-    def add_pay(self, sort, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True):
+    def add_pay(self, sort, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True,
+                act_id=0, act_item_id=0):
         """ 记录充值
 
         :param sort:
@@ -211,31 +212,40 @@ class UserPayment(ModelBase):
         """
         if can_open_gift:   # 实付金额大于或等于订单金额才会给gift
             now = int(time.time())
-            if sort == 1:      # 月卡
-                if not self.mm.active_card.get_status(sort):
-                    self.mm.active_card.record(sort)
-                else:
-                    return order_diamond
-            elif sort == 2:    # 至尊卡卡
-                if not self.mm.active_card.get_status(sort):
-                    self.mm.active_card.record(sort)
-                else:
-                    return order_diamond
-            elif sort == 3:     # 等级限时礼包
-                charge_config = game_config.charge.get(product_id, {})
-                lv = charge_config.get('gift_reward_id', 0)
+            if not act_id:
+                if sort == 1:      # 月卡
+                    if not self.mm.active_card.get_status(sort):
+                        self.mm.active_card.record(sort)
+                    else:
+                        return order_diamond
+                elif sort == 2:    # 至尊卡卡
+                    if not self.mm.active_card.get_status(sort):
+                        self.mm.active_card.record(sort)
+                    else:
+                        return order_diamond
+                # elif sort == 3:     # 等级限时礼包
+                #     charge_config = game_config.charge.get(product_id, {})
+                #     lv = charge_config.get('gift_reward_id', 0)
+                #     level_gift_config = game_config.level_gift.get(lv)
+                #     if level_gift_config and lv in self.mm.user.level_gift:
+                #         self.mm.user.level_gift[lv]['status'] = 1
+                #         # self.mm.user.level_gift.pop(lv)
+                #         # message = self.mm.mail.generate_mail(
+                #         #     i18n_msg.get(25, self.mm.user.language_sort),
+                #         #     i18n_msg.get('level_gift', self.mm.user.language_sort),
+                #         #     gift=level_gift_config['reward'])
+                #         # self.mm.mail.add_mail(message)
+                #         self.mm.user.save()
+                #     else:
+                #         return order_rmb * 10
+            elif act_id == 3001:  # 限时等级礼包
+                if not act_item_id:
+                    return order_rmb * 10
+                lv = act_item_id
                 level_gift_config = game_config.level_gift.get(lv)
                 if level_gift_config and lv in self.mm.user.level_gift:
                     self.mm.user.level_gift[lv]['status'] = 1
-                    # self.mm.user.level_gift.pop(lv)
-                    # message = self.mm.mail.generate_mail(
-                    #     i18n_msg.get(25, self.mm.user.language_sort),
-                    #     i18n_msg.get('level_gift', self.mm.user.language_sort),
-                    #     gift=level_gift_config['reward'])
-                    # self.mm.mail.add_mail(message)
-                    self.mm.user.save()
-                else:
-                    return order_rmb * 10
+
             return 0
         else:
             return 0
