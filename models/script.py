@@ -682,8 +682,7 @@ class Script(ModelBase):
             'continued_income': 0,  # 已领取持续收入
             'continued_income_unit': 0,  # 持续收入 每分钟收入数
 
-            'attention': 0,  # 关注度
-            'audience': 0,  # 观众
+            'final_attention': 0,  # 关注度
         }
         return data
 
