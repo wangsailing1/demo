@@ -399,6 +399,7 @@ class Chapter_stage(object):
     # 解锁艺人对话
     def open_actor_chat(self, now_stage):
         config = game_config.avg_dialogue[now_stage]
+        info = {}
         if config['is_end']:
             phone_unlock = config['phone_unlock']
             if not phone_unlock:
