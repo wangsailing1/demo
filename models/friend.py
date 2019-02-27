@@ -441,6 +441,8 @@ class Friend(ModelBase):
         group_id = game_config.card_basis[config['hero_id']]['group']
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
+        if config['chapter_id'] in self.actors[group_id]['chat_log']:
+            return {}
         self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
         if is_save:
             self.save()
