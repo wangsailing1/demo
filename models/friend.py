@@ -488,6 +488,7 @@ class Friend(ModelBase):
         self.add_newest_uid(group_id)
         if is_save:
             self.save()
+        return {group_id:config['dialogue_id']}
 
     def new_actor(self, group_id, is_save=False):
         if group_id not in self.actors:
