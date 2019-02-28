@@ -27,8 +27,8 @@ class OnePieceLogic(object):
         self.mm = mm
         self.one_piece = self.mm.one_piece
         self.one_piece_config = copy.deepcopy(game_config.one_piece.get(self.one_piece.version, {}))
-        self.one_piece_config['start_time'] = game_config.active[self.one_piece.config_id]['start_time']
-        self.one_piece_config['end_time'] = game_config.active[self.one_piece.config_id]['end_time']
+        self.one_piece_config['start_time'] = game_config.active.get(self.one_piece.config_id,{}).get('start_time','')
+        self.one_piece_config['end_time'] = game_config.active.get(self.one_piece.config_id,{}).get('end_time','')
 
     def index(self):
         rank = self.one_piece.get_rank()
