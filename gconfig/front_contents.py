@@ -601,5 +601,10 @@ one_piece_mapping = {
     'one_piece_reduce': ('one_piece_reduce', True),
 }
 
+foundation_mapping = {
+    'foundation': ('foundation', True),
+    'rmb_foundation': ('rmb_foundation', True),
+}
+
 # 注册需要写到最下面
 register_handler()
