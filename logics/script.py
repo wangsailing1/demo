@@ -735,6 +735,9 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         attention = cur_script['finished_attention'].get('attention', 0)
+        #  添加导演效果
+        attention = script.calc_director_effect(11, attention)
+
         finished_attr = cur_script['finished_attr']
         part_a = finished_attr.get('part_a', 0)
         part_b = finished_attr.get('part_b', 0)
