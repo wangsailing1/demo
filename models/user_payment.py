@@ -245,6 +245,8 @@ class UserPayment(ModelBase):
                 level_gift_config = game_config.level_gift.get(lv)
                 if level_gift_config and lv in self.mm.user.level_gift:
                     self.mm.user.level_gift[lv]['status'] = 1
+                    return 0
+                return order_rmb * 10
 
             return 0
         else:
