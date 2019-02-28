@@ -26,7 +26,6 @@ class OnePiece(ModelBase):
     TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     DURATION_TIME = 60 * 60 * 24 * 3        # 秒
-    MAX_FREE_ONE_PIECE_TIMES = 3
     KEY_ID = 100002
     ACTIVE_ID = 2008
 
@@ -103,7 +102,7 @@ class OnePiece(ModelBase):
 
         :return:
         """
-        return self.MAX_FREE_ONE_PIECE_TIMES - self.open_times
+        return game_config.common[94] - self.open_times
     #
     ######################################本服积分排行榜######################################################
     def get_rank_key(self, server_name=None, version=None):
