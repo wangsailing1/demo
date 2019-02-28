@@ -53,11 +53,14 @@ class Script(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'refresh_date': '',
+
             'newbie': True,         # 是否新用户首次拍片
             'sequel_script': [],  # 已获得的可拍摄的续集片子
             'continued_script': {},         # 持续收益的片子
             'style_log': [],                # 连续拍片类型，保留最近10个
             'own_script': [],               # 已获得的可拍摄的片子
+            'directing_times': 0,           # 当天导演次数
 
             'group_sequel': {},  # 每个系列的可拍续集
 
@@ -188,6 +191,11 @@ class Script(ModelBase):
         return data[-5:]
 
     def pre_use(self):
+        today = time.strftime('%F')
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.directing_times = 0
+
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
         # if self.cur_script:
@@ -261,6 +269,9 @@ class Script(ModelBase):
 
         if save:
             self.save()
+
+    def max_directing_times(self):
+        return game_config.common[93]
 
     @property
     def top_group(self):
@@ -644,6 +655,7 @@ class Script(ModelBase):
         script_config = game_config.script[script_id]
         type_config = game_config.script_type_style[script_config['type']]
         data = {
+            're_directing': 0,               # 是否处理过了重拍流程  1： 重拍过，  -1: 跳过重拍， 0 未处理
             'director_effect': {},          # 拍片时候是否有上导演，在logics层检查director模块 director_skill_effect 方法
             'directing_ids': [],             # 导演执导方针
             'cost': 0,  # 拍摄消耗的美金

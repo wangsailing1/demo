@@ -69,6 +69,33 @@ def set_directing_id(hm):
     return rc, data
 
 
+def reset_directing_id(hm):
+    """
+    重拍方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.set_directing_id(directing_id, re_directing=True)
+    return rc, data
+
+
+def ignore_re_directing(hm):
+    """
+     跳过重置指导
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.ignore_re_directing()
+    return rc, data
+
+
 def set_card(hm):
     """
     选演员上阵
