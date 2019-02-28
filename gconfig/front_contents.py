@@ -592,6 +592,7 @@ egg_mapping = {
     'egg_item': ('egg_item', True),
     'egg_diamond': ('egg_diamond', True),
 }
+
 one_piece_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'one_piece': ('one_piece', True),
@@ -601,5 +602,13 @@ one_piece_mapping = {
     'one_piece_reduce': ('one_piece_reduce', True),
 }
 
+super_player_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'player': ('player', True),
+    'play_redbag': ('play_redbag', True),
+    'play_shop': ('play_shop', True),
+    'play_rankreward': ('play_rankreward', True),
+    'play_points': ('play_points', True),
+}
 # 注册需要写到最下面
 register_handler()
