@@ -328,6 +328,10 @@ class GameConfigMixIn(object):
         self.functional_building_mapping = {}
         self.director_gacha_mapping = {}
         self.add_recharge_mapping = {}
+        self.play_shop_mapping = {}
+        self.play_redbag_mapping = {}
+        self.play_rankreward_mapping = {}
+        self.play_points_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -423,6 +427,10 @@ class GameConfigMixIn(object):
         self.functional_building_mapping.clear()
         self.director_gacha_mapping.clear()
         self.add_recharge_mapping.clear()
+        self.play_shop_mapping.clear()
+        self.play_redbag_mapping.clear()
+        self.play_rankreward_mapping.clear()
+        self.play_points_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2518,6 +2526,53 @@ class GameConfigMixIn(object):
                     self.add_recharge_mapping[j['version']] = {}
                 self.add_recharge_mapping[j['version']][i] = j
         return self.add_recharge_mapping
+
+    # 超级大玩家mapping
+    def get_play_shop_mapping(self):
+        if not self.play_shop_mapping:
+            for i, j in self.play_shop.iteritems():
+                version = j['version']
+                sort = j['sort']
+                j['id'] = i
+                if version not in self.play_shop_mapping:
+                    self.play_shop_mapping[version] = {}
+                if sort not in self.play_shop_mapping[version]:
+                    self.play_shop_mapping[version][sort] = {}
+                self.play_shop_mapping[version][sort][i] = j
+        return self.play_shop_mapping
+
+    def get_play_redbag_mapping(self):
+        if not self.play_redbag_mapping:
+            for i, j in self.play_redbag.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_redbag_mapping:
+                    self.play_redbag_mapping[version] = {}
+                self.play_redbag_mapping[version] = j
+        return self.play_redbag_mapping
+
+
+    def get_play_rankreward_mapping(self):
+        if not self.play_rankreward_mapping:
+            for i, j in self.play_rankreward.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_rankreward_mapping:
+                    self.play_rankreward_mapping[version] = {}
+                self.play_rankreward_mapping[version] = j
+        return self.play_rankreward_mapping
+
+
+    def get_play_points_mapping(self):
+        if not self.play_points_mapping:
+            for i, j in self.play_points.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_points_mapping:
+                    self.play_points_mapping[version] = {}
+                self.play_points_mapping[version] = j
+        return self.play_points_mapping
+
 
 
 
