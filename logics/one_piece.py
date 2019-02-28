@@ -123,7 +123,7 @@ class OnePieceLogic(object):
         # 更新排行榜
         self.one_piece.update_key(1, save=False)
 
-        gift = [[6, self.one_piece.KEY_ID, 1]]
+        gift = [[5, self.one_piece.KEY_ID, 1]]
         reward = add_mult_gift(self.mm, gift, reward)
 
         gifts.extend(gift)
@@ -155,7 +155,7 @@ class OnePieceLogic(object):
         reward = {}
         index = None
 
-        gifts = [[6, self.one_piece.KEY_ID, 11]]
+        gifts = [[5, self.one_piece.KEY_ID, 11]]
 
         for i in xrange(11):
             one_piece_rate_id, gift = self.receive_random_gifts()

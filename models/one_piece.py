@@ -26,7 +26,7 @@ class OnePiece(ModelBase):
     TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     DURATION_TIME = 60 * 60 * 24 * 3        # 秒
-    KEY_ID = 100002
+    KEY_ID = 800043
     ACTIVE_ID = 2008
 
     def __init__(self, uid=None):
