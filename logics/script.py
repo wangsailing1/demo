@@ -30,6 +30,7 @@ class ScriptLogic(object):
         self.mm = mm
 
     def get_step(self):
+        """整个拍片流程的几个阶段，帮前端预处理下"""
         script = self.mm.script
         if not script.script_pool:
             step = 0
@@ -45,6 +46,22 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def directing_step(self):
+        """重拍的几个阶段，帮前端预处理下
+        0:跳过这步 1:选指导方针 2.进入推翻重拍界面 3.确认完方针开始选人
+        """
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script.get('directing_ids'):
+            step = 0
+        else:
+            step = 1
+            if cur_script['director_effect']:
+                step = 2
+            if cur_script['re_directing']:
+                step = 3
+        return step
+
     def get_recommend_card(self, script_id):
         return self.mm.script.top_end_lv_card.get(script_id, {})
 
@@ -58,6 +75,7 @@ class ScriptLogic(object):
             # 'own_script': script.own_script,
             # 'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
+            'directing_step': self.directing_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
             'cur_script': script.cur_script,
