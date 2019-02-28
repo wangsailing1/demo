@@ -67,7 +67,8 @@ class ScriptLogic(object):
             'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
-            'script_license': self.mm.user.script_license
+            'script_license': self.mm.user.script_license,
+            'remain_directing_times': script.max_directing_times() - script.directing_times,
         }
 
     # 统计总的effect
@@ -137,7 +138,10 @@ class ScriptLogic(object):
         # if not directing_id and self.mm.director.all_director_pos:
         #     film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
 
-        film['directing_ids'] = self.mm.director.get_directing_id(script_id)
+        # 判断是否有导演次数
+        if script.directing_times < script.max_directing_times():
+            film['directing_ids'] = self.mm.director.get_directing_id(script_id)
+
         script.cur_script = film
         film['cost'] = cost
 
@@ -155,7 +159,7 @@ class ScriptLogic(object):
         rc, data = self.index()
         return rc, data
 
-    def set_directing_id(self, directing_id):
+    def set_directing_id(self, directing_id, re_directing=False):
         """
 
         :param directing_id:
@@ -178,11 +182,24 @@ class ScriptLogic(object):
         if not self.mm.director.all_director_pos:
             return 3, {}        # 请上阵导演
 
+        if re_directing:
+            cur_script['re_directing'] = 1
         cur_script['director_effect'] = self.mm.director.director_skill_effect(directing_id, cur_script['id'])
+        script.directing_times += 1
         script.save()
 
         rc, data = self.index()
         return rc, data
+
+    def ignore_re_directing(self):
+        """跳过重拍"""
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+        cur_script['re_directing'] = -1
+        script.save()
+        return self.index()
 
     def set_card(self, role_card):
         """
@@ -735,6 +752,9 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         attention = cur_script['finished_attention'].get('attention', 0)
+        #  添加导演效果
+        attention = script.calc_director_effect(11, attention)
+
         finished_attr = cur_script['finished_attr']
         part_a = finished_attr.get('part_a', 0)
         part_b = finished_attr.get('part_b', 0)
