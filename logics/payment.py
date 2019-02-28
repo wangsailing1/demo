@@ -138,6 +138,12 @@ def pay_apply(mm, obj, charge_config):
         except:
             print_log(traceback.format_exc())
 
+        # 钻石福利基金
+        try:
+            mm.foundation.add_score(order_diamond)
+        except:
+            print_log(traceback.format_exc())
+
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
         if server_type == 1:

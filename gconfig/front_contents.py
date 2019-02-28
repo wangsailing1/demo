@@ -593,5 +593,10 @@ egg_mapping = {
     'egg_diamond': ('egg_diamond', True),
 }
 
+foundation_mapping = {
+    'foundation': ('foundation', True),
+    'rmb_foundation': ('rmb_foundation', True),
+}
+
 # 注册需要写到最下面
 register_handler()
