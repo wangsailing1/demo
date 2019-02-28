@@ -1,11 +1,11 @@
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
+#! --*-- coding: utf-8 --*--
 
+__author__ = 'ljm'
 
 import time
 from gconfig import game_config
 import random
-from logics.notice import add_notice_all_server
+# from logics.notice import add_notice_all_server
 from return_msg_config import i18n_msg
 from math import ceil
 from lib.db import ModelBase, ModelTools
@@ -13,6 +13,7 @@ from lib.core.environ import ModelManager
 from lib.utils import generate_rank_score
 from lib.utils.debug import print_log
 from lib.utils.active_inreview_tools import get_version_by_active_id
+from chat.to_server import send_to_all
 
 
 class SuperPlayer(ModelBase):
@@ -42,6 +43,7 @@ class SuperPlayer(ModelBase):
             'reward_step': {1: 0, 2: 0, 3: 0},   # 领取成就
             'get_time': 0,           # 下一次可获取红包时间戳
             'refreshplayer': 1,      # 刷新自己数据
+            'a_id':0,                # active表里的id
         }
         super(SuperPlayer, self).__init__(self.uid)
 
@@ -59,6 +61,7 @@ class SuperPlayer(ModelBase):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_ID)
         if version and self.version < version:
             self.version = version
+            self.a_id = a_id
             self.all_clear()
 
     def all_clear(self):
@@ -119,23 +122,18 @@ class SuperPlayer(ModelBase):
                 redbag = RedBag(self.version)
                 redbag.add_red_bag('%s_%s' % (self.uid, self.day_send_bag), list_)
             self.add_send_notice()
-            # self.can_receive_times += self.ADD_CAN_RECEIVED_TIME * can_send_times
             send_rank.update_user_score(self.uid, can_send_times)
 
         self.save()
 
     def add_send_notice(self):
-        u = User.get(self.uid)
-        name = u.name
-        server_name = u._server_name
-        msg = i18n_msg[1208] % (server_name, name)
+        server_name = self._server_name
+        msg = i18n_msg[1208] % (server_name, self.mm.user.name)
         data_ = {
             'msg': msg,
             'notice_lv': 6,
         }
-        add_notice_all_server(data=data_)
-        # superplayer_notice= SuperPlayerNotice()
-        # superplayer_notice.add_notice(notice_)
+        send_to_all(data_, server_name)
 
     def add_day_pay(self, coin_num):
         if self.version:
@@ -317,4 +315,4 @@ def random_red_bag(num, min_, max_, total=1000):
     return random_list
 
 
-ModelManager.register_model('super_player', SuperPlayer)
+ModelManager.register_model('superplayer', SuperPlayer)

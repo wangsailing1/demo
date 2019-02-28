@@ -5,8 +5,7 @@ __author__ = 'ljm'
 
 
 player = {
-    'uk':           ('id', 'int'),          # id
-    'version':      ('version', 'int'),     # 活动版本
+    'uk':           ('version', 'int'),          # 活动版本
     'recharge':     ('recharge', 'int'),    # 充值额度
     'consume':      ('consume', 'int'),     # 消费额度
     'donate':       ('donate', 'int'),      # 红包钻石
