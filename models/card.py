@@ -868,6 +868,8 @@ class Card(ModelBase):
             for card_oid, group_id in card_oid_dict:
                 if group_id in skill_info['skilltarget_id']:
                     skilltarget_oid_list.append(group_id)
+            if not skilltarget_oid_list:
+                return {}
 
         for target_oid in skilltarget_oid_list:
             result['skilltarget_oid'][target_oid] = {}
@@ -901,20 +903,23 @@ class Card(ModelBase):
                     5: 23,
                 },  # 该卡牌受所有生效技能影响后，最终类型值的增加值，这里只有类型只有1-6
                     # 大于6的类型留给非卡牌属性值的增益，如最终拍片收益的增长等
-                skill_id1: {
-                    'skilltype': list  # 技能效果类型
-                    'skilltarget_oid': {
-                        'card_oid': {
-                            3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
-                            5: 13,
-                        }  # 这里只有效果类型只有1-6
-                        ...
-                    }  # 技能影响的卡牌和效果值
-                    'computing_method': int  # 效果计算方法
-                    'skilllevel_value': int  # 技能效果数值
-                },
-                skill_id2: {
-                ...
+                skill: {
+                    skill_id1: {
+                        'skilltype': list  # 技能效果类型
+                        'skilltarget_oid': {
+                            'card_oid': {
+                                3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
+                                5: 13,
+                            }  # 这里只有效果类型只有1-6
+                            ...
+                        }  # 技能影响的卡牌和效果值
+                        'computing_method': int  # 效果计算方法
+                        'skilllevel_value': int  # 技能效果数值
+                    },
+                    skill_id2: {
+                    ...
+                    },
+                    ...
                 }
             },
             card_oid2: {
@@ -929,19 +934,28 @@ class Card(ModelBase):
         for card_oid, role_id in align.iteritems():
             skill_id_list = self.cards[card_oid]['skill'].keys()
             result[card_oid] = {}
+            result[card_oid]['skill'] = {}
             for skill_id in skill_id_list:
                 data = self.get_single_skill_effect(skill_id, card_oid, model_type, card_oid_list, script_id, role_id)
-                result[card_oid][skill_id] = data
+                result[card_oid]['skill'][skill_id] = data
                 if not data:
+                    del result[card_oid]['skill'][skill_id]
                     continue
                 for target_oid, effect in data['skilltarget_oid'].iteritems():
                     if target_oid not in total_effect:
                         total_effect[target_oid] = {}
                     for type, value in effect.items():
                         total_effect[target_oid][type] = total_effect[target_oid].get(type, 0) + value
+            if not result[card_oid]['skill']:
+                del result[card_oid]['skill']
 
         for card_oid, effect in total_effect.iteritems():
-            result[card_oid]['effect'] = effect
+            if effect:
+                result[card_oid]['effect'] = effect
+
+        for card_oid in card_oid_list:
+            if not result[card_oid]:
+                del result[card_oid]
 
         return result
 
