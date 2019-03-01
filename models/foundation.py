@@ -79,7 +79,7 @@ class Foundation(ModelBase):
 
             if self.score >= foundation_info['need_coin'] and f_id not in self.reward_dict:
                 self.activate_mark[f_id] = time.strftime('%F')
-                reward_dict = [0]  # 预先填充大奖
+                reward_dict = []
                 for key, value in foundation_info.iteritems():
                     if key.startswith('day'):
                         day = int(key.split('day')[1])

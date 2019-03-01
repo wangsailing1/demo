@@ -27,22 +27,20 @@ class Foundation(object):
         data['reward_dict'] = self.mm.foundation.reward_dict
         return 0, data
 
-    def withdraw(self, f_id):
+    def withdraw(self, f_id, days):
         f_active_date = self.mm.foundation.activate_mark[f_id]
         f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
         active_days = (datetime.date.today() - f_active_date).days + 1
         reward_list = self.mm.foundation.reward_dict[f_id]
         foundation_info = game_config.foundation[f_id]
-        reward = []
-        if not reward_list or active_days < reward_list[1]:
+
+        if days not in reward_list or active_days < days:
             return 4, {}  # 无奖励可领取
-        if len(reward_list) == 2:
-            reward.extend(foundation_info['day%s' % reward_list[-1]])
-            reward.extend(foundation_info['reward_show'])
-            self.mm.foundation.reward_dict[f_id] = []
-        else:
-            _day = reward_list.pop(1)
-            reward.extend(foundation_info['day%s' % _day])
+
+        index = reward_list.index(days)
+        reward_list.pop(index)
+        reward = foundation_info['day%s' % days]
         add_mult_gift(self.mm, reward)
         self.mm.foundation.save()
-        return 0, {}
+
+        return self.foundation_index()
