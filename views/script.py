@@ -76,10 +76,11 @@ def reset_directing_id(hm):
     :return:
     """
     mm = hm.mm
-    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
-
     sl = ScriptLogic(mm)
-    rc, data = sl.set_directing_id(directing_id, re_directing=True)
+
+    # directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+    # rc, data = sl.set_directing_id(directing_id, re_directing=True)
+    rc, data = sl.reset_directing_id()
     return rc, data
 
 

@@ -57,9 +57,9 @@ class ScriptLogic(object):
         else:
             step = 1
             if cur_script['director_effect']:
-                step = 2
+                step += 1
             if cur_script['re_directing']:
-                step = 3
+                step += 1
         return step
 
     def get_recommend_card(self, script_id):
@@ -208,6 +208,18 @@ class ScriptLogic(object):
 
         rc, data = self.index()
         return rc, data
+
+    def reset_directing_id(self):
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        if not cur_script['director_effect']:
+            return 2, {}
+        cur_script['re_directing'] = 1
+        script.save()
+        return self.index()
 
     def ignore_re_directing(self):
         """跳过重拍"""
