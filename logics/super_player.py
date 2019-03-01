@@ -87,7 +87,7 @@ class SuperPlayer(object):
                 rank_notice.append({'uid': user.uid, 'server_name': user._server_name, 'score': int(ceil(score_)), 'name': user.name})
         data['rank_notice'] = rank_notice
         data['bag_info'] = self.get_red_bag(1)
-        data['next_refresh_time'] = superplayershop.refresh_time + 1800
+        data['next_refresh_time'] = int(superplayershop.refresh_time + 1800 - int(time.time()))
         return 0, data
 
     def buy_goods(self, sort_id, good_id):
