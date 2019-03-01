@@ -52,7 +52,7 @@ class ScriptLogic(object):
         """
         script = self.mm.script
         cur_script = script.cur_script
-        if not cur_script.get('directing_ids') or script.directing_times < script.max_directing_times():
+        if not cur_script.get('directing_ids') or script.directing_times >= script.max_directing_times():
             step = 0
         else:
             step = 1
