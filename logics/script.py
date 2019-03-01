@@ -58,8 +58,8 @@ class ScriptLogic(object):
             step = 1
             if cur_script['director_effect']:
                 step += 1
-            if cur_script['re_directing']:
-                step += 1
+                if cur_script['re_directing']:
+                    step += 1
         return step
 
     def get_recommend_card(self, script_id):
