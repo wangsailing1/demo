@@ -791,6 +791,14 @@ class Card(ModelBase):
         return False
 
     def is_skill_active(self, skill_id, model_type, align_list, script_id, role_id):
+        '''
+        :param skill_id: 技能id
+        :param model_type: 系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param align_list: 队友（包括自己）组id列表
+        :param script_id: 剧本id
+        :param role_id: 技能所有者角色id
+        :return: True|False
+        '''
         skill_info = game_config.card_skill[skill_id]
         if model_type not in skill_info['triggersystem']:
             return False
@@ -820,7 +828,13 @@ class Card(ModelBase):
         :param role_id: 技能所有者角色id
         :return: {
             'skilltype': list  # 技能效果类型
-            'skilltarget_oid': list  # 获得技能效果的card_oid列表
+            'skilltarget_oid': {
+                'card_oid': {
+                    3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
+                    5: 13,
+                }
+                ...
+            }  # 技能影响的卡牌和效果值
             'computing_method': int  # 效果计算方法
             'skilllevel_value': int  # 技能效果数值
         }
@@ -843,16 +857,29 @@ class Card(ModelBase):
         result['computing_method'] = skill_info['computing_method']
         skill_lv = self.cards[self_card_oid]['skill'][skill_id]['lv']
         result['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
-        result['skilltarget_oid'] = []
+        result['skilltarget_oid'] = {}
         type = skill_info['skilltarget_type']
+        skilltarget_oid_list = []
         if type == 1:
-            result['skilltarget_oid'] = card_oid_list
+            skilltarget_oid_list = card_oid_list
         elif type == 3:
-            result['skilltarget_oid'] = [self_card_oid]
+            skilltarget_oid_list = [self_card_oid]
         elif type == 2:
             for card_oid, group_id in card_oid_dict:
                 if group_id in skill_info['skilltarget_id']:
-                    result['skilltarget_oid'].append(group_id)
+                    skilltarget_oid_list.append(group_id)
+
+        for target_oid in skilltarget_oid_list:
+            result['skilltarget_oid'][target_oid] = {}
+            all_char_pro = self.mm.card.get_card(target_oid)['all_char_pro']
+            for skilltype in skill_info['skilltype']:
+                if all_char_pro[skilltype-1] == -1:
+                    continue
+                if skill_info['computing_method'] == 1:
+                    result['skilltarget_oid'][target_oid][skilltype] = result['skilllevel_value']
+                else:
+                    real_value = math.ceil(all_char_pro[skilltype - 1] * result['skilllevel_value'] / 10000)
+                    result['skilltarget_oid'][target_oid][skilltype] = real_value
 
         return result
 
@@ -868,9 +895,20 @@ class Card(ModelBase):
         :return:
         {
             card_oid1: {
+                effect: {
+                    1: 10,
+                    3: 20,
+                    5: 23,
+                },  # 该卡牌受所有生效技能影响后，最终类型值的增加值
                 skill_id1: {
                     'skilltype': list  # 技能效果类型
-                    'skilltarget_oid': list  # 获得技能效果的card_oid列表
+                    'skilltarget_oid': {
+                        'card_oid': {
+                            3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
+                            5: 13,
+                        }
+                        ...
+                    }  # 技能影响的卡牌和效果值
                     'computing_method': int  # 效果计算方法
                     'skilllevel_value': int  # 技能效果数值
                 },
@@ -892,6 +930,21 @@ class Card(ModelBase):
             for skill_id in skill_id_list:
                 data = self.get_single_skill_effect(skill_id, card_oid, model_type, card_oid_list, script_id, role_id)
                 result[card_oid][skill_id] = data
+
+        # 计算所有卡牌最终获得加成
+        total_effect = {}
+        for _, skill_effect in result.iteritems():
+            for _, skilltarget_info in skill_effect.iteritems():
+                if not skilltarget_info:
+                    continue
+                for target_oid, effect in skilltarget_info['skilltarget_oid'].iteritems():
+                    if target_oid not in total_effect:
+                        total_effect[target_oid] = {}
+                    for type, value in effect.items():
+                        total_effect[target_oid][type] = total_effect[target_oid].get(type, 0) + value
+
+        for card_oid, effect in total_effect.iteritems():
+            result[card_oid]['effect'] = effect
 
         return result
 
