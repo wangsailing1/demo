@@ -109,9 +109,9 @@ DATE_LIST_JOBS = (
     # # 新服限时英雄排名发奖
     # (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
     # 超级大玩家刷新
-    (super_player_refresh_time                  , refresh           , 0),
+    (super_player_refresh_time                  , refresh           , 1),
     # 超级大玩家发奖
-    (active_reward_time                         , active_reward     , 0),
+    (active_reward_time                         , active_reward     , 1),
 )
 
 
