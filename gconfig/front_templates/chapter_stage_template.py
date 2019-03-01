@@ -31,6 +31,7 @@ chapter_stage = {
     'dialog1': ('dialog1', 'str'),  # 角色台词
     'name2': ('name2', 'str'),  # 角色名
     'dialog2': ('dialog2', 'str'),  # 角色台词
+    'script_icon': ('script_icon', 'str'),  # 角色台词
 
 }
 
