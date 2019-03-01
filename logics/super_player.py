@@ -23,8 +23,9 @@ class SuperPlayer(object):
         self.user = self.mm.user
         self.superplayer = self.mm.superplayer
         self.superplayer_config = game_config.player.get(self.superplayer.version, {})
-        self.superplayer_config['start_time'] = game_config.active.get(self.superplayer.a_id, {}).get('start_time', '')
-        self.superplayer_config['end_time'] = game_config.active.get(self.superplayer.a_id, {}).get('end_time', '')
+        if self.superplayer_config:
+            self.superplayer_config['start_time'] = game_config.active.get(self.superplayer.a_id, {}).get('start_time', '')
+            self.superplayer_config['end_time'] = game_config.active.get(self.superplayer.a_id, {}).get('end_time', '')
 
     def is_enter(self):
         config = self.superplayer_config
