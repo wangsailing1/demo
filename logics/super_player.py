@@ -13,6 +13,7 @@ from tools.gift import add_mult_gift
 from lib.utils.active_inreview_tools import get_version_by_active_id
 from models.super_player import SuperPlayerShop, SuperPlayerRank, RedBag
 from lib.utils.time_tools import str2timestamp
+import datetime
 
 class SuperPlayer(object):
 
@@ -232,3 +233,32 @@ def active_reward():
             mm = ModelManager(uid)
             message = mm.mail.generate_mail(msg, unicode('att_reward', 'utf-8'), reward)
             mm.mail.add_mail(message, save=True)
+
+
+# 刷新时间func
+def super_player_refresh_time():
+    config = game_config.active
+    str_times = [v['start_time'] for v in config.values() if v['active_type'] == 2010]
+    result = []
+    for str_time in str_times:
+        tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+        utc_time = time.mktime(tmp_time) - 30 *60
+        if utc_time in result:
+            continue
+        result.append(utc_time)
+
+    return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
+
+# 发奖时间func
+def active_reward_time():
+    config = game_config.active
+    str_times = [v['end_time'] for v in config.values() if v['active_type'] == 2010]
+    result = []
+    for str_time in str_times:
+        tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+        utc_time = time.mktime(tmp_time) + 5
+        if utc_time in result:
+            continue
+        result.append(utc_time)
+
+    return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
