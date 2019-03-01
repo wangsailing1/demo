@@ -67,6 +67,8 @@ class Foundation(ModelBase):
         return False
 
     def add_score(self, order_diamond):
+        if not self.is_open():
+            return
         self.score += order_diamond
         self.save()
 
