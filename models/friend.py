@@ -599,7 +599,7 @@ class Friend(ModelBase):
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
         # data['phone_daily_remain'] = self.check_chat_end()[-1]
-        data['phone_daily_remain'] = 0
+        data['phone_daily_remain'] = []
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
         # data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data
