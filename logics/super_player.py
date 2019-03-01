@@ -12,7 +12,7 @@ from math import ceil
 from tools.gift import add_mult_gift
 from lib.utils.active_inreview_tools import get_version_by_active_id
 from models.super_player import SuperPlayerShop, SuperPlayerRank, RedBag
-
+from lib.utils.time_tools import str2timestamp
 
 class SuperPlayer(object):
 
@@ -29,19 +29,18 @@ class SuperPlayer(object):
         config = self.superplayer_config
         if not config:
             return 'error_superplayer'
-        FORMAT = '%Y-%m-%d %H:%M:%S'
-        start_time = config['start_time']
-        end_time = config['end_time']
+        start_time = str2timestamp(config['start_time'])
+        end_time = str2timestamp(config['end_time'])
         if not (start_time and end_time):
             return 'error_superplayer'
-        now_str = time.strftime(FORMAT)
+        now_str = int(time.time())
         if start_time <= now_str <= end_time:
             return 0
         return 'error_superplayer'
 
     # 刷新商店
     def refresh(self):
-        shop_config = game_config.play_shop_mapping.get(self.superplayer.version, {})
+        shop_config = game_config.get_play_shop_mapping().get(self.superplayer.version, {})
         if not shop_config:
             return -1
         superplayershop = SuperPlayerShop.get(self.superplayer.version)
@@ -92,6 +91,7 @@ class SuperPlayer(object):
     def buy_goods(self, sort_id, good_id):
         superplayershop = SuperPlayerShop.get(self.superplayer.version)
         shop_goods = superplayershop.shop_goods
+        print shop_goods
         if good_id != shop_goods[sort_id]['id']:
             return 1, {}  # 该商品已售完
         if shop_goods[sort_id]['limit_num'] <= 0:
@@ -135,8 +135,9 @@ class SuperPlayer(object):
         reward = []
         super_rank = SuperPlayerRank(self.superplayer.version)
         mytimes = int(ceil(super_rank.get_user_score(self.user)))
-        active_config = game_config.play_points_mapping.get(self.superplayer.version, {})
+        active_config = game_config.get_play_points_mapping().get(self.superplayer.version, {})
         need_point = active_config.get(reward_id, {}).get('point', 0)
+        print need_point,mytimes
         if need_point and mytimes >= need_point:
             gift = active_config.get(reward_id, {}).get('reward', [])
             if gift:
@@ -192,7 +193,7 @@ def refresh():
         version = get_version_by_active_id(active_id=2010, differ_time=-3600)
     shop_config = {}
     if version:
-        shop_config = game_config.play_shop_mapping.get(version, {})
+        shop_config = game_config.get_play_shop_mapping().get(version, {})
     if shop_config:
         superplayershop = SuperPlayerShop.get(version)
         for i in range(1, 4):
@@ -209,7 +210,7 @@ def active_reward():
     version = get_version_by_active_id(active_id=2010, differ_time=3600)
     super_rank = SuperPlayerRank(version)
     uids_rank = super_rank.get_users_rank(100)
-    playrankreward_config = game_config.play_rankreward_mapping.get(version, {})
+    playrankreward_config = game_config.get_play_rankreward_mapping().get(version, {})
     rank_id = playrankreward_config.keys()
     rank_id.sort()
     for idx, info in enumerate(uids_rank):

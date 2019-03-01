@@ -2548,7 +2548,7 @@ class GameConfigMixIn(object):
                 j['id'] = i
                 if version not in self.play_redbag_mapping:
                     self.play_redbag_mapping[version] = {}
-                self.play_redbag_mapping[version] = j
+                self.play_redbag_mapping[version][i] = j
         return self.play_redbag_mapping
 
 
@@ -2559,7 +2559,7 @@ class GameConfigMixIn(object):
                 j['id'] = i
                 if version not in self.play_rankreward_mapping:
                     self.play_rankreward_mapping[version] = {}
-                self.play_rankreward_mapping[version] = j
+                self.play_rankreward_mapping[version][i] = j
         return self.play_rankreward_mapping
 
 
@@ -2570,7 +2570,7 @@ class GameConfigMixIn(object):
                 j['id'] = i
                 if version not in self.play_points_mapping:
                     self.play_points_mapping[version] = {}
-                self.play_points_mapping[version] = j
+                self.play_points_mapping[version][i] = j
         return self.play_points_mapping
 
 

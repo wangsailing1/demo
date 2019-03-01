@@ -87,10 +87,11 @@ class SuperPlayer(ModelBase):
             super_player_config = game_config.player.get(self.version)
             if super_player_config:
                 FORMAT = '%Y-%m-%d %H:%M:%S'
-                start_time = super_player_config['start_time']
-                end_time = super_player_config['end_time']
+                start_time = game_config.active.get(self.a_id, {}).get('start_time', '')
+                end_time = game_config.active.get(self.a_id, {}).get('end_time', '')
                 if start_time and end_time:
                     now_str = time.strftime(FORMAT)
+                    print start_time,now_str,end_time
                     if start_time <= now_str <= end_time:
                         self.day_spend += coin_num
                         self.send_bag(tp='spend')
@@ -102,7 +103,7 @@ class SuperPlayer(ModelBase):
         elif tp == 'pay' and self.day_pay:
             can_send_times = int(self.day_pay/self.PAY_SEND_NEED - self.day_pay_send)
 
-        configs = game_config.play_redbag_mapping.get(self.version, {})
+        configs = game_config.get_play_redbag_mapping().get(self.version, {})
         if can_send_times and configs:
             id_list = configs.keys()
             send_rank = SuperPlayerRank(self.version)
@@ -140,8 +141,8 @@ class SuperPlayer(ModelBase):
             super_player_config = game_config.player.get(self.version)
             if super_player_config:
                 FORMAT = '%Y-%m-%d %H:%M:%S'
-                start_time = super_player_config['start_time']
-                end_time = super_player_config['end_time']
+                start_time = game_config.active.get(self.a_id, {}).get('start_time', '')
+                end_time = game_config.active.get(self.a_id, {}).get('end_time', '')
                 if start_time and end_time:
                     now_str = time.strftime(FORMAT)
                     if start_time <= now_str <= end_time:
@@ -161,7 +162,7 @@ class RedBag(ModelTools):
         super(RedBag, self).__init__()
         self.version = version
         self.all_bag_key = None
-        self.redis = self.get_redis_client(self.__class__.__name__, self.SERVER_NAME)
+        self.redis = self.get_redis_client(self.SERVER_NAME)
 
     # 获取全部红包code存储的key
     def get_all_bag_key(self):
@@ -235,7 +236,7 @@ class SuperPlayerShop(ModelBase):
         super(SuperPlayerShop, self).__init__(self.version)
 
     @classmethod
-    def get(cls, version):
+    def get(cls, version, server_name=''):
         o = super(SuperPlayerShop, cls).get('superplayershop%s' % version, server_name=cls.SERVER_NAME)
         o.version = version
         return o
@@ -251,7 +252,7 @@ class SuperPlayerRank(ModelTools):
     def __init__(self, version=None):
         self.version = version
         self.rank_key = None
-        self.redis = self.get_redis_client(self.__class__.__name__, self.SERVER_NAME)
+        self.redis = self.get_redis_client(self.SERVER_NAME)
 
     # 获取排行榜的keys
     def get_rank_key(self):
