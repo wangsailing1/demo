@@ -190,9 +190,9 @@ class SuperPlayer(object):
 
 
 def refresh():
-    version = get_version_by_active_id(active_id=2010)
+    _, version = get_version_by_active_id(active_id=2010)
     if not version:
-        version = get_version_by_active_id(active_id=2010, differ_time=-3600)
+        _, version = get_version_by_active_id(active_id=2010, differ_time=-3600)
     shop_config = {}
     if version:
         shop_config = game_config.get_play_shop_mapping().get(version, {})
@@ -209,7 +209,7 @@ def refresh():
 
 
 def active_reward():
-    version = get_version_by_active_id(active_id=2010, differ_time=3600)
+    _, version = get_version_by_active_id(active_id=2010, differ_time=3600)
     super_rank = SuperPlayerRank(version)
     uids_rank = super_rank.get_users_rank(100)
     playrankreward_config = game_config.get_play_rankreward_mapping().get(version, {})
