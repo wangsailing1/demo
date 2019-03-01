@@ -17,8 +17,8 @@ def foundation_index(hm):
 def withdraw(hm):
     # 领取奖励的接口
     mm = hm.mm
-    if not mm.foundation.is_open():
-        return 1, {}  # 活动未开启
+    # if not mm.foundation.is_open():
+    #     return 1, {}  # 活动未开启
     f_id = hm.get_argument('f_id', 0, is_int=True)
     if not f_id:
         return 2, {}  # 活动id错误

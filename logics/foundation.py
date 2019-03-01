@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # encoding: utf-8
 
+import time
 import datetime
 from gconfig import game_config
 from tools.gift import add_mult_gift
-
+from lib.utils.active_inreview_tools import get_version_by_active_id
 
 class Foundation(object):
 
@@ -13,6 +14,10 @@ class Foundation(object):
 
     def foundation_index(self):
         data = {}
+        actice_id, _ = get_version_by_active_id(self.mm.foundation.ACTIVE_TYPE)
+        end_date = game_config.active[actice_id]['end_time']
+        end_time = time.mktime(time.strptime(end_date, '%Y-%m-%d %H:%M:%S')) - time.time()
+        data['end_time'] = end_time
         data['version'] = self.mm.foundation.version
         data['score'] = self.mm.foundation.score
         data['f_active_dates'] = {}
