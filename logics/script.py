@@ -217,6 +217,7 @@ class ScriptLogic(object):
 
         if not cur_script['director_effect']:
             return 2, {}
+        cur_script['director_effect'].clear()
         cur_script['re_directing'] = 1
         script.save()
         return self.index()
