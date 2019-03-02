@@ -33,7 +33,7 @@ chapter_stage = {
     'dialog2': ('dialog2', 'str'),  # 角色台词
     'icon': ('icon', 'str'),  # 剧本图标
     'tag': ('tag', 'str'),  # 标签
-
+    'script_icon': ('script_icon', 'str'),  # 图片icon
 
 }
 

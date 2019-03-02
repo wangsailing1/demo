@@ -17,13 +17,12 @@ def foundation_index(hm):
 def withdraw(hm):
     # 领取奖励的接口
     mm = hm.mm
-    # if not mm.foundation.is_open():
-    #     return 1, {}  # 活动未开启
     f_id = hm.get_argument('f_id', 0, is_int=True)
-    if not f_id:
-        return 2, {}  # 活动id错误
+    days = hm.get_argument('days', 0, is_int=True)
+    if not f_id or not days:
+        return 2, {}  # 参数错误
     if f_id not in mm.foundation.activate_mark:
         return 3, {}  # 该基金未激活
     foundation = Foundation(mm)
-    rc, data = foundation.withdraw(f_id)
+    rc, data = foundation.withdraw(f_id, days)
     return rc, data

@@ -23,6 +23,7 @@ def send_to_all(msg_dict, server_name):
     :param server_name:
     :return:
     """
+    print server_name
     s = get_socket(server_name)
     data = {"level": 1, "combat": 1, "sign": "", "kqgFlag": "system", "guild": "",
             "uid": "", "guild_id": "", "time": 0, "vip": 0, "name": "", "role": 1, "msg": "", "server": server_name}
@@ -44,6 +45,7 @@ def make_sign(uid):
 
 def get_socket(server_name, timeout=1):
     addr = get_socket_addr(server_name)
+    print addr
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
     s.connect(addr)
