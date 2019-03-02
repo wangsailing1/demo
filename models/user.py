@@ -1077,6 +1077,9 @@ class User(ModelBase):
             # 消费记录
             spend_event = self.mm.get_event('spend_event')
             spend_event.record(diamond)
+
+            #超级大玩家
+            self.mm.super_player.add_day_spend(diamond)
             # 消耗钻石活动
             # if self.mm.action not in settings.SPEND_IGNORE_METHOD:
             #     server_type = int(self.mm.user.config_type)
