@@ -183,7 +183,7 @@ def pay_apply(mm, obj, charge_config):
             # mm.red_bag.pay_trigger(product_id, amount)
 
         # mm.user.record_privilege_gift(charge_config=charge_config)
-        mm.super_player.add_day_pay(order_diamond)
+        mm.superplayer.add_day_pay(order_diamond)
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
         mm.user.save()
 
