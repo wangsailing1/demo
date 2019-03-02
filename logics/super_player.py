@@ -176,7 +176,7 @@ class SuperPlayer(object):
             return 3, {}
         reward = {}
         if num and num > 0:
-            gift = [[9, 0, num]]
+            gift = [[2, 0, num]]
             reward = add_mult_gift(self.mm, gift)
             self.superplayer.get_time = int(time.time()) + 10   # 记录下一次抢红包时间戳
             self.superplayer.can_receive_times -= 1
