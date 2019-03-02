@@ -1008,8 +1008,9 @@ class Achieve(DoMission):
             self.done.append(mission_id)
             config = game_config.achieve_mission[mission_id]
             next_id = config['next_id']
-            self.data[next_id] = self.data[mission_id]
-            if config['sort'] == CARD_LEVEL:
+            if next_id:
+                self.data[next_id] = self.data[mission_id]
+            if config['sort'] == CARD_LEVEL and next_id:
                 self.data[next_id] = []
                 for k, v in self.mm.card.cards.iteritems():
                     if v['lv'] >= config['target'][0]:
