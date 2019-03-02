@@ -55,11 +55,16 @@ class ScriptLogic(object):
         if not cur_script.get('directing_ids') or script.directing_times >= script.max_directing_times():
             step = 0
         else:
-            step = 1
-            if cur_script['director_effect']:
-                step += 1
-                if cur_script['re_directing']:
+            # 直接跳过导演了
+            if cur_script['re_directing'] == -1:
+                step = 3
+            else:
+                step = 1
+                if cur_script['director_effect']:
                     step += 1
+                    if cur_script['re_directing']:
+                        step += 1
+
         return step
 
     def get_recommend_card(self, script_id):
