@@ -36,6 +36,7 @@ avg_dialogue = {
     'main_expression': ('main_expression', 'str'),
     'box_center': ('box_center', 'int_list'),
     'cg_picture': ('cg_picture', 'str'),
+    'Recall_effects': ('Recall_effects', 'int'),
 }
 
 # 战斗内广告栏
