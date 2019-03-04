@@ -239,14 +239,29 @@ def active_reward():
 # 刷新时间func
 def super_player_refresh_time():
     config = game_config.active
-    str_times = [v['start_time'] for v in config.values() if v['active_type'] == 2010]
+    now_str = time.strftime('%Y-%m-%d %H:%M:%S')
+    a_id = min([k for k,v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str])
+    str_time = config[a_id]['start_time']
+    str_end_time = config[a_id]['end_time']
     result = []
-    for str_time in str_times:
-        tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
-        utc_time = time.mktime(tmp_time) - 30 *60
-        if utc_time in result:
-            continue
+    now = time.time()
+
+    tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+    utc_time = time.mktime(tmp_time) - 30 *60
+    if utc_time not in result:
         result.append(utc_time)
+    i = 0
+    while True:
+        next_time = (ceil(now / 1800) + i) * 1800
+        i += 1
+        tmp_end_time = time.strptime(str_end_time, '%Y-%m-%d %H:%M:%S')
+        utc_end_time = time.mktime(tmp_end_time)
+        if next_time > utc_end_time:
+            break
+        if next_time in result:
+            continue
+        result.append(next_time)
+
 
     return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
 
