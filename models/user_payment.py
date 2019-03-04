@@ -8,6 +8,9 @@ import datetime
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
+from lib.utils.active_inreview_tools import get_version_by_active_id
+from lib.utils.time_tools import str2timestamp
+from return_msg_config import i18n_msg
 
 
 class UserPayment(ModelBase):
@@ -19,6 +22,7 @@ class UserPayment(ModelBase):
     """
     DOUBLE_PAY_REFRESH = ''           # 首充双倍刷新时间
     FIRST_CHARGE_TIME = 3600 * 72       # 首充倒计时
+    ADD_RECHARGE_ID = 2007  # 活动id
 
     def __init__(self, uid):
         self.uid = uid
@@ -39,8 +43,13 @@ class UserPayment(ModelBase):
             'active_double_pay_refresh': '',       # 首充双倍刷新时间
 
             'buy_log': {},      # 每个商品id的购买时间，用于限购次数的刷新
-            'first_charge_done': {},    # 首充礼包已领取的id
+            'first_charge_done': {},    # 首充礼包已领取的id 1 充值未领取  2 已领取
             'first_charge_time': 0,     # 首充开始倒计时的时间
+            'first_charge_show': 1,
+            'last_day': '',  # 最近操作时间
+            'add_recharge_done': {},  # 累充礼包 1 充值未领取  2 已领取
+            'add_recharge_version': 0,  # 累充版本号
+            'add_recharge_price': 0,  # 总累充
         }
         #首充双倍活动时间段
         time_config = {}
@@ -54,6 +63,25 @@ class UserPayment(ModelBase):
     def pre_use(self):
         now = datetime.datetime.now()
         is_save = False
+        _, add_recharge_version = get_version_by_active_id(active_id=self.ADD_RECHARGE_ID)
+        if add_recharge_version != self.add_recharge_version:
+            config = game_config.add_recharge
+            mail_save = False
+            for recharge_id, status in self.add_recharge_done.iteritems():
+                if status == 1:
+                    gift = config[recharge_id]['reward']
+                    mail_dict = self.mm.mail.generate_mail(i18n_msg.get(44, self.mm.user.language_sort),
+                                                           title=i18n_msg.get('add_recharge',
+                                                                              self.mm.user.language_sort), gift=gift)
+                    self.mm.mail.add_mail(mail_dict)
+                    mail_save = True
+
+            self.add_recharge_version = add_recharge_version
+            self.add_recharge_done = {}
+            self.add_recharge_price = 0
+            is_save = True
+            if mail_save:
+                self.mm.mail.save()
 
         # if self.week['pay_dt']:
         #     pay_dt = datetime.datetime.strptime(self.week['pay_dt'], '%Y-%m-%d %H:%M:%S')
@@ -69,6 +97,15 @@ class UserPayment(ModelBase):
         #         is_save = True
 
         today = time.strftime('%F')
+
+        if self.last_day == today:
+            self.first_charge_show = 0
+            is_save = True
+        if self.last_day != today:
+            self.last_day = today
+            self.first_charge_show = 1
+            is_save = True
+
         if self.double_start_time <= today <= self.double_end_time and \
                 not (self.double_start_time <= self.active_double_pay_refresh <= self.double_end_time):
             self.active_double_pay_refresh = today
@@ -164,7 +201,8 @@ class UserPayment(ModelBase):
         double_data.append(product_id)
         self.save()
 
-    def add_pay(self, sort, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True):
+    def add_pay(self, sort, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True,
+                act_id=0, act_item_id=0):
         """ 记录充值
 
         :param sort:
@@ -174,31 +212,42 @@ class UserPayment(ModelBase):
         """
         if can_open_gift:   # 实付金额大于或等于订单金额才会给gift
             now = int(time.time())
-            if sort == 1:      # 月卡
-                if not self.mm.active_card.get_status(sort):
-                    self.mm.active_card.record(sort)
-                else:
-                    return order_diamond
-            elif sort == 2:    # 至尊卡卡
-                if not self.mm.active_card.get_status(sort):
-                    self.mm.active_card.record(sort)
-                else:
-                    return order_diamond
-            elif sort == 3:     # 等级限时礼包
-                charge_config = game_config.charge.get(product_id, {})
-                lv = charge_config.get('gift_reward_id', 0)
+            if not act_id:
+                if sort == 1:      # 月卡
+                    if not self.mm.active_card.get_status(sort):
+                        self.mm.active_card.record(sort)
+                    else:
+                        return order_diamond
+                elif sort == 2:    # 至尊卡卡
+                    if not self.mm.active_card.get_status(sort):
+                        self.mm.active_card.record(sort)
+                    else:
+                        return order_diamond
+                # elif sort == 3:     # 等级限时礼包
+                #     charge_config = game_config.charge.get(product_id, {})
+                #     lv = charge_config.get('gift_reward_id', 0)
+                #     level_gift_config = game_config.level_gift.get(lv)
+                #     if level_gift_config and lv in self.mm.user.level_gift:
+                #         self.mm.user.level_gift[lv]['status'] = 1
+                #         # self.mm.user.level_gift.pop(lv)
+                #         # message = self.mm.mail.generate_mail(
+                #         #     i18n_msg.get(25, self.mm.user.language_sort),
+                #         #     i18n_msg.get('level_gift', self.mm.user.language_sort),
+                #         #     gift=level_gift_config['reward'])
+                #         # self.mm.mail.add_mail(message)
+                #         self.mm.user.save()
+                #     else:
+                #         return order_rmb * 10
+            elif act_id == 3001:  # 限时等级礼包
+                if not act_item_id:
+                    return order_rmb * 10
+                lv = act_item_id
                 level_gift_config = game_config.level_gift.get(lv)
                 if level_gift_config and lv in self.mm.user.level_gift:
                     self.mm.user.level_gift[lv]['status'] = 1
-                    # self.mm.user.level_gift.pop(lv)
-                    # message = self.mm.mail.generate_mail(
-                    #     i18n_msg.get(25, self.mm.user.language_sort),
-                    #     i18n_msg.get('level_gift', self.mm.user.language_sort),
-                    #     gift=level_gift_config['reward'])
-                    # self.mm.mail.add_mail(message)
-                    self.mm.user.save()
-                else:
-                    return order_rmb * 10
+                    return 0
+                return order_rmb * 10
+
             return 0
         else:
             return 0
@@ -219,8 +268,8 @@ class UserPayment(ModelBase):
         :return:
         """
         self.first_charge_done[config_id] = status
-        if config_id == 1 and status == 2:
-            self.first_charge_time = int(time.time())
+        # if config_id == 1 and status == 2:
+        #     self.first_charge_time = int(time.time())
 
     def get_first_charge_status(self, config_id):
         """
@@ -250,8 +299,8 @@ class UserPayment(ModelBase):
                 continue
             config_price = config['price_CN']
             charge_type = config['type']
-            if not charge_type or (charge_type == 2 and price >= config_price) or \
-                    (charge_type == 1 and self.charge_price >= config_price):
+            if not charge_type or (charge_type == 2 and price == config_price) or \
+                    (charge_type == 1 and price):
                 self.add_first_charge_done(active_id, status=1)
 
             # mail_dict = self.mm.mail.generate_mail(
@@ -284,9 +333,9 @@ class UserPayment(ModelBase):
         首充活动标志
         :return:
         """
-        remain_time = self.get_first_charge_remain_time()
-        if remain_time == -2:
-            return False
+        # remain_time = self.get_first_charge_remain_time()
+        # if remain_time == -2:
+        #     return False
 
         received_id = []
         charge_done = self.first_charge_done
@@ -304,13 +353,13 @@ class UserPayment(ModelBase):
         首充弹板
         :return:
         """
-        open_days = self.mm.user.server_opening_time_info().get('open_days')
-        if open_days is not None and open_days <= 3:
-            data = self.first_charge_done
-            if not sum(data.values()):
-                return True
-
-        return False
+        # open_days = self.mm.user.server_opening_time_info().get('open_days')
+        # if open_days is not None and open_days <= 3:
+        #     data = self.first_charge_done
+        #     if not sum(data.values()):
+        #         return True
+        #
+        # return False
 
     def first_charge_alert(self):
         """
@@ -319,23 +368,66 @@ class UserPayment(ModelBase):
         :return:
         """
         is_alert = False
+        if not self.first_charge_show:
+            return False
         for reward_id in game_config.first_recharge.keys():
-            first_recharge_config = game_config.first_recharge.get(reward_id)
             if self.mm.user_payment.get_first_charge_status(reward_id) == 2:
                 continue  # 奖励已领取
 
-            if self.mm.user_payment.get_first_charge_status(reward_id) == 0:
-                # if reward_id == 1:
-                #     now = int(time.time())
-                #     if now - self.mm.user.reg_time < first_recharge_config['time'] * 3600:
-                #         continue  # 没有到领取时间
-                # else:
-                #     continue  # 未达到条件
-                continue
+            # if self.mm.user_payment.get_first_charge_status(reward_id) == 0:
+            #     # if reward_id == 1:
+            #     #     now = int(time.time())
+            #     #     if now - self.mm.user.reg_time < first_recharge_config['time'] * 3600:
+            #     #         continue  # 没有到领取时间
+            #     # else:
+            #     #     continue  # 未达到条件
+            #     continue
 
             is_alert = True
 
         return is_alert
+
+    # 添加累充礼包
+    def add_add_recharge(self, price_dict):
+        if not self.add_recharge_version:
+            return
+        config = game_config.get_add_recharge_mapping()[self.add_recharge_version]
+        price_type = config.values()[0]['type']
+        price = price_dict.get(price_type, 0)
+        self.add_recharge_price += price
+        for recharge_id, value in config.iteritems():
+            if recharge_id in self.add_recharge_done:
+                continue
+            if value['number'] > self.add_recharge_price:
+                continue
+            self.add_add_recharge_done(recharge_id,status = 1)
+        self.save()
+
+    # 添加累充礼包done
+    def add_add_recharge_done(self, recharge_id, status = 2):
+        self.add_recharge_done[recharge_id] = status
+
+    # 获取剩余时间
+    def get_add_recharge_remain_time(self):
+        a_id , add_recharge_version = get_version_by_active_id(active_id=self.ADD_RECHARGE_ID)
+        if not a_id:
+            return 0
+        config = game_config.active[a_id]
+        end_time = int(str2timestamp(config['end_time']))
+        now = int(time.time())
+        return end_time - now
+
+    # 获取累充礼包状态
+    def get_add_recharge_status(self,recharge_id):
+        return self.add_recharge_done.get(recharge_id, 0)
+
+    # 红点
+    def get_add_recharge_red_dot(self):
+        for recharge_id, status in self.add_recharge_done.iteritems():
+            if status == 1:
+                return True
+        return False
+
 
 
 ModelManager.register_model('user_payment', UserPayment)

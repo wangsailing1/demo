@@ -402,7 +402,10 @@ class User(ModelBase):
         # 刷新限时等级礼包
         for lv, level_gift_dict in self.level_gift.items():
             expire = level_gift_dict.get('expire', 0)
+            status = level_gift_dict.get('status', 0)
             if now <= expire:
+                continue
+            if status == 1:
                 continue
             self.level_gift.pop(lv)
             is_save = True
@@ -1074,6 +1077,9 @@ class User(ModelBase):
             # 消费记录
             spend_event = self.mm.get_event('spend_event')
             spend_event.record(diamond)
+
+            #超级大玩家
+            self.mm.superplayer.add_day_spend(diamond)
             # 消耗钻石活动
             # if self.mm.action not in settings.SPEND_IGNORE_METHOD:
             #     server_type = int(self.mm.user.config_type)
@@ -1492,19 +1498,20 @@ class User(ModelBase):
             level_rank = self.mm.get_obj_tools('level_rank')
             level_rank.add_rank(self.uid, self.level)
             # 激活限时等级礼包
+            level_gift_config = game_config.level_gift
             for _lv in xrange(cur_level + 1, self.level + 1):
                 # 升级送道具
                 hero_exp_config = game_config.player_level.get(_lv, {})
                 add_mult_gift(self.mm, hero_exp_config.get('gifts', []))
 
-                if _lv not in game_config.level_gift:
+                if _lv not in level_gift_config:
                     continue
                 self.level_gift[_lv] = {
-                    'expire': int(time.time()) + self.LEVEL_GIFT_EXPIRE,
+                    'expire': int(time.time()) + level_gift_config[_lv].get('time', 24) * 3600,
                     'status': 0,
                 }
-                if not game_config.level_gift[_lv]['buy']:
-                    self.level_gift[_lv]['status'] = 1
+                # if not game_config.level_gift[_lv]['buy']:
+                #     self.level_gift[_lv]['status'] = 1
 
             # 新手引导处理
             if cur_level < 10 <= self.level:

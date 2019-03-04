@@ -8,6 +8,7 @@ Created on 2018-09-04
 
 import time
 import copy
+import math
 import random
 import itertools
 import settings
@@ -52,11 +53,14 @@ class Script(ModelBase):
         """
         self.uid = uid
         self._attrs = {
+            'refresh_date': '',
+
             'newbie': True,         # 是否新用户首次拍片
             'sequel_script': [],  # 已获得的可拍摄的续集片子
             'continued_script': {},         # 持续收益的片子
             'style_log': [],                # 连续拍片类型，保留最近10个
             'own_script': [],               # 已获得的可拍摄的片子
+            'directing_times': 0,           # 当天导演次数
 
             'group_sequel': {},  # 每个系列的可拍续集
 
@@ -187,6 +191,11 @@ class Script(ModelBase):
         return data[-5:]
 
     def pre_use(self):
+        today = time.strftime('%F')
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.directing_times = 0
+
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
         # if self.cur_script:
@@ -217,6 +226,9 @@ class Script(ModelBase):
             continued_lv_config = game_config.script_continued_level[continued_lv]
 
             continued_income = continued_lv_config['parm'] * all_income / 100
+            # 计算导演加成
+            continued_income = self.calc_director_effect(9, continued_income)
+
             continued_time = game_config.common[19]
             continued_income_unit = continued_income / continued_time
 
@@ -258,6 +270,9 @@ class Script(ModelBase):
         if save:
             self.save()
 
+    def max_directing_times(self):
+        return game_config.common[93]
+
     @property
     def top_group(self):
         """按剧本系列 {gruop_id: film_info}
@@ -272,6 +287,39 @@ class Script(ModelBase):
             elif info['finished_summary']['income'] > data[group_id]['finished_summary']['income']:
                 data[group_id] = info
         return data
+
+    def calc_director_effect(self, sort, value=0):
+        """
+        计算导演对拍片各个阶段的效果
+
+        :param sort:
+                    1~6 六种属性的数值加成
+
+                    7 首映票房万分比
+                    8 每日上映收益万分比
+                    9 下映后持续收益万分比
+                    10 点赞数获取万分比         ps: 向上取整
+                    11 关注度数值， 选完导演后直接增加关注度
+                    12 随机减少角色要求数量      ps： 在导演模块里已经处理完了
+        :param value:
+        :return:
+        """
+        # 计算导演加成
+        director_effect = self.cur_script.get('director_effect')
+        if director_effect:
+            if sort in [1, 2, 3, 4, 5, 6]:
+                add_value = director_effect['skill_effect'].get(sort, 0)
+                value += add_value
+            elif sort in [7, 8, 9, 10]:
+                rate = director_effect['skill_effect'].get(sort, 0)
+                if sort == 10:
+                    value = int(math.ceil(value * (1 + rate / 10000.0)))
+                else:
+                    value = int(value * (1 + rate / 10000.0))
+            elif sort == 11:
+                add_value = director_effect['skill_effect'].get(sort, 0)
+                value += add_value
+        return value
 
     def script_continued_summary(self):
         """持续收入片子信息统计
@@ -607,6 +655,9 @@ class Script(ModelBase):
         script_config = game_config.script[script_id]
         type_config = game_config.script_type_style[script_config['type']]
         data = {
+            're_directing': 0,               # 是否处理过了重拍流程  1： 重拍过，  -1: 跳过重拍， 0 未处理
+            'director_effect': {},          # 拍片时候是否有上导演，在logics层检查director模块 director_skill_effect 方法
+            'directing_ids': [],             # 导演执导方针
             'cost': 0,  # 拍摄消耗的美金
             'length': random.randint(*type_config['length']),  # 剧集时间/集数
             'step': 1,  # 拍摄进度  1: 艺人选择; 2: 类型选择 3: 宣传预热  4: 杀青

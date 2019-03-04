@@ -47,10 +47,53 @@ def filming(hm):
     mm = hm.mm
     name = hm.get_argument('name')  # 名字
     script_id = hm.get_argument('script_id', is_int=True)  # 剧本id
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
     is_sequel = hm.get_argument('is_sequel', is_int=True)  # 是否续集 0 否 1 是
 
     sl = ScriptLogic(mm)
-    rc, data = sl.filming(script_id, name, is_sequel)
+    rc, data = sl.filming(script_id, name, directing_id, is_sequel)
+    return rc, data
+
+
+def set_directing_id(hm):
+    """
+    设置指导方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.set_directing_id(directing_id)
+    return rc, data
+
+
+def reset_directing_id(hm):
+    """
+    重拍方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+
+    # directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+    # rc, data = sl.set_directing_id(directing_id, re_directing=True)
+    rc, data = sl.reset_directing_id()
+    return rc, data
+
+
+def ignore_re_directing(hm):
+    """
+     跳过重置指导
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.ignore_re_directing()
     return rc, data
 
 

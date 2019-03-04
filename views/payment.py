@@ -42,18 +42,13 @@ def index(hm):
     return 0, result
 
 
-def first_charge(hm):
+def first_recharge(hm):
     """
     首充index
     :param hm:
     :return:
     """
     mm = hm.mm
-
-    charge_done = {}
-    for i, j in game_config.first_recharge.iteritems():
-        status = mm.user_payment.get_first_charge_status(i)
-        charge_done[i] = status
 
     if 'tw' in settings.ENV_NAME:
         currency = 'USD'
@@ -62,10 +57,10 @@ def first_charge(hm):
     price = round(mm.user_payment.charge_price / currencys.get(currency, 1), 2)
 
     data = {
-        'charge_done': charge_done,   # 已领过奖励的id
-        'price': price,             # 已充值金额
+        'charge_done': mm.user_payment.first_charge_done,   # 已领过奖励的id
+        # 'price': price,             # 已充值金额
         'currency': currency,       # 货币
-        'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
+        # 'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
     }
 
     return 0, data
@@ -107,9 +102,53 @@ def get_first_charge(hm):
 
     result = {
         'reward': reward,
-        'first_charge': mm.user_payment.first_charge_alert()
+        'first_recharge_red_dot': mm.user_payment.first_charge_alert()
     }
     result.update(first_charge(hm)[1])
+
+    return 0, result
+
+
+def add_recharge_index(hm):
+    mm = hm.mm
+    if not mm.user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    return 0, {'add_recharge': mm.user_payment.add_recharge_done,
+               'remain_time':mm.user_payment.get_add_recharge_remain_time(),
+               'version': mm.user_payment.add_recharge_version,
+               'price': mm.user_payment.add_recharge_price}
+
+def get_add_recharge(hm):
+    mm = hm.mm
+    if not mm.user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    reward_id = hm.get_argument('reward_id', is_int=True)
+
+    if reward_id <= 0:
+        return 'error_100', {}
+
+    add_recharge_config = game_config.add_recharge.get(reward_id)
+    if not add_recharge_config:
+        return 'error_config', {}
+
+    if mm.user_payment.get_add_recharge_status(reward_id) == 2:
+        return 1, {}  # 奖励已领取
+
+    if mm.user_payment.get_add_recharge_status(reward_id) == 0:
+        return 3, {}  # 未达到条件
+
+    mm.user_payment.add_add_recharge_done(reward_id)
+    reward = add_mult_gift(mm, add_recharge_config['reward'])
+
+    mm.user_payment.save()
+
+    result = {
+        'reward': reward,
+        'add_recharge_red_dot': mm.user_payment.get_add_recharge_red_dot()
+    }
+    result.update(add_recharge_index(hm)[1])
 
     return 0, result
 

@@ -75,6 +75,7 @@ from lib.utils.online_user import backup_all_server_online_count
 
 # from logics.decisive_battle import mapping_battle_uid, send_duel_rank_award
 # from logics.decisive_battle import one_server_battle, vip_auto_enroll
+from logics.super_player import super_player_refresh_time, active_reward_time, refresh, active_reward
 
 JOBS_RUNTIME_KEY = 'jobs_runtime_key'
 # 任务配置，添加分服或任务后，需要重启进程使之生效
@@ -107,6 +108,10 @@ DATE_LIST_JOBS = (
     # (limit_hero_mail_time                       , send_limit_hero_rank_award            , 1),
     # # 新服限时英雄排名发奖
     # (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
+    # 超级大玩家刷新
+    (super_player_refresh_time                  , refresh           , 1),
+    # 超级大玩家发奖
+    (active_reward_time                         , active_reward     , 1),
 )
 
 

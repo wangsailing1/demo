@@ -149,7 +149,7 @@ class Director(ModelBase):
             times = -1
         else:
             times -= 1
-        return gacha_cd[times] * 60
+        return gacha_cd[times] * 60 - self.mm.user.build_effect.get(14, [0, 0])[0]
 
     def remain_time(self, tp):
         """
@@ -172,7 +172,7 @@ class Director(ModelBase):
         招聘次数上限
         :return: 
         """
-        return self.add_gacha_times + game_config.common[86]
+        return self.add_gacha_times + game_config.common[86] + self.mm.user.build_effect.get(14, [0, 0])[1]
 
     @property
     def all_director(self):
@@ -238,6 +238,17 @@ class Director(ModelBase):
         setattr(self, '%s_recover_time' % (self.TYPEMAPPING[tp]), int(time.time()))
 
         return gacha
+
+    def get_directing_id(self, script_id):
+        """
+        :param script_id: 
+        :return: [1,2,3]
+        """
+        if not self.all_director_pos:
+            return []
+        config = game_config.script[script_id].get('directing_policy',[])
+        num = min(len(config),3)
+        return random.sample(config, num)
 
     def director_skill_effect(self, directing_id, script_id):
         """
@@ -336,7 +347,7 @@ class Director(ModelBase):
         roles = game_config.script[script_id]['role_id']
         tps = ['sex_type', 'profession_class', 'profession_type']
         config = game_config.script_role
-        role_class = {}
+        role_class = {'effect':{}}
         for role_id in roles:
             if role_id not in role_class:
                 role_class[role_id] = {}
@@ -358,6 +369,9 @@ class Director(ModelBase):
                     role_id = 0
             r_tp = random.choice(role_class[role_id].keys())
             role_class[role_id].pop(r_tp)
+            if role_id not in role_class['effect']:
+                role_class['effect'][role_id] = []
+            role_class['effect'][role_id].append(r_tp)
         return role_class
 
 

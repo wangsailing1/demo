@@ -754,73 +754,226 @@ class Card(ModelBase):
         end_train_time = start_time_stamp + training_times
         return int(end_train_time)
 
-    def get_skill_effect(self, skill_id, skill_lv, model_type, align, script_id, sex_type, profession_class, profession_type, accept_skill_card):
+    def is_match_single_condition(self, condition, align_list, script_id, role_id):
+        '''
+        :param condition: 单个条件，如[1, 0]
+        :param align_list: [group_id1, group_id2, ...]  队友（可以包括自身）的组id列表
+        :param script_id: 剧本id
+        :param role_id: 角色id
+        '''
+        condition_type = condition[0]
+        condition_id = condition[1]
+        script = game_config.script[script_id]
+        script_type = script['type']
+        script_tag = script['tag_script']
+        role = game_config.script_role[role_id]
+        role_sex = role['sex_type']
+        role_profession_class = role['profession_class']
+        role_profession_type = role['profession_type']
+        role_tag = role['tag_role']
+
+        _dict = {
+            1: 0,
+            2: align_list,
+            3: script_type,
+            4: role_sex,
+            5: role_profession_class,
+            6: role_profession_type,
+            7: script_tag,
+            8: role_tag,
+        }
+
+        if condition_type in [2, 7, 8] and condition_id in _dict[condition_type]:
+            return True
+        if condition_type in [1, 3, 4, 5, 6] and condition_id == _dict[condition_type]:
+            return True
+
+        return False
+
+    def is_skill_active(self, skill_id, model_type, align_list, script_id, role_id):
         '''
         :param skill_id: 技能id
-        :param skill_lv: 技能等级
-        :param model_type: 触发系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
-        :param align: 队友组id列表
-        :param script_id: 剧本类型id
-        :param sex_type: 角色性别，0没要求、2男、1女
-        :param profession_class: 角色类型，0没要求、2偶像、1实力
-        :param profession_type: 角色分类，2青春、1成熟
-        :param accept_skill_card: 被使用技能的卡牌的group id
-        :return: {}
+        :param model_type: 系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param align_list: 队友（包括自己）组id列表
+        :param script_id: 剧本id
+        :param role_id: 技能所有者角色id
+        :return: True|False
         '''
-        def is_skill_valid(skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
-            skill_info = game_config.card_skill[skill_id]
-            if model_type not in skill_info['triggersystem']:
-                return False
-
-            def is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
-                condition_type = condition[0]
-                condition_id = condition[1]
-                if condition_type == 1 or \
-                        condition_type == 2 and condition_id in align or \
-                        condition_type == 3 and condition_id == script_id or \
-                        condition_type == 6 and condition_id == profession_type:
-                    return True
-
-                if condition_type == 4:
-                    if condition_id == 0 or condition_id == sex_type:
-                        return True
-
-                if condition_type == 5:
-                    if condition_id == 0 or condition_id == profession_class:
-                        return True
-
-                return False
-
-            triggercondition_logic = skill_info.get('triggercondition_logic')
-            if not triggercondition_logic:
-                triggercondition = skill_info['triggercondition']
-                return is_match_condition(triggercondition[0], align, script_id, sex_type, profession_class, profession_type)
-
-            if triggercondition_logic == 1:
-                # result = True
-                for condition in skill_info['triggercondition']:
-                    if not is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
-                        return False
-                return True
-
-            for condition in skill_info['triggercondition']:
-                if is_match_condition(condition, align, script_id, sex_type, profession_class, profession_type):
-                    return True
+        skill_info = game_config.card_skill[skill_id]
+        if model_type not in skill_info['triggersystem']:
             return False
+        triggercondition_logic = skill_info.get('triggercondition_logic')
+        if not triggercondition_logic:
+            condition = skill_info['triggercondition'][0]
+            return self.is_match_single_condition(condition, align_list, script_id, role_id)
 
-        if not is_skill_valid(skill_id, model_type, align, script_id, sex_type, profession_class, profession_type):
+        if triggercondition_logic == 1:
+            for condition in skill_info['triggercondition']:
+                if not self.is_match_single_condition(condition, align_list, script_id, role_id):
+                    return False
+            return True
+
+        for condition in skill_info['triggercondition']:
+            if self.is_match_single_condition(condition, align_list, script_id, role_id):
+                return True
+        return False
+
+    def get_single_skill_effect(self, skill_id, self_card_oid, model_type, card_oid_list, script_id, role_id):
+        '''
+        :param skill_id: 技能id
+        :param self_card_oid: 技能所有者卡牌唯一id
+        :param model_type: 系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param card_oid_list: 队友（包括自己）的卡牌唯一id列表
+        :param script_id: 剧本id
+        :param role_id: 技能所有者角色id
+        :return: {
+            'skilltype': list  # 技能效果类型
+            'skilltarget_oid': {
+                'card_oid': {
+                    3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
+                    5: 13,
+                },  # 这里只有效果类型只有1-6, 大于6的类型留给非卡牌属性值的增益，如最终拍片收益的增长等
+                ...
+            }  # 技能影响的卡牌和效果值
+            'computing_method': int  # 效果计算方法
+            'skilllevel_value': int  # 技能效果数值
+        }
+        '''
+        align_list = []
+        card_oid_dict = {}
+        for card_oid in card_oid_list:
+            card_id = self.cards[card_oid]['id']
+            card_group_id = game_config.card_basis[card_id]['group']
+            align_list.append(card_group_id)
+            card_oid_dict[card_oid] = card_group_id
+
+        if not self.is_skill_active(skill_id, model_type, align_list, script_id, role_id):
             return {}
 
         skill_info = game_config.card_skill[skill_id]
-        if skill_info['skilltarget_type'] == 2 and accept_skill_card not in skill_info['skilltarget_id']:
-            return {}
 
         result = {}
-        skill_type = skill_info['skilltype']
-        result[skill_type] = {}
-        result[skill_type]['skilltarget_type'] = skill_info['skilltarget_type']
-        result[skill_type]['computing_method'] = skill_info['computing_method']
-        result[skill_type]['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
+        result['skilltype'] = skill_info['skilltype']
+        result['computing_method'] = skill_info['computing_method']
+        skill_lv = self.cards[self_card_oid]['skill'][skill_id]['lv']
+        result['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
+        result['skilltarget_oid'] = {}
+        type = skill_info['skilltarget_type']
+        skilltarget_oid_list = []
+        if type == 1:
+            skilltarget_oid_list = card_oid_list
+        elif type == 3:
+            skilltarget_oid_list = [self_card_oid]
+        elif type == 2:
+            for card_oid, group_id in card_oid_dict:
+                if group_id in skill_info['skilltarget_id']:
+                    skilltarget_oid_list.append(group_id)
+            if not skilltarget_oid_list:
+                return {}
+
+        for target_oid in skilltarget_oid_list:
+            result['skilltarget_oid'][target_oid] = {}
+            all_char_pro = self.mm.card.get_card(target_oid)['all_char_pro']
+            for skilltype in skill_info['skilltype']:
+                if skilltype > 6 or all_char_pro[skilltype-1] == -1:
+                    continue
+                if skill_info['computing_method'] == 1:
+                    result['skilltarget_oid'][target_oid][skilltype] = result['skilllevel_value']
+                else:
+                    real_value = math.ceil(all_char_pro[skilltype - 1] * result['skilllevel_value'] / 10000)
+                    result['skilltarget_oid'][target_oid][skilltype] = real_value
+
+        return result
+
+    def get_skill_effect(self, align, model_type, script_id):
+        '''
+        :param align: {
+            card_oid1: role_id1,
+            card_oid2: role_id2,
+            ...
+        }  阵型，key为card_oid，value为角色id
+        :param model_type: 系统id，1歌王、2粉丝活动、3自制拍摄、4艺人养成
+        :param script_id: 剧本id
+        :return:
+        {
+            card_oid1: {
+                effect: {
+                    1: 10,
+                    3: 20,
+                    5: 23,
+                },  # 该卡牌受所有生效技能影响后，最终类型值的增加值，这里只有类型只有1-6
+                    # 大于6的类型留给非卡牌属性值的增益，如最终拍片收益的增长等
+                skill: {
+                    skill_id1: {
+                        'skilltype': list   # 技能效果类型
+                                            # 1增加演技
+                                            # 2增加歌艺
+                                            # 3增加气质
+                                            # 4增加动感
+                                            # 5增加艺术
+                                            # 6增加娱乐
+                                            # 7暴击crit_rate_base
+                                            # 8额外触发万分比ex_special_rate
+                                            # 9艺人片酬降低
+                                            # 10关注度加成
+                                            # 11首映票房加成
+                                            # 12总票房加成
+                                            # 13持续收益加成
+                                            # 14拍摄类型经验
+                                            # 15媒体口碑加成
+                                            # 16培养花费下降
+                                            # 17粉丝活动产出金币加成
+                        'skilltarget_oid': {
+                            'card_oid': {
+                                3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
+                                5: 13,
+                            }  # 这里只有效果类型只有1-6
+                            ...
+                        }  # 技能影响的卡牌和效果值
+                        'computing_method': int  # 效果计算方法
+                        'skilllevel_value': int  # 技能效果数值
+                    },
+                    skill_id2: {
+                    ...
+                    },
+                    ...
+                }
+            },
+            card_oid2: {
+            ...
+            }
+
+        }
+        '''
+        result = {}
+        total_effect = {}
+        card_oid_list = align.keys()
+        for card_oid, role_id in align.iteritems():
+            skill_id_list = self.cards[card_oid]['skill'].keys()
+            result[card_oid] = {}
+            result[card_oid]['skill'] = {}
+            for skill_id in skill_id_list:
+                data = self.get_single_skill_effect(skill_id, card_oid, model_type, card_oid_list, script_id, role_id)
+                result[card_oid]['skill'][skill_id] = data
+                if not data:
+                    del result[card_oid]['skill'][skill_id]
+                    continue
+                for target_oid, effect in data['skilltarget_oid'].iteritems():
+                    if target_oid not in total_effect:
+                        total_effect[target_oid] = {}
+                    for type, value in effect.items():
+                        total_effect[target_oid][type] = total_effect[target_oid].get(type, 0) + value
+            if not result[card_oid]['skill']:
+                del result[card_oid]['skill']
+
+        for card_oid, effect in total_effect.iteritems():
+            if effect:
+                result[card_oid]['effect'] = effect
+
+        for card_oid in card_oid_list:
+            if not result[card_oid]:
+                del result[card_oid]
+
         return result
 
 ModelManager.register_model('card', Card)

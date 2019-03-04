@@ -396,6 +396,7 @@ active_mapping = {
     'sign_first_week': ('sign_first_week', True),
     'sign_daily_normal': ('sign_daily_normal', True),
     'active': ('active', True),
+    'add_recharge': ('add_recharge', True),
 }
 
 daily_activity_mapping = {
@@ -586,5 +587,33 @@ skill_mapping = {
     'card_skill': ('card_skill', True),
 }
 
+egg_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'egg_item': ('egg_item', True),
+    'egg_diamond': ('egg_diamond', True),
+}
+
+one_piece_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'one_piece': ('one_piece', True),
+    'one_piece_rate': ('one_piece_rate', True),
+    'one_piece_exchange': ('one_piece_exchange', True),
+    'one_piece_rank_reward': ('one_piece_rank_reward', True),
+    'one_piece_reduce': ('one_piece_reduce', True),
+}
+
+foundation_mapping = {
+    'foundation': ('foundation', True),
+    'rmb_foundation': ('rmb_foundation', True),
+}
+
+super_player_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'player': ('player', True),
+    'play_redbag': ('play_redbag', True),
+    'play_shop': ('play_shop', True),
+    'play_rankreward': ('play_rankreward', True),
+    'play_points': ('play_points', True),
+}
 # 注册需要写到最下面
 register_handler()

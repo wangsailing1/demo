@@ -30,6 +30,7 @@ class ScriptLogic(object):
         self.mm = mm
 
     def get_step(self):
+        """整个拍片流程的几个阶段，帮前端预处理下"""
         script = self.mm.script
         if not script.script_pool:
             step = 0
@@ -45,6 +46,27 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def directing_step(self):
+        """重拍的几个阶段，帮前端预处理下
+        0:跳过这步 1:选指导方针 2.进入推翻重拍界面 3.确认完方针开始选人
+        """
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script.get('directing_ids') or script.directing_times >= script.max_directing_times():
+            step = 0
+        else:
+            # 直接跳过导演了
+            if cur_script['re_directing'] == -1:
+                step = 3
+            else:
+                step = 1
+                if cur_script['director_effect']:
+                    step += 1
+                    if cur_script['re_directing']:
+                        step += 1
+
+        return step
+
     def get_recommend_card(self, script_id):
         return self.mm.script.top_end_lv_card.get(script_id, {})
 
@@ -58,6 +80,7 @@ class ScriptLogic(object):
             # 'own_script': script.own_script,
             # 'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
+            'directing_step': self.directing_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
             'cur_script': script.cur_script,
@@ -67,7 +90,8 @@ class ScriptLogic(object):
             'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
-            'script_license': self.mm.user.script_license
+            'script_license': self.mm.user.script_license,
+            'remain_directing_times': script.max_directing_times() - script.directing_times,
         }
 
     # 统计总的effect
@@ -103,7 +127,7 @@ class ScriptLogic(object):
         rc, data = self.index()
         return rc, data
 
-    def filming(self, script_id, name, is_sequel=False):
+    def filming(self, script_id, name, directing_id=None, is_sequel=False):
         """拍片
 
         :param script_id:
@@ -133,6 +157,14 @@ class ScriptLogic(object):
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
+        # # 检查是否有导演模块，拆分到 set_directing_id 接口里做
+        # if not directing_id and self.mm.director.all_director_pos:
+        #     film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
+
+        # 判断是否有导演次数
+        if script.directing_times < script.max_directing_times():
+            film['directing_ids'] = self.mm.director.get_directing_id(script_id)
+
         script.cur_script = film
         film['cost'] = cost
 
@@ -149,6 +181,61 @@ class ScriptLogic(object):
 
         rc, data = self.index()
         return rc, data
+
+    def set_directing_id(self, directing_id, re_directing=False):
+        """
+
+        :param directing_id:
+        :return:
+        """
+
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        directing_ids = cur_script['directing_ids']
+        if not directing_ids:
+            return self.index()
+
+        if directing_id not in directing_ids:
+            return 2, {}        # 本片无此指导方针
+
+        # 检查是否有导演模块
+        if not self.mm.director.all_director_pos:
+            return 3, {}        # 请上阵导演
+
+        if re_directing:
+            cur_script['re_directing'] = 1
+        cur_script['director_effect'] = self.mm.director.director_skill_effect(directing_id, cur_script['id'])
+        script.directing_times += 1
+        script.save()
+
+        rc, data = self.index()
+        return rc, data
+
+    def reset_directing_id(self):
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        if not cur_script['director_effect']:
+            return 2, {}
+        cur_script['director_effect'].clear()
+        cur_script['re_directing'] = 1
+        script.save()
+        return self.index()
+
+    def ignore_re_directing(self):
+        """跳过重拍"""
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+        cur_script['re_directing'] = -1
+        script.save()
+        return self.index()
 
     def set_card(self, role_card):
         """
@@ -168,6 +255,9 @@ class ScriptLogic(object):
             return 2, {}  # 已选完角色
 
         cost = 0
+        # 导演对角色的限制
+        director_skill_effect = cur_script['director_effect'].get('skill_12_effect', {})
+
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
@@ -184,12 +274,20 @@ class ScriptLogic(object):
                 return 3, {}
 
             card_info = card.cards[card_id]
+            card_config = game_config.card_basis[card_info['id']]
 
             # if card_info['physical'] < need_physical:
             #     return 6, {}  # 艺人体力不足，请先休息
             # if card_info['mood'] < need_mood:
             #     return 7, {}  # 艺人心情糟糕，请先休息
-            card_config = game_config.card_basis[card_info['id']]
+
+            # 检查导演限制
+            if role in director_skill_effect:
+                for check_type, check_value in director_skill_effect[role].iteritems():
+                    if check_value and check_value != card_config[check_type]:
+                        # check_type: profession_class | sex_type | profession_type
+                        return 'error_%s' % check_type, {}
+
             cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
 
             used_card.add(card_id)
@@ -445,6 +543,8 @@ class ScriptLogic(object):
                 d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
                      / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
             d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            d = script.calc_director_effect(pro_id, d)
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -479,6 +579,8 @@ class ScriptLogic(object):
                      / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
 
             d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            d = script.calc_director_effect(pro_id, d)
             base_b += d
 
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
@@ -686,6 +788,9 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         attention = cur_script['finished_attention'].get('attention', 0)
+        #  添加导演效果
+        attention = script.calc_director_effect(11, attention)
+
         finished_attr = cur_script['finished_attr']
         part_a = finished_attr.get('part_a', 0)
         part_b = finished_attr.get('part_b', 0)
@@ -700,6 +805,9 @@ class ScriptLogic(object):
 
         z = game_config.common[9]
         first_income = script_config['output'] * (1 + attention_lv / 10.0) * (part_a + part_b) / 2 / z
+        # 计算导演加成
+        first_income = self.mm.script.calc_director_effect(7, first_income)
+
         first_income = int(first_income)
         # 如果作品类型是电视剧、综艺节目, 让前端算 区分展示单位
         # if script_config['type'] != 1:
@@ -745,7 +853,9 @@ class ScriptLogic(object):
         score = min(round(score, 2), game_config.common[43])
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
-        return {'score': score, 'like': int(score * like_rate)}
+        like = int(score * like_rate)
+        like = self.mm.script.calc_director_effect(10, like)
+        return {'score': score, 'like': like}
 
     def calc_audience_judge(self):
         """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
@@ -815,6 +925,9 @@ class ScriptLogic(object):
 
         rate = game_config.common[18]
         curve = [first_income * i / rate for i in curve_config['curve_rate']]
+        # 计算导演加成
+        curve = [self.mm.script.calc_director_effect(8, i) for i in curve]
+
         curve = [int(i) for i in curve]
         return {
             'curve_id': curve_id,
@@ -1125,6 +1238,9 @@ class ScriptLogic(object):
         all_income = finished_summary['income']
 
         continued_income = continued_lv_config['parm'] * all_income / 100
+        # 计算导演加成
+        continued_income = self.mm.script.calc_director_effect(9, continued_income)
+
         continued_time = game_config.common[19]
         continued_income_unit = continued_income / continued_time
 

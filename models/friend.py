@@ -484,10 +484,13 @@ class Friend(ModelBase):
         group_id = game_config.card_basis[config['hero_id']]['group']
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
+        if config['chapter_id'] in self.actors[group_id]['chat_log']:
+            return {}
         self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
         self.add_newest_uid(group_id)
         if is_save:
             self.save()
+        return {group_id:config['dialogue_id']}
 
     def new_actor(self, group_id, is_save=False):
         if group_id not in self.actors:
@@ -605,10 +608,12 @@ class Friend(ModelBase):
             data['appointment_remain'] = ()
             return data
         data['lock'] = False
-        data['phone_daily_remain_times'] = self.get_max_phone_times() - self.phone_daily_times
-        data['appointment_remain_times'] = self.get_max_avgdate_times() - self.appointment_times
+        # data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
+        data['phone_daily_remain_times'] = 0
+        data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
-        data['phone_daily_remain'] = self.check_chat_end()[-1]
+        # data['phone_daily_remain'] = self.check_chat_end()[-1]
+        data['phone_daily_remain'] = []
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
         # data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data

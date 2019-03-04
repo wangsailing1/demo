@@ -10,6 +10,7 @@ director = {
     'tag':  ('tag', 'int_list'),                # 擅长标签
     'icon':  ('icon', 'str'),                   # 初始消耗美元
     'cost':  ('cost', 'str'),                   # icon
+    'split_num':  ('split_num', 'int'),         # 拆分条数
     'pro':  (('pro1', 'pro2','pro3','pro4','pro5','pro6',), ('int', 'mult_force_num_list')),    # 属性加成
 }
 
@@ -48,5 +49,6 @@ director_skill = {
 directing_policy  = {
     'uk':                       ('id', 'int'),                          # 导演等级
     'director_skillid':         ('director_skillid', 'int_list'),       # 技能类型
+    'name':                     ('name', 'str'),                        # 技能名
     'des':                      ('des', 'str'),                         # 属性加成万分比
 }
