@@ -763,14 +763,16 @@ class Card(ModelBase):
         '''
         condition_type = condition[0]
         condition_id = condition[1]
-        script = game_config.script[script_id]
-        script_type = script['type']
-        script_tag = script['tag_script']
-        role = game_config.script_role[role_id]
-        role_sex = role['sex_type']
-        role_profession_class = role['profession_class']
-        role_profession_type = role['profession_type']
-        role_tag = role['tag_role']
+
+        script = game_config.script.get(script_id, {})
+        script_type = script.get('type')
+        script_tag = script.get('tag_script')
+
+        role = game_config.script_role.get(role_id, {})
+        role_sex = role.get('sex_type')
+        role_profession_class = role.get('profession_class')
+        role_profession_type = role.get('profession_type')
+        role_tag = role.get('tag_role')
 
         _dict = {
             1: 0,
