@@ -93,6 +93,7 @@ def update(req, **kwargs):
     chapter = req.get_argument('chapter')
     skip_dialouge = int(req.get_argument('skip_dialouge'))
     company_vip_exp = int(req.get_argument('company_vip_exp'))
+    directing_times = int(req.get_argument('directing_times'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -108,6 +109,8 @@ def update(req, **kwargs):
         mm.user.exp = exp
     mm.user.name = name
     mm.user.company_vip_exp = company_vip_exp
+
+    mm.script.directing_times = directing_times
 
     # 调章节
     chapter_id, stage = [int(i) for i in chapter.split('-')]
@@ -228,6 +231,7 @@ def update(req, **kwargs):
     mm.carnival.save()
     mm.chapter_stage.save()
     mm.fans_activity.save()
+    mm.script.save()
 
     msg = 'success'
 
