@@ -240,6 +240,9 @@ def active_reward():
 def super_player_refresh_time():
     config = game_config.active
     now_str = time.strftime('%Y-%m-%d %H:%M:%S')
+    l = [k for k, v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str]
+    if not l:
+        return
     a_id = min([k for k,v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str])
     str_time = config[a_id]['start_time']
     str_end_time = config[a_id]['end_time']
