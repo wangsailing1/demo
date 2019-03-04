@@ -360,8 +360,10 @@ class ScriptLogic(object):
         script.cur_script['attention_market'] = att
         user.add_attention(3, att)
         rc, data = self.index()
+        # 中途记录 关注度 前端显示用
+        script.cur_script['final_attention'] =  result['attention_initial']
+
         data.update(effect)
-        data['cur_script']['attention'] = result['attention_initial']
         if finished_reward:
             data['finished_reward'] = finished_reward
 
@@ -609,7 +611,7 @@ class ScriptLogic(object):
             return
         if step == 3:
             resoult = self.calc_attention(film_info)
-            self.mm.script.cur_script['attention'] = resoult['attention']
+            self.mm.script.cur_script['final_attention'] = resoult['attention']
             if is_save:
                 self.mm.script.save()
             return resoult
@@ -639,7 +641,7 @@ class ScriptLogic(object):
                 min_attection = game_config.common[40] / 10000.0
                 if attention < min_attection:
                     attention = min_attection
-                script.cur_script['attention'] = int(attention)
+                script.cur_script['final_attention'] = int(attention)
                 if is_save:
                     script.save()
                 return {'attention': int(attention)}
@@ -670,7 +672,7 @@ class ScriptLogic(object):
         min_attection = game_config.common[40] / 10000.0
         if attention < min_attection:
             attention = min_attection
-        script.cur_script['attention'] = int(attention)
+        script.cur_script['final_attention'] = int(attention)
         if is_save:
             script.save()
             self.mm.user.save()
