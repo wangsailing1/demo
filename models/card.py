@@ -894,11 +894,11 @@ class Card(ModelBase):
         {
             card_oid1: {
                 effect: {
-                    1: 10,
-                    3: 20,
-                    5: 23,
-                },  # 该卡牌受所有生效技能影响后，最终类型值的增加值，这里只有类型只有1-6
-                    # 大于6的类型留给非卡牌属性值的增益，如最终拍片收益的增长等
+                    1: {
+                        2: 1900  # 算法与值
+                        },  # 每个type的算法和值
+                    ...
+                },  # 所有生效技能对card_oid1的汇总效果
                 skill: {
                     skill_id1: {
                         'skilltype': list   # 技能效果类型
@@ -919,13 +919,7 @@ class Card(ModelBase):
                                             # 15媒体口碑加成
                                             # 16培养花费下降
                                             # 17粉丝活动产出金币加成
-                        'skilltarget_oid': {
-                            'card_oid': {
-                                3: 10,  # 效果类型和提升的数值（乘法的百分比已经被换算成了增加的点数）
-                                5: 13,
-                            }  # 这里只有效果类型只有1-6
-                            ...
-                        }  # 技能影响的卡牌和效果值
+                        'skilltarget_oid': list  # 技能影响的卡牌列表
                         'computing_method': int  # 效果计算方法
                         'skilllevel_value': int  # 技能效果数值
                     },
