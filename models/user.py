@@ -407,7 +407,7 @@ class User(ModelBase):
                 continue
             if status == 1:
                 continue
-            self.level_gift.pop(lv)
+            # self.level_gift.pop(lv)
             is_save = True
 
         # if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
