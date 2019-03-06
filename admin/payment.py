@@ -81,6 +81,8 @@ def virtual_pay(req):
     goods_id = req.get_argument('goods_id')
     reason = req.get_argument('reason')
     times = int(req.get_argument('times', 1))
+    act_id = int(req.get_argument('act_id', 0))
+    act_item_id = int(req.get_argument('act_item_id', 0))
 
     if 'admin' in req.request.arguments:
         tp = 'admin'  # 后台代充  算真实收入
@@ -99,7 +101,7 @@ def virtual_pay(req):
         return render(req, 'admin/payment/virtual_index.html', **data)
 
     approval_payment = ApprovalPayment()
-    key = approval_payment.add_payment(req.uname, uid, goods_id, reason, times, tp)
+    key = approval_payment.add_payment(req.uname, uid, goods_id, reason, times, tp, act_id, act_item_id)
 
     admin = auth.get_admin_by_request(req)
     if settings.DEBUG:  # or (admin and 'for_approval' in admin.right_links):
