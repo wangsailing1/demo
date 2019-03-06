@@ -203,7 +203,7 @@ charge = {
     'price_dollar': ('price_dollar', 'float'),  # 所需美元
     'name': ('name', 'int'),  # 名字
     'icon': ('icon', 'str'),  # 图
-    'charge_condition': ('charge_condition', 'str'),  #
+    'charge_condition': ('charge_condition', 'int_list'),  #
     'gift': ('gift', 'int_list'),  #
 }
 
@@ -515,7 +515,7 @@ level_gift = {
     'uk':       ('level', 'int'),       # 等级
     'reward':   ('reward', 'list_3'),   # 奖励
     'time':     ('time', 'int'),        # 时长
-    'type':     ('type', 'int'),        # 充值类型
+    'charge_id':     ('charge_id', 'int'),        # 充值类型
     'des':      ('des', 'str'),     # 描述
 }
 
