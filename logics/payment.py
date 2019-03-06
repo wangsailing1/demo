@@ -19,10 +19,7 @@ from gconfig import MUITL_LAN, charge_scheme_func
 from lib.sdk_platform.sdk_hero import save_player_charger_log
 from lib.sdk_platform.helper import http
 from lib import utils
-<<<<<<< HEAD
 from logics.egg import Egg
-=======
->>>>>>> feature/level_gift
 from lib.utils.debug import print_log
 
 COIN_RATE = {
