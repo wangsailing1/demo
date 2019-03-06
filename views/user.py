@@ -849,3 +849,14 @@ def get_company_vip_reward(hm):
     mm.user.save()
     return 0, {'reward': reward}
 
+
+def can_buy_level_gift(hm):
+    mm = hm.mm
+    level_id = hm.get_argument('lv', is_int=True)
+    if not level_id:
+        return 1 , {}  # 等级礼包id错误
+    rc =  mm.user.can_buy_level_gift(level_id)
+    level_gift_data = mm.user.level_gift
+    return 0, {'level_limit_gift':level_gift_data,
+               'level_flag': rc}
+
