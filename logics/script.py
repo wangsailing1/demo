@@ -872,15 +872,21 @@ class ScriptLogic(object):
         if score < min_score:
             score = min_score
         score = min(round(score, 2), game_config.common[43])
-        # 技能效果
-        skill_add_value = script.calc_skill_effect(15, score)
-        score += skill_add_value
 
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
         like = int(score * like_rate)
-        like += self.mm.script.calc_director_effect(10, like)
-        return {'score': score, 'like': like}
+        # 技能效果
+        skill_add_like = script.calc_skill_effect(15, score)
+        # 导演效果
+        director_add_like = script.calc_director_effect(10, like)
+        like += skill_add_like + director_add_like
+        return {
+            'score': score,
+            'like': like,
+            'skill_add_like': skill_add_like,
+            'director_add_like': director_add_like,
+        }
 
     def calc_audience_judge(self):
         """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
@@ -1135,6 +1141,17 @@ class ScriptLogic(object):
         if not result:
             cur_script['finished_step'] = finished_step
             result = func()
+            # 处理下 attention结算
+            if finished_step == 3:
+                attention = result['attention']
+                #  添加导演效果
+                director_add_attention= script.calc_director_effect(11, attention)
+                # 技能效果
+                skill_add_attention = script.calc_skill_effect(10, attention)
+                result['attention'] = attention + skill_add_attention + director_add_attention
+                result['skill_add_attention'] = skill_add_attention
+                result['director_add_attention'] = director_add_attention
+
             cur_script[key] = result
             script.save()
         data[key] = result

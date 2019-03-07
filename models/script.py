@@ -328,7 +328,7 @@ class Script(ModelBase):
                     add_value = int(value * rate / 10000.0)
             elif sort == 11:
                 add_value = director_effect['skill_effect'].get(sort, 0)
-        return add_value
+        return int(add_value)
 
     def calc_skill_effect(self, sort, value=0):
         """
