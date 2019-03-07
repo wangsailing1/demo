@@ -3,7 +3,8 @@ gevent==1.0.2
 aliyun-log-python-sdk   # ==0.6.39.1
 amqp                    # ==2.3.2
 APScheduler             # ==3.3.0
-celery                  # ==4.2.0
+celery==4.2.1
+kombu==4.3.0
 msgpack                 # ==0.5.6
 redis==2.10.6
 MySQL-python            # ==1.2.5
