@@ -76,41 +76,41 @@ payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
     'host': '10.10.4.11',
-    'user': 'sale_tw',
+    'user': 'root',
     'passwd': 'w34QB8jK01HAlYT2KH6Z',
-    'db': 'big_sale',
+    'db': 'sale_tw',
     'table_prefix': 'payment',
 }
 
 SPEND_CONFIG = {
     'host': '10.10.4.11',
-    'user': 'sale_tw',
+    'user': 'root',
     'passwd': 'w34QB8jK01HAlYT2KH6Z',
-    'db': 'big_sale',
+    'db': 'sale_tw',
     'table_prefix': 'spend',
 }
 
 EARN_CONFIG = {
     'host': '10.10.4.11',
-    'user': 'sale_tw',
+    'user': 'root',
     'passwd': 'w34QB8jK01HAlYT2KH6Z',
-    'db': 'big_sale',
+    'db': 'sale_tw',
     'table_prefix': 'earn',
 }
 
 QUEST_CONFIG = {
     'host': '10.10.4.11',
-    'user': 'sale_tw',
+    'user': 'root',
     'passwd': 'w34QB8jK01HAlYT2KH6Z',
-    'db': 'big_sale',
+    'db': 'sale_tw',
     'table_prefix': 'quest',
 }
 
 GS_HOST = {
     'host': '10.10.4.11',
-    'user': 'sale_tw',
+    'user': 'root',
     'passwd': 'w34QB8jK01HAlYT2KH6Z',
-    'db': 'big_sale',
+    'db': 'sale_tw',
     'table_prefix': 'client_service',
 }
 
