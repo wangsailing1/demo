@@ -109,9 +109,17 @@ def config_version(hm):
     :param hm:
     :return:
     """
+    version_size = {}
+    for name in front_game_config.versions.keys():
+        config = getattr(front_game_config, name, {})
+        s = round(len(json.dumps(config, separators=(',', ':'))) / 1024.0, 2)
+        if s == 0:
+            continue
+        version_size[name] = '%sK' % (s)
     return 0, {
         'game_config_version': front_game_config.versions,
         'all_config_version': front_game_config.ver_md5,
+        'version_size':version_size
     }
 
 
