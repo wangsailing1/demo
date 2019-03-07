@@ -22,7 +22,7 @@ rmb_foundation = {
     'version': ('version', 'int'),  # 版本号
     'id': ('id', 'int'),  # 顺序
     'server_id': ('server_id', 'str'),  # 服务器id
-    'need_rmb': ('need_rmb', 'int'),  # 所需钻石
+    'need_charge': ('need_charge', 'int'),  # 所需钻石
     'name': ('name', 'str'),  # 基金名称
     'icon': ('icon', 'str'),  # 图标
     'rate_of_return': ('rate_of_return', 'int'),  # 回报率（百分之）
@@ -34,5 +34,5 @@ rmb_foundation = {
     'day5': ('day5', 'int_list'),  # 第五天
     'day6': ('day6', 'int_list'),  # 第六天
     'day7': ('day7', 'int_list'),  # 第七天
-    'notice': ('notice', 'unicode'),  # 说明
+    'notice': ('notice', 'int'),  # 说明
 }
