@@ -207,6 +207,7 @@ charge = {
     'gift': ('gift', 'int_list'),  #
     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
     'is_show': ('is_show', 'int'),  #  是否显示
+    'icon2': ('icon2', 'str'),  #  是否显示
 }
 
 month_privilege = {
