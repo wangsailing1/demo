@@ -98,7 +98,7 @@ class Egg(object):
 
     def open_egg(self, egg_type, is_super, egg_sort):
         if not self.is_open():
-            return 1, {}  # 活动未开启
+            return 4, {}  # 活动未开启
         reward = []
         # data = {'refresh_flog': 0}
         data = {}
@@ -153,7 +153,7 @@ class Egg(object):
             egg_item_info = game_config.egg_item.get(self.egg.version)
             if is_super:
                 if not self.egg.egg_item_super_times:
-                    return 4, {}  # 雷彩锤不足
+                    return 7, {}  # 雷彩锤不足
                 reward = copy.copy(self.egg.egg_item_reward_list)
                 reward_best = copy.copy(self.egg.egg_item_reward_best)
                 reward = [i[:3] for i in reward]
