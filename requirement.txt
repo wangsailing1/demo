@@ -1,7 +1,7 @@
 openpyxl==1.7.0
 gevent==1.0.2
 aliyun-log-python-sdk   # ==0.6.39.1
-amqp                    # ==2.3.2
+amqp==2.4.0
 APScheduler             # ==3.3.0
 celery==4.2.1
 kombu==4.3.0
