@@ -367,12 +367,12 @@ class Script(ModelBase):
         if skill_effect:
             all_effect = {}
             for card_oid, card_effect in skill_effect.iteritems():
-                for sort, effect in card_effect.iteritems():
+                for sort, effect in card_effect.get('effect', {}).iteritems():
                     sort_all_effect = all_effect.setdefault(sort, {})
                     merge_dict(sort_all_effect, effect)
 
             sort_effect = all_effect.get(sort, {})
-            for method, method_value in sort_effect.get(sort, {}).iteritems():
+            for method, method_value in sort_effect.iteritems():
                 if method == 1:
                     add_value += method_value
                 elif method == 2:
