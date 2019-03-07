@@ -172,7 +172,7 @@ class Egg(object):
                 # self.egg.egg_item_open_times += 1
                 self.egg.egg_sort_used[egg_type] = egg_sort
                 num_ = egg_item_info.get('number')
-                if self.egg.egg.egg_item_used_times / num_ and not self.egg.egg.egg_item_used_times % num_:
+                if self.egg.egg_item_used_times / num_ and not self.egg.egg_item_used_times % num_:
                     self.egg.egg_item_super_times += 1
                 reward = copy.copy(weight_choice(self.egg.egg_item_reward_list))
                 self.egg.egg_item_reward_list.pop(self.egg.egg_item_reward_list.index(reward))
