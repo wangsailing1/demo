@@ -26,11 +26,6 @@ class RmbFoundation(object):
         data['reward_dict'] = self.mm.rmbfoundation.reward_dict
         return 0, data
 
-    def buy_rmbf(self, f_id):
-        charge_id = game_config.rmb_foundation[f_id]['need_charge']
-        charge_info = game_config.charge[charge_id]
-        if LAN_SORT == 1:
-
 
     def withdraw(self, f_id, days):
         f_active_date = self.mm.rmbfoundation.activate_mark[f_id]
