@@ -248,6 +248,21 @@ class UserPayment(ModelBase):
                     return 0
                 return order_rmb * 10
 
+            elif act_id == 2012:
+                if not act_item_id:
+                    return order_rmb * 10
+                rmbfoundation_info = game_config.rmb_foundation.get(act_item_id)
+                if rmbfoundation_info and act_item_id not in self.mm.rmbfoundation.activate_mark:
+                    self.mm.rmbfoundation.activate_mark[act_item_id] = time.strftime('%F')
+                    reward_dict = []
+                    for key, value in rmbfoundation_info.iteritems():
+                        if key.startswith('day'):
+                            day = int(key.split('day')[1])
+                            reward_dict.append(day)
+                    self.mm.rmbfoundation.reward_dict[act_item_id] = sorted(reward_dict)
+                    return 0
+                return order_rmb * 10
+
             return 0
         else:
             return 0
