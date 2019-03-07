@@ -23,6 +23,7 @@ class Egg(object):
         egg_item_info = game_config.egg_item.get(self.mm.egg.version)
         egg_diamond_info = game_config.egg_diamond.get(self.mm.egg.version)
         data = {'egg_item': {}, 'egg_diamond': {}}
+        data['version'] = self.mm.egg.version
         data['egg_item']['reward_show_item'] = [i[:3] for i in self.mm.egg.egg_item_reward_list]
         data['egg_item']['reward_best_item'] = [i[:3] for i in egg_item_info.get('reward_1')]
         data['egg_item']['egg_times_item'] = self.mm.egg.egg_item_times - self.mm.egg.egg_item_used_times
