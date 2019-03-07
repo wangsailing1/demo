@@ -10,6 +10,7 @@ import datetime
 from gconfig import front_game_config
 from models.config import ResourceVersion
 from lib.utils.debug import print_log
+import json
 
 
 def resource_version(hm):
