@@ -54,4 +54,5 @@ rest = {
     'type': ('type', 'int'),  # 类型
     'rank': ('rank', 'int_list'),    # 区间
     'effect': ('effect', 'int'),    # 影响效果
+    'icon': ('icon', 'str'),    # 影响效果
 }
