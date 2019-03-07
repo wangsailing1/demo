@@ -93,6 +93,7 @@ vip_company = {
     'title': ('title', 'str'),                             # 标题
     'half': ('half', 'str'),                             #
     'background': ('background', 'str'),                             # 背景图
+    'name_icon': ('name_icon', 'str'),                             # 美术字设置
 
 }
 
