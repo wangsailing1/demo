@@ -34,7 +34,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             return 11, {}  # vip等级不够
-        if status:
+        if not status:
             return 1, {}  # 活动未开启
         if self.check_done():
             self.toy.refresh_reward()
@@ -66,7 +66,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             return 11, {}  # vip等级不够
-        if status:
+        if not status:
             return 1, {}  # 活动未开启
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
         gacha_cost_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_cost'))
@@ -154,7 +154,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             return 11, {}  # vip等级不够
-        if status:
+        if not status:
             return 1, {}  # 活动未开启
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
         if self.toy.is_free_refresh():
@@ -175,7 +175,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             return 11, {}  # vip等级不够
-        if status:
+        if not status:
             return 1, {}  # 活动未开启
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))
         if self.toy.rank_reward:
