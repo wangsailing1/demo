@@ -222,6 +222,11 @@ class ScriptLogic(object):
 
         if not cur_script['director_effect']:
             return 2, {}
+
+        # 判断是否有导演次数
+        if script.directing_times < script.max_directing_times():
+            cur_script['directing_ids'] = self.mm.director.get_directing_id(cur_script['id'])
+
         cur_script['director_effect'].clear()
         cur_script['re_directing'] = 1
         script.save()
