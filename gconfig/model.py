@@ -2803,6 +2803,10 @@ class FrontGameConfig(GameConfigMixIn):
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
+                    config = getattr(self, name, '')
+                    s = len(json.dumps(config, separators=(',', ':')))
+                    if config and s != 0:
+                        self.version_size[name] = s
 
             elif cv_version:  # 不是策划配置的xlsx, 服务器自己使用的配置存储在Config中
                 # print 'reload: %s' % name
@@ -2816,10 +2820,6 @@ class FrontGameConfig(GameConfigMixIn):
                     config = getattr(self, name, '')
                     cv_version = cm.generate_custom_md5(config)
                     self.versions[name] = cv_version if cv_version else ''
-            config = getattr(self, name, '')
-            s = len(json.dumps(config, separators=(',', ':')))
-            if config and s != 0:
-                self.version_size[name] = s
 
         if cv_save:
             cv.save()
