@@ -407,7 +407,7 @@ class User(ModelBase):
                 continue
             if status == 1:
                 continue
-            self.level_gift.pop(lv)
+            # self.level_gift.pop(lv)
             is_save = True
 
         # if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
@@ -1555,6 +1555,16 @@ class User(ModelBase):
         special_bdc_log(self, sort='exp_change', **kwargs)
         special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='PLE'))
         return True
+
+    def can_buy_level_gift(self, level_id):
+        if level_id not in self.level_gift:
+            return 0   # 可充值
+        if self.level_gift[level_id]['status'] != 0:
+            return 11   # 已充值
+        now = int(time.time())
+        if now > self.level_gift[level_id]['expire'] :
+            return 12   # 已过期
+        return 0
 
     def add_player_exp_for_config(self, action_id, times=1):
         """

@@ -937,7 +937,7 @@ class UserLogic(object):
         # if not self.user.is_diamond_enough(config['coin']):
         #     return 'error_diamond', {}
 
-        self.user.level_gift.pop(lv)
+        self.user.level_gift[lv] = 2
         # self.user.deduct_diamond(config['coin'])
 
         reward = add_mult_gift(self.mm, config['reward'])

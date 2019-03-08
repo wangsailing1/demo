@@ -5,7 +5,7 @@ pvp_rank = {
     'uk':               ('id',              'int'),         # id
     'name':             ('name',            'str'),         # 区间名称
     'name0':            ('name0',           'str'),         # 段位名称
-    'icon':             ('icon',            'int'),         # 段位图标
+    'icon':             ('icon',            'str'),         # 段位图标
     'script':           ('script',          'int_list'),    # 可选作品库
     'card_num':         ('card_num',        'int'),         # 剧本上阵人数
     'star':             ('star',            'int'),         # 升降级临界值

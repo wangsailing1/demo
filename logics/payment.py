@@ -106,7 +106,8 @@ def pay_apply(mm, obj, charge_config):
     payment = Payment()
     if payment.exists_order_id(obj['order_id']):
         return True
-
+    act_id = obj.pop('act_id') if 'act_id' in obj else 0
+    act_item_id = obj.pop('act_item_id') if 'act_item_id' in obj else 0
     if payment.insert_pay(obj, commit=False):
         order_diamond = obj['order_diamond']
         gift_diamond = obj['gift_diamond']
@@ -116,8 +117,6 @@ def pay_apply(mm, obj, charge_config):
         double_pay = obj['double_pay']
         open_gift = charge_config.get('open_gift', 0)
         add_vip_exp = charge_config.get('level_exp', 0)
-        act_id = obj.get('act_id', 0)   # 活动id
-        act_item_id = obj.get('act_item_id', 0) # 活动充值项id
 
         if double_pay:
             amount = order_diamond * 2 + gift_diamond + over_diamond
@@ -381,7 +380,7 @@ def payment_verify(req, tp=None):
     return return_data[rc]
 
 
-def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', currency=CURRENCY_CNY, charge_config=None):
+def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', currency=CURRENCY_CNY, charge_config=None, act_id=0, act_item_id=0):
     """ tp: admin 后台代充，算真实收入
         admin_test  管理员测试用
 
@@ -422,8 +421,12 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
         'currency': currency,
         'admin': admin,
         'reason': reason,
+        'act_id': act_id,
+        'act_item_id': act_item_id,
     }
     save_player_charger_log(mm, obj, order_id)
+    from lib.utils.debug import print_log
+    print_log(obj)
 
     return pay_apply(mm, obj, charge_config)
 
