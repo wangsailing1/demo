@@ -447,6 +447,7 @@ def upload_local_config(req):
     f.close()
 
     done_list = []
+    save_file_data = []
 
     if back_config:
         cv = ConfigVersion.get()
@@ -462,15 +463,17 @@ def upload_local_config(req):
         c.update_config(config, m, save=True)
         cv.update_version(config_name, m)
         done_list.append(config_name)
+        save_file_data.append((config_name, m, config))
 
         handle_reslove_config = getattr(front_game_config, 'handle_reslove_config', None)
         if callable(handle_reslove_config):
-            save_list, save_file_data = handle_reslove_config(c, cv)
-            done_list.append(config_name)
-            done_list.extend(save_list)
+            _save_list, _save_file_data = handle_reslove_config(c, cv)
+            done_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
 
-        # 配置cdn文件
-        if settings.CONFIG_RESOURCE_OPEN:
+    # 配置cdn文件
+    if settings.CONFIG_RESOURCE_OPEN:
+        for config_name, m, config in save_file_data:
             filename = '%s%s_%s.json' % (settings.CONFIG_RESOURCE_PATH, config_name, m)
             with open(filename, 'wb+') as f:
                 r = json.dumps(config, ensure_ascii=False, separators=(',', ':'), encoding='utf-8', default=to_json)
