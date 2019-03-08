@@ -121,6 +121,7 @@ class UserPayment(ModelBase):
         # 限购次数的刷新
         week = time.strftime('%W')  # 一年中第几周
         month = time.strftime('%B')  # %B 英文的月份   %m 01 - 12
+        today = time.strftime('%F')  # %F 日期
         for product_id, dt in self.buy_log.items():
             charge_config = game_config.charge.get(product_id)
             if not charge_config:
@@ -136,6 +137,12 @@ class UserPayment(ModelBase):
                     is_save = True
             elif buy_times == 2:    # 每月刷新
                 if dt_time.strftime('%B') != month:
+                    self.buy_log.pop(product_id)
+                # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
+                #     self.buy_log.pop(product_id)
+                    is_save = True
+            elif buy_times == 4:    # 每月刷新
+                if dt_time.strftime('%F') != today:
                     self.buy_log.pop(product_id)
                 # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
                 #     self.buy_log.pop(product_id)
