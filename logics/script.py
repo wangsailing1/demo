@@ -434,6 +434,8 @@ class ScriptLogic(object):
         result['reward'] = reward
         result['attention_initial'] = attention['attention_initial']
         result['attention_end'] = attention['attention']
+        result['skill_add_attention'] = attention['skill_add_attention']
+        result['director_add_attention'] = attention['director_add_attention']
         return result
 
     # 7.剧本属性计算
@@ -785,10 +787,20 @@ class ScriptLogic(object):
             card_p = 0
         else:
             card_p = card_popularity / standard_popularity
+
+        #  添加导演效果
+        director_add_attention = script.calc_director_effect(11, attention)
+        # 技能效果
+        skill_add_attention = script.calc_skill_effect(10, attention)
+        attention += skill_add_attention + director_add_attention
+
         return {
             'attention': int(attention),  # 关注度
             'card_effect': card_p,  # 艺人人气对关注度影响
-            'attention_initial': int(attention_initial)
+            'attention_initial': int(attention_initial),
+
+            'skill_add_attention': skill_add_attention,
+            'director_add_attention': director_add_attention,
         }
 
     # 8.首映票房、收视计算
@@ -1146,17 +1158,6 @@ class ScriptLogic(object):
         if not result:
             cur_script['finished_step'] = finished_step
             result = func()
-            # 处理下 attention结算
-            if finished_step == 3:
-                attention = result['attention']
-                #  添加导演效果
-                director_add_attention= script.calc_director_effect(11, attention)
-                # 技能效果
-                skill_add_attention = script.calc_skill_effect(10, attention)
-                result['attention'] = attention + skill_add_attention + director_add_attention
-                result['skill_add_attention'] = skill_add_attention
-                result['director_add_attention'] = director_add_attention
-
             cur_script[key] = result
             script.save()
         data[key] = result
