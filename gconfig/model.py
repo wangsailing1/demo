@@ -2740,9 +2740,8 @@ class FrontGameConfig(GameConfigMixIn):
                     self.versions[name] = cv_version if cv_version else ''
             config = getattr(self, name, '')
             s = len(json.dumps(config, separators=(',', ':')))
-            if s == 0:
-                continue
-            self.version_size[name] = s
+            if config and s != 0:
+                self.version_size[name] = s
 
         if cv_save:
             cv.save()
