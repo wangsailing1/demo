@@ -2745,6 +2745,7 @@ class FrontGameConfig(GameConfigMixIn):
         self.keys = []
         self.ver_md5 = ''
         self.versions = {}
+        self.version_size = {}
         self.reload()
         self.locked = False
 
@@ -2815,6 +2816,11 @@ class FrontGameConfig(GameConfigMixIn):
                     config = getattr(self, name, '')
                     cv_version = cm.generate_custom_md5(config)
                     self.versions[name] = cv_version if cv_version else ''
+            config = getattr(self, name, '')
+            s = len(json.dumps(config, separators=(',', ':')))
+            if s == 0:
+                continue
+            self.version_size[name] = s
 
         if cv_save:
             cv.save()
