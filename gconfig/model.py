@@ -2866,30 +2866,17 @@ class FrontGameConfig(GameConfigMixIn):
                         save_list.append(one_fake_list[0])
                         save_file_data.append((one_fake_list[0], md5_value, one_fake_list[1]))
 
-            # 拆分表
-            if config_name in RESOLVE_LIST:
-                r = {}
-                for k, v in config.iteritems():
-                    key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
-                    if key not in r:
-                        r[key] = {k: v}
-                    else:
-                        r[key][k] = v
-                for k, v in r.iteritems():
-                    md5_value = hashlib.md5(repr(v)).hexdigest()
-                    if cv.versions.get(k) == md5_value:
-                        continue
-                    c = FrontConfig.get(k)
-                    c.update_config(v, md5_value, save=True)
-                    cv.update_version(k, md5_value)
-                    save_list.append(k)
-                    save_file_data.append((k, md5_value, v))
-
             if cv.versions.get(config_name) == m:
                 continue
             c = FrontConfig.get(config_name)
             c.update_config(config, m, save=True)
             cv.update_version(config_name, m)
+
+            # 处理拆分表
+            _save_list, _save_file_data = self.handle_reslove_config(c, cv)
+            save_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
+
             save_list.append(config_name)
             save_file_data.append((config_name, m, config))
 
@@ -2906,6 +2893,38 @@ class FrontGameConfig(GameConfigMixIn):
                     f.write(r)
 
         return save_list, save_file_data, check_warning
+
+    def handle_reslove_config(self, config_instance, cv):
+        """
+        :param config:  instance of Config|FrontConfig
+        :param cv:  instance of ConfigVersion|FrontConfigVersion
+        :return:
+        """
+        # 拆分表
+        save_list = []
+        save_file_data = []
+        config_name = config_instance.uid
+        config = config_instance.value
+
+        if config_name in RESOLVE_LIST:
+            r = {}
+            for k, v in config.iteritems():
+                # key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
+                key = '%s_%d' % (config_name, int(k) % RESOLVE_LIST[config_name])
+                if key not in r:
+                    r[key] = {k: v}
+                else:
+                    r[key][k] = v
+            for k, v in r.iteritems():
+                md5_value = hashlib.md5(repr(v)).hexdigest()
+                if cv.versions.get(k) == md5_value:
+                    continue
+                c = config_instance.get(k)
+                c.update_config(v, md5_value, save=True)
+                cv.update_version(k, md5_value)
+                save_list.append(k)
+                save_file_data.append((k, md5_value, v))
+        return save_list, save_file_data
 
     def refresh(self):
         """ 刷新配置，用于进程加载配置

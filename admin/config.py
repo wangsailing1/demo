@@ -236,6 +236,8 @@ def upload(req):
     if back_warning_msg or front_warning_msg:
         return select(req,  **{'msg': 'warning: back(%s) front(%s) ,done: back(%s) front(%s)' % (','.join(back_warning_msg), ','.join(front_warning_msg), ','.join(back_save_list), ','.join(front_save_list))})
     ConfigRefresh.set_updated()
+    back_save_list.sort()
+    front_save_list.sort()
     return select(req, **{'msg': 'done: back(%s) front(%s)' % (','.join(back_save_list), ','.join(front_save_list))})
 
 
@@ -461,6 +463,12 @@ def upload_local_config(req):
         cv.update_version(config_name, m)
         done_list.append(config_name)
 
+        handle_reslove_config = getattr(front_game_config, 'handle_reslove_config', None)
+        if callable(handle_reslove_config):
+            save_list, save_file_data = handle_reslove_config(c, cv)
+            done_list.append(config_name)
+            done_list.extend(save_list)
+
         # 配置cdn文件
         if settings.CONFIG_RESOURCE_OPEN:
             filename = '%s%s_%s.json' % (settings.CONFIG_RESOURCE_PATH, config_name, m)
@@ -469,6 +477,7 @@ def upload_local_config(req):
                 f.write(r)
 
     cv.save()
+    done_list.sort()
 
     return select(req, **{'msg': 'num: %s, done: ' % len(done_list) + ', '.join(done_list)})
 
