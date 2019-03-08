@@ -10,6 +10,7 @@ import datetime
 from gconfig import front_game_config
 from models.config import ResourceVersion
 from lib.utils.debug import print_log
+import json
 
 
 def resource_version(hm):
@@ -110,6 +111,7 @@ def config_version(hm):
     return 0, {
         'game_config_version': front_game_config.versions,
         'all_config_version': front_game_config.ver_md5,
+        'version_size': front_game_config.version_size
     }
 
 

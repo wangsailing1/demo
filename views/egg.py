@@ -29,7 +29,7 @@ def open_egg(hm):
     is_super = hm.get_argument('is_super', 0, is_int=True)
     egg_sort = hm.get_argument('egg_sort', 0, is_int=True)
     if not is_super and egg_sort not in [1, 2, 3]:
-        return 1, {}  #
+        return 1, {}  # 参数错误
     egg = Egg(mm)
     rc, reward = egg.open_egg(egg_type, is_super, egg_sort)
     if rc != 0:

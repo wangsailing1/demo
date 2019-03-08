@@ -52,6 +52,8 @@
             <input type="hidden" name="goods_id" value="{{goods_id}}" />
             <input type="hidden" name="diamond" value="{{item['diamond']}}" />
             <b>次数:</b><input type="text" title='1-99之间的整数' name="times" value="1" size='2' maxlength='2'/>
+            <b>活动id(act_id):</b><input type="text" title='1-99之间的整数' name="act_id" value="0" size='4' maxlength='4'/>
+            <b>活动充值id(act_item_id):</b><input type="text" title='1-99之间的整数' name="act_item_id" value="0" size='4' maxlength='4'/>
             <b>原因:</b><input type="text" title='默认淘宝, 其它请自填' name="reason" value="代充"/>
             <input type="submit" title='请检查次数和原因' id='admin' name='admin' onclick="return confirm('确定要为该用户充值?   后台代充(算真实收入)')" value="后台代充(算真实收入)" />
             <input type="submit" title='请检查次数和原因' id='admin_test' name='admin_test' onclick="return confirm('确定要为该用户充值么?')" value="管理员测试专用"/>

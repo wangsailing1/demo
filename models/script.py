@@ -17,6 +17,7 @@ from gconfig import game_config
 from lib.db import ModelBase, get_redis_client
 from lib.utils import salt_generator
 from lib.utils import weight_choice
+from lib.utils import merge_dict
 from lib.core.environ import ModelManager
 from models.ranking_list import AppealRank, BlockRank
 from models.block import get_date
@@ -196,6 +197,12 @@ class Script(ModelBase):
             self.refresh_date = today
             self.directing_times = 0
 
+        # todo 开发期容错，不走数据升级， 上线后删除
+        if self.cur_script:
+            for i in ['director_effect', 'skill_effect']:
+                if i not in self.cur_script:
+                    self.cur_script[i] = {}
+
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
         # if self.cur_script:
@@ -227,7 +234,10 @@ class Script(ModelBase):
 
             continued_income = continued_lv_config['parm'] * all_income / 100
             # 计算导演加成
-            continued_income = self.calc_director_effect(9, continued_income)
+            director_add_value = self.calc_director_effect(9, continued_income)
+            # 技能效果
+            skill_add_value = self.calc_skill_effect(13, continued_income)
+            continued_income = continued_income + director_add_value + skill_add_value
 
             continued_time = game_config.common[19]
             continued_income_unit = continued_income / continued_time
@@ -306,20 +316,69 @@ class Script(ModelBase):
         """
         # 计算导演加成
         director_effect = self.cur_script.get('director_effect')
+        add_value = 0
         if director_effect:
             if sort in [1, 2, 3, 4, 5, 6]:
                 add_value = director_effect['skill_effect'].get(sort, 0)
-                value += add_value
             elif sort in [7, 8, 9, 10]:
                 rate = director_effect['skill_effect'].get(sort, 0)
                 if sort == 10:
-                    value = int(math.ceil(value * (1 + rate / 10000.0)))
+                    add_value = int(math.ceil(value * rate / 10000.0))
                 else:
-                    value = int(value * (1 + rate / 10000.0))
+                    add_value = int(value * rate / 10000.0)
             elif sort == 11:
                 add_value = director_effect['skill_effect'].get(sort, 0)
-                value += add_value
-        return value
+        return int(add_value)
+
+    def calc_skill_effect(self, sort, value=0):
+        """
+        计算卡牌技能对拍片各个阶段的效果
+
+        :param sort:
+                    1~6 六种属性的数值加成
+
+                    7暴击crit_rate_base
+                    8额外触发万分比ex_special_rate
+                    9艺人片酬降低
+                    10关注度加成
+                    11首映票房加成
+                    12总票房加成
+                    13持续收益加成
+                    14拍摄类型经验
+                    15媒体口碑加成
+                    16培养花费下降
+                    17粉丝活动产出金币加成
+
+                    {card_oid1: {
+                        effect: {
+                            sort: {method: value},
+                            3: {1: 111},,
+                            5: {2: 222},,
+                        },
+                      }
+                    }
+
+        :param value:
+        :return:
+        """
+        # 计算卡牌技能加成
+        skill_effect = self.cur_script.get('skill_effect')
+        add_value = 0
+        if skill_effect:
+            all_effect = {}
+            for card_oid, card_effect in skill_effect.iteritems():
+                for sort, effect in card_effect.get('effect', {}).iteritems():
+                    sort_all_effect = all_effect.setdefault(sort, {})
+                    merge_dict(sort_all_effect, effect)
+
+            sort_effect = all_effect.get(sort, {})
+            for method, method_value in sort_effect.iteritems():
+                if method == 1:
+                    add_value += method_value
+                elif method == 2:
+                    add_value += value * method_value / 10000.0
+
+        return int(add_value)
 
     def script_continued_summary(self):
         """持续收入片子信息统计
@@ -655,6 +714,8 @@ class Script(ModelBase):
         script_config = game_config.script[script_id]
         type_config = game_config.script_type_style[script_config['type']]
         data = {
+            'skill_effect': {},  # 卡牌技能效果
+
             're_directing': 0,               # 是否处理过了重拍流程  1： 重拍过，  -1: 跳过重拍， 0 未处理
             'director_effect': {},          # 拍片时候是否有上导演，在logics层检查director模块 director_skill_effect 方法
             'directing_ids': [],             # 导演执导方针
@@ -694,8 +755,7 @@ class Script(ModelBase):
             'continued_income': 0,  # 已领取持续收入
             'continued_income_unit': 0,  # 持续收入 每分钟收入数
 
-            'attention': 0,  # 关注度
-            'audience': 0,  # 观众
+            'final_attention': 0,  # 关注度
         }
         return data
 

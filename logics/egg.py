@@ -23,6 +23,7 @@ class Egg(object):
         egg_item_info = game_config.egg_item.get(self.mm.egg.version)
         egg_diamond_info = game_config.egg_diamond.get(self.mm.egg.version)
         data = {'egg_item': {}, 'egg_diamond': {}}
+        data['version'] = self.mm.egg.version
         data['egg_item']['reward_show_item'] = [i[:3] for i in self.mm.egg.egg_item_reward_list]
         data['egg_item']['reward_best_item'] = [i[:3] for i in egg_item_info.get('reward_1')]
         data['egg_item']['egg_times_item'] = self.mm.egg.egg_item_times - self.mm.egg.egg_item_used_times
@@ -97,7 +98,7 @@ class Egg(object):
 
     def open_egg(self, egg_type, is_super, egg_sort):
         if not self.is_open():
-            return 1, {}  # 活动未开启
+            return 4, {}  # 活动未开启
         reward = []
         # data = {'refresh_flog': 0}
         data = {}
@@ -108,7 +109,7 @@ class Egg(object):
                 num_ = self.mm.item.get_item(item_id)
                 need_num = egg_diamond_info.get('super_item_higher')[0][2]
                 if num_ < need_num:
-                    return 6, {}  # 雷金锤数量不足
+                    return 6, {}  # 高级金锤数量不足
                 reward = copy.copy(self.egg.egg_diamond_reward_list)
                 reward_best = copy.copy(self.egg.egg_diamond_reward_best)
                 reward = [i[:3] for i in reward]
@@ -118,7 +119,7 @@ class Egg(object):
                     return rc, {}
                 # data['refresh_flog'] = 1
                 reward_msg = get_reward_and_num(self.mm, [reward_best])
-                log_ = u'%s在砸金蛋活动中，使用雷金锤，获得%s' % (self.mm.user.name, reward_msg)
+                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级金锤，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 need_diamond = egg_diamond_info.get('need_recharge')
@@ -145,14 +146,14 @@ class Egg(object):
                     # data['refresh_flog'] = 1
                 if reward_choice == self.egg.egg_diamond_reward_best:
                     reward_msg = get_reward_and_num(self.mm, reward)
-                    log_ = u'%s砸金蛋人品爆发，获得%s' % (self.mm.user.name, reward_msg)
+                    log_ = u'<#6cbaf4>%s<#ffffff>砸金蛋人品爆发，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
 
         elif egg_type == 2:  # 彩蛋
             egg_item_info = game_config.egg_item.get(self.egg.version)
             if is_super:
                 if not self.egg.egg_item_super_times:
-                    return 4, {}  # 雷彩锤不足
+                    return 7, {}  # 高级彩锤不足
                 reward = copy.copy(self.egg.egg_item_reward_list)
                 reward_best = copy.copy(self.egg.egg_item_reward_best)
                 reward = [i[:3] for i in reward]
@@ -162,7 +163,7 @@ class Egg(object):
                     return rc, {}
                 # data['refresh_flog'] = 1
                 reward_msg = get_reward_and_num(self.mm, [reward_best])
-                log_ = u'%s在砸金蛋活动中，使用雷彩锤，获得%s' % (self.mm.user.name, reward_msg)
+                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级彩锤，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 # need_num = egg_item_info.get('need_recharge')
@@ -172,7 +173,7 @@ class Egg(object):
                 # self.egg.egg_item_open_times += 1
                 self.egg.egg_sort_used[egg_type] = egg_sort
                 num_ = egg_item_info.get('number')
-                if self.egg.egg.egg_item_used_times / num_ and not self.egg.egg.egg_item_used_times % num_:
+                if self.egg.egg_item_used_times / num_ and not self.egg.egg_item_used_times % num_:
                     self.egg.egg_item_super_times += 1
                 reward = copy.copy(weight_choice(self.egg.egg_item_reward_list))
                 self.egg.egg_item_reward_list.pop(self.egg.egg_item_reward_list.index(reward))
@@ -185,7 +186,7 @@ class Egg(object):
                     # data['refresh_flog'] = 1
                 if reward[0] == self.egg.egg_item_reward_best:
                     reward_msg = get_reward_and_num(self.mm, [self.egg.egg_item_reward_best])
-                    log_ = u'%s砸彩蛋人品爆发，获得%s' % (self.mm.user.name, reward_msg)
+                    log_ = u'<#6cbaf4>%s<#ffffff>砸彩蛋人品爆发，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
         gift = add_mult_gift(self.mm, reward)
         data['gift'] = gift

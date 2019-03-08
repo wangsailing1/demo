@@ -236,6 +236,8 @@ def upload(req):
     if back_warning_msg or front_warning_msg:
         return select(req,  **{'msg': 'warning: back(%s) front(%s) ,done: back(%s) front(%s)' % (','.join(back_warning_msg), ','.join(front_warning_msg), ','.join(back_save_list), ','.join(front_save_list))})
     ConfigRefresh.set_updated()
+    back_save_list.sort()
+    front_save_list.sort()
     return select(req, **{'msg': 'done: back(%s) front(%s)' % (','.join(back_save_list), ','.join(front_save_list))})
 
 
@@ -445,6 +447,7 @@ def upload_local_config(req):
     f.close()
 
     done_list = []
+    save_file_data = []
 
     if back_config:
         cv = ConfigVersion.get()
@@ -460,15 +463,24 @@ def upload_local_config(req):
         c.update_config(config, m, save=True)
         cv.update_version(config_name, m)
         done_list.append(config_name)
+        save_file_data.append((config_name, m, config))
 
-        # 配置cdn文件
-        if settings.CONFIG_RESOURCE_OPEN:
+        handle_reslove_config = getattr(front_game_config, 'handle_reslove_config', None)
+        if callable(handle_reslove_config):
+            _save_list, _save_file_data = handle_reslove_config(c, cv)
+            done_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
+
+    # 配置cdn文件
+    if settings.CONFIG_RESOURCE_OPEN:
+        for config_name, m, config in save_file_data:
             filename = '%s%s_%s.json' % (settings.CONFIG_RESOURCE_PATH, config_name, m)
             with open(filename, 'wb+') as f:
                 r = json.dumps(config, ensure_ascii=False, separators=(',', ':'), encoding='utf-8', default=to_json)
                 f.write(r)
 
     cv.save()
+    done_list.sort()
 
     return select(req, **{'msg': 'num: %s, done: ' % len(done_list) + ', '.join(done_list)})
 

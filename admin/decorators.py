@@ -185,7 +185,7 @@ class ApprovalPayment(ModelTools):
         data = self.redis.hget(self._key, key)
         return pickle.loads(data) if data else {}
 
-    def add_payment(self, admin, uid, goods_id, reason, times, tp):
+    def add_payment(self, admin, uid, goods_id, reason, times, tp, act_id, act_item_id):
         """ 增加审批支付
 
         :param admin: admin账号
@@ -206,6 +206,8 @@ class ApprovalPayment(ModelTools):
             'approval': '',  # 审批者
             'status': 0,  # 状态0,为审批时, 1为同意, 2为拒绝
             'tp': tp,
+            'act_id': act_id,
+            'act_item_id': act_item_id,
         }
         key = '%s_%s' % (admin, now)
         self.redis.hset(self._key, key, pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
@@ -247,7 +249,8 @@ class ApprovalPayment(ModelTools):
                 # u = mm.get(pay['uid'])
                 mm = ModelManager(pay['uid'])
                 for i in xrange(int(pay['times'])):
-                    flag = virtual_pay_by_admin(mm, pay['goods_id'], pay['admin'], pay['reason'], pay['tp'])
+                    flag = virtual_pay_by_admin(mm, pay['goods_id'], pay['admin'], pay['reason'], pay['tp'],
+                                                act_id=pay['act_id'], act_item_id=pay['act_item_id'])
             else:
                 # 拒绝
                 pay['status'] = 2

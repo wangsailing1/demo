@@ -93,6 +93,7 @@ vip_company = {
     'title': ('title', 'str'),                             # 标题
     'half': ('half', 'str'),                             #
     'background': ('background', 'str'),                             # 背景图
+    'name_icon': ('name_icon', 'str'),                             # 美术字设置
 
 }
 
@@ -203,8 +204,11 @@ charge = {
     'price_dollar': ('price_dollar', 'float'),  # 所需美元
     'name': ('name', 'int'),  # 名字
     'icon': ('icon', 'str'),  # 图
-    'charge_condition': ('charge_condition', 'str'),  #
+    'charge_condition': ('charge_condition', 'int_list'),  #
     'gift': ('gift', 'int_list'),  #
+    'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
+    'is_show': ('is_show', 'int'),  #  是否显示
+    'icon2': ('icon2', 'str'),  #  是否显示
 }
 
 month_privilege = {
@@ -515,7 +519,7 @@ level_gift = {
     'uk':       ('level', 'int'),       # 等级
     'reward':   ('reward', 'list_3'),   # 奖励
     'time':     ('time', 'int'),        # 时长
-    'type':     ('type', 'int'),        # 充值类型
+    'charge_id':     ('charge_id', 'int'),        # 充值类型
     'des':      ('des', 'str'),     # 描述
 }
 

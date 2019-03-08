@@ -121,6 +121,7 @@ class UserPayment(ModelBase):
         # 限购次数的刷新
         week = time.strftime('%W')  # 一年中第几周
         month = time.strftime('%B')  # %B 英文的月份   %m 01 - 12
+        today = time.strftime('%F')  # %F 日期
         for product_id, dt in self.buy_log.items():
             charge_config = game_config.charge.get(product_id)
             if not charge_config:
@@ -136,6 +137,12 @@ class UserPayment(ModelBase):
                     is_save = True
             elif buy_times == 2:    # 每月刷新
                 if dt_time.strftime('%B') != month:
+                    self.buy_log.pop(product_id)
+                # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
+                #     self.buy_log.pop(product_id)
+                    is_save = True
+            elif buy_times == 4:    # 每月刷新
+                if dt_time.strftime('%F') != today:
                     self.buy_log.pop(product_id)
                 # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
                 #     self.buy_log.pop(product_id)
@@ -245,6 +252,21 @@ class UserPayment(ModelBase):
                 level_gift_config = game_config.level_gift.get(lv)
                 if level_gift_config and lv in self.mm.user.level_gift:
                     self.mm.user.level_gift[lv]['status'] = 1
+                    return 0
+                return order_rmb * 10
+
+            elif act_id == 2012:
+                if not act_item_id:
+                    return order_rmb * 10
+                rmbfoundation_info = game_config.rmb_foundation.get(act_item_id)
+                if rmbfoundation_info and act_item_id not in self.mm.rmbfoundation.activate_mark:
+                    self.mm.rmbfoundation.activate_mark[act_item_id] = time.strftime('%F')
+                    reward_dict = []
+                    for key, value in rmbfoundation_info.iteritems():
+                        if key.startswith('day'):
+                            day = int(key.split('day')[1])
+                            reward_dict.append(day)
+                    self.mm.rmbfoundation.reward_dict[act_item_id] = sorted(reward_dict)
                     return 0
                 return order_rmb * 10
 

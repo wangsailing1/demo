@@ -9,6 +9,7 @@ import random
 import time
 import hashlib
 import json
+import zlib
 
 from models.config import Config, ConfigVersion, ConfigMd5
 from models.config import FrontConfig, FrontConfigVersion, FrontConfigMd5
@@ -2745,6 +2746,7 @@ class FrontGameConfig(GameConfigMixIn):
         self.keys = []
         self.ver_md5 = ''
         self.versions = {}
+        self.version_size = {}
         self.reload()
         self.locked = False
 
@@ -2775,6 +2777,10 @@ class FrontGameConfig(GameConfigMixIn):
                         # print 'reload: %s' % name
                         setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
+                        config = getattr(self, r_name, '')
+                        s = self.get_version_size(config)
+                        if config and s != 0:
+                            self.version_size[r_name] = s
             if name in FAKE_CONFIG:
                 for i in FAKE_CONFIG[name][1]:
                     r_name = i
@@ -2784,6 +2790,10 @@ class FrontGameConfig(GameConfigMixIn):
                         # print 'reload: %s' % name
                         setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
+                        config = getattr(self, r_name, '')
+                        s = self.get_version_size(config)
+                        if config and s != 0:
+                            self.version_size[r_name] = s
 
             cv_version = cv.versions.get(name)
             if cv_version and self.versions.get(name) == cv_version:
@@ -2802,6 +2812,10 @@ class FrontGameConfig(GameConfigMixIn):
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
+                    config = getattr(self, name, '')
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
             elif cv_version:  # 不是策划配置的xlsx, 服务器自己使用的配置存储在Config中
                 # print 'reload: %s' % name
@@ -2809,12 +2823,19 @@ class FrontGameConfig(GameConfigMixIn):
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
+                    config = getattr(self, name, '')
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
             else:  # 不是策划配置的xlsx, 服务器自己使用的配置, 在gconfig.model属性中, 每次更改需要重启服务器
                 if v[1]:  # 前端可见配置
                     config = getattr(self, name, '')
                     cv_version = cm.generate_custom_md5(config)
                     self.versions[name] = cv_version if cv_version else ''
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
         if cv_save:
             cv.save()
@@ -2822,6 +2843,16 @@ class FrontGameConfig(GameConfigMixIn):
         self.reset()
         self.locked = False
         return True
+
+
+    def get_version_size(self, data):
+        """
+        计算配置大小
+        :param data: 
+        :return: 
+        """
+        return len(zlib.compress(json.dumps(data, separators=(',', ':'))))
+
 
     def upload(self, file_name, xl=None):
         """ 上传一个文件
@@ -2861,30 +2892,17 @@ class FrontGameConfig(GameConfigMixIn):
                         save_list.append(one_fake_list[0])
                         save_file_data.append((one_fake_list[0], md5_value, one_fake_list[1]))
 
-            # 拆分表
-            if config_name in RESOLVE_LIST:
-                r = {}
-                for k, v in config.iteritems():
-                    key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
-                    if key not in r:
-                        r[key] = {k: v}
-                    else:
-                        r[key][k] = v
-                for k, v in r.iteritems():
-                    md5_value = hashlib.md5(repr(v)).hexdigest()
-                    if cv.versions.get(k) == md5_value:
-                        continue
-                    c = FrontConfig.get(k)
-                    c.update_config(v, md5_value, save=True)
-                    cv.update_version(k, md5_value)
-                    save_list.append(k)
-                    save_file_data.append((k, md5_value, v))
-
             if cv.versions.get(config_name) == m:
                 continue
             c = FrontConfig.get(config_name)
             c.update_config(config, m, save=True)
             cv.update_version(config_name, m)
+
+            # 处理拆分表
+            _save_list, _save_file_data = self.handle_reslove_config(c, cv)
+            save_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
+
             save_list.append(config_name)
             save_file_data.append((config_name, m, config))
 
@@ -2901,6 +2919,38 @@ class FrontGameConfig(GameConfigMixIn):
                     f.write(r)
 
         return save_list, save_file_data, check_warning
+
+    def handle_reslove_config(self, config_instance, cv):
+        """
+        :param config:  instance of Config|FrontConfig
+        :param cv:  instance of ConfigVersion|FrontConfigVersion
+        :return:
+        """
+        # 拆分表
+        save_list = []
+        save_file_data = []
+        config_name = config_instance.uid
+        config = config_instance.value
+
+        if config_name in RESOLVE_LIST:
+            r = {}
+            for k, v in config.iteritems():
+                # key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
+                key = '%s_%d' % (config_name, int(k) % RESOLVE_LIST[config_name])
+                if key not in r:
+                    r[key] = {k: v}
+                else:
+                    r[key][k] = v
+            for k, v in r.iteritems():
+                md5_value = hashlib.md5(repr(v)).hexdigest()
+                if cv.versions.get(k) == md5_value:
+                    continue
+                c = config_instance.get(k)
+                c.update_config(v, md5_value, save=True)
+                cv.update_version(k, md5_value)
+                save_list.append(k)
+                save_file_data.append((k, md5_value, v))
+        return save_list, save_file_data
 
     def refresh(self):
         """ 刷新配置，用于进程加载配置
