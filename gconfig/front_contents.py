@@ -432,8 +432,8 @@ home_mapping = {
 
 language_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
-    'ZH_CN': ('ZH_CN', True),
-    'ZH_TW': ('ZH_TW', True),
+    'ZH_CN': ('ZH_CN', False),
+    'ZH_TW': ('ZH_TW', False),
     'ZH_CN_FOREND': ('ZH_CN_FOREND', True),
     'ZH_TW_FOREND': ('ZH_TW_FOREND', True),
     'ZH_TW_YUNYING': ('ZH_TW_YUNYING', True),
