@@ -196,6 +196,7 @@ vip_pay = {
 charge = {
     'uk': ('buy_id', 'int'),  # id
     'sort': ('sort', 'int'),  # 购买类型
+    'cost': ('cost', 'str'),  # 商品id
     'diamond': ('diamond', 'int'),  # 给予钻石数量
     'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
     'is_double': ('is_double', 'int'),  # 是否首次双倍

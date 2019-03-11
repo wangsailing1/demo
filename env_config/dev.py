@@ -28,6 +28,17 @@ RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
 
+# 前端热更资源地址
+resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+# 前端热更配置地址
+config_resource = [
+    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
+]
+
+payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
+
+
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
 SLG_REQUESTRUN = {
@@ -59,16 +70,6 @@ apps = [
     ('d5', 'net1', '192.168.1.103', 6311, 3),
 ]
 
-
-# 前端热更资源地址
-resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-# 前端热更配置地址
-config_resource = [
-    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
-    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
-]
-
-payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
     'host': '192.168.1.51',

@@ -31,6 +31,18 @@ RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
 
+# 前端热更资源地址
+# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+
+resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
+# 前端热更配置地址
+config_resource = [
+    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
+]
+
+payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
+
 # DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
 # slg服务redis地址，用来查看slg在线人数等
@@ -64,18 +76,6 @@ apps = [
     ('r5', 'net1', '10.10.2.4', 6305, 3),
 ]
 
-
-# 前端热更资源地址
-# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-
-resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
-# 前端热更配置地址
-config_resource = [
-    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
-    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
-]
-
-payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
     'host': '10.10.2.4',
