@@ -665,3 +665,11 @@ server_type = {
     'time': ('time', 'str'),
     'type': ('type', 'int'),
 }
+
+assistant = {
+    'uk': ('id', 'int'),
+    'desc': ('desc', 'str'),
+    'chargeid1': ('chargeid1', 'int'),
+    'chargeid2': ('chargeid2', 'int'),
+    'gift': ('gift', 'int_list'),
+}
