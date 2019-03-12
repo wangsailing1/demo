@@ -112,7 +112,7 @@ def pay_apply(mm, obj, charge_config):
     if payment.insert_pay(obj, commit=False):
         order_diamond = obj['order_diamond']
         gift_diamond = obj['gift_diamond']
-        gift = obj['gift']          # 香水等礼物
+        gift = charge_config['gift']          # 香水等礼物
         order_money = obj['order_money']
         order_rmb = obj['order_rmb']
         product_id = obj['product_id']
