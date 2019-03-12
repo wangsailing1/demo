@@ -170,50 +170,56 @@ vip_pay = {
 }
 
 # 支付表
-# charge = {
-#     'uk': ('buy_id', 'int'),  # 充值ID
-#     'diamond': ('diamond', 'int'),  # 给予钻石数量
-#     'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
-#     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
-#     'is_double': ('is_double', 'int'),  # 是否首次双倍
-#     'goodsId': ('goodsId', 'int'),
-#     'cost': ('cost', 'str'),  # 商品id
-#     'name': ('name', 'unicode'),  # 名字
-#     'des': ('des', 'unicode'),  # 描述
-#     'icon': ('icon', 'str'),  # ICON
-#     'open_gift': ('open_gift', 'int'),  # 购买后开启奖励，0：不开启，1：月卡，2：季卡，3：充值限时礼包
-#     'is_show': ('is_show', 'int'),  # 是否显示充值项
-#     'gift_reward_id': ('gift_reward_id', 'int'),  # 限时礼包奖励
-#     'charge_reward': ('charge_reward', 'list_3'),  # 充值项奖励
-#     'charge_anim': ('charge_anim', 'str'),  # 充值项奖励的图或动画
-#     'charge_icon': ('charge_icon', 'str'),
-#     'price_CN': ('price_CN', 'float'),  # 所需金额
-#     'price_TW': ('price_TW', 'float'),  # 所需金额
-#     'price_TWD': ('price_TWD', 'float'),  # 所需金额
-#     'charge_condition': ('charge_condition', 'int_list'),  # 充值限制（写谁，该充值项不算谁1累充，2.首充）
-# }
-
 charge = {
-    'uk': ('buy_id', 'int'),  # id
-    'sort': ('sort', 'int'),  # 购买类型
-    'cost': ('cost', 'str'),  # 商品id
+    'uk': ('buy_id', 'int'),  # 充值ID
     'diamond': ('diamond', 'int'),  # 给予钻石数量
     'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
-    'is_double': ('is_double', 'int'),  # 是否首次双倍
-    'vip_exp': ('vip_exp', 'int'),  # vip经验
-    'price_rmb': ('price_rmb', 'int'),  # 所需RMB
-    'price_dollar': ('price_dollar', 'float'),  # 所需美元
-    'name': ('name', 'int'),  # 名字
-    'icon': ('icon', 'str'),  # 图
-    'charge_condition': ('charge_condition', 'int_list'),  #
-    'gift': ('gift', 'int_list'),  #
     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
-    'is_show': ('is_show', 'int'),  #  是否显示
-    'icon2': ('icon2', 'str'),  #  是否显示
+    'is_double': ('is_double', 'int'),  # 是否首次双倍
+    'goodsId': ('goodsId', 'int'),
+    'cost': ('cost', 'str'),  # 商品id
+    'name': ('name', 'unicode'),  # 名字
+    'des': ('des', 'unicode'),  # 描述
+    'icon': ('icon', 'str'),  # ICON
+    'open_gift': ('open_gift', 'int'),  # 购买后开启奖励，0：不开启，1：月卡，2：季卡，3：充值限时礼包
+    'is_show': ('is_show', 'int'),  # 是否显示充值项
+    'gift_reward_id': ('gift_reward_id', 'int'),  # 限时礼包奖励
+    'charge_reward': ('charge_reward', 'list_3'),  # 充值项奖励
+    'charge_anim': ('charge_anim', 'str'),  # 充值项奖励的图或动画
+    'charge_icon': ('charge_icon', 'str'),
     'price_CN': ('price_CN', 'float'),  # 所需金额
     'price_TW': ('price_TW', 'float'),  # 所需金额
     'price_TWD': ('price_TWD', 'float'),  # 所需金额
+    'charge_condition': ('charge_condition', 'int_list'),  # 充值限制（写谁，该充值项不算谁1累充，2.首充）
+    'sort': ('sort', 'int'),  # 购买类型
+    'vip_exp': ('vip_exp', 'int'),  # vip经验
+    'price_rmb': ('price_rmb', 'int'),  # 所需RMB
+    'price_dollar': ('price_dollar', 'float'),  # 所需美元
+    'gift': ('gift', 'int_list'),  #
+    'icon2': ('icon2', 'str'),  # 是否显示
 }
+
+# charge = {
+#     'uk': ('buy_id', 'int'),  # id
+#     'sort': ('sort', 'int'),  # 购买类型
+#     'cost': ('cost', 'str'),  # 商品id
+#     'diamond': ('diamond', 'int'),  # 给予钻石数量
+#     'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
+#     'is_double': ('is_double', 'int'),  # 是否首次双倍
+#     'vip_exp': ('vip_exp', 'int'),  # vip经验
+#     'price_rmb': ('price_rmb', 'int'),  # 所需RMB
+#     'price_dollar': ('price_dollar', 'float'),  # 所需美元
+#     'name': ('name', 'int'),  # 名字
+#     'icon': ('icon', 'str'),  # 图
+#     'charge_condition': ('charge_condition', 'int_list'),  #
+#     'gift': ('gift', 'int_list'),  #
+#     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
+#     'is_show': ('is_show', 'int'),  #  是否显示
+#     'icon2': ('icon2', 'str'),  #  是否显示
+#     'price_CN': ('price_CN', 'float'),  # 所需金额
+#     'price_TW': ('price_TW', 'float'),  # 所需金额
+#     'price_TWD': ('price_TWD', 'float'),  # 所需金额
+# }
 
 month_privilege = {
     'uk': ('card_type', 'int'),  # id
