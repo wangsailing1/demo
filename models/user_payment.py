@@ -11,6 +11,7 @@ from gconfig import game_config
 from lib.utils.active_inreview_tools import get_version_by_active_id
 from lib.utils.time_tools import str2timestamp
 from return_msg_config import i18n_msg
+from lib.utils.debug import print_log
 
 
 class UserPayment(ModelBase):
@@ -141,7 +142,7 @@ class UserPayment(ModelBase):
                 # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
                 #     self.buy_log.pop(product_id)
                     is_save = True
-            elif buy_times == 4:    # 每月刷新
+            elif buy_times == 4:    # 每日刷新
                 if dt_time.strftime('%F') != today:
                     self.buy_log.pop(product_id)
                 # if datetime.datetime.strptime(today, '%Y-%m-%d') - dt_time + 1 > 30:
@@ -245,6 +246,17 @@ class UserPayment(ModelBase):
                 #         self.mm.user.save()
                 #     else:
                 #         return order_rmb * 10
+                elif sort == 3:  # 激活终身助理
+                    if not self.mm.assistant.assistant:
+                        self.mm.assistant.open_assistant(sort)
+                    else:
+                        return order_diamond
+                elif sort == 4:  # 助理特权礼包
+                    if self.mm.assistant.assistant and not self.mm.assistant.assistant_gift:
+                        self.mm.assistant.open_assistant(sort)
+                    else:
+                        return order_diamond
+
             elif act_id == 3001:  # 限时等级礼包
                 if not act_item_id:
                     return order_rmb * 10
