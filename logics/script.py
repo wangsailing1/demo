@@ -131,7 +131,7 @@ class ScriptLogic(object):
 
     def re_selection(self):
         script = self.mm.script
-        if script.reselection_times >= vip_company.script_reselectiontimes(self.mm):
+        if script.reselection_times >= vip_company.script_reselectiontimes(self.mm.user):
             return 1, {}
 
         script.pre_filming(re_selection=True)
