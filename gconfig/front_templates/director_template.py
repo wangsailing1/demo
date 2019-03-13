@@ -43,6 +43,7 @@ director_skill = {
     'value':            ('value', 'int'),                       # 技能效果
     'dskill_param':     ('dskill_param', 'int'),                # 导演技能系数
     'des':              ('des', 'str'),                         # 属性加成万分比
+    'computing_method': ('computing_method', 'int'),            # 无实际运算功能的效果计算方式（1加法，2乘法）客户端要求
 }
 
 
