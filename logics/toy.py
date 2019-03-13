@@ -14,6 +14,7 @@ from lib.utils.debug import print_log
 class Toy(object):
     mapping = {1: 'toy', 2: 'freetoy'}
     pre_str_mapping = {1: 'rmb_', 2: 'free_'}
+    VIP_MAPPING = {1: 'if_super_catcher', 2: 'if_catcher'}
 
     def __init__(self, mm, sort=1):
         self.mm = mm
@@ -30,10 +31,20 @@ class Toy(object):
         action_config_id, version = self.toy.get_version()
         return version
 
+    def unlock_lv(self):
+        lv = 1
+        k = self.VIP_MAPPING[self.sort]
+        while True:
+            if game_config.vip_company[lv][k]:
+                break
+            lv += 1
+        return lv
+
     def index(self):
         status = self.is_open()
         if status == -1:
-            return 11, {}  # vip等级不够
+            lv = self.unlock_lv()
+            return 11, {'custom_msg':'群星纪念塔楼建到%s层解锁'%lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         if self.check_done():
@@ -65,7 +76,8 @@ class Toy(object):
     def get_toy(self, catch, reward_id):
         status = self.is_open()
         if status == -1:
-            return 11, {}  # vip等级不够
+            lv = self.unlock_lv()
+            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
@@ -153,7 +165,8 @@ class Toy(object):
     def refresh(self):
         status = self.is_open()
         if status == -1:
-            return 11, {}  # vip等级不够
+            lv = self.unlock_lv()
+            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
@@ -174,7 +187,8 @@ class Toy(object):
     def get_rank_reward(self):
         status = self.is_open()
         if status == -1:
-            return 11, {}  # vip等级不够
+            lv = self.unlock_lv()
+            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))
