@@ -38,6 +38,19 @@ def pre_filming(hm):
     return rc, data
 
 
+def re_selection(hm):
+    """
+    剧本池刷新
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+
+    rc, data = sl.re_selection()
+    return rc, data
+
+
 def filming(hm):
     """
     拍片, 设置剧本名字

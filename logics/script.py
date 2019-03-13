@@ -20,6 +20,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 
+from models import vip_company
 from models.script import Script
 from models.card import Card
 from models.ranking_list import BlockRank
@@ -92,6 +93,7 @@ class ScriptLogic(object):
             'attr_total': self.attr_total(),
             'script_license': self.mm.user.script_license,
             'remain_directing_times': script.max_directing_times() - script.directing_times,
+            'reselection_times': script.reselection_times,
         }
 
     # 统计总的effect
@@ -124,6 +126,16 @@ class ScriptLogic(object):
                 del_mult_goods(self.mm, cost)
             script.save()
             self.mm.user.save()
+        rc, data = self.index()
+        return rc, data
+
+    def re_selection(self):
+        script = self.mm.script
+        if script.reselection_times >= vip_company.script_reselectiontimes(self.mm):
+            return 1, {}
+
+        script.pre_filming(re_selection=True)
+        script.save()
         rc, data = self.index()
         return rc, data
 

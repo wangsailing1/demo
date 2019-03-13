@@ -62,6 +62,7 @@ class Script(ModelBase):
             'style_log': [],                # 连续拍片类型，保留最近10个
             'own_script': [],               # 已获得的可拍摄的片子
             'directing_times': 0,           # 当天导演次数
+            'reselection_times': 0,         # 本次拍摄剧本池更新次数
 
             'group_sequel': {},  # 每个系列的可拍续集
 
@@ -654,9 +655,13 @@ class Script(ModelBase):
         """
         return '%s-%s-%s' % (script_id, int(time.time()), salt_generator())
 
-    def pre_filming(self):
+    def pre_filming(self, re_selection=False):
         self.script_pool = {}
         self.sequel_script_pool = {}
+        if re_selection:
+            self.reselection_times += 1
+        else:
+            self.reselection_times = 0
 
         # 新手引导剧本
         first_scripts = []
