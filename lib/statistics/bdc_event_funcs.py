@@ -249,6 +249,7 @@ def user_guide(hm, args, data, **kwargs):
     content = {
         'guide_id': data['sort'],
         'guide_num': data['guide_id'],
+        'role_level': user.level,
     }
     content.update(base_info)
     return content
@@ -370,6 +371,7 @@ def mission_get_reward(hm, args, data, **kwargs):
         'task_type': tp_id,
         'task_id': mission_id,
         'rewards_info': json.dumps(data.get('reward', {})),
+        'role_level': user.level,
     }
     content.update(base_info)
     return content
@@ -405,6 +407,7 @@ def chapter_stage_chapter_stage_fight(hm, args, data, **kwargs):
         'iswin': iswin,             # 0 胜利 1 失败
         'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
         'complete_type': 0,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
+        'role_level': user.level,
     }
     content.update(base_info)
     return content
@@ -440,6 +443,7 @@ def chapter_stage_auto_sweep(hm, args, data, **kwargs):
         'iswin': iswin,             # 0 胜利 1 失败
         'lineup': lineup,           # 阵容，英雄id;英雄id;英雄id
         'complete_type': times,         # 扫荡次数，扫荡次数：0，手动通关；1，扫荡一次；5，扫荡五次；以游戏实际情况分类
+        'role_level': user.level,
     }
     content.update(base_info)
     return content
@@ -604,11 +608,14 @@ def _device_register(hm, args, data, **kwargs):
 
 def _item_change(user, **kwargs):
     base_info = get_game_base_info(user)
+    obj = kwargs['obj']
+    product_type, product_id = obj.split('@', 1)
 
     content = {
         'role_level': user.level,
         'vip_level': user.vip,
-        'product_id': kwargs['obj'],
+        'product_id': product_id,
+        'product_type': product_type,
         'product_num': abs(kwargs['diff']),
         'reason_id': user.mm.action,
         'reason_info': {},

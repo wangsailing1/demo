@@ -21,6 +21,7 @@ from lib.sdk_platform.helper import http
 from lib import utils
 from logics.egg import Egg
 from lib.utils.debug import print_log
+from tools.gift import add_mult_gift
 
 COIN_RATE = {
     'CN': 1.0 / 8,
@@ -111,6 +112,7 @@ def pay_apply(mm, obj, charge_config):
     if payment.insert_pay(obj, commit=False):
         order_diamond = obj['order_diamond']
         gift_diamond = obj['gift_diamond']
+        gift = charge_config['gift']          # 香水等礼物
         order_money = obj['order_money']
         order_rmb = obj['order_rmb']
         product_id = obj['product_id']
@@ -190,6 +192,7 @@ def pay_apply(mm, obj, charge_config):
         # mm.user.record_privilege_gift(charge_config=charge_config)
         mm.superplayer.add_day_pay(order_diamond)
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
+        add_mult_gift(mm, gift)
         mm.user.save()
 
         # 购买商品日期记录，用于刷新次数

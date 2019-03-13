@@ -128,6 +128,7 @@ def card(mm, **kwargs):
             'star': card_dict['star'],
             'evo': card_dict['evo'],
             'love_lv': card_dict['love_lv'],
+            'love_exp': card_dict['love_exp'],
             'popularity': card_dict['popularity'],
             'train_times': card_dict['train_times'],
             'style_pro': card_dict['style_pro'],
