@@ -377,6 +377,11 @@ class User(ModelBase):
         刷新
         :return:
         """
+        # todo 数据升级，上线前删除 2019.03.14
+        for lv, level_gift_dict in self.level_gift.items():
+            if not isinstance(level_gift_dict, dict):
+                self.level_gift.pop(lv)
+
         is_save = False
         now = int(time.time())
         today = time.strftime('%F')
