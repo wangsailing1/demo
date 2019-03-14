@@ -88,6 +88,7 @@ def user_status(mm):
         'timezone': time.timezone / -3600,
         'build_effect': {i: j for i, j in mm.user.build_effect.iteritems() if i in [7, 9]},
         'company_vip_reward': mm.user.company_vip_reward,   #  已领等级礼包
+        'assistant': mm.assistant.assistant,  # 终身助理
     }
     return data
 
