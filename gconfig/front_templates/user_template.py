@@ -82,7 +82,7 @@ vip_company = {
     'if_skip_story': ('if_skip_story', 'int'),                              # 可使用跳过剧情功能
     'if_skip_battle': ('if_skip_battle', 'int'),                              # 可使用跳过票房功能
     'card_max': ('card_max', 'int'),                              # 可拥有艺人上限数量+N
-    'extra_script': ('extra_script', 'int'),                              # 续作拍摄上限+N档
+    'extra_script': ('extra_script', 'int_list'),                              # 续作拍摄上限
     'more_license': ('more_license', 'int'),                              # 秘书每天申请许可证数量+L
     'buy_pvp': ('buy_pvp', 'int'),                              # 谁是歌手每日购买次数上限
     'scriptgacha_maxnum': ('scriptgacha_maxnum', 'int'),                              # 抽剧本可积攒的次数上限

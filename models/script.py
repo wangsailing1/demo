@@ -21,6 +21,7 @@ from lib.utils import merge_dict
 from lib.core.environ import ModelManager
 from models.ranking_list import AppealRank, BlockRank
 from models.block import get_date
+from models.vip_company import extra_script
 
 
 class Script(ModelBase):
@@ -440,6 +441,9 @@ class Script(ModelBase):
         sequel_count = script_config['sequel_count']
         group_id = script_config['group']
         next_id = script_config['next_id']
+        max_sequel_id = extra_script(self.mm.user)[script_config['star'] - 1]
+        if game_config.script[next_id]['sequel_count'] > max_sequel_id:
+            next_id = 0
 
         end_lv = cur_script['end_lv']
         end_lv_config = game_config.script_end_level[end_lv]
