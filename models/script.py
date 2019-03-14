@@ -443,7 +443,7 @@ class Script(ModelBase):
         group_id = script_config['group']
         next_id = script_config['next_id']
         max_sequel_id = extra_script(self.mm.user)[script_config['star'] - 1]
-        if game_config.script[next_id]['sequel_count'] > max_sequel_id:
+        if next_id and game_config.script[next_id]['sequel_count'] > max_sequel_id:
             next_id = 0
 
         end_lv = cur_script['end_lv']
