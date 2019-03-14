@@ -96,7 +96,6 @@ def card_max(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['card_max']
 
-# todo 功能生效
 def extra_script(user, *args, **kwargs):
     """续作拍摄上限"""
     vip = user.company_vip
