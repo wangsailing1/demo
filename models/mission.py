@@ -7,6 +7,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
+from models.vip_company import task_cd
 
 """
 任务对应个个接口的返回数据
@@ -622,7 +623,7 @@ class Mission(ModelBase):
             now = int(time.time())
             del_dict = {}
             for k, v in self.random_data.iteritems():
-                if isinstance(k, (str, unicode)) and 'refresh_ts' in k and now >= v + self.RANDOMREFRESHTIME:
+                if isinstance(k, (str, unicode)) and 'refresh_ts' in k and now >= v + self.refresh_time():
                     while True:
                         mission_id = self.get_random_mission()
                         if mission_id in self.random_data or mission_id in del_dict:
@@ -634,6 +635,9 @@ class Mission(ModelBase):
                     self.random_data.pop(del_key)
                     self.random_data[add_key] = 0
                     self.check_and_do_random_mission(add_key)
+
+    def refresh_time(self):
+        return self.RANDOMREFRESHTIME - task_cd(self.mm.user) * 60
 
     def refresh_random_misstion(self, mission_id, is_save=False):
         new_mission_id = mission_id

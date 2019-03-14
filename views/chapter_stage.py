@@ -1,7 +1,7 @@
 # -*- coding: utf-8 –*-
 
 from logics.chapter_stage import Chapter_stage
-
+from models.vip_company import chapterstage_fastten, unlock_func_lv
 
 # 首页
 def chapter_stage_index(hm):
@@ -47,10 +47,15 @@ def open_actor_chat(hm):
 # 扫荡
 def auto_sweep(hm):
     mm = hm.mm
+    if not mm.assistant.assistant:
+        return 1, {}  # 请先聘请终身助理
     stage = hm.get_argument('stage', '')
     times = hm.get_argument('times', 1, is_int=True)
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
     align = hm.get_argument('align', '')
+    if times == 10 and not chapterstage_fastten(mm.user):
+        lv = unlock_func_lv('chapterstage_fastten')
+        return 2, {'custom_msg': u'群星纪念塔楼建到%s层解锁'%lv}  #
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.chapter_stage_fight_new(stage, type_hard, auto=True, times=times, align=align)
     return rc, data
