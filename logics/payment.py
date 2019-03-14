@@ -111,13 +111,13 @@ def pay_apply(mm, obj, charge_config):
     act_item_id = obj.pop('act_item_id') if 'act_item_id' in obj else 0
     if payment.insert_pay(obj, commit=False):
         order_diamond = obj['order_diamond']
-        gift_diamond = obj['gift_diamond']
+        gift_diamond = 0 # obj['gift_diamond'] # 暂时废弃
         gift = charge_config['gift']          # 香水等礼物
         order_money = obj['order_money']
         order_rmb = obj['order_rmb']
         product_id = obj['product_id']
         double_pay = obj['double_pay']
-        open_gift = charge_config.get('open_gift', 0)
+        open_gift = charge_config.get('sort', 0)
         add_vip_exp = charge_config.get('level_exp', 0)
 
         if double_pay:
@@ -129,6 +129,9 @@ def pay_apply(mm, obj, charge_config):
             # mm.user.add_diamond(order_diamond + gift_diamond)
 
         mm.user.diamond_charge += amount
+        # 助理特权礼包 只能领一次
+        if open_gift == 4 and mm.assistant.assistant_gift:
+            gift = []
 
         add_diamond = mm.user_payment.add_pay(open_gift, price=order_money, order_diamond=order_diamond, order_rmb=order_rmb,
                                               product_id=product_id, can_open_gift=can_open_gift,act_id=act_id,act_item_id=act_item_id)

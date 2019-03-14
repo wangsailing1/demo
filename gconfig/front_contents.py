@@ -276,6 +276,7 @@ user_config_mapping = {
     'help': ('help', True),
     'login_reward_id': ('login_reward_id', True),
     'money_guide': ('money_guide', True),
+    'assistant': ('assistant', True),
 }
 
 #
