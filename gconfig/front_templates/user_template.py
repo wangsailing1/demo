@@ -210,12 +210,32 @@ charge = {
     'icon2': ('icon2', 'str'),  #  是否显示
 }
 
+# 月卡
 month_privilege = {
-    'uk': ('card_type', 'int'),  # id
-    'price': ('price', 'int'),  # 所需RMB
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
     'effective_days': ('effective_days', 'int'),  # 持续天数
     'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
-    'des': ('des', 'int'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'int'),  # 描述
+}
+
+# 月卡
+bigmonth_privilege = {
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
+    'effective_days': ('effective_days', 'int'),  # 持续天数
+    'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'int'),  # 描述
 }
 
 charge_ios = {
