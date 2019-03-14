@@ -221,7 +221,7 @@ month_privilege = {
     'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
     'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
     'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
-    'des': ('des', 'int'),  # 描述
+    'des': ('des', 'str'),  # 描述
 }
 
 # 月卡
@@ -235,7 +235,7 @@ bigmonth_privilege = {
     'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
     'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
     'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
-    'des': ('des', 'int'),  # 描述
+    'des': ('des', 'str'),  # 描述
 }
 
 charge_ios = {
