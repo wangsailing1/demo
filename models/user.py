@@ -11,7 +11,7 @@ import itertools
 
 import settings
 from lib.db import ModelBase, ModelTools
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from lib.core.environ import ModelManager
 from lib.utils import get_it
 from lib.utils import weight_choice
@@ -1629,9 +1629,9 @@ class User(ModelBase):
             level_mail_config = game_config.level_mail.get(level_mail_id)
             if not level_mail_config:
                 continue
-            content = level_mail_config['des']
-            title = level_mail_config['name']
-            gift = level_mail_config['reward']
+            content = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['name']]
+            gift = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['reward']]
             mail_dict = self.mm.mail.generate_mail(content, title=title, gift=gift)
             self.mm.mail.add_mail(mail_dict, save=True)
             self.level_mail_done.append(level_mail_id)
