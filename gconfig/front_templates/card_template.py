@@ -66,6 +66,8 @@ card_basis = {
     'health_cost': ('health_cost', 'int'),  # 健康回复价格(元/点)
     'health_diamondcost': ('health_diamondcost', 'int'),  # 健康回复钻石价格
     'skill': ('skill', 'int_list'),  # 技能
+    'adle_action1': ('adle_action1', 'str'),  # 待机动画
+    'adle_action_img': ('adle_action_img', 'str'),  # 待机动画
 }
 
 card_level = {
