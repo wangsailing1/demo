@@ -423,8 +423,15 @@ class CardLogic(object):
         card_dict = card.cards.get(card_oid)
         if not card_dict:
             return 1, {}
+        if not card_dict.get('first_change_name', 1):
+            cost = game_config.common.get(5, 50)
+            if not self.mm.user.is_diamond_enough(cost):
+                return 2, {}  # 钻石不足
+            self.mm.user.deduct_diamond(cost)
+        card_dict['first_change_name'] = 0
         card_dict['name'] = name
         card.save()
+        self.mm.user.save()
         return 0, {}
 
 
