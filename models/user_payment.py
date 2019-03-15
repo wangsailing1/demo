@@ -238,6 +238,16 @@ class UserPayment(ModelBase):
                 #         self.mm.user.save()
                 #     else:
                 #         return order_rmb * 10
+                elif sort == 5:  # 月卡優惠禮包
+                    if self.mm.active_card.reward_info and not self.mm.active_card.gift:
+                        self.mm.active_card.buy_gift()
+                    else:
+                        return order_diamond
+                elif sort == 6:  # 至尊優惠禮包
+                    if self.mm.big_month.reward_info and not self.mm.big_month.gift:
+                        self.mm.big_month.buy_gift()
+                else:
+                    return order_diamond
             elif act_id == 3001:  # 限时等级礼包
                 if not act_item_id:
                     return order_rmb * 10

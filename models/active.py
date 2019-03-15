@@ -24,6 +24,8 @@ class ActiveCard(ModelBase):
             'buy_times': {},  # 购买次数
             'version': 0,  # 版本号
             'get_reward_times': 0, # 领取奖励次数
+            'gift': 0,
+            'last_data': '',
         }
         self.config = game_config.month_privilege
         super(ActiveCard, self).__init__(self.uid)
@@ -47,6 +49,9 @@ class ActiveCard(ModelBase):
             remain_time = effective_days * 3600 * 24 + self.reward_info['buy_time'] - now
             remain_day = (one_day + remain_time - 1) // one_day
             self.reward_info['remain_time'] = remain_day
+            if self.last_data != today_time:
+                self.last_data = today_time
+                self.gift = 0
             if self.reward_info['last_receive'] != today_time:
                 self.reward_info['status'] = 1
             if remain_time <= 0:  # 结束删除数据
@@ -97,6 +102,10 @@ class ActiveCard(ModelBase):
         else:
             return 0
 
+    def buy_gift(self):
+        self.gift = 1
+        self.save()
+
 class BigMonth(ActiveCard):
     """
     至尊月卡
@@ -108,6 +117,7 @@ class BigMonth(ActiveCard):
             'buy_times': {},  #
             'version': 0,
             'get_reward_times': 0,
+            'gift': 0,
         }
         self.config = game_config.month_privilege
         super(BigMonth, self).__init__(self.uid)
