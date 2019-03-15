@@ -65,7 +65,7 @@ class ActiveCard(object):
             obj.reward_info['last_receive'] = today_time
             diamond_num = reward.get('diamond', 0)
             obj.reward_info['had_receive'] += diamond_num
-            obj.reward_info['get_reward_times'] += 1
+            obj.reward_info['get_reward_times'] = obj.reward_info.get('get_reward_times', 0) + 1
             obj.save()
             return 0, {'reward': reward}
 
