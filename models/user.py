@@ -2118,6 +2118,8 @@ class OnlineUsers(ModelTools):
     活跃玩家
     """
     ONLINE_USERS_PREFIX = 'online_users'
+    DELETED_USER_PREFIX = 'deleted_users'    # redis 中 存放已经删除的用户的key
+
     ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
     FORMAT = '%Y%m%d'
 
@@ -2125,6 +2127,21 @@ class OnlineUsers(ModelTools):
         super(OnlineUsers, self).__init__()
         self._key = self.make_key(self.ONLINE_USERS_PREFIX, server_name=server)
         self.redis = self.get_redis_client(server)
+        self.server_name = server
+
+    def deleted_user_key(self):
+        return '%s_%s' % (self.DELETED_USER_PREFIX, self.server_name)
+
+    def get_deleted_uids(self):
+        return self.redis.zrange(self.deleted_user_key(), 0, -1, withscores=False)
+
+    def update_deleted_status(self, uid, ts=None):
+        """
+        存储已经删除的用户的记录
+        :param ts:
+        :return:
+        """
+        self.redis.zadd(self.deleted_user_key(), **{uid: ts or int(time.time())})
 
     def get_online_key(self):
         """
