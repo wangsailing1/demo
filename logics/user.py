@@ -105,6 +105,7 @@ class UserLogic(object):
             'first_charge_pop': self.mm.user_payment.get_first_charge_pop(),  # 首充弹板
             # 'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
             'level_limit_gift': self.mm.user.level_gift,  # 限时等级礼包
+            'level_gift_open':self.mm.user.level_gift_red_dot()
         }
         result['activity_status'] = activity_status
 
