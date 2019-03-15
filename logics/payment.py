@@ -431,8 +431,6 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
         'act_item_id': act_item_id,
     }
     save_player_charger_log(mm, obj, order_id)
-    from lib.utils.debug import print_log
-    print_log(obj)
 
     return pay_apply(mm, obj, charge_config)
 

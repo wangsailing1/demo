@@ -222,13 +222,13 @@ class UserPayment(ModelBase):
             now = int(time.time())
             if not act_id:
                 if sort == 1:      # 月卡
-                    if not self.mm.active_card.get_status(sort):
-                        self.mm.active_card.record(sort)
+                    if not self.mm.active_card.get_status():
+                        self.mm.active_card.record()
                     else:
                         return order_diamond
-                elif sort == 2:    # 至尊卡卡
-                    if not self.mm.active_card.get_status(sort):
-                        self.mm.active_card.record(sort)
+                elif sort == 2:    # 至尊月卡
+                    if not self.mm.big_month.get_status():
+                        self.mm.big_month.record()
                     else:
                         return order_diamond
                 # elif sort == 3:     # 等级限时礼包
