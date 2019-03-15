@@ -1901,8 +1901,9 @@ class User(ModelBase):
                     continue
             else:
                 continue
-
-            message = self.mm.mail.generate_mail(v['des'], v['title'], v['reward'], url=v['url'])
+            des = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['title']]
+            message = self.mm.mail.generate_mail(des, title, v['reward'], url=v['url'])
             self.mm.mail.add_mail(message, save=False)
             self.login_reward_id[k] = self.login_reward_id.get(k, 0) + 1
             notify_save = True
