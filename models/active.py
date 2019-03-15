@@ -8,6 +8,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils.timelib import datetime_to_str
+from lib.utils.active_inreview_tools import active_inreview_version
 
 
 class ActiveCard(ModelBase):
@@ -15,44 +16,56 @@ class ActiveCard(ModelBase):
     月卡至尊卡卡活动
     """
 
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
-            'reward_info': {},
-            'his_record': [],  # 购买过的月卡
+            'reward_info': {},  # 月卡信息
+            'buy_times': {},  # 购买次数
+            'version': 0,  # 版本号
+            'get_reward_times': 0, # 领取奖励次数
         }
+        self.config = game_config.month_privilege
         super(ActiveCard, self).__init__(self.uid)
+
 
     def pre_use(self):
         user_card = self.reward_info
+        version = self.get_version()
         if not user_card:
+            if version > self.version:
+                self.version = version
+                self.save()
             return 0
         _format = "%Y-%m-%d"
         today_time = time.strftime(_format)
         one_day = 3600 * 24
-        month_card_config = game_config.month_privilege
-        if month_card_config:
-            reward_data = copy.deepcopy(self.reward_info)
+
+        if self.config:
             now = int(time.time())
-            for k, v in reward_data.iteritems():
-                effective_days = month_card_config[k]['effective_days']
-                remain_time = effective_days * 3600 * 24 + v['buy_time'] - now
-                remain_day = (one_day + remain_time - 1) // one_day
-                if k != 2:
-                    self.reward_info[k]['remain_time'] = remain_day
-                if self.reward_info[k]['last_receive'] != today_time:
-                    self.reward_info[k]['status'] = 1
-                if remain_time <= 0 and k != 2:  # 结束删除数据
-                    self.reward_info.pop(k)
+            effective_days = self.config[self.version]['effective_days']
+            remain_time = effective_days * 3600 * 24 + self.reward_info['buy_time'] - now
+            remain_day = (one_day + remain_time - 1) // one_day
+            self.reward_info['remain_time'] = remain_day
+            if self.reward_info['last_receive'] != today_time:
+                self.reward_info['status'] = 1
+            if remain_time <= 0:  # 结束删除数据
+                self.reward_info = {}
+                self.get_reward_times = 0
+                if version > self.version:
+                    self.version = version
             self.save()
 
-    def record(self, charge_id):
+    def get_version(self):
+        return active_inreview_version(self.config)
+
+    def record(self):
         today = datetime.date.today()
         time_0 = time.mktime(today.timetuple())
-        month_card_config = game_config.month_privilege
-        self.reward_info[charge_id] = {
+        self.buy_times[self.version] = self.buy_times.get(self.version, 0) + 1
+        self.reward_info = {
             'status': 1,
-            'remain_time': month_card_config[charge_id]['effective_days'],
+            'remain_time': self.config[self.version]['effective_days'],
             'last_receive': '',
             'had_receive': 0,
             'buy_time': time_0,
@@ -60,32 +73,45 @@ class ActiveCard(ModelBase):
 
         self.save()
 
-    def get_status(self, tp):
+    def get_status(self):
         """
-        获取月卡、至尊卡状态
-        :param tp: 1:月卡，2:至尊卡
+        获取月卡状态
         status:0未激活1能领奖2已领奖
         :return:
         """
-        return self.reward_info.get(tp, {}).get('status', 0)
+        return self.reward_info.get('status', 0)
 
     def is_alert(self):
         not_alert = False
-        month_card_config = game_config.month_privilege
         reward_info = self.reward_info
-        if not reward_info or not month_card_config:
+        if not reward_info or not self.config:
             return not_alert
-        for k, v in reward_info.iteritems():
-            if v['status'] == 1:
-                return True
+        if reward_info['status'] == 1:
+            return True
         return not_alert
 
     def month_remain_times(self):
         """月卡剩余次数"""
-        if self.get_status(1):
-            return int(self.reward_info[1]['remain_time'])
+        if self.get_status():
+            return int(self.reward_info['remain_time'])
         else:
             return 0
+
+class BigMonth(ActiveCard):
+    """
+    至尊月卡
+    """
+    def __init__(self, uid=None):
+        self.uid = uid
+        self._attrs = {
+            'reward_info': {},
+            'buy_times': {},  #
+            'version': 0,
+            'get_reward_times': 0,
+        }
+        self.config = game_config.month_privilege
+        super(BigMonth, self).__init__(self.uid)
+
 
 
 class SevenLogin(ModelBase):
@@ -254,3 +280,4 @@ class MonthlySign(ModelBase):
 ModelManager.register_model('active_card', ActiveCard)
 ModelManager.register_model('seven_login', SevenLogin)
 ModelManager.register_model('monthly_sign', MonthlySign)
+ModelManager.register_model('big_month', BigMonth)

@@ -113,7 +113,7 @@ def pay_apply(mm, obj, charge_config):
         order_rmb = obj['order_rmb']
         product_id = obj['product_id']
         double_pay = obj['double_pay']
-        open_gift = charge_config.get('open_gift', 0)
+        open_gift = charge_config.get('sort', 0)
         add_vip_exp = charge_config.get('level_exp', 0)
 
 
@@ -409,8 +409,6 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
         'act_item_id': act_item_id,
     }
     save_player_charger_log(mm, obj, order_id)
-    from lib.utils.debug import print_log
-    print_log(obj)
 
     return pay_apply(mm, obj, charge_config)
 
