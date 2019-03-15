@@ -29,7 +29,7 @@ class ActiveCard(object):
             had_receive = obj.reward_info.get('had_receive', 0)
             show_data[k] = {'status': status, 'remain_time': remain_time, 'had_receive': had_receive,
                             'get_reward_times':obj.get_reward_times, 'version':obj.version,
-                            'buy_times':sum(obj.buy_times.values()),'buy_gift':obj.buy_gift}
+                            'buy_times':sum(obj.buy_times.values()),'buy_gift':obj.gift}
         return show_data
 
     def receive(self, active_id):
