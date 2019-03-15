@@ -1563,6 +1563,15 @@ class User(ModelBase):
             return 12   # 已过期
         return 0
 
+    def level_gift_red_dot(self):
+        now = int(time.time())
+        for lv, level_gift_dict in self.level_gift.items():
+            expire = level_gift_dict.get('expire', 0)
+            status = level_gift_dict.get('status', 0)
+            if now <= expire or status == 1:
+                return True
+        return False
+
     def add_player_exp_for_config(self, action_id, times=1):
         """
         根据动作id，增加战队经验
