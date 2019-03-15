@@ -1631,7 +1631,7 @@ class User(ModelBase):
                 continue
             content = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['des']]
             title = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['name']]
-            gift = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['reward']]
+            gift = level_mail_config['reward']
             mail_dict = self.mm.mail.generate_mail(content, title=title, gift=gift)
             self.mm.mail.add_mail(mail_dict, save=True)
             self.level_mail_done.append(level_mail_id)
