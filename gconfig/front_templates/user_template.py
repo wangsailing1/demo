@@ -222,6 +222,7 @@ month_privilege = {
     'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
     'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
     'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
 }
 
 # 月卡
@@ -236,6 +237,7 @@ bigmonth_privilege = {
     'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
     'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
     'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
 }
 
 charge_ios = {
