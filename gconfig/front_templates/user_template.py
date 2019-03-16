@@ -82,7 +82,7 @@ vip_company = {
     'if_skip_story': ('if_skip_story', 'int'),                              # 可使用跳过剧情功能
     'if_skip_battle': ('if_skip_battle', 'int'),                              # 可使用跳过票房功能
     'card_max': ('card_max', 'int'),                              # 可拥有艺人上限数量+N
-    'extra_script': ('extra_script', 'int'),                              # 续作拍摄上限+N档
+    'extra_script': ('extra_script', 'int_list'),                              # 续作拍摄上限
     'more_license': ('more_license', 'int'),                              # 秘书每天申请许可证数量+L
     'buy_pvp': ('buy_pvp', 'int'),                              # 谁是歌手每日购买次数上限
     'scriptgacha_maxnum': ('scriptgacha_maxnum', 'int'),                              # 抽剧本可积攒的次数上限
@@ -221,12 +221,34 @@ charge = {
 #     'price_TWD': ('price_TWD', 'float'),  # 所需金额
 # }
 
+# 月卡
 month_privilege = {
-    'uk': ('card_type', 'int'),  # id
-    'price': ('price', 'int'),  # 所需RMB
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
     'effective_days': ('effective_days', 'int'),  # 持续天数
     'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
-    'des': ('des', 'int'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
+}
+
+# 月卡
+bigmonth_privilege = {
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
+    'effective_days': ('effective_days', 'int'),  # 持续天数
+    'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
 }
 
 charge_ios = {

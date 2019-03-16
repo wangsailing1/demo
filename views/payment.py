@@ -104,7 +104,7 @@ def get_first_charge(hm):
         'reward': reward,
         'first_recharge_red_dot': mm.user_payment.first_charge_alert()
     }
-    result.update(first_charge(hm)[1])
+    result.update(first_recharge(hm)[1])
 
     return 0, result
 

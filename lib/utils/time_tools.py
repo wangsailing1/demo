@@ -6,9 +6,10 @@ import datetime as datetime_module
 from gconfig import game_config
 import settings
 from models import server as serverM
+from lib.utils import LRUCache
 
 
-timestamp_cache = {}
+timestamp_cache = LRUCache(500)
 
 
 def str2timestamp(time_str, fmt='%Y-%m-%d %H:%M:%S'):
@@ -16,10 +17,10 @@ def str2timestamp(time_str, fmt='%Y-%m-%d %H:%M:%S'):
     :param time_str:
     :param fmt:
     """
-    if time_str in timestamp_cache:
-        ts = timestamp_cache[time_str]
-    else:
-        ts = timestamp_cache[time_str] = time.mktime(time.strptime(time_str, fmt))
+    ts = timestamp_cache.get(time_str)
+    if ts is None:
+        ts = time.mktime(time.strptime(time_str, fmt))
+        timestamp_cache.set(time_str, ts)
     return ts
 
 

@@ -861,7 +861,7 @@ class Card(ModelBase):
         elif type == 3:
             skilltarget_oid_list = [self_card_oid]
         elif type == 2:
-            for card_oid, group_id in card_oid_dict:
+            for card_oid, group_id in card_oid_dict.iteritems():
                 if group_id in skill_info['skilltarget_id']:
                     skilltarget_oid_list.append(group_id)
             if not skilltarget_oid_list:

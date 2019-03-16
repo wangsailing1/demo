@@ -1301,11 +1301,12 @@ class ScriptLogic(object):
             return rc, {}
 
         continued_start = script_info['continued_start']
-        div, mod = divmod(now - continued_start, 60)
         last_dollar = 0
-        if div:
-            last_dollar = div * script_info['continued_income_unit']
-            continued_start = now - mod
+        # 升级不结算之前的产出 2019.03.15
+        # div, mod = divmod(now - continued_start, 60)
+        # if div:
+        #     last_dollar = div * script_info['continued_income_unit']
+        #     continued_start = now - mod
 
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
@@ -1332,7 +1333,8 @@ class ScriptLogic(object):
         self.mm.user.save()
         script.save()
         return 0, {
-            'reward': {'dollar': last_dollar},
+            # 'reward': {'dollar': last_dollar},
+            'reward': {},
             'continued_script': script.continued_script
         }
 

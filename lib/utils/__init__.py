@@ -18,13 +18,37 @@ import psutil
 import os
 import hashlib
 import logging
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import msgpack
 import re
 
 sys_random = random.SystemRandom()
 
 chars = string.ascii_letters + string.digits
+
+
+class LRUCache(object):
+    def __init__(self, max_size=5):
+        self.max_size = max_size
+        self.cache = OrderedDict()
+
+    def set(self, key, value):
+        if self.cache.has_key(key):
+            self.cache.pop(key)
+        elif len(self.cache) == self.max_size:
+            self.cache.popitem(last=False)
+        self.cache[key] = value
+
+    def get(self, key):
+        if self.cache.has_key(key):
+            value = self.cache.pop(key)
+            self.cache[key] = value
+        else:
+            value = None
+        return value
+
+    def __len__(self):
+        return len(self.cache)
 
 
 def salt_generator(size=6):

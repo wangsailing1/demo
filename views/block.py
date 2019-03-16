@@ -81,7 +81,7 @@ def get_reward(hm):
     data = block.get_reward()
     return 0, data
 
-@check_unlock
+# @check_unlock
 def get_daily_reward(hm):
     mm = hm.mm
     now = time.strftime('%F')

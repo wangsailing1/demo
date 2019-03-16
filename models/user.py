@@ -11,7 +11,7 @@ import itertools
 
 import settings
 from lib.db import ModelBase, ModelTools
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from lib.core.environ import ModelManager
 from lib.utils import get_it
 from lib.utils import weight_choice
@@ -377,6 +377,11 @@ class User(ModelBase):
         刷新
         :return:
         """
+        # todo 数据升级，上线前删除 2019.03.14
+        for lv, level_gift_dict in self.level_gift.items():
+            if not isinstance(level_gift_dict, dict):
+                self.level_gift.pop(lv)
+
         is_save = False
         now = int(time.time())
         today = time.strftime('%F')
@@ -1434,7 +1439,7 @@ class User(ModelBase):
         if 22 not in self.group_ids:
             return True
         next_lv = self.company_vip + 1
-        if not next_lv:
+        if next_lv not in config:
             return False
         need_company_vip = config[next_lv].get('exp', 100)
         if self.company_vip_exp >= need_company_vip:
@@ -1566,6 +1571,15 @@ class User(ModelBase):
             return 12   # 已过期
         return 0
 
+    def level_gift_red_dot(self):
+        now = int(time.time())
+        for lv, level_gift_dict in self.level_gift.items():
+            expire = level_gift_dict.get('expire', 0)
+            status = level_gift_dict.get('status', 0)
+            if now <= expire or status == 1:
+                return True
+        return False
+
     def add_player_exp_for_config(self, action_id, times=1):
         """
         根据动作id，增加战队经验
@@ -1624,8 +1638,8 @@ class User(ModelBase):
             level_mail_config = game_config.level_mail.get(level_mail_id)
             if not level_mail_config:
                 continue
-            content = level_mail_config['des']
-            title = level_mail_config['name']
+            content = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['name']]
             gift = level_mail_config['reward']
             mail_dict = self.mm.mail.generate_mail(content, title=title, gift=gift)
             self.mm.mail.add_mail(mail_dict, save=True)
@@ -1896,8 +1910,9 @@ class User(ModelBase):
                     continue
             else:
                 continue
-
-            message = self.mm.mail.generate_mail(v['des'], v['title'], v['reward'], url=v['url'])
+            des = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['title']]
+            message = self.mm.mail.generate_mail(des, title, v['reward'], url=v['url'])
             self.mm.mail.add_mail(message, save=False)
             self.login_reward_id[k] = self.login_reward_id.get(k, 0) + 1
             notify_save = True
@@ -2112,6 +2127,8 @@ class OnlineUsers(ModelTools):
     活跃玩家
     """
     ONLINE_USERS_PREFIX = 'online_users'
+    DELETED_USER_PREFIX = 'deleted_users'    # redis 中 存放已经删除的用户的key
+
     ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
     FORMAT = '%Y%m%d'
 
@@ -2119,6 +2136,21 @@ class OnlineUsers(ModelTools):
         super(OnlineUsers, self).__init__()
         self._key = self.make_key(self.ONLINE_USERS_PREFIX, server_name=server)
         self.redis = self.get_redis_client(server)
+        self.server_name = server
+
+    def deleted_user_key(self):
+        return '%s_%s' % (self.DELETED_USER_PREFIX, self.server_name)
+
+    def get_deleted_uids(self):
+        return self.redis.zrange(self.deleted_user_key(), 0, -1, withscores=False)
+
+    def update_deleted_status(self, uid, ts=None):
+        """
+        存储已经删除的用户的记录
+        :param ts:
+        :return:
+        """
+        self.redis.zadd(self.deleted_user_key(), **{uid: ts or int(time.time())})
 
     def get_online_key(self):
         """

@@ -33,7 +33,7 @@ def login(req):
 
         admin = Admin.get(username)
         if not admin:
-            msgs.append(u'用户不存在')
+            msgs.append(u'密码错误')
             return render(req, 'admin/gs/login.html', **d)
         elif not admin.check_password(password):
             msgs.append(u'密码错误')

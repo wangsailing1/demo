@@ -8,6 +8,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
 from tools.gift import calc_gift
+from models.vip_company import bussiness_gold
 
 
 class FansActivity(ModelBase):
@@ -86,10 +87,11 @@ class FansActivity(ModelBase):
                     item = weight_choice(config_id['item'])[:-1]
                     items.append(item)
             item_produce_new = calc_gift(items)
-
+            skill_effect = self.mm.card.get_skill_effect({card:0}, 2, 0).get(card, {}).get('effect', {})
             # 计算金币
-            increase = value.get('effect_id') / 10000.0  # 活动加成
-            gold_per_card = config_id['gold_per_card'] * (1 + increase)
+            increase = (value.get('effect_id') + bussiness_gold(self.mm.user) +
+                        skill_effect.get(17, {}).get(2, 0)) / 10000.0  # 活动加成
+            gold_per_card = config_id['gold_per_card'] * (1 + increase )
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
             new_items = [[1, 0, god_num]]
 

@@ -48,9 +48,9 @@ def if_super_catcher(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['if_super_catcher']
 
-# todo 功能生效
+
 def bussiness_gold(user, *args, **kwargs):
-    """明星活动金币收益+N%"""
+    """明星活动金币收益+N"""
     vip = user.company_vip
     return game_config.vip_company[vip]['bussiness_gold']
 
@@ -66,7 +66,7 @@ def shop_num(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['shop_num']
 
-# todo 功能生效
+
 def task_cd(user, *args, **kwargs):
     """随机任务刷新时间变快N分钟"""
     vip = user.company_vip
@@ -96,9 +96,8 @@ def card_max(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['card_max']
 
-# todo 功能生效
 def extra_script(user, *args, **kwargs):
-    """续作拍摄上限+N档"""
+    """续作拍摄上限"""
     vip = user.company_vip
     return game_config.vip_company[vip]['extra_script']
 
@@ -108,13 +107,11 @@ def scriptgacha_maxnum(user, *args, **kwargs):
     vip = user.company_vip
     return game_config.vip_company[vip]['scriptgacha_maxnum']
 
-# todo 功能生效
 def chapterstage_fastten(user, *args, **kwargs):
     """快速工作10场"""
     vip = user.company_vip
     return game_config.vip_company[vip]['chapterstage_fastten']
 
-# todo 功能生效
 def script_reselectiontimes(user, *args, **kwargs):
     """重新选择自制拍摄剧本次数"""
     vip = user.company_vip
@@ -131,3 +128,23 @@ def phonecalltimes(user, *args, **kwargs):
     """手机聊天次数"""
     vip = user.company_vip
     return game_config.vip_company[vip]['phonecalltimes']
+
+
+def unlock_func_lv(f_name, *args, **kwargs):
+    """
+    获取解锁功能等级
+    :param f_name:  功能对应game_config.vip_company 的字段名
+    :param args: 
+    :param kwargs: 
+    :return: 
+    """
+    config = game_config.vip_company
+    lv = 1
+    while True:
+        if f_name not in config[lv]:
+            return max(config.keys())
+        if config[lv][f_name]:
+            return lv
+        lv += 1
+        if lv >= max(config.keys()):
+            return max(config.keys())

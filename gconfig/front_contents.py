@@ -235,6 +235,7 @@ user_config_mapping = {
     'building_unlock': ('building_unlock', True),
     'charge': ('charge', True),
     'month_privilege': ('month_privilege', True),
+    'bigmonth_privilege': ('bigmonth_privilege', True),
     'charge_ios': ('charge_ios', True),
     'currency_exchange': ('currency_exchange', True),
     'value': ('value', True),
