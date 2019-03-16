@@ -42,7 +42,8 @@ class ActiveCard(ModelBase):
         _format = "%Y-%m-%d"
         today_time = time.strftime(_format)
         one_day = 3600 * 24
-
+        if not self.version:
+            return
         if self.config:
             now = int(time.time())
             effective_days = self.config[self.version]['effective_days']
