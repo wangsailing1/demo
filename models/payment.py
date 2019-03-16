@@ -43,6 +43,55 @@ currencys = {
 }
 
 
+COIN_RATE = {
+    'CN': 1.0 / 8,
+    'EN': 1.0 / 8,
+    'TW': 1.0 / 8,
+    'TH': 4.4,
+    'ID': 1923.0,
+    'VN': 3280.0,
+}
+
+# 货币与国家映射
+CURRENCY_COUNTRY = {
+    'CNY': 'CN',
+    'TWD': 'TWD',
+    'USD': 'EN',
+    'KRW': 'KR',
+    'THB': 'TH',
+    'VND': 'VN',
+    'IDR': 'ID',
+    'MYR': 'MYR',
+    'SGD': 'SGD',
+    'AUD': 'AUD',
+    'PHP': 'PHP',
+    'BRL': 'BRL',
+    'NZD': 'NZN',
+    'INR': 'INR',
+    'MMK': 'MMK',
+}
+
+
+# 每种货币兑换元宝/vip经验数
+CURRENCY_VIP_EXP = {
+    'THB': 2.5,
+    'TWD': 2.5,
+    'USD': 65,
+    'VND': 0.003,
+    'IDR': 0.0045,
+    'KRW': 0.055,
+    'CNY': 10,
+    'MYR': 16,
+    'SGD': 50,
+    'AUD': 50,
+    'PHP': 1.5,
+    'BRL': 20,
+    'NZD': 50,
+    'INR': 1,
+    'MMK': 0.05,
+}
+
+
 class Payment(object):
     """ 充值模块
 
