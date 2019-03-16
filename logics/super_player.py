@@ -101,9 +101,9 @@ class SuperPlayer(object):
         if self.superplayer.shop_buy_times[sort_id] >= shop_goods[sort_id]['player_limit']:
             return 3, {}  # 个人购买次数达到上限
         cost_ = abs(shop_goods[sort_id]['cost_coin'])
-        if self.user.coin < cost_:
-            return 4, {}  # 钻石不足
-        self.user.coin -= cost_
+        if self.user.diamond < cost_:
+            return 'error_diamond', {}  # 钻石不足
+        self.user.diamond -= cost_
         self.superplayer.can_receive_times += superplayershop.shop_goods[sort_id]['time']
         if superplayershop.shop_goods[sort_id]['limit_type'] == 1:
             superplayershop.shop_goods[sort_id]['limit_num'] -= 1
