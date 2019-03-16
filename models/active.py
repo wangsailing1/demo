@@ -32,6 +32,10 @@ class ActiveCard(ModelBase):
 
 
     def pre_use(self):
+        # 先做个容错
+        if self.reward_info and not self.version:
+            self.reward_info.clear()
+
         user_card = self.reward_info
         version = self.get_version()
         if not user_card:
@@ -42,8 +46,7 @@ class ActiveCard(ModelBase):
         _format = "%Y-%m-%d"
         today_time = time.strftime(_format)
         one_day = 3600 * 24
-        if not self.version:
-            return
+
         if self.config:
             now = int(time.time())
             effective_days = self.config[self.version]['effective_days']
@@ -66,6 +69,8 @@ class ActiveCard(ModelBase):
         return active_inreview_version(self.config)
 
     def record(self):
+        if not self.get_version():
+            return
         today = datetime.date.today()
         time_0 = time.mktime(today.timetuple())
         self.buy_times[self.version] = self.buy_times.get(self.version, 0) + 1
@@ -75,6 +80,7 @@ class ActiveCard(ModelBase):
             'last_receive': '',
             'had_receive': 0,
             'buy_time': time_0,
+            'version': self.version,
         }
 
         self.save()
