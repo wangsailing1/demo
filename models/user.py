@@ -1439,7 +1439,7 @@ class User(ModelBase):
         if 22 not in self.group_ids:
             return True
         next_lv = self.company_vip + 1
-        if not next_lv:
+        if next_lv not in config:
             return False
         need_company_vip = config[next_lv].get('exp', 100)
         if self.company_vip_exp >= need_company_vip:
