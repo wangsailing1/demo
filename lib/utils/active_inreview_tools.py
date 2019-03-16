@@ -6,6 +6,7 @@ __author__ = 'hougd'
 import time
 from gconfig import game_config
 from lib.utils.debug import print_log
+from lib.utils.time_tools import str2timestamp
 import datetime
 import settings
 
@@ -101,13 +102,15 @@ def get_active_inreview_start_end_time(config, server=None, channel_id=None, con
         start_time = value['start_time']
         if not start_time:
             return 0, 0, 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
+        # s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+        # start_time_stamp = time.mktime(s_time)
+        start_time_stamp = str2timestamp(start_time)
         end_time = value['end_time']
         if not end_time:
             return 0, 0, 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        # e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        # end_time_stamp = time.mktime(e_time)
+        end_time_stamp = str2timestamp(end_time)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             if value.get('version', 0):
                 return value['version'], start_time_stamp, end_time_stamp

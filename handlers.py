@@ -219,6 +219,7 @@ class LoginHandler(BaseRequestHandler):
 
 class AdminHandler(BaseRequestHandler):
 
+    @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self, module_name, func_name=None):
         """ get请求
 
@@ -238,6 +239,7 @@ class AdminHandler(BaseRequestHandler):
             self.method_name = module_name
         return method(self)
 
+    @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def post(self, module_name, func_name=None):
         """ post请求
 
