@@ -75,13 +75,12 @@ class FansActivity(ModelBase):
         all_items = []
         item_produce_new = []
         old_items = item_produce['items']
-
+        card_effect = {}
         for card in value['cards']:
             if card in ['0']:
                 continue
             # 计算item
             items = []
-            card_effect = {}
             for _ in range(item_choice_times):
                 can_choice = random.randint(1, 10000) <= config_id['ratio_per_card']
                 if can_choice:
