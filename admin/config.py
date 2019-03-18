@@ -189,8 +189,8 @@ def upload(req):
     if False and not settings.DEBUG and platform and platform not in file_name:
         return select(req, msg=u"检查配置文件是否为 %s 平台的" % platform)
 
-    # 获取当前时分秒
-    file_name_part = time.strftime('%Y-%m-%d-%H-%M-%S')
+    # 获取当前真实时分秒
+    file_name_part = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
 
     # 保存文件
     file_dir = os.path.join(settings.BASE_ROOT, 'upload_xls')
