@@ -96,7 +96,7 @@ class Shop(ModelBase):
                 goods_vip[pos] = []
             for good_id, weight in good:
                 show_vip = config[good_id]['show_vip']
-                if self.mm.user.vip >= show_vip:
+                if self.mm.user.company_vip >= show_vip:
 
                     goods_vip[pos].append([good_id, weight])
         return goods_vip
@@ -111,6 +111,41 @@ class Shop(ModelBase):
         discount = weight_choice(shop_config.get('discount', [10, 1]))[0]
 
         return discount, int(math.ceil(round(price * 0.1 * discount, 2)))
+
+    def vip_goods_mapping(self):
+        config = game_config.shop_goods
+        goods_mapping = {}
+        for goods_id, value in config.iteritems():
+            if value['show_vip'] and value['shop_id'] == self.shop_id:
+                if value['show_vip'] not in goods_mapping:
+                    goods_mapping[value['show_vip']] = []
+                goods_mapping[value['show_vip']].append([goods_id, value['pos_id']])
+        return goods_mapping
+
+    def add_vip_goods(self):
+        vip_goods_mapping = self.vip_goods_mapping()
+        if self.mm.user.company_vip not in vip_goods_mapping:
+            return
+        level = self.mm.user.level
+        goods_weight = self.get_shop_id_with_level(level)
+        if not goods_weight:
+            return
+        save = False
+        for i, j in goods_weight.iteritems():
+            if not j:
+                continue
+            if i not in [value[1] for value in vip_goods_mapping[self.mm.user.company_vip]]:
+                continue
+            goods_id = weight_choice(j)[0]
+            sell_config = self.get_shop_config(goods_id)
+            if not sell_config:
+                continue
+            sell_num = sell_config.get('sell_num', 0)
+            discount, price = self.get_price(sell_num, sell_config)
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            save = True
+        if save:
+            self.save()
 
 
 # 神秘商店
