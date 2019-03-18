@@ -15,7 +15,9 @@ def assistant_index(hm):
         'assistant_gift': ass.assistant_gift,
         'assistant_daily': ass.assistant_daily,
         'license_apply_times': ass.license_apply_times,
-        'license_apply_done_time': ass.license_apply_done_time
+        'license_apply_done_time': ass.license_apply_done_time,
+        'max_times':ass.get_max_time(),
+        'status':ass.get_status()
     }
 
 # 领取日常奖励
@@ -38,15 +40,15 @@ def license_apply(hm):
     mm = hm.mm
     if not mm.assistant.assistant:
         return 1, {}  # 请先聘请终身助理
-    if mm.assistant.license_apply_times:
-        return 2, {}  # 已经申请过
+    if mm.assistant.license_apply_times >= mm.assistant.get_max_time():
+        return 2, {}  # 申请次数达到上限
     now = int(time.time())
     if mm.assistant.license_apply_done_time:
         if mm.assistant.license_apply_done_time > now:
             return 3, {}  # 申请中
         else:
             return 4, {}  # 请先领取
-    mm.assistant.license_apply_times = 1
+    mm.assistant.license_apply_times += 1
     mm.assistant.license_apply_done_time = now + game_config.common.get(95, 240) * 60
     mm.assistant.save()
     _, info = assistant_index(hm)

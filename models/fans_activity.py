@@ -81,6 +81,7 @@ class FansActivity(ModelBase):
                 continue
             # 计算item
             items = []
+            card_effect = {}
             for _ in range(item_choice_times):
                 can_choice = random.randint(1, 10000) <= config_id['ratio_per_card']
                 if can_choice:
@@ -89,6 +90,7 @@ class FansActivity(ModelBase):
             item_produce_new = calc_gift(items)
             skill_effect = self.mm.card.get_skill_effect({card:0}, 2, 0).get(card, {}).get('effect', {})
             # 计算金币
+            card_effect[card] = skill_effect.get(17, {}).get(2, 0) + bussiness_gold(self.mm.user)
             increase = (value.get('effect_id') + bussiness_gold(self.mm.user) +
                         skill_effect.get(17, {}).get(2, 0)) / 10000.0  # 活动加成
             gold_per_card = config_id['gold_per_card'] * (1 + increase )
@@ -119,7 +121,7 @@ class FansActivity(ModelBase):
         if is_save:
             self.save()
 
-        return all_items
+        return all_items, card_effect
 
     # 添加可解锁粉丝活动
     # def add_can_unlock_activity(self, activity_id, is_save=False):
