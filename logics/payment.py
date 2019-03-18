@@ -268,6 +268,8 @@ def generate_pay(user_id, goods_id, order_id, amount, uin, platform, act_id, act
         'real_product_id': real_product_id,
         'lan_sort': lan_sort,
         'over_diamond': over_diamond,
+        'act_id': act_id,
+        'act_item_id': act_item_id,
     }
 
     flag = pay_apply(mm, obj, charge_config)
