@@ -558,7 +558,7 @@ def get_deploy(req):
                 filename_list = filename.split("_")
                 filename_time = filename_list.pop()
                 filename_name = "_".join(filename_list)
-                if filename_name not in file_name:
+                if filename_name not in file_dict:
                     file_dict[filename_name] = [filename]
                 else:
                     file_dict[filename_name].append(filename)
