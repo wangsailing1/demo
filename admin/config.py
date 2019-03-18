@@ -551,7 +551,6 @@ def get_deploy(req):
     # sys.path.insert(0, os.path.join(cur_dir, ".."))
     sys.path.append(os.path.join(cur_dir))
     file_address = cur_dir + 'upload_xls'
-    file_name = []
     file_dict = {}
     for dirpaths, dirnames, filenames in os.walk(file_address):
         for filename in filenames:
@@ -560,18 +559,19 @@ def get_deploy(req):
                 filename_time = filename_list.pop()
                 filename_name = "_".join(filename_list)
                 if filename_name not in file_name:
-                    file_name.append(filename_name)
-                    file_dict[filename_name] = [filename_time]
+                    file_dict[filename_name] = [filename]
                 else:
-                    file_dict[filename_name].append(filename_time)
+                    file_dict[filename_name].append(filename)
 
     file_name_sort = []
+    keep_num = 20
+    show_num = 3
     for k, v in file_dict.items():
         time_sort = sorted(v, reverse=True)
-        if len(v) > 3:
-            time_sort = time_sort[0:3]
-        for t in time_sort:
-            file_name_sort.append(k+'_'+t)
+        for i in time_sort[keep_num:]:
+            p = os.path.join(file_address, i)
+            os.remove(p)
+        file_name_sort.extend(v[:show_num])
 
     return render(req, 'admin/config/deploy_download.html', **{
         'file_name': file_name_sort,
