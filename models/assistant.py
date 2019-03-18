@@ -5,6 +5,7 @@ import time
 
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
+from models.vip_company import more_license
 
 
 class Assistant(ModelBase):
@@ -41,6 +42,25 @@ class Assistant(ModelBase):
             save = True
         if save:
             self.save()
+
+    def get_max_time(self):
+        return more_license(self.mm.user) + 1
+
+    def get_status(self):
+        """
+        :return:  1 全部领取完 2，可领取，3可申请,4 申请中
+        """
+        now = int(time.time())
+        if self.license_apply_times >= self.get_max_time() and self.license_apply_done_time == 0:
+            return 1
+        if self.license_apply_done_time != 0:
+            if now >= self.license_apply_done_time:
+                return 2
+            else :
+                return 4
+        else:
+            return 3
+
 
 
 ModelManager.register_model('assistant',Assistant)

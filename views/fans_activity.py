@@ -122,7 +122,7 @@ def get_reward(hm):
         return 2, {}  # 未参加活动
     if not mm.fans_activity.activity_log[activity_id]:
         return 2, {}  # 未参加活动
-    gift = mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id)
+    gift, _ = mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id)
     reward = add_mult_gift(mm, gift)
     fa = FansActivity(mm)
     rc, data = fa.fans_index()

@@ -3,6 +3,7 @@
 import time
 import datetime
 from gconfig import game_config
+from models.vip_company import task_cd
 
 ############### 任务是否完成判断函数定义 返回flag, value, need #################
 
@@ -184,7 +185,7 @@ class Mission(object):
                 continue
             if isinstance(mission_id, (str, unicode)) and 'refresh_ts' in mission_id:
                 now = int(time.time())
-                end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME
+                end_time = mission_obj.data[mission_id] + self.mm.mission.RANDOMREFRESHTIME - task_cd(self.mm.user) * 60
                 refresh_time = end_time - now if end_time - now > 0 else 0
                 result[mission_id] = [refresh_time, now, 0]
                 continue
