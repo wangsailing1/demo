@@ -281,6 +281,9 @@ class UserPayment(ModelBase):
             elif act_id == 2012:
                 if not act_item_id:
                     return order_rmb * 10
+                rmbfoundation_version = self.mm.rmbfoundation.get_version()
+                if not rmbfoundation_version or rmbfoundation_version != act_item_id:
+                    return order_rmb * 10
                 rmbfoundation_info = game_config.rmb_foundation.get(act_item_id)
                 if rmbfoundation_info and act_item_id not in self.mm.rmbfoundation.activate_mark:
                     self.mm.rmbfoundation.activate_mark[act_item_id] = time.strftime('%F')
