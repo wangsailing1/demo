@@ -27,8 +27,9 @@ class ActiveCard(ModelBase):
             'gift': 0,
             'last_data': '',
         }
-        self.config = game_config.month_privilege
+
         super(ActiveCard, self).__init__(self.uid)
+        self.config = game_config.month_privilege
 
 
     def pre_use(self):
@@ -126,8 +127,9 @@ class BigMonth(ActiveCard):
             'get_reward_times': 0,
             'gift': 0,
         }
-        self.config = game_config.bigmonth_privilege
+
         super(BigMonth, self).__init__(self.uid)
+        self.config = game_config.bigmonth_privilege
 
 
 
