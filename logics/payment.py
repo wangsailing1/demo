@@ -192,6 +192,7 @@ def pay_apply(mm, obj, charge_config):
         mm.superplayer.add_day_pay(order_diamond)
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
         mm.user.save()
+        mm.rmbfoundation.save()
 
         # 购买商品日期记录，用于刷新次数
         mm.user_payment.add_buy_log(product_id)
