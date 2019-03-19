@@ -1009,6 +1009,14 @@ class UserLogic(object):
         self.user.save()
         return 0, {'got_icon':self.user.got_icon}
 
+    def get_sex(self):
+        config = game_config.main_hero
+        if not self.role:
+            return 0
+        if not self.role not in config:
+            return 0
+        return config[self.role]['sex']
+
     def change_icon(self, icon):
         """
         更换头像
