@@ -264,14 +264,20 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
-    'entry_mode': ('entry_mode', 'int'),
+    'entry_mode': ('entry_mode', 'int_list'),
     'top_picture': ('top_picture', 'str'),
     'time_frame': ('time_frame', 'int_or_float_list'),
     'avg_bgm': ('avg_bgm', 'str'),
+    'chapter': ('chapter', 'int'),
+    'player_sex': ('player_sex', 'int'),
+    'phone_unlock': ('phone_unlock', 'int'),
+    # 'name': ('name', 'unicode'),
     'hero_zoom': ('hero_zoom', 'int_or_float_list'),
     'hero_name': ('hero_name', 'str'),
     'main_expression': ('main_expression', 'str'),
+    'box_center': ('box_center', 'int_list'),
     'cg_picture': ('cg_picture', 'str'),
+    'Recall_effects': ('Recall_effects', 'int'),
 }
 
 explain = {
