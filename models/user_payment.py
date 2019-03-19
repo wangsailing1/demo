@@ -269,7 +269,7 @@ class UserPayment(ModelBase):
                     if self.mm.big_month.reward_info and not self.mm.big_month.gift:
                         self.mm.big_month.buy_gift()
                 else:
-                    return order_diamond
+                    return 0
 
 
             elif act_id == 3001:  # 限时等级礼包
