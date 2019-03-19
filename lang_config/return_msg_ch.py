@@ -864,6 +864,26 @@ egg_msg = {
     }
 }
 
+assistant_msg = {
+    'assistant.get_daily_reward': {
+        1: u'请先聘请终身助理',
+        2: u'已经领取',
+    },
+    'assistant.license_apply': {
+        1: u'请先聘请终身助理',
+        2: u'申请次数达到上限',
+        3: u'申请中',
+        4: u'请先领取',
+    },
+    'assistant.get_license': {
+        1: u'请先聘请终身助理',
+        2: u'请先申请',
+        3: u'申请中',
+        4: u'已经领取过了',
+        5: u'许可证已达上限',
+    }
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
