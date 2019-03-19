@@ -262,7 +262,7 @@ class UserPayment(ModelBase):
                     return order_rmb * 10
                 lv = act_item_id
                 level_gift_config = game_config.level_gift.get(lv)
-                if level_gift_config and lv in self.mm.user.level_gift:
+                if level_gift_config and lv in self.mm.user.level_gift and not self.mm.user.can_buy_level_gift(lv):
                     self.mm.user.level_gift[lv]['status'] = 1
                     return 0
                 return order_rmb * 10
