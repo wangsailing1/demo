@@ -191,7 +191,7 @@ class ShopLogics(object):
 
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
-        company_vip_num = self.get_company_vip_num(good_id)
+        company_vip_num = self.get_company_vip_num(goods['shop_id'])
         if goods['times'] + num > shop_config['sell_max'] + company_vip_num and shop_config['sell_max'] != -1:
             return 4, {}
 
