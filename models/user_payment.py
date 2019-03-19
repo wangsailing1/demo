@@ -12,6 +12,8 @@ from lib.utils.active_inreview_tools import get_version_by_active_id
 from lib.utils.time_tools import str2timestamp
 from return_msg_config import i18n_msg
 from lib.utils.debug import print_log
+from models.payment import CURRENCY_VIP_EXP
+import math
 
 
 class UserPayment(ModelBase):
@@ -209,7 +211,7 @@ class UserPayment(ModelBase):
         double_data.append(product_id)
         self.save()
 
-    def add_pay(self, sort, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True,
+    def add_pay(self, sort, currency, price=0, order_diamond=0, order_rmb=0, product_id=0, can_open_gift=True,
                 act_id=0, act_item_id=0):
         """ 记录充值
 
@@ -220,6 +222,7 @@ class UserPayment(ModelBase):
         """
         if can_open_gift:   # 实付金额大于或等于订单金额才会给gift
             now = int(time.time())
+            add_diamond = int(math.ceil(order_rmb * CURRENCY_VIP_EXP.get(currency, 1)))
             if not act_id:
                 if sort == 1:      # 月卡
                     if not self.mm.active_card.get_status():
@@ -268,19 +271,20 @@ class UserPayment(ModelBase):
                 else:
                     return order_diamond
 
+
             elif act_id == 3001:  # 限时等级礼包
                 if not act_item_id:
-                    return order_rmb * 10
+                    return add_diamond
                 lv = act_item_id
                 level_gift_config = game_config.level_gift.get(lv)
                 if level_gift_config and lv in self.mm.user.level_gift:
                     self.mm.user.level_gift[lv]['status'] = 1
                     return 0
-                return order_rmb * 10
+                return add_diamond
 
             elif act_id == 2012:
                 if not act_item_id:
-                    return order_rmb * 10
+                    return add_diamond
                 rmbfoundation_info = game_config.rmb_foundation.get(act_item_id)
                 if rmbfoundation_info and act_item_id not in self.mm.rmbfoundation.activate_mark:
                     self.mm.rmbfoundation.activate_mark[act_item_id] = time.strftime('%F')
@@ -291,7 +295,7 @@ class UserPayment(ModelBase):
                             reward_dict.append(day)
                     self.mm.rmbfoundation.reward_dict[act_item_id] = sorted(reward_dict)
                     return 0
-                return order_rmb * 10
+                return add_diamond
 
             return 0
         else:
