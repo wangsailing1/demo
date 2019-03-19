@@ -28,6 +28,7 @@ from lib.utils.time_tools import relative_activity_remain_time
 from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from lib.db import get_redis_client
+from lib.utils.crypto import md5
 # from models.mission import building
 
 BAN_INFO_MESSAGE = {
@@ -288,34 +289,37 @@ class User(ModelBase):
         return get_redis_client(settings.public)
 
     @classmethod
-    def get_name_unique_key(cls):
-        return 'models.user||User||public||NameUnique'
+    def get_name_unique_key(cls, name, k=None):
+        if not k:
+            k = int(md5(name),16) % 20
+        return 'models.user||User||public||NameUnique||%s'%k
+
 
     @classmethod
     def set_name_unique(cls, name):
         if cls.is_exists_name(name):
             return 1  # 名字存在
         redis = cls.get_public_redis()
-        key = cls.get_name_unique_key()
+        key = cls.get_name_unique_key(name)
         redis.hset(key, name, 1)
         return 0
 
     @classmethod
     def is_exists_name(cls, name):
         redis = cls.get_public_redis()
-        key = cls.get_name_unique_key()
+        key = cls.get_name_unique_key(name)
         return redis.hexists(key, name)
 
     @classmethod
     def del_name_unique(cls, name):
         redis = cls.get_public_redis()
-        key = cls.get_name_unique_key()
+        key = cls.get_name_unique_key(name)
         redis.hdel(key, name)
 
     @classmethod
-    def get_all_name_unique(cls):
+    def get_all_name_unique(cls, num):
         redis = cls.get_public_redis()
-        key = cls.get_name_unique_key()
+        key = cls.get_name_unique_key('', num)
         return redis.hgetall(key)
 
     def set_tpid(self, tpid):

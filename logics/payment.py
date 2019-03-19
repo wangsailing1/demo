@@ -84,7 +84,7 @@ def pay_apply(mm, obj, charge_config):
         if open_gift == 4 and mm.assistant.assistant_gift:
             gift = []
 
-        add_diamond = mm.user_payment.add_pay(open_gift, price=order_money, order_diamond=order_diamond, order_rmb=order_rmb,
+        add_diamond = mm.user_payment.add_pay(open_gift, obj['currency'], price=order_money, order_diamond=order_diamond, order_rmb=order_rmb,
                                               product_id=product_id, can_open_gift=can_open_gift,act_id=act_id,act_item_id=act_item_id)
         if add_diamond:
             mm.user.add_diamond(int(add_diamond))
