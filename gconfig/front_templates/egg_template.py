@@ -14,6 +14,7 @@ egg_item = {
     'reward_chance': ('reward_chance', 'int_list'),  # 随机权重
     'refresh_price': ('refresh_price', 'int'),  # 刷新花费钻石
     'notice': ('notice', 'int'),  # 说明
+    'best_reward': ('best_reward', 'int_list'),  # 最好奖励
 }
 
 egg_diamond = {
@@ -29,4 +30,5 @@ egg_diamond = {
     'reward_chance': ('reward_chance', 'int_list'),  # 随机权重
     'refresh_price': ('refresh_price', 'int'),  # 刷新花费钻石
     'notice': ('notice', 'int'),  # 说明
+    'best_reward': ('best_reward', 'int_list'),  # 最好奖励
 }
