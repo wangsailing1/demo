@@ -473,10 +473,11 @@ def stat(func):
             # 'device_id': device_id,
             'level': str(mm.user.level),
             'exp': str(mm.user.exp),
-            'vip_exp': str(mm.user.vip_exp),
+            'vip_exp': str(mm.user.company_vip_exp),
             'silver': str(mm.user.silver),
             'coin': str(mm.user.coin),
             'diamond': str(mm.user.diamond),
+            'sex':mm.user.get_sex()
         }
 
         f_name = '%s_%s_%s' % (settings.ENV_NAME, os.getpid(), time.strftime('%Y%m%d'))
