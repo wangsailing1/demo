@@ -154,11 +154,13 @@ user_msg = {
     'user.charge_name': {
         1: u'名字不合法',
         2: u'名字已使用',
+        5: u'名字已经存在',
     },
     'user.register_name': {
         1: u'名字不合法',
         2: u'已经有名字了',
         3: u'名字不能为空',
+        5: u'名字已经存在',
     },
     'user.show_hero_detail': {
         1: u'没有该英雄',
@@ -879,7 +881,7 @@ assistant_msg = {
         4: u'请先领取',
     },
     'assistant.get_license': {
-        1: u'请先聘请终身助理',
+       1: u'请先聘请终身助理',
         2: u'请先申请',
         3: u'申请中',
         4: u'已经领取过了',

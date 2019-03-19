@@ -668,6 +668,9 @@ class UserLogic(object):
         cost = game_config.common.get(29, 500)
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
+        if self.user.set_name_unique(name):
+            return 5, {}   # 名字存在
+        self.user.del_name_unique(self.user.name)
 
         self.user.name = name
         self.user.change_name += 1
@@ -692,7 +695,8 @@ class UserLogic(object):
             return 2, {}    # 已经有名字了
         if not role:
             return 4, {}    # 请选择一个角色
-
+        if self.user.set_name_unique(name):
+            return 5, {}   # 名字存在
         self.user.name = name
         self.user.role = role
         self.user.got_icon.append(role)
