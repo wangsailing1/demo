@@ -271,6 +271,7 @@ tour_dialogue = {
     'hero_zoom': ('hero_zoom', 'int_or_float_list'),
     'hero_name': ('hero_name', 'str'),
     'main_expression': ('main_expression', 'str'),
+    'cg_picture': ('cg_picture', 'str'),
 }
 
 explain = {
