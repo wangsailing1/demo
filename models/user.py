@@ -857,6 +857,15 @@ class User(ModelBase):
         if save:
             self.save()
 
+    # 获取性别
+    def get_sex(self):
+        config = game_config.main_hero
+        if not self.role:
+            return 0
+        if not self.role not in config:
+            return 0
+        return config[self.role]['sex']
+
     def decr_action_point(self, point, save=False):
         """
         扣除体力
