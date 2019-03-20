@@ -22,7 +22,7 @@ class RmbFoundation(object):
         data['rmbf_active_dates'] = {}
         for f_id, f_active_date in self.mm.rmbfoundation.activate_mark.iteritems():
             f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
-            data['f_active_dates'][f_id] = (datetime.date.today() - f_active_date).days + 1
+            data['rmbf_active_dates'][f_id] = (datetime.date.today() - f_active_date).days + 1
         data['reward_dict'] = self.mm.rmbfoundation.reward_dict
         return 0, data
 
