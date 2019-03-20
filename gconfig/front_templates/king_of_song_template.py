@@ -30,3 +30,13 @@ singerking_rate = {
     'enemyscore_min':   ('enemyscore_min',     'int'),         #
     'enemyscore_max':   ('enemyscore_max',     'int'),         #
 }
+
+
+pvp_dialogue = {
+    'uk':               ('id',          'int'),         #
+    'group':        ('group',        'int'),            #
+    'random':       ('random',        'int'),           #
+    'pic':          ('pic',        'str'),              #
+    'name':         ('name',        'unicode'),         #
+    'dialogue':     ('dialogue',        'unicode'),     #
+}

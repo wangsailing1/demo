@@ -160,6 +160,7 @@ king_of_song_mapping = {
     'pvp_rank': ('pvp_rank', True),
     'pvp_robots': ('pvp_robots', True),
     'singerking_rate': ('singerking_rate', False),
+    'pvp_dialogue': ('pvp_dialogue', True),
 }
 
 equip_mapping = {

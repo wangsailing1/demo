@@ -112,6 +112,11 @@ class KingOfSong(ModelBase):
                 self.star = 0
 
         self.continue_win_times += 1
+        # 最高等级星级限制
+        max_rank = max(game_config.pvp_rank)
+        max_config = game_config.pvp_rank[max_rank]
+        if self.rank == max_rank:
+            self.star = min(self.star, max_config['star'])
         return rank_up
 
     def deduct_star(self):
