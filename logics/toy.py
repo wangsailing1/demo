@@ -9,6 +9,7 @@ from models.toy import Toy as MToy
 from lib.utils.active_inreview_tools import get_version_by_active_id
 from lib.core.environ import ModelManager
 from lib.utils.debug import print_log
+from return_msg_config import i18n_msg
 
 
 class Toy(object):
@@ -24,8 +25,8 @@ class Toy(object):
 
     def is_open(self):
         method = 'if_catcher' if self.sort == 2 else 'if_super_catcher'
-        module = __import__('models.vip_company',globals(),locals(),['if_catcher','if_super_catcher'])
-        fun = getattr(module,method)
+        module = __import__('models.vip_company', globals(), locals(), ['if_catcher', 'if_super_catcher'])
+        fun = getattr(module, method)
         if not fun(self.mm.user):
             return -1
         action_config_id, version = self.toy.get_version()
@@ -44,7 +45,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg':'群星纪念塔楼建到%s层解锁'%lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg[1210] % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         if self.check_done():
@@ -61,23 +62,21 @@ class Toy(object):
             data['own_score'] = self.toy.get_score(self.mm.uid)
         return 0, data
 
-
     def get_all_rank_user_info(self):
         info = []
         rank_list = self.toy.get_all_user(start=0, end=99, withscores=True)
         rank = 1
         for uid, score in rank_list:
             mm = ModelManager(uid)
-            info.append({'name': mm.user.name, 'score':score, 'rank': rank})
+            info.append({'name': mm.user.name, 'score': score, 'rank': rank})
             rank += 1
         return info
-
 
     def get_toy(self, catch, reward_id):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg[1210] % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
@@ -122,7 +121,7 @@ class Toy(object):
             self.toy.toy_list[reward_id]['num'] += 1
             self.toy.catch_num += 1
             self.toy.toy_list[reward_id]['flag'] = 1
-            self.toy.got_reward.append({reward_id:self.toy.toy_list[reward_id]})
+            self.toy.got_reward.append({reward_id: self.toy.toy_list[reward_id]})
             # self.toy.toy_list.pop(reward_id)
 
         # 抽完自动刷新
@@ -131,7 +130,7 @@ class Toy(object):
 
         reward = add_mult_gift(self.mm, gift)
         self.toy.save()
-        if self.sort == 1 and self.toy.catch_num :
+        if self.sort == 1 and self.toy.catch_num:
             self.toy.add_rank(self.mm.uid, self.toy.catch_num)
         _, data = self.index()
         data['reward'] = reward
@@ -166,7 +165,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg[1210] % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
@@ -188,7 +187,7 @@ class Toy(object):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': '群星纪念塔楼建到%s层解锁' % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg[1210] % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))

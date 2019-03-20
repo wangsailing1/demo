@@ -21,6 +21,7 @@ from lib.core.environ import ModelManager
 from lib.utils import fake_deepcopy
 from models.ranking_list import BlockRank
 from logics.mission import Mission
+from return_msg_config import i18n_msg
 
 
 def refresh_roulette_ranktime():
@@ -688,7 +689,7 @@ class UserLogic(object):
             return 1, {}    # 名字不合法
 
         if self.user.reg_name:
-            return 'error_21', {}    # 已经有名字了
+            return 'error_21', {'custom_msg':i18n_msg[1209]}    # 已经有名字了
         if not role:
             return 4, {}    # 请选择一个角色
 
