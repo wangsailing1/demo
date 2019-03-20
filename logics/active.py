@@ -20,7 +20,7 @@ class ActiveCard(object):
     def show(self):
         if not self.active_card.config and not self.big_month.config:
             return {}
-        show_data = {}
+        show_data = {'item': self.mm.item.items}
         show_data['double_pay_id'] = self.mm.user_payment.get_double_pay()
         for k in [1, 2]:
             obj = getattr(self.mm,self.MAPPING[k])
