@@ -439,10 +439,15 @@ class ScriptLogic(object):
                     reward.append(d)
         result = self.calc_attention_by_step(1)
         attention = self.calc_attention()
+
+        # 玩家经验player_exp
+        self.mm.user.add_player_exp(script_config['player_exp'])
+
         # 来自本部的关注度为 关注度 - 初始关注度
         init_att = sum(user.attention.values())
         att = attention.get('attention', 0) - init_att if attention.get('attention', 0) else 0
         user.add_attention(3, att)
+        user.save()
         result['reward'] = reward
         result['attention_initial'] = attention['attention_initial']
         result['attention_end'] = attention['attention']
@@ -1030,9 +1035,9 @@ class ScriptLogic(object):
                 skill_add_value = script.calc_skill_effect(14, fight_exp)
                 fight_exp += skill_add_value
                 card.add_style_exp(card_oid, style, fight_exp)
-
-        # 玩家经验player_exp
-        self.mm.user.add_player_exp(script_config['player_exp'])
+        #
+        # # 玩家经验player_exp
+        # self.mm.user.add_player_exp(script_config['player_exp'])
 
         # 专业评级点赞数
         self.mm.user.add_like(finished_medium_judge['like'])
