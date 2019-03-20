@@ -11,6 +11,7 @@ class ActiveCard(object):
     """
     TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
     MAPPING = {1:'active_card', 2: 'big_month'}
+    CHARGE_MAPPING = {1:12, 2:13}
 
     def __init__(self, mm):
         self.mm = mm
@@ -68,6 +69,19 @@ class ActiveCard(object):
             obj.reward_info['get_reward_times'] = obj.reward_info.get('get_reward_times', 0) + 1
             obj.save()
             return 0, {'reward': reward}
+
+    def get_gift(self,active_id):
+        obj = getattr(self.mm, self.MAPPING[active_id])
+        if not obj.gift:
+            return 1, {}  # 未充值
+        if obj.gift == 2:
+            return 2, {}  # 已经领取过了
+        gift = game_config.charge[self.CHARGE_MAPPING[active_id]]['gift']
+        reward = add_mult_gift(self.mm, gift)
+        obj.gift = 2
+        obj.save()
+        return 0, {'reward':reward}
+
 
 
 class SevenLoginLogic(object):

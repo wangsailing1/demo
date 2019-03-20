@@ -32,6 +32,17 @@ def active_card_award(hm):
 
     return 0, data
 
+def get_gift(hm):
+    mm = hm.mm
+    active_id = hm.get_argument('active_id', 0, is_int=True)
+    acl = ActiveCard(mm)
+    rc, data = acl.get_gift(active_id)
+    if rc != 0:
+        return rc, data
+    data['show'] = acl.show()
+
+    return 0, data
+
 
 def seven_login(hm):
     """

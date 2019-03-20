@@ -75,4 +75,16 @@ def get_license(hm):
     _, info = assistant_index(hm)
     return 0, info
 
+def get_gift(hm):
+    mm = hm.mm
+    if not mm.assistant.assistant_gift:
+        return 1, {}  # 未充值
+    if mm.assistant.assistant_gift == 2:
+        return 2, {}  # 已经领取
+    gift = game_config.charge[11]['gift']
+    reward = add_mult_gift(mm, gift)
+    _, info = assistant_index(hm)
+    info['reward'] = reward
+    return 0, info
+
 
