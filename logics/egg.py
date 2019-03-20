@@ -119,7 +119,7 @@ class Egg(object):
                     return rc, {}
                 # data['refresh_flog'] = 1
                 reward_msg = get_reward_and_num(self.mm, [reward_best])
-                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级金锤，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
+                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活動中，使用高級金錘，獲得<#f65891>%s' % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 need_diamond = egg_diamond_info.get('need_recharge')
@@ -146,7 +146,7 @@ class Egg(object):
                     # data['refresh_flog'] = 1
                 if reward_choice == self.egg.egg_diamond_reward_best:
                     reward_msg = get_reward_and_num(self.mm, reward)
-                    log_ = u'<#6cbaf4>%s<#ffffff>砸金蛋人品爆发，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
+                    log_ = u'<#6cbaf4>%s<#ffffff>砸金蛋人品爆發，獲得<#f65891>%s' % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
 
         elif egg_type == 2:  # 彩蛋
@@ -163,7 +163,7 @@ class Egg(object):
                     return rc, {}
                 # data['refresh_flog'] = 1
                 reward_msg = get_reward_and_num(self.mm, [reward_best])
-                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级彩锤，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
+                log_ = u'<#6cbaf4>%s<#ffffff>在砸金蛋活動中，使用高級彩錘，獲得<#f65891>%s' % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 # need_num = egg_item_info.get('need_recharge')
@@ -186,7 +186,7 @@ class Egg(object):
                     # data['refresh_flog'] = 1
                 if reward[0] == self.egg.egg_item_reward_best:
                     reward_msg = get_reward_and_num(self.mm, [self.egg.egg_item_reward_best])
-                    log_ = u'<#6cbaf4>%s<#ffffff>砸彩蛋人品爆发，获得<#f65891>%s' % (self.mm.user.name, reward_msg)
+                    log_ = u'<#6cbaf4>%s<#ffffff>砸彩蛋人品爆發，獲得<#f65891>%s' % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
         gift = add_mult_gift(self.mm, reward)
         data['gift'] = gift
