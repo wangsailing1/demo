@@ -205,7 +205,7 @@ def analysis_order(order_id, split='-'):
     else:
         user_id, goods_id, charge_config, act_id, act_item_id = None, 0, {}, 0, 0
 
-    return user_id, goods_id, charge_config, act_id, act_item_id
+    return user_id, goods_id, charge_config, int(act_id), int(act_item_id)
 
 
 def generate_pay(user_id, goods_id, order_id, amount, uin, platform, act_id, act_item_id, raw_data='',
