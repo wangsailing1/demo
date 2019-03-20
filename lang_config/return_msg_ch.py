@@ -31,6 +31,7 @@ return_msg_config = {
     'error_0': u"vip级别不够，无法完成此操作",
     'error_1': u"战斗数据错误",
     'error_2': u"数据错误",
+    'error_21': u"重新登入",
     'error_100': u"参数出错",
     'error_9527': u'连接异常，请重新登录(9527)',
     'error_close_shop': u'商店已关闭',

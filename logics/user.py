@@ -688,7 +688,7 @@ class UserLogic(object):
             return 1, {}    # 名字不合法
 
         if self.user.reg_name:
-            return 2, {}    # 已经有名字了
+            return 'error_21', {}    # 已经有名字了
         if not role:
             return 4, {}    # 请选择一个角色
 
