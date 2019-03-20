@@ -80,8 +80,8 @@ def pay_apply(mm, obj, charge_config):
             # mm.user.add_diamond(order_diamond + gift_diamond)
 
         mm.user.diamond_charge += amount
-        # 助理特权礼包 只能领一次
-        if open_gift == 4 and mm.assistant.assistant_gift:
+        # 助理,月卡，至尊月卡 特权礼包 主动领取
+        if open_gift in [4, 5, 6]:
             gift = []
 
         add_diamond = mm.user_payment.add_pay(open_gift, obj['currency'], price=order_money, order_diamond=order_diamond, order_rmb=order_rmb,
