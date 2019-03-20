@@ -239,7 +239,7 @@ class ResourceVersion(ModelBase):
         :return:
         """
         if self.can_hot_update_ip:
-            return self.can_hot_update_ip.split(',')
+            return [i.strip() for i in self.can_hot_update_ip.split(',')]
         else:
             return []
 

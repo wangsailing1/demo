@@ -120,7 +120,7 @@ def select(req, **kwargs):
     check_limit_version, recent_version = check_version(version_dirs, limit_version)
     if check_limit_version != resource.limit_version and limit_version:
         resource.set_limit_version(check_limit_version, is_save=True)
-    if recent_version != resource.recent_version:
+    if recent_version and recent_version != resource.recent_version:
         resource.set_recent_version(recent_version, is_save=True)
 
     msg = kwargs.get('msg', '')
