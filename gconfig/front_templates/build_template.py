@@ -29,6 +29,7 @@ building = {
     'lvlup_des': ('lvlup_des', 'str'),  # 升级描述
     'lvlup_condition': ('lvlup_condition', 'str'),  # 升级条件
     'icon2': ('icon2', 'str'),  # 图标
+    'building_use': ('building_use', 'str'),  # 建筑用途
 }
 
 field = {

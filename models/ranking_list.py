@@ -614,7 +614,7 @@ class BlockRank(AllRank):
         :param withscores:
         :return:
         """
-        return self.fredis.zrangebyscore(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
+        return self.fredis.zrangebyscore(self._key_date, min, max, withscores=withscores, score_cast_func=score_cast_func)
 
     def get_score(self, uid, score_cast_func=round_float_or_str):
         """
