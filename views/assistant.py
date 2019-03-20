@@ -83,6 +83,8 @@ def get_gift(hm):
         return 2, {}  # 已经领取
     gift = game_config.charge[11]['gift']
     reward = add_mult_gift(mm, gift)
+    mm.assistant.assistant_gift = 2
+    mm.assistant.save()
     _, info = assistant_index(hm)
     info['reward'] = reward
     return 0, info
