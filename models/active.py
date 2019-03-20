@@ -24,7 +24,7 @@ class ActiveCard(ModelBase):
             'buy_times': {},  # 购买次数
             'version': 0,  # 版本号
             'get_reward_times': 0, # 领取奖励次数
-            'gift': 0,
+            'gift': 0, # 0 未充值 1 充值未领奖 2 已领奖
             'last_data': '',
         }
 
