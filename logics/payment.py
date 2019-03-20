@@ -232,7 +232,7 @@ def pay_apply(mm, obj, charge_config):
 def analysis_order(order_id, split='-'):
     """ 解析游戏订单号
 
-    :param order_id:
+    :param order_id:  tw19920896-t1-4-1553022721-popstar_twandriod-0-0
     :param split:
     :return:
     """
@@ -244,6 +244,10 @@ def analysis_order(order_id, split='-'):
         charge_config = game_config.charge[goods_id]
     elif order_len == 5:
         user_id, server_id, goods_id, act_id, act_item_id = order_list
+        goods_id = int(goods_id)
+        charge_config = game_config.charge[goods_id]
+    elif order_len == 7:
+        user_id, server_id, goods_id, ts, appid, act_id, act_item_id = order_list
         goods_id = int(goods_id)
         charge_config = game_config.charge[goods_id]
     else:
