@@ -19,7 +19,7 @@ class ActiveCard(object):
         month_card_config = game_config.month_privilege
         if not month_card_config:
             return {}
-        show_data = {}
+        show_data = {'item': self.mm.item.items}
         show_data['double_pay_id'] = self.mm.user_payment.get_double_pay()
         if not self.active_card.reward_info:
             for k, v in month_card_config.iteritems():
