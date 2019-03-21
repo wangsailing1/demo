@@ -34,7 +34,7 @@ class RmbFoundation(ModelBase):
 
         self._attrs = {
             'version': 0,  # 版本号
-            'withdraw_log': {},  # 领取基金信息
+            # 'withdraw_log': {},  # 领取基金信息
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
         }
@@ -55,9 +55,8 @@ class RmbFoundation(ModelBase):
 
     def refresh(self):
         self.version = self.get_version()
-        self.withdraw_log = {}
-        self.activate_mark = {}
-        self.reward_dict = {}
+        # self.activate_mark = {}
+        # self.reward_dict = {}
 
     def is_open(self):
         if self.get_version():
