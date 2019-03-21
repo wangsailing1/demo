@@ -470,7 +470,8 @@ class APIRequestHandler(BaseRequestHandler):
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         if obj._model_name == 'mission':
-                            mission = Mission(self.hm.mm)
+                            from logics.mission import Mission as LMission
+                            mission = LMission(self.hm.mm)
                             l = []
                             for m_id, m_value in obj._client_cache_update()['achieve_data']['update'].items():
                                 if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
