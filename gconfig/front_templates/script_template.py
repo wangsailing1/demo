@@ -113,7 +113,7 @@ script_end_level = {
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
     'next_attention': ('next_attention', 'int'),
     'level_sequel_count': ('level_sequel_count', 'int'),    # 可获取该档次的续作编号
-    'icon_background': ('icon_background', 'str_list'),    # 背景图
+    'icon_background': ('icon_background', 'str'),    # 背景图
 
 }
 
