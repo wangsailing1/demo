@@ -108,9 +108,11 @@ class Mission(object):
             return 1
         return 0
 
-    def mission_red_dot(self,type = 'daily'):
+    def mission_red_dot(self,type = 'daily', m_id=None):
         mission_obj = getattr(self.mission, type)
         for mission_id in mission_obj.data:
+            if m_id and mission_id != m_id:
+                continue
             if isinstance(mission_id, basestring) and ('time' in mission_id or 'refresh_ts' in mission_id):
                 continue
             has_reward = self.has_reward_by_type(type=type, mission_id=mission_id)

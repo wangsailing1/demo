@@ -77,7 +77,7 @@ class ActiveCard(object):
         if obj.gift == 2:
             return 2, {}  # 已经领取过了
         gift = game_config.charge[self.CHARGE_MAPPING[active_id]]['gift']
-        reward = add_mult_gift(self.mm, gift)
+        reward = add_mult_gift(self.mm, gift, source=1)
         obj.gift = 2
         obj.save()
         return 0, {'reward':reward}

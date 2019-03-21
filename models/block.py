@@ -130,7 +130,7 @@ class Block(ModelBase):
                 for card_id in self.today_card:
                     c_uid = "%s_%s" % (self.uid, card_id)
                     rank = br.get_rank(c_uid)
-                    if rank == -1:
+                    if not rank:
                         continue
                     score = br.get_score(c_uid)
                     data[tp_num][card_id] = {'rank': rank, 'score':score}
@@ -143,10 +143,11 @@ class Block(ModelBase):
                 for script_id in self.today_script:
                     br_uid = "%s_%s" % (self.uid, script_id)
                     rank = br.get_rank(br_uid)
-                    if rank == -1:
+                    if not rank:
                         continue
                     score = br.get_score(br_uid)
                     data[tp_num][script_id] = {'rank': rank, 'score': score}
+        return data
 
 
 

@@ -411,6 +411,7 @@ class Mission(ModelBase):
     # mission_mapping
     MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission', 7: 'new_guide'}
     BOXOFFICEREFRESHTIME = '05:00:00'
+    _need_diff = ('achieve_data')
 
     # 数值类任务初始化时需要自检的
     NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]
