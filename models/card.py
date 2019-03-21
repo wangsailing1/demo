@@ -560,6 +560,7 @@ class Card(ModelBase):
             group_id = self.get_group_id_by_oid(card_oid)
         add_num = int(add_num)
         card_dict = card_dict or self.cards[card_oid]
+        add_num = add_num if card_dict['popularity'] > add_num else card_dict['popularity']
         card_dict['popularity'] -= add_num
         self.attr[group_id]['popularity'] = card_dict['popularity']
 

@@ -100,3 +100,5 @@ def get_daily_reward(hm):
     mm.block.reward_daily = now
     mm.block.save()
     return 0, {'reward': reward}
+
+
