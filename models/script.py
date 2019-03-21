@@ -635,6 +635,14 @@ class Script(ModelBase):
             ar = self.mm.get_obj_tools('appeal_rank')  # uid 格式 uid + '|' + group_id
             ar.incr_rank(guid, income)
 
+            # 记录当天拍过片的艺人
+            if card_id not in self.mm.block.today_card:
+                self.mm.block.today_card.append(card_id)
+
+        # 记录当天拍过的剧本
+        if script_id not in self.mm.block.today_script:
+            self.mm.block.today_script.append(script_id)
+
         self.mm.script_book.add_book(script_id)
         self.mm.script_book.add_script_group(script_id, True, income)
 
