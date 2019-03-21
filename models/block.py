@@ -5,6 +5,7 @@ import time
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
+from models.ranking_list import BlockRank
 
 REWARD_TIME = '22:30:00'
 REFRESH_TIME = '06:00:00'
@@ -34,8 +35,10 @@ class Block(ModelBase):
             'is_count': 0,  # 是否计算奖杯
             'cup_log_card': {},
             'cup_log_script': {},
-            'rank_reward_got': [], # 排行奖励
+            'rank_reward_got': [],  # 排行奖励
             'rank_reward_date': '',  # 领奖时间
+            'today_card': [],  # 当天拍过片的艺人
+            'today_script': [],  # 当天拍过的剧本
         }
 
         super(Block, self).__init__(self.uid)
@@ -50,6 +53,8 @@ class Block(ModelBase):
             self.has_ceremony = 0
             self.is_count = 0
             self.reward_data = {}
+            self.today_card = []
+            self.today_script = []
             save = True
         last_date = get_date_before(REFRESH_TIME)
         if last_date != self.rank_reward_date:
@@ -106,6 +111,43 @@ class Block(ModelBase):
     def block_reward_red_hot(self):
         now = time.strftime('%F')
         return now != self.reward_daily
+
+
+    # 获取 7种排行榜 自己的信息
+    def get_own_max_rank_by_tp(self, rank_tp=None):
+        data = {}
+        for tp in self.rank_list:
+            if rank_tp and tp != rank_tp:
+                continue
+            rank_uid = self.get_key_profix(self.block_num, self.block_group, tp)
+            date = get_date()
+            br = BlockRank(rank_uid, self._server_name, date)
+
+            if tp in ['nv', 'nan']:
+                tp_num = self.RANKMAPPING[tp]
+                if tp_num not in data:
+                    data[tp_num] = {}
+                for card_id in self.today_card:
+                    c_uid = "%s_%s" % (self.uid, card_id)
+                    rank = br.get_rank(c_uid)
+                    if rank == -1:
+                        continue
+                    score = br.get_score(c_uid)
+                    data[tp_num][card_id] = {'rank': rank, 'score':score}
+            else:
+                tp_num = tp
+                if tp in ['medium', 'audience']:
+                    tp_num = self.RANKMAPPING[tp]
+                for script_id in self.today_script:
+                    br_uid = "%s_%s" % (self.uid, script_id)
+                    rank = br.get_rank(br_uid)
+                    if rank == -1:
+                        continue
+                    score = br.get_score(br_uid)
+                    data[tp_num][script_id] = {'rank': rank, 'score': score}
+
+
+
 
 
 # 获取日期
