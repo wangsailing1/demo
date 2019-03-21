@@ -57,7 +57,7 @@ class ActiveCard(object):
                     gift.extend(month_card_config[obj.version]['only_frist_reward'])
                 else:
                     gift.extend(month_card_config[obj.version]['frist_reward'])
-            reward = add_mult_gift(self.mm, gift, reward)
+            reward = add_mult_gift(self.mm, gift, reward, source=1)
             if not reward:
                 return 4, {}  # 配置错误
             _format = "%Y-%m-%d"
@@ -77,7 +77,7 @@ class ActiveCard(object):
         if obj.gift == 2:
             return 2, {}  # 已经领取过了
         gift = game_config.charge[self.CHARGE_MAPPING[active_id]]['gift']
-        reward = add_mult_gift(self.mm, gift, source=1)
+        reward = add_mult_gift(self.mm, gift)
         obj.gift = 2
         obj.save()
         return 0, {'reward':reward}
