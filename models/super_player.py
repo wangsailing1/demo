@@ -178,7 +178,7 @@ class RedBag(ModelTools):
     # 添加红包
     def add_red_bag(self, red_bag_code, lst):
         all_keys = self.get_all_bag_key()
-        print_log('all_keys', all_keys, 'red_bag_code',red_bag_code)
+        # print_log('all_keys', all_keys, 'red_bag_code',red_bag_code)
         self.redis.sadd(all_keys, red_bag_code)
         self.set_redbag(red_bag_code, lst)
 
