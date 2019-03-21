@@ -20,19 +20,14 @@ class Foundation(ModelBase):
     def __init__(self, uid=None):
         """
                        # 领取基金的时间  活动的开启时间   基金类型  第几天
-        withdraw_log: {withdraw_time: {activate_time, f_id, period_of_reward, gift}, ... },
-        withdraw_log: {143221233: {140110000, 2, 5, [[2,0,1000]]}, ... },
-        score_history: {'2014-09-15': 3000, ...},
         activate_mark: { fid_1: '140143532', ...},
-        reward_dict: {f_id1: {1: [[1,0,2000], [6,1255, 1]], 2:[[2,0,1555]], ... }, f_id2:{...}, ... },
-        score_anchor: 142311989
+        reward_dict: {f_id1: [3, 4, 5, 6, 7], ... },
         """
         self.uid = uid
         # self.inreview_index = 127
         # self.active_inreview = 508   # 活动的编号
         self._attrs = {
             'version': 0,  # 版本号
-            'withdraw_log': {},  # 领取基金信息
             'score': 0,  # 本次活动期间充值钻石数
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
@@ -56,10 +51,7 @@ class Foundation(ModelBase):
 
     def refresh(self):
         self.version = self.get_version()
-        self.withdraw_log = {}
         self.score = 0
-        self.activate_mark = {}
-        self.reward_dict = {}
 
     def is_open(self):
         if self.get_version():
