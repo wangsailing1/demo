@@ -469,6 +469,17 @@ class APIRequestHandler(BaseRequestHandler):
                 for k, obj in self.hm.mm._model.iteritems():
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
+                        if obj._model_name == 'mission':
+                            mission = Mission(self.hm.mm)
+                            l = []
+                            for m_id, m_value in obj._client_cache_update()['achieve_data']['update'].items():
+                                if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
+                                    l.append(m_id)
+                            for d_m_id in l:
+                                obj._client_cache_update()['achieve_data']['update'].pop(d_m_id)
+                            if not obj._client_cache_update()['achieve_data']['update']:
+                                client_cache_udpate.pop('mission')
+
                         old_data[k] = getattr(obj, '_old_data', {})
 
 
