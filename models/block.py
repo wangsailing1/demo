@@ -138,6 +138,8 @@ class Block(ModelBase):
                 tp_num = tp
                 if tp in ['medium', 'audience']:
                     tp_num = self.RANKMAPPING[tp]
+                if tp_num not in data:
+                    data[tp_num] = {}
                 for script_id in self.today_script:
                     br_uid = "%s_%s" % (self.uid, script_id)
                     rank = br.get_rank(br_uid)
