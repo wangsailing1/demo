@@ -251,3 +251,56 @@ class Block(object):
             self.block.save()
             return True
         return False
+
+    def get_ranking_info(self):
+        data = {}
+        for tp in self.block.rank_list:
+            rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
+                                                 tp)
+            date = get_date_before()
+            br = BlockRank(rank_uid, self.block._server_name, date)
+            nomination = br.get_all_user(0, 4, withscores=True)
+            if tp in ['nv', 'nan']:
+                tp_num = self.block.RANKMAPPING[tp]
+                if tp_num not in data:
+                    data[tp_num] = {}
+                for id, (uid_card_id, score) in enumerate(nomination, 1):
+                    uid, card_id = uid_card_id.split('_')
+                    umm = ModelManager(uid)
+                    name = umm.user.name
+                    if card_id not in umm.card.cards:
+                        continue
+                    card_cid = umm.card.cards[card_id]['id']
+                    card_name = umm.card.cards[card_id]['name']
+                    data[tp_num][id] = {
+                        'uid': uid,
+                        'name': name,
+                        'card_cid': card_cid,
+                        'card_name': card_name,
+                        'score': score
+                    }
+            else:
+                tp_num = tp
+                if tp in ['medium', 'audience']:
+                    tp_num = self.block.RANKMAPPING[tp]
+                if tp_num not in data:
+                    data[tp_num] = {}
+                for id, (uid_script_id, score) in enumerate(nomination, 1):
+                    uid, script_id = uid_script_id.split('_')
+                    umm = ModelManager(uid)
+                    name = umm.user.name
+                    script_id = int(script_id)
+                    script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    if not script_name:
+                        script_name = game_config.script[script_id]['name']
+                        script_name = get_str_words(self.mm.user.language_sort, script_name)
+                    data[tp_num][id] = {
+                        'uid': uid,
+                        'name': name,
+                        'script_id': script_id,
+                        'script_name': script_name,
+                        'score': score
+                    }
+        big_sale_info = self.get_big_sale_info()
+        data['big_sale_info'] = big_sale_info
+        return data
