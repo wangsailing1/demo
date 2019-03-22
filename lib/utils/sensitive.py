@@ -49,7 +49,7 @@ def replace_sensitive(word, use_jieba=True):
         return ''.join(d)
 
     for v in WORDS:
-        if v in word:
+        if v and v in word:
             word = word.replace(v, u'**')
 
     return word
