@@ -88,14 +88,16 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0, lan=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
+        if not lan:
+            lan = 1
 
         card_dict = {
             'popularity': popularity,  # 人气
 
-            'name': get_str_words('1', card_config['name']),  # 卡牌名字
+            'name': get_str_words(lan, card_config['name']),  # 卡牌名字
             'id': card_id,  # 配置id
             'oid': card_oid,  # 唯一id
             'is_cold': False,  # 是否雪藏
@@ -265,6 +267,7 @@ class Card(ModelBase):
                                                  love_exp=init_love_exp,
                                                  mm=self.mm,
                                                  popularity=popularity,
+                                                 lan = self.mm.user.language_sort,
                                                  )
 
         self.mm.card_book.add_book(group_id)
