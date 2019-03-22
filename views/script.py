@@ -15,6 +15,7 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from logics.script import ScriptLogic
 from tools.gift import has_mult_goods
+from logics.block import Block
 
 
 def index(hm):
@@ -289,3 +290,14 @@ def recent_event(hm):
     script = hm.mm.script
     recent_event = script.recent_event()
     return 0, {'event': recent_event}
+
+
+def get_rank_info(hm):
+    mm = hm.mm
+    block = Block(mm)
+    data = {}
+    rank_info = block.get_ranking_info()
+    own_info = mm.block.get_own_max_rank_by_tp()
+    data['rank_info'] = rank_info
+    data['own_info'] = own_info
+    return 0, data
