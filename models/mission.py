@@ -730,8 +730,13 @@ class Mission(ModelBase):
                 self.daily.add_count(k, kwargs[sort])
 
         for k, value in self.achieve_data.iteritems():
-            sort = game_config.achieve_mission[k]['sort']
+            config = game_config.achieve_mission[k]
+            sort = config['sort']
+            target_data = config['target']
             if sort in kwargs:
+                if sort == 15:
+                    func = globals()['target_sort%s' % sort]
+                    kwargs.update(func(self.mm, self, target_data))
                 self.achieve_mission.add_count(k, kwargs[sort])
 
         # for k, value in self.guide_data.iteritems():
