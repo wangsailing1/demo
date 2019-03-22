@@ -189,7 +189,7 @@ class KingOfSong(ModelBase):
                     cards = {}
                     for i in robot_config['card']:
                         card_id, lv, love_lv = i[:3]
-                        card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv)
+                        card_oid, card_info = CardM.generate_card(card_id, lv=lv, love_lv=love_lv,lan=self.mm.user.language_sort)
                         cards[card_oid] = card_info
 
                 script_id = random.choice(self.choice_scripts())
