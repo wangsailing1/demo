@@ -640,8 +640,7 @@ class Script(ModelBase):
                 self.mm.block.today_card.append(card_id)
 
         # 记录当天拍过的剧本
-        if script_id not in self.mm.block.today_script:
-            self.mm.block.today_script.append(script_id)
+        self.mm.block.today_script.append(script_id)
 
         self.mm.script_book.add_book(script_id)
         self.mm.script_book.add_script_group(script_id, True, income)
