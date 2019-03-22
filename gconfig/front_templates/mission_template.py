@@ -67,6 +67,7 @@ achieve_mission = {
     'achieve_point': ('achieve_point', 'int'),  # 成就点
     'jump': ('jump', 'int_list'),  # 跳转
     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
+    'achieve_icon': ('achieve_icon', 'str'),  # 图标
 }
 
 # 新手引导任务
