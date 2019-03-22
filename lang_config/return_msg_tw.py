@@ -351,9 +351,22 @@ script_msg = {
         2: u'已是最大等級',
         3: u'推廣時間已過',
     },
+    'script.finished_summary': {
+        1: u'拍片已經結束'
+    },
+    'script.finished_analyse': {
+        1: u'拍片已經結束'
+    },
+    'script.get_continued_reward': {
+        1: u'拍片已經結束'
+    },
+}
+
+
+script_gacha_msg = {
     'script_gacha.get_gacha': {
         1: u'可抽取次數不足'
-    }
+    },
 }
 
 chapter_stage_msg = {
