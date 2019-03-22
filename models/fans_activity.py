@@ -93,11 +93,13 @@ class FansActivity(ModelBase):
             increase = value.get('effect_id') / 10000.0  # 活动加成
             gold_per_card = config_id['gold_per_card'] * (1 + increase + card_effect[card] / 10000.0)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
+            god_num = god_num if god_num > 0 else 0
             new_items = [[1, 0, god_num]]
 
             # 计算关注度
             attention_per_card = config_id['attention_per_card'] * (1 + increase)
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
+            attention_num = attention_num if attention_num > 0 else 0
             new_items.append([19, 1, attention_num])
             all_items.extend(new_items)
         item_produce_new.extend(old_items)
