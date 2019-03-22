@@ -386,7 +386,7 @@ class Card(ModelBase):
                 continue
             attr_id = game_config.card_love_gift_taste[gift_id]['attr']
             if base_char_pro[cls.PRO_IDX_MAPPING[attr_id]] > 0:
-                gift_attr = game_config.common.get(2, 10)
+                gift_attr = game_config.common.get(2, 10) * (info['lv'] - 1)
                 char_pro[cls.PRO_IDX_MAPPING[attr_id]] += gift_attr
                 pass
 
