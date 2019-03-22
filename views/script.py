@@ -300,4 +300,5 @@ def get_rank_info(hm):
     own_info = mm.block.get_own_max_rank_by_tp()
     data['rank_info'] = rank_info
     data['own_info'] = own_info
+    data['film_times'] = mm.block.today_script
     return 0, data
