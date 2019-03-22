@@ -57,7 +57,7 @@ class ActiveCard(object):
                     gift.extend(month_card_config[obj.version]['only_frist_reward'])
                 else:
                     gift.extend(month_card_config[obj.version]['frist_reward'])
-            reward = add_mult_gift(self.mm, gift, reward)
+            reward = add_mult_gift(self.mm, gift, reward, source=1)
             if not reward:
                 return 4, {}  # 配置错误
             _format = "%Y-%m-%d"

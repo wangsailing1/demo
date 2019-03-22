@@ -90,8 +90,8 @@ class FansActivity(ModelBase):
             skill_effect = self.mm.card.get_skill_effect({card:0}, 2, 0).get(card, {}).get('effect', {})
             # 计算金币
             card_effect[card] = skill_effect.get(17, {}).get(2, 0) + bussiness_gold(self.mm.user)
-            increase = (value.get('effect_id') + card_effect[card]) / 10000.0  # 活动加成
-            gold_per_card = config_id['gold_per_card'] * (1 + increase )
+            increase = value.get('effect_id') / 10000.0  # 活动加成
+            gold_per_card = config_id['gold_per_card'] * (1 + increase + card_effect[card] / 10000.0)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
             new_items = [[1, 0, god_num]]
 

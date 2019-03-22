@@ -7,8 +7,8 @@ from logics.foundation import Foundation
 def foundation_index(hm):
     # 基金活动的首页
     mm = hm.mm
-    if not mm.foundation.is_open():
-        return 1, {}  # 活动未开启
+    # if not mm.foundation.is_open():
+    #     return 1, {}  # 活动未开启
     foundation = Foundation(mm)
     rc, data = foundation.foundation_index()
     return rc, data

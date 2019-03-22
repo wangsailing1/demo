@@ -346,7 +346,7 @@ def target_sort26(mm, mission_obj, target):
 TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
 MULT_TYPE = 22  # 剧本拍摄多要求
 TYPE_STYLE = [24, 25]
-CHANGE_NUM = [1, 19, 21]  # 纯数值 玩家等级  公司市值
+CHANGE_NUM = [1, 19, 21, 15]  # 纯数值 玩家等级  公司市值
 CARD_LEVEL = 2  # 艺人等级
 FIRST_CHAPTER = 7  # 首次通关
 NUM_CHAPTER = 8  # 通关次数
@@ -411,6 +411,7 @@ class Mission(ModelBase):
     # mission_mapping
     MISSIONMAPPING = {1: 'daily', 2: 'box_office', 3: 'guide', 4: 'randmission', 6: 'achieve_mission', 7: 'new_guide'}
     BOXOFFICEREFRESHTIME = '05:00:00'
+    _need_diff = ('achieve_data')
 
     # 数值类任务初始化时需要自检的
     NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]

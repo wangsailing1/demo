@@ -70,12 +70,13 @@ def check_item_enough(func):
         return data
     return wrapper
 
-def add_mult_gift(mm, gift_config, cur_data=None):
+def add_mult_gift(mm, gift_config, cur_data=None,source=0):
     """ 获取统一多项奖励
 
     :param mm:
     :param gift_config: [[类型, id, 数量]], [[类型, id, 数量, 权重]]
     :param cur_data:
+    :param source:  来源 1 代表充值
     :param save:
     :return:
     """
@@ -85,7 +86,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
 
     for pkg in gift_config:
         sort = pkg[0]
-        add_gift(mm, sort, [pkg[1:]], cur_data=data)
+        add_gift(mm, sort, [pkg[1:]], cur_data=data,source=source)
 
     return data
 
@@ -111,7 +112,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
 """
 
 
-def add_gift(mm, gift_sort, gift_config, cur_data=None):
+def add_gift(mm, gift_sort, gift_config, cur_data=None,source=0):
     """ 获取统一奖励
 
     :param mm:
@@ -213,11 +214,12 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             if not hero_num:
                 continue
             for i in xrange(hero_num):
-                status = mm.card.add_card(hero_id)
+                status = mm.card.add_card(hero_id,source=source)
                 if isinstance(status, bool) and status:
                     card_config = game_config.card_basis.get(hero_id)
+                    p_num = card_config['star_cost'] if source == 1 else card_config['star_giveback']
                     add_dict(data.setdefault('pieces', {}), card_config['piece_id'],
-                             card_config['star_giveback'])
+                             p_num)
                 elif not isinstance(status, bool):
                     data.setdefault('cards', []).append(status)
         mm.card.save()

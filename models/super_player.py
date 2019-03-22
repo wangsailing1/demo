@@ -114,7 +114,7 @@ class SuperPlayer(ModelBase):
                 max_ = configs[id_]['max']
                 total = configs[id_]['donate']
                 list_ = random_red_bag(num_, min_, max_, total)
-                print_log('num_, min_, max_, total',num_, min_, max_, total, 'list_', list_)
+                # print_log('num_, min_, max_, total',num_, min_, max_, total, 'list_', list_)
                 if tp == 'spend':
                     self.day_spend_send += 1
                 else:
@@ -178,7 +178,7 @@ class RedBag(ModelTools):
     # 添加红包
     def add_red_bag(self, red_bag_code, lst):
         all_keys = self.get_all_bag_key()
-        print_log('all_keys', all_keys, 'red_bag_code',red_bag_code)
+        # print_log('all_keys', all_keys, 'red_bag_code',red_bag_code)
         self.redis.sadd(all_keys, red_bag_code)
         self.set_redbag(red_bag_code, lst)
 

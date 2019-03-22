@@ -162,7 +162,7 @@ card_piece = {
     'star': ('star', 'int'),  # 星级
     'use_num': ('use_num', 'int'),  # 碎片合成数量
     'card_id': ('card_id', 'int'),  # 对应艺人
-    'guide': ('guide', 'list_int_list'),  # 掉落指引
+    'guide': ('guide', 'int_list'),  # 掉落指引
 }
 
 # 卡牌品质

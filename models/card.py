@@ -229,7 +229,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -253,7 +253,8 @@ class Card(ModelBase):
         popularity = self.attr.get(group_id,{}).get('popularity', 0)
 
         if self.has_card_with_group_id(card_id):
-            self.add_piece(card_config['piece_id'], card_config['star_giveback'])
+            p_num = card_config['star_cost'] if source == 1 else card_config['star_giveback']
+            self.add_piece(card_config['piece_id'], p_num)
             return True
 
         card_oid, card_dict = self.generate_card(card_id,
@@ -560,6 +561,7 @@ class Card(ModelBase):
             group_id = self.get_group_id_by_oid(card_oid)
         add_num = int(add_num)
         card_dict = card_dict or self.cards[card_oid]
+        add_num = add_num if card_dict['popularity'] > add_num else card_dict['popularity']
         card_dict['popularity'] -= add_num
         self.attr[group_id]['popularity'] = card_dict['popularity']
 
