@@ -353,9 +353,22 @@ script_msg = {
         2: u'已是最大等级',
         3: u'推广时间已过',
     },
+    'script.finished_summary': {
+        1: u'拍片已经结束'
+    },
+    'script.finished_analyse': {
+        1: u'拍片已经结束'
+    },
+    'script.get_continued_reward': {
+        1: u'拍片已经结束'
+    },
+}
+
+
+script_gacha_msg = {
     'script_gacha.get_gacha': {
         1: u'可抽取次数不足'
-    }
+    },
 }
 
 
