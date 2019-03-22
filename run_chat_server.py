@@ -261,7 +261,8 @@ def request_handler(client_socket, addr):
             client.init_info(info.get('uid'), info.get('guild_id', ''),
                              info.get('game_id', ''), info.get('vip', 0),
                              info.get('domain', ''), info.get('team_id', ''),
-                             addr[0], info.get('device_mark'), info.get('device_mem'))
+                             addr[0], info.get('device_mark'), info.get('device_mem'),
+                             info.get('lan',1))
             client_manager.add_server_client(client)
             if GAG_MSG_SWICTH:
                 client.socket.sendall(force_str(get_default_msg()))

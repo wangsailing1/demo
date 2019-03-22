@@ -82,12 +82,13 @@ def send(hm):
     uid = hm.get_argument('uid')
     content = hm.get_argument('content')
     sort = hm.get_argument('sort', is_int=True)
+    lan = hm.get_argument('lan', '1')
 
     if not uid or not content or not sort:
         return 'error_100', {}
 
     ml = MailLogic(mm)
-    rc, data = ml.send(uid, content, sort)
+    rc, data = ml.send(uid, content, sort, lan)
     if rc != 0:
         return rc, {}
 

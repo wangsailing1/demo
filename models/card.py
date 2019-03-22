@@ -231,7 +231,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0,lan=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -267,7 +267,7 @@ class Card(ModelBase):
                                                  love_exp=init_love_exp,
                                                  mm=self.mm,
                                                  popularity=popularity,
-                                                 lan = self.mm.user.language_sort,
+                                                 lan = lan if lan else self.mm.user.language_sort,
                                                  )
 
         self.mm.card_book.add_book(group_id)

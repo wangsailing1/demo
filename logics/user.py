@@ -650,13 +650,13 @@ class UserLogic(object):
 
         return 0, {'privileges': self.user.privileges}
 
-    def charge_name(self, name):
+    def charge_name(self, name, lan):
         """ 改名字
 
         :param name:
         :return:
         """
-        if is_sensitive(name):
+        if is_sensitive(name, lan):
             return 1, {}
         if name == self.user.name:
             return 2, {}  #名字已使用
@@ -681,7 +681,7 @@ class UserLogic(object):
 
         return 0, {}
 
-    def register_name(self, name, role):
+    def register_name(self, name, role, lan):
         """
         起名字
         :param name:
@@ -689,7 +689,7 @@ class UserLogic(object):
         """
         if not name:
             return 3, {}    # 名字不能为空
-        if is_sensitive(name):
+        if is_sensitive(name, lan):
             return 1, {}    # 名字不合法
 
         if self.user.reg_name:
@@ -706,18 +706,18 @@ class UserLogic(object):
         # self.mm.role_info.init_role(role)
         self.user.reg_name = True
         # todo 初定默认发卡牌，是否根据配置发其他东西再定
-        self.new_account_init()
+        self.new_account_init(lan)
         self.user.save()
 
         return 0, {}
 
-    def new_account_init(self):
+    def new_account_init(self,lan):
         mp = {1: 13, 2: 15}
         role = self.mm.user.role
         sex = game_config.main_hero[role]['sex']
         cid = mp[sex]
         self.mm.user.add_dollar(50000)
-        self.mm.card.add_card(cid)
+        self.mm.card.add_card(cid,lan=lan)
         self.mm.card.save()
 
     def buy_point(self):

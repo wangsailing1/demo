@@ -59,7 +59,7 @@ class Client(object):
         finally:
             self.socket.close()
 
-    def init_info(self, uid, guild_id, game_id, vip, domain, team_id, ip, device_mark, device_mem):
+    def init_info(self, uid, guild_id, game_id, vip, domain, team_id, ip, device_mark, device_mem,lan):
         """ 初始化数据
 
         :param uid: 用户uid
@@ -84,6 +84,7 @@ class Client(object):
         self.ip = ip
         self.device_mem = device_mem
         self.device_mark = device_mark
+        self.lan = lan
 
     def get_blacklist(self):
         """
@@ -131,7 +132,7 @@ class Client(object):
                 json_msg = json.loads(json_msg_str)
                 # 屏蔽字
                 if json_msg.get('msg') and json_msg.get('kqgFlag') != 'system':
-                    json_msg['msg'] = replace_sensitive(json_msg['msg'])
+                    json_msg['msg'] = replace_sensitive(json_msg['msg'],self.lan)
                 json_msg['dsign'] = int(time.time())
                 json_msg_str = json.dumps(json_msg)
                 self.msg = self.format_str % (len(json_msg_str), json_msg_str)
