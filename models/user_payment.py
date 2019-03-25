@@ -286,9 +286,11 @@ class UserPayment(ModelBase):
                 if not act_item_id:
                     return add_diamond
                 rmbfoundation_version = self.mm.rmbfoundation.get_version()
-                if not rmbfoundation_version or rmbfoundation_version != act_item_id:
+                config = game_config.get_rmbfoundation_mapping()
+                if not rmbfoundation_version or rmbfoundation_version not in config or \
+                                act_item_id not in config[rmbfoundation_version]:
                     return add_diamond
-                rmbfoundation_info = game_config.rmb_foundation.get(act_item_id)
+                rmbfoundation_info = config[rmbfoundation_version][act_item_id]
                 if rmbfoundation_info and act_item_id not in self.mm.rmbfoundation.activate_mark:
                     self.mm.rmbfoundation.activate_mark[act_item_id] = time.strftime('%F')
                     reward_dict = []

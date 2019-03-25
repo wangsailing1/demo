@@ -32,7 +32,10 @@ class RmbFoundation(object):
         f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
         active_days = (datetime.date.today() - f_active_date).days + 1
         reward_list = self.mm.rmbfoundation.reward_dict[f_id]
-        rmbfoundation_info = game_config.rmb_foundation[f_id]
+        config = game_config.get_rmbfoundation_mapping()
+        rmbfoundation_info = config.get(self.mm.rmbfoundation.version, {}).get(f_id, {})
+        if not rmbfoundation_info:
+            return 5, {}  # 基金活动配置错误
 
         if days not in reward_list or active_days < days:
             return 4, {}  # 无奖励可领取

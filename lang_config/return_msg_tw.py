@@ -92,6 +92,7 @@ return_msg_config = {
     'error_guild_add_max': u'今日添加成員已達上限，無法添加成員',
     'error_popularity': u'人氣不足',
     'error_food_enough': u'食品倉庫已滿',
+    'error_assistant': u'請先聘請終身助理',
 }
 
 account_msg = {
