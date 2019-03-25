@@ -900,6 +900,19 @@ assistant_msg = {
     }
 }
 
+rmb_foundation_msg = {
+    'rmb_foundation.rmbfoundation_index': {
+        1: u'活动未开启',
+    },
+    'rmb_foundation.withdraw': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该基金未激活',
+        4: u'无奖励可领取',
+        5: u'基金活动配置错误',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
