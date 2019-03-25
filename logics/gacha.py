@@ -71,7 +71,11 @@ class GachaLogics(object):
 
         if sort == 0:
             if self.gacha.coin_left_times <= 0:
-                return 3, {}
+                # 次数不足再判断下是否有星探卡
+                cost = game_config.coin_gacha_cd['cost']
+                rc, _ = del_mult_goods(self.mm, cost)
+                if rc:
+                    return 3, {}
             # if self.gacha.coin_pool_expire():
             #     return 2, {}
             cost_type = 'coin'
