@@ -267,7 +267,7 @@ class Card(ModelBase):
                                                  love_exp=init_love_exp,
                                                  mm=self.mm,
                                                  popularity=popularity,
-                                                 lan = lan if lan else self.mm.user.language_sort,
+                                                 lan=lan if lan else self.mm.user.language_sort,
                                                  )
 
         self.mm.card_book.add_book(group_id)
