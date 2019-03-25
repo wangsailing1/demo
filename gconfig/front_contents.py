@@ -260,6 +260,7 @@ user_config_mapping = {
     'title': ('title', True),
     'player_icon': ('player_icon', True),
     'dirtyword_ch': ('dirtyword_ch', True),
+    'dirtyword_tw': ('dirtyword_tw', True),
     'homepage_button': ('homepage_button', True),
     'message': ('message', True),
     'common_attention': ('common_attention', True),

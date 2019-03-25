@@ -24,7 +24,7 @@ def assistant_index(hm):
 def get_daily_reward(hm):
     mm = hm.mm
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     if mm.assistant.assistant_daily:
         return 2, {}  # 已经领取
     gift = game_config.assistant[1]['gift']
@@ -39,7 +39,7 @@ def get_daily_reward(hm):
 def license_apply(hm):
     mm = hm.mm
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     if mm.assistant.license_apply_times >= mm.assistant.get_max_time():
         return 2, {}  # 申请次数达到上限
     now = int(time.time())
@@ -58,7 +58,7 @@ def license_apply(hm):
 def get_license(hm):
     mm = hm.mm
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     if mm.assistant.license_apply_times and not mm.assistant.license_apply_done_time:
         return 4, {}  # 已经领取过了
     if not mm.assistant.license_apply_done_time:

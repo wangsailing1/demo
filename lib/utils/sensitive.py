@@ -12,16 +12,21 @@ import settings
 
 # 敏感词
 
-WORDS = getattr(game_config, 'dirtyword_ch', {})
+LANMAPPING = {'0': 'tw', '1': 'ch', 0: 'tw', 1: 'ch'}
 
 
-def is_sensitive(word):
+# WORDS = getattr(game_config, 'dirtyword_ch', {})
+
+
+def is_sensitive(word, lan):
     """ 是否敏感词
 
     :param word:
     :return:
     """
     str_or_unicode = isinstance(word, (str, unicode))
+    tp = 'dirtyword_%s' % LANMAPPING[lan]
+    WORDS = getattr(game_config, tp, {})
     if str_or_unicode:
         word = word.replace(' ', '')
     for v in WORDS:
@@ -36,12 +41,14 @@ def is_sensitive(word):
     return False
 
 
-def replace_sensitive(word, use_jieba=True):
+def replace_sensitive(word, lan, use_jieba=True):
     """ 替换敏感词
 
     :param word:
     :return:
     """
+    tp = 'dirtyword_%s' % LANMAPPING[lan]
+    WORDS = getattr(game_config, tp, {})
     if jieba and use_jieba:
         d = []
         for i in jieba.cut(word):

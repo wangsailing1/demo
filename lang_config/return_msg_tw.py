@@ -92,6 +92,7 @@ return_msg_config = {
     'error_guild_add_max': u'今日添加成員已達上限，無法添加成員',
     'error_popularity': u'人氣不足',
     'error_food_enough': u'食品倉庫已滿',
+    'error_assistant': u'請先聘請終身助理',
 }
 
 account_msg = {
@@ -869,6 +870,7 @@ egg_msg = {
         5: u'彩錘不足',
         6: u'高級金錘數量不足',
         7: u'高級彩錘數量不足',
+
     },
     'egg.refresh_egg': {
         1: u'活動未開啟',
@@ -897,6 +899,21 @@ assistant_msg = {
         5: u'許可證已達上限',
     }
 }
+
+rmb_foundation_msg = {
+    'rmb_foundation.rmbfoundation_index': {
+        1: u'活動未開啟',
+    },
+    'rmb_foundation.withdraw': {
+        1: u'活動未開啟',
+        2: u'參數錯誤',
+        3: u'該基金未啟動',
+        4: u'無獎勵可領取',
+        5: u'基金活動配寘錯誤',
+    },
+}
+
+
 
 i18n = {
     'user_name': u'明日之星',

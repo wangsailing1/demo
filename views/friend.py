@@ -76,7 +76,7 @@ def sent_gift_all(hm):
 
     fl = FriendLogic(mm)
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.sent_gift_all()
     if rc != 0:
         return rc, {}
@@ -117,7 +117,7 @@ def receive_gift_all(hm):
 
     fl = FriendLogic(mm)
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.receive_gift_all()
     if rc != 0:
         return rc, {}
@@ -579,9 +579,10 @@ def rename(hm):
     mm = hm.mm
     uid = hm.get_argument('uid', '')
     name = hm.get_argument('name', '')
+    lan = hm.get_argument('lan', '1')
     if not uid:
         return 1, {}  # 未指定好友
-    if is_sensitive(name):
+    if is_sensitive(name, lan):
         return 2, {}  # 名字不合法
     # 好友为艺人
     if uid.isdigit():

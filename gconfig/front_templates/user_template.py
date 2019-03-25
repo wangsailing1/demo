@@ -466,6 +466,10 @@ dirtyword_ch = ({
                     'uk': ('dirtyword', 'unicode'),
                 }, 'dirtyword')
 
+dirtyword_tw = ({
+                    'uk': ('dirtyword', 'unicode'),
+                }, 'dirtyword')
+
 # 主页按钮配置
 # homepage_button = {
 #     'uk': ('id', 'int'),  # 按钮id

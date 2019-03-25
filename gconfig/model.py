@@ -333,6 +333,7 @@ class GameConfigMixIn(object):
         self.play_redbag_mapping = {}
         self.play_rankreward_mapping = {}
         self.play_points_mapping = {}
+        self.rmb_foundation_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -432,6 +433,7 @@ class GameConfigMixIn(object):
         self.play_redbag_mapping.clear()
         self.play_rankreward_mapping.clear()
         self.play_points_mapping.clear()
+        self.rmb_foundation_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2573,6 +2575,17 @@ class GameConfigMixIn(object):
                     self.play_points_mapping[version] = {}
                 self.play_points_mapping[version][i] = j
         return self.play_points_mapping
+
+
+    def get_rmbfoundation_mapping(self):
+        if not self.rmb_foundation_mapping:
+            for i, j in self.rmb_foundation.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.rmb_foundation_mapping:
+                    self.rmb_foundation_mapping[version] = {}
+                self.rmb_foundation_mapping[version][j['id']] = j
+        return self.rmb_foundation_mapping
 
 
 
