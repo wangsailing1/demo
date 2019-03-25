@@ -14,6 +14,7 @@ import settings
 
 LANMAPPING = {'0': 'tw', '1': 'ch', 0: 'tw', 1: 'ch'}
 
+
 # WORDS = getattr(game_config, 'dirtyword_ch', {})
 
 
@@ -46,8 +47,8 @@ def replace_sensitive(word, lan, use_jieba=True):
     :param word:
     :return:
     """
-    tp = 'dirtyword_%s'%LANMAPPING[lan]
-    WORDS =  getattr(game_config, tp, {})
+    tp = 'dirtyword_%s' % LANMAPPING[lan]
+    WORDS = getattr(game_config, tp, {})
     if jieba and use_jieba:
         d = []
         for i in jieba.cut(word):
