@@ -307,7 +307,6 @@ card_msg = {
     },
 }
 
-
 gacha_msg = {
     'gacha.get_gacha': {
         2: u'cd中',
@@ -324,7 +323,6 @@ gacha_msg = {
         2: u"招募次数不够",
     },
 }
-
 
 script_msg = {
     'script.pre_filming': {
@@ -364,13 +362,11 @@ script_msg = {
     },
 }
 
-
 script_gacha_msg = {
     'script_gacha.get_gacha': {
         1: u'可抽取次数不足'
     },
 }
-
 
 chapter_stage_msg = {
     'chapter_stage.chapter_stage_fight': {
@@ -397,6 +393,7 @@ chapter_stage_msg = {
         36: u'有卡牌人气不足',
     },
     'chapter_stage.auto_sweep': {
+        1: u'請先聘請終身助理',
         11: u'章节错误',
         12: u'难度错误',
         13: u'关卡错误',
@@ -592,7 +589,7 @@ friend_msg = {
         3: u'自己的好友列表是否已达到上限',
         4: u'对方好友已达到上限',
     },
-'friend.remove_friend': {
+    'friend.remove_friend': {
         1: u'不能删除自己',
         2: u'对方不是自己好友',
     },
@@ -671,7 +668,6 @@ active_msg = {
     },
 }
 
-
 code_msg = {
     'code.use_code': {
         1: u'激活码错误',
@@ -680,7 +676,7 @@ code_msg = {
         4: u'活动已过期',
         6: u'不符合领取条件',
         -1: u'您已经领过这个礼包了',
-   },
+    },
 }
 
 pvp_msg = {
@@ -708,14 +704,14 @@ pvp_msg = {
 toy_msg = {
     'toy.index': {
         1: u'活动未开启',
-        11:u'vip等级不够',
+        11: u'vip等级不够',
     },
     'toy.get_toy': {
         1: u'活动未开启',
         2: u'娃娃已经被抓走了',
         3: u'娃娃错误',
         4: u'道具不足',
-        11:u'vip等级不够',
+        11: u'vip等级不够',
     },
     'toy.refresh': {
         1: u'活动未开启',
@@ -895,7 +891,7 @@ assistant_msg = {
         4: u'请先领取',
     },
     'assistant.get_license': {
-       1: u'请先聘请终身助理',
+        1: u'请先聘请终身助理',
         2: u'请先申请',
         3: u'申请中',
         4: u'已经领取过了',
