@@ -335,6 +335,7 @@ chapter_stage_msg = {
         36: u'有卡牌人气不足',
     },
     'chapter_stage.auto_sweep': {
+        1: u'請先聘請終身助理',
         11: u'章节错误',
         12: u'难度错误',
         13: u'关卡错误',
