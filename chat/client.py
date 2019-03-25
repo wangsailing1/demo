@@ -25,10 +25,10 @@ class Client(object):
     content_prefix = '<content>'
     content_suffix = '</content>'
     format_str = '<xml><length>%s</length><content>%s</content></xml>'
-    a = '<xml><content>{u"guild": u"666", u"uid": u"gtt11290798", u"combat": 227577, u"level": 260, u"kqgFlag": u"first", u"sign": u'', u"vip": 15, u"role": 23, u"time": 1507789169, u"dsign": 0, u"guild_id": u"gtt1-18", u"name": ''}</content></xml>'
+    a = '<xml><content>{u"guild": u"666", u"uid": u"gtt11290798", u"combat": 227577, u"level": 260, u"kqgFlag": u"first", u"sign": u'', u"vip": 15, u"role": 23, u"time": 1507789169, u"dsign": 0, u"guild_id": u"gtt1-18", u"name": '', u"lan": "1"}</content></xml>'
 
-    CLIENT_TIMEOUT = 10 * 60        # socket最大连接时间 单位：秒
-    COSE_CLIENT_TIMEOUT = 3 * 60   # socket最大无效连接时间 单位：秒
+    CLIENT_TIMEOUT = 10 * 60  # socket最大连接时间 单位：秒
+    COSE_CLIENT_TIMEOUT = 3 * 60  # socket最大无效连接时间 单位：秒
 
     def __init__(self, client_socket, addr):
         self.socket = client_socket
@@ -39,7 +39,7 @@ class Client(object):
         self.msg = ''
 
         self.guild_id = ''
-        self.game_id = ''   # 工会战聊天模块
+        self.game_id = ''  # 工会战聊天模块
         self.uid = ''
         self.server_name = ''
         self.vip = 0
@@ -49,6 +49,7 @@ class Client(object):
         self.sid = ''
         self.device_mark = ''
         self.device_mem = ''
+        self.lan = '1'
 
     def disconnect(self):
         try:
@@ -59,7 +60,7 @@ class Client(object):
         finally:
             self.socket.close()
 
-    def init_info(self, uid, guild_id, game_id, vip, domain, team_id, ip, device_mark, device_mem,lan):
+    def init_info(self, uid, guild_id, game_id, vip, domain, team_id, ip, device_mark, device_mem, lan):
         """ 初始化数据
 
         :param uid: 用户uid
@@ -76,7 +77,7 @@ class Client(object):
         self.uid = uid
         self.guild_id = guild_id
         self.game_id = game_id
-        self.server_name = settings.get_father_server(uid[:-7])   # uid[:-7]
+        self.server_name = settings.get_father_server(uid[:-7])  # uid[:-7]
         self.buffer = ''
         self.domain = domain
         self.vip = int(vip)
@@ -132,7 +133,7 @@ class Client(object):
                 json_msg = json.loads(json_msg_str)
                 # 屏蔽字
                 if json_msg.get('msg') and json_msg.get('kqgFlag') != 'system':
-                    json_msg['msg'] = replace_sensitive(json_msg['msg'],self.lan)
+                    json_msg['msg'] = replace_sensitive(json_msg['msg'], self.lan)
                 json_msg['dsign'] = int(time.time())
                 json_msg_str = json.dumps(json_msg)
                 self.msg = self.format_str % (len(json_msg_str), json_msg_str)
@@ -147,6 +148,7 @@ class ClientManager(object):
     """ 连接管理器
 
     """
+
     def __init__(self):
         self._clients = {}  # 所有连接
         self._server_clients = {}  # 区服对应连接
@@ -252,7 +254,7 @@ class ClientManager(object):
                 timeout_sockets.append(_client)
 
         for _client in timeout_sockets:
-            print_log('client %s timeout' % (_client.fileno, ))
+            print_log('client %s timeout' % (_client.fileno,))
             self.lose_client(_client)
 
     def lose_repeat_clients(self, client):
@@ -269,6 +271,5 @@ class ClientManager(object):
                 repeat_socktes.append(_client)
 
         for _client in repeat_socktes:
-            print_log('client %s repeat' % (_client.fileno, ), _client.uid)
+            print_log('client %s repeat' % (_client.fileno,), _client.uid)
             self.lose_client(_client)
-
