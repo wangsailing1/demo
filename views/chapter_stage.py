@@ -50,7 +50,7 @@ def open_actor_chat(hm):
 def auto_sweep(hm):
     mm = hm.mm
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     stage = hm.get_argument('stage', '')
     times = hm.get_argument('times', 1, is_int=True)
     type_hard = hm.get_argument('type_hard', 0, is_int=True)

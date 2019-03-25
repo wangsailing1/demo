@@ -76,7 +76,7 @@ def sent_gift_all(hm):
 
     fl = FriendLogic(mm)
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.sent_gift_all()
     if rc != 0:
         return rc, {}
@@ -117,7 +117,7 @@ def receive_gift_all(hm):
 
     fl = FriendLogic(mm)
     if not mm.assistant.assistant:
-        return 1, {}  # 请先聘请终身助理
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.receive_gift_all()
     if rc != 0:
         return rc, {}
