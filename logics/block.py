@@ -35,22 +35,23 @@ class Block(object):
                     name = umm.user.name
                     if card_id not in umm.card.cards:
                         continue
-                    card_cid = umm.card.cards[card_id]['id']
-                    card_name = umm.card.cards[card_id]['name']
+                    card_info = umm.card.cards[card_id]
                     if not data[tp_num]['win']:
                         data[tp_num]['win'] = {
-                            'uid':uid,
+                            'uid': uid,
                             'name': name,
-                            'card_cid': card_cid,
-                            'card_name': card_name,
-                            'score': score
+                            'card_cid': card_info['id'],
+                            'card_name': card_info['name'],
+                            'score': score,
+                            'level': card_info['lv'],
                         }
                     data[tp_num]['nomination'][id] = {
                         'uid': uid,
                         'name': name,
-                        'card_cid': card_cid,
-                        'card_name': card_name,
-                        'score': score
+                        'card_cid': card_info['id'],
+                        'card_name': card_info['name'],
+                        'score': score,
+                        'level': card_info['lv'],
                     }
                     id += 1
             else:
@@ -59,7 +60,7 @@ class Block(object):
                     tp_num = self.block.RANKMAPPING[tp]
                 id = 1
                 if tp_num not in data:
-                    data[tp_num]= {'win': {}, 'nomination': {}}
+                    data[tp_num] = {'win': {}, 'nomination': {}}
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
                     umm = ModelManager(uid)
@@ -126,7 +127,7 @@ class Block(object):
         data = {}
         info = self.mm.block.reward_data
         if not info:
-            return {}  #没有奖励可领
+            return {}  # 没有奖励可领
         cup = 0
         for k, v in info.iteritems():
             if k == 'big_sale_cup':
@@ -157,7 +158,7 @@ class Block(object):
 
         return data
 
-    def count_cup(self,is_save=False):
+    def count_cup(self, is_save=False):
         data = {}
         if self.block.is_count:
             return
@@ -176,25 +177,25 @@ class Block(object):
                         if self.mm.uid != uid:
                             continue
                         rank = br.get_rank(uid)
-                        card_cid = self.card.cards[card_id]['id']
-                        card_name = self.card.cards[card_id]['name']
+                        card_info = self.card.cards[card_id]
                         reward_type = 'win_cup_num'
                         if rank > 1:
                             reward_type = 'nomi_cup_num'
 
-                        cup = game_config.cup_num[int(tp_num)].get(reward_type,1)
+                        cup = game_config.cup_num[int(tp_num)].get(reward_type, 1)
                         data[tp_num] = {
                             'name': self.mm.user.name,
-                            'card_cid': card_cid,
-                            'card_name': card_name,
+                            'card_cid': card_info['id'],
+                            'card_name': card_info['name'],
                             'score': score,
-                            'reward_type':reward_type,
-                            'cup':cup
+                            'reward_type': reward_type,
+                            'cup': cup,
+                            'level': card_info['lv'],
 
                         }
                         if rank == 1:
-                            self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num,0) + 1
-                            self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id,0) + 1
+                            self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
+                            self.block.cup_log_card[card_id] = self.block.cup_log_card.get(card_id, 0) + 1
                 else:
                     tp_num = tp
                     if tp in ['medium', 'audience']:
@@ -225,7 +226,8 @@ class Block(object):
                             self.block.cup_log[tp_num] = self.block.cup_log.get(tp_num, 0) + 1
                             if script_id not in self.block.cup_log_script:
                                 self.block.cup_log_script[script_id] = {}
-                            self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(tp_num, 0) + 1
+                            self.block.cup_log_script[script_id][tp_num] = self.block.cup_log_script[script_id].get(
+                                tp_num, 0) + 1
                 if self.block.big_sale:
                     data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
@@ -245,7 +247,7 @@ class Block(object):
                                                              'income')
         date = get_date_before()
         bir = BlockRank(block_income_rank_uid, self.mm.script._server_name, date)
-        user_num = len(bir.get_all_user(0,4))
+        user_num = len(bir.get_all_user(0, 4))
         if user_num == 5:
             self.block.has_ceremony = 1
             self.block.save()
@@ -270,14 +272,14 @@ class Block(object):
                     name = umm.user.name
                     if card_id not in umm.card.cards:
                         continue
-                    card_cid = umm.card.cards[card_id]['id']
-                    card_name = umm.card.cards[card_id]['name']
+                    card_info = umm.card.cards[card_id]
                     data[tp_num][id] = {
                         'uid': uid,
                         'name': name,
-                        'card_cid': card_cid,
-                        'card_name': card_name,
-                        'score': score
+                        'card_cid': card_info['id'],
+                        'card_name': card_info['name'],
+                        'score': score,
+                        'level': card_info['lv'],
                     }
             else:
                 tp_num = tp
