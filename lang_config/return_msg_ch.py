@@ -667,6 +667,10 @@ active_msg = {
         3: u'已领取',
         4: u'配置错误',
     },
+    'active.get_gift': {
+        1: u'未充值',
+        2: u'已经领取过了',
+    },
 }
 
 code_msg = {
