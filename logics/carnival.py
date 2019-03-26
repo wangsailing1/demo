@@ -33,9 +33,25 @@ def target_sort_num(mm, reward_obj, target_data, mission_id, target_data1):
 
 # 票房
 def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
-    target_value = target_data1
+    target_value = target_data[1]
     value = reward_obj.get_count(mission_id)
     return value >= target_value, value, target_value
+
+# 艺人好感度
+def target_sort23(mm, reward_obj, target_data, mission_id, target_data1):
+    num = 0
+    config = game_config.card_basis
+    group_ids = []
+    target_value = target_data[1]
+    for card_id, value in mm.card.cards.iteritems():
+        group_id = config[value['id']]['group']
+        group_ids.append(group_id)
+        if value['love_exp'] >= target_data[0]:
+            num += 1
+    for g_id in mm.card.attr:
+        if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target_data[0]:
+            num += 1
+    return num >= target_value, num, target_value
 
 
 class Carnival(object):
