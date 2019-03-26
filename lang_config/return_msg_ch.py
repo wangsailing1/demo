@@ -953,6 +953,18 @@ foundation_msg = {
     },
 }
 
+payment_msg = {
+    'payment.get_first_charge': {
+        1: u'奖励已领取',
+        3: u'未达到条件',
+    },
+    'payment.add_recharge_index': {
+        1: u'活动未开启',
+        2: u'奖励已领取',
+        3: u'未达到条件',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',

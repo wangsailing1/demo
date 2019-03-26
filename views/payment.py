@@ -134,7 +134,7 @@ def get_add_recharge(hm):
         return 'error_config', {}
 
     if mm.user_payment.get_add_recharge_status(reward_id) == 2:
-        return 1, {}  # 奖励已领取
+        return 2, {}  # 奖励已领取
 
     if mm.user_payment.get_add_recharge_status(reward_id) == 0:
         return 3, {}  # 未达到条件
