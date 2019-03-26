@@ -727,8 +727,10 @@ def get_retention_channel_by_day(select_day, for_account=False, **kwargs):
     for_device = kwargs.get('for_device')
     if for_device:
         key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE
+    elif for_account:
+        key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
     else:
-        key = DATA_RETENTION_CHANNEL_DAILY_KEY if not for_account else DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
+        key = DATA_RETENTION_CHANNEL_DAILY_KEY
 
     raw_data = cache.hget(key, select_day)
     obj = dencrypt_data(raw_data) if raw_data else {}
@@ -738,7 +740,7 @@ def get_retention_channel_by_day(select_day, for_account=False, **kwargs):
     now_str = now.strftime('%Y-%m-%d')
     day = select_day
     day_date = datetime.datetime.strptime(day, '%Y-%m-%d')
-    if not for_account and not for_device:
+    if not for_account:
         result = {'00': {}}
         for server_id, server_data in obj.iteritems():
             result.setdefault(server_id, {})
@@ -815,11 +817,17 @@ def get_retention_channel_by_day_and_ip(select_day, for_account=True):
     return result
 
 
-def get_retention_data(days=30, for_account=False):
+def get_retention_data(days=30, for_account=False, **kwargs):
     """获取留存统计数据
     """
     cache = get_global_cache()
-    key = DATA_RETENTION_DAILY_KEY if not for_account else DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+    for_device = kwargs.get('for_device')
+    if for_device:
+        key = DATA_RETENTION_DAILY_KEY_FOR_DEVICE
+    elif for_account:
+        key = DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+    else:
+        key = DATA_RETENTION_DAILY_KEY
 
     now = datetime.datetime.now()
     now_str = now.strftime('%Y-%m-%d')

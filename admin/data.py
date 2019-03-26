@@ -140,7 +140,7 @@ def retention_index(req, select_server='', select_day='', ip_data=''):
     else:
         channel_data = {}
 
-    retention_data = data_analysis.get_retention_data(days=limit_days, for_account=for_account)
+    retention_data = data_analysis.get_retention_data(days=limit_days, for_account=for_account, for_device=for_device)
     rate_data = {}
     channel_rate_data = {}
     rate_days = (2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30)
