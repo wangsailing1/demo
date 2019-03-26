@@ -1603,7 +1603,7 @@ class User(ModelBase):
         }
         gift = []
         for i in xrange(cur_level +1 , self.level + 1):
-            level_gift = game_config.player_level.get(cur_level, {}).get('award')
+            level_gift = game_config.player_level.get(i, {}).get('award')
             gift.extend(level_gift)
         add_mult_gift(self.mm, gift)
         special_bdc_log(self, sort='exp_change', **kwargs)
