@@ -1,0 +1,126 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+{% import datetime %}
+
+<hr/>
+<p>最近30日留存记录(每小时的半点更新)</p>
+<table id="data">
+    <tr>
+        <th>日期</th>
+        {% for num in days_delta %}
+        <th>第{{ num }}天</th>
+        {% end %}
+    </tr>
+    {% for idx, (date, obj) in enumerate(sorted(retention_data.iteritems(), reverse=False)) %}
+    <tr class="retention_{{idx}}" onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ date }}</td>
+        {% for num in days_delta %}
+        <td>{{ obj.get(num, '') }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+</table>
+
+<br/>
+<button onclick="mySwitch()"><font color="red"> <big>显示/隐藏 最近30日留存率</big></font></button>
+<div id="switch_display" style="display:none;">
+<table id="data">
+    <tr>
+        <th>日期</th>
+        {% for rd in rate_days %}
+        <th>{{ rd }}日留存</th>
+        {% end %}
+    </tr>
+    {% for idx, (date, obj) in enumerate(sorted(rate_data.iteritems(), reverse=False)) %}
+    <tr class="retention_{{idx}}" onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ date }}</td>
+        {% for rd in rate_days %}
+        <td>{{ obj.get(rd, '') or '' }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+</table>
+</div>
+
+<hr/>
+<p>分渠道留存统计</p>
+<form action="/{{url_partition}}/admin/data/retention_channel/" method="get">
+<input type="hidden" name="for_device" value="1">
+<table id="data">
+<tr>
+    <td>
+        选择日期:
+        <select name="day" value="1">
+            {% for day in sorted(retention_data, reverse=True) %}
+                {% if day == select_day %}
+                <option value="{{ day }}" selected>{{ day }}</option>
+                {% else %}
+                <option value="{{ day }}">{{ day }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+    <td><button type="submit" style="color: red;">查询</button></td>
+</tr>
+</table>
+</form>
+
+<table id="data">
+    <tr>
+        <th>日期</th>
+        <!-- <th>分服</th> -->
+        <th>渠道</th>
+        {% for num in days_delta %}
+        <th>第{{ num }}天</th>
+        {% end %}
+    </tr>
+    {% set sum_data = {} %}
+    {% for channel, obj in sorted(channel_data.iteritems(), reverse=False) %}
+    <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ select_day }}</td>
+        <!-- <td>{{ select_server }}</td> -->
+        <td>{{ get_channel_name(channel) }}</td>
+        {% for num in days_delta %}
+        {% set sum_data[num] = sum_data.get(num, 0) + obj.get(num, 0) %}
+        <td>{{ obj.get(num, '') }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+    <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>总计</td>
+        <!-- <td>{{ select_server }}</td> -->
+        <td> </td>
+         {% for num in days_delta %}
+        <td>{{ sum_data.get(num) or '' }}</td>
+        {% end %}
+    </tr>
+</table>
+
+<hr/>
+<p>分IP地域留存统计</p>
+<form action="/{{url_partition}}/admin/data/retention_ip/" method="get">
+<input type="hidden" name="for_device" value="1">
+<input type="hidden" name="for_ip" value="1">
+<table id="data">
+<tr>
+
+    <td>
+        选择日期:
+        <select name="day" value="1">
+            {% for day in sorted(retention_data, reverse=True) %}
+                {% if day == select_day %}
+                <option value="{{ day }}" selected>{{ day }}</option>
+                {% else %}
+                <option value="{{ day }}">{{ day }}</option>
+                {% end %}
+            {% end %}
+        </select>
+    </td>
+    <td><button type="submit" style="color: red;">查询</button></td>
+</tr>
+</table>
+</form>
+
+{% end %}

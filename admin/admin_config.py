@@ -322,16 +322,26 @@ menu_config = {
                 ('retention_index_account', u'留存统计[account]', 1),
                 ('retention_index_account', u'留存统计[account]', 1),
             ]
-        }, {
+        },
+            {
+                'name': u"留存统计[device]",
+                'sub': [
+                    ('retention_index_device', u'留存统计[device]', 1),
+                    ('retention_index_device', u'留存统计[device]', 1),
+                ]
+            },
+
+            {
             'name': u"等级滞留统计",
             'sub': [('lv_pass_rate_index', u'等级滞留统计', 1)]
         }, {
             'name': u"查看世界boss排行",
             'sub': [('world_boss_rank_show', u'查看世界boss排行', 1)]
-        }, {
-                'name': u'slg在线统计',
-                'sub': [('slg_status', u'slg在线统计', 1)]
-            }
+        },
+            # {
+            #     'name': u'slg在线统计',
+            #     'sub': [('slg_status', u'slg在线统计', 1)]
+            # }
         ],
     },
     'questionnaire': {

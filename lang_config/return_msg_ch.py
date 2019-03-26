@@ -93,6 +93,7 @@ return_msg_config = {
     'error_popularity': u'人气不足',
     'error_food_enough': u'食品仓库已满',
     'error_assistant': u'请先聘请终身助理',
+    'error_superplayer': u'活动未开启',
 }
 
 account_msg = {
@@ -667,6 +668,10 @@ active_msg = {
         3: u'已领取',
         4: u'配置错误',
     },
+    'active.get_gift': {
+        1: u'充值尚未完成，请稍后重试',
+        2: u'已经领取过了',
+    },
 }
 
 code_msg = {
@@ -877,6 +882,28 @@ egg_msg = {
         2: u'奖品配置错误',
         3: u'钻石不足',
         4: u'参数错误',
+    }
+}
+
+super_player_msg = {
+    'super_player.buy_goods': {
+        -1: u'参数错误',
+        1: u'该商品已售完',
+        2: u'全服可购买次数不足',
+        3: u'个人购买次数达到上限',
+    },
+    'super_player.index': {
+        1: u'没有配置, 活动未开启',
+    },
+    'super_player.get_reward': {
+        -1: u'没有要领取的成就id',
+        -2: u'该奖励已领取',
+    },
+    'super_player.grab_bag': {
+        -1: u'没有要领取的红包code',
+        1: u'领取时间已过',
+        2: u'未到领取时间',
+        3: u'已全部领取完毕',
     }
 }
 
