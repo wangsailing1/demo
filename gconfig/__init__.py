@@ -17,6 +17,14 @@ front_game_config = FrontGameConfig()
 front_game_config.refresh()
 
 
+def auto_reload_all():
+    if game_config.reload() or front_game_config.reload():
+        game_config.reset()
+        front_game_config.reset()
+        return True
+    return False
+
+
 def get_str_words(languages_sort, *args):
     """
         获取对应字段的提示
