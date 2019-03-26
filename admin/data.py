@@ -117,16 +117,19 @@ def retention_index(req, select_server='', select_day='', ip_data=''):
     留存统计
     """
     for_account = bool(req.get_argument('for_account', ''))
+    for_device = bool(req.get_argument('for_device', ''))
     for_ip = bool(req.get_argument('for_ip', ''))
     if for_account and ip_data and for_ip:
         field = 'retention_for_account_ip_data'
     elif for_account:
         field = 'retention_for_account'
+    elif for_device:
+        field = 'retention_for_device'
     else:
         field = 'retention'
 
     if select_day:
-        day_channel_data = data_analysis.get_retention_channel_by_day(select_day, for_account=for_account)
+        day_channel_data = data_analysis.get_retention_channel_by_day(select_day, for_account=for_account, for_device=for_device)
         # print 'day_channel_data:', day_channel_data             # debug_flag
         if for_account and for_ip:
             channel_data = data_analysis.get_retention_channel_by_day_and_ip(select_day)
@@ -190,6 +193,17 @@ def retention_index_account(req):
     :return:
     """
     req.request.arguments['for_account'] = ['1']
+    return retention_index(req)
+
+
+@require_permission
+def retention_index_device(req):
+    """
+
+    :param req:
+    :return:
+    """
+    req.request.arguments['for_device'] = ['1']
     return retention_index(req)
 
 
