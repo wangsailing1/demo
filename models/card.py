@@ -591,6 +591,10 @@ class Card(ModelBase):
                     card_dict['love_exp'] += v
                 else :
                     card_dict[attr] += v
+                if card_dict['love_exp'] < 0:
+                    card_dict['love_exp'] = 0
+                if card_dict[attr] < 0:
+                    card_dict[attr] = 0
             self.attr[group_id][attr] = self.attr[group_id].get(attr, 0) + v
             add_value[attr] = add_value.get(attr, 0) + v
         if is_save:

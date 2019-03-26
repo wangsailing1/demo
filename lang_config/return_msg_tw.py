@@ -363,6 +363,28 @@ script_msg = {
     },
 }
 
+super_player_msg = {
+    'super_player.buy_goods': {
+        -1: u'參數錯誤',
+        1: u'該商品已售完',
+        2: u'全服可購買次數不足',
+        3: u'個人購買次數達到上限',
+    },
+    'super_player.index': {
+        1: u'沒有配寘，活動未開啟',
+    },
+    'super_player.get_reward': {
+        -1: u'沒有要領取的成就id',
+        -2: u'該獎勵已領取',
+    },
+    'super_player.grab_bag': {
+        -1: u'沒有要領取的紅包code',
+        1: u'領取時間已過',
+        2: u'未到領取時間',
+        3: u'已全部領取完畢',
+    }
+}
+
 
 script_gacha_msg = {
     'script_gacha.get_gacha': {
