@@ -156,7 +156,7 @@ def mem_watcher(process):
 def main():
     app = Application()
 
-    from gconfig import game_config, front_game_config
+    from gconfig import game_config, front_game_config, auto_reload_all
     print_log(os.getpid(), os.getppid(), options.port)
     try:
         sockets = tornado.netutil.bind_sockets(options.port)
@@ -181,9 +181,8 @@ def main():
         print CHILDREN
         while 1:
             time.sleep(5)
-            print CHILDREN
-            if (game_config and game_config.reload()) or \
-                    (front_game_config and front_game_config.reload()):
+            print 'children_process: ', CHILDREN
+            if auto_reload_all():
             # if not game_config.is_config_out():
                 print_log('config out')
                 # game_config.load_all()
@@ -219,8 +218,7 @@ def main():
 
     if settings.DEBUG and not process_sum:
         def check_config():
-            if (game_config and game_config.reload()) or \
-                    (front_game_config and front_game_config.reload()):
+            if auto_reload_all():
             # if not game_config.is_config_out():
                 print_log('config out')
                 # game_config.load_all()
@@ -235,7 +233,7 @@ def main():
 
 
 def main_single():
-    from gconfig import game_config, front_game_config
+    from gconfig import game_config, front_game_config, auto_reload_all
 
     # tornado多进程模式不支持debug模式中的autoreload
     debug = options.debug if options.numprocs == 1 else False
@@ -273,11 +271,11 @@ def main_single():
         tornado.ioloop.PeriodicCallback(debug_sync_change_time, 10*1000).start()
 
     # 监控配置
-    # tornado.ioloop.PeriodicCallback(game_config.auto_reload_all, 10*1000).start()
-    if game_config:
-        tornado.ioloop.PeriodicCallback(game_config.reload, 10*1000).start()
-    if front_game_config:
-        tornado.ioloop.PeriodicCallback(front_game_config.reload, 10 * 1000).start()
+    tornado.ioloop.PeriodicCallback(auto_reload_all, 10*1000).start()
+    # if game_config:
+    #     tornado.ioloop.PeriodicCallback(game_config.reload, 10*1000).start()
+    # if front_game_config:
+    #     tornado.ioloop.PeriodicCallback(front_game_config.reload, 10 * 1000).start()
 
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
