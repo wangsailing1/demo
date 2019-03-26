@@ -36,6 +36,7 @@ class HandlerManager(object):
         if self.uid:
             self.mm = ModelManager(self.uid, async_save=True)
             self.mm.action = self.req.get_argument('method', '')
+            self.mm.lan = self.req.get_argument('lan', 1)
             self.mm.action_ts = self.req.get_argument('__ts', int(time.time() * 1000))
             self.mm.args = self.params()
         else:

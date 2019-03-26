@@ -775,7 +775,7 @@ def has_goods(mm, gift_sort, gift_config):
     return True
 
 
-def get_reward_and_num(mm, gifts):
+def get_reward_and_num(mm, gifts, lan):
     msg = ''
     for gift in gifts:
         _sort = gift[0]
@@ -784,13 +784,13 @@ def get_reward_and_num(mm, gifts):
         reward = u''
 
         if _sort == 1:  # 金币
-            reward = i18n_msg[1001]
+            reward = i18n_msg.get(1001, lan)
         elif _sort == 2:  # 钻石
-            reward = i18n_msg[1002]
+            reward = i18n_msg.get(1002, lan)
         elif _sort == 3:  # 体力
-            reward = i18n_msg[1003]
+            reward = i18n_msg.get(1003, lan)
         elif _sort == 4:  # 美元
-            reward = i18n_msg[1004]
+            reward = i18n_msg.get(1004, lan)
         elif _sort == 5:  # 道具
             item_name = game_config.use_item[item_id]['name']
             reward = get_str_words(mm.user.language_sort, item_name)
@@ -798,7 +798,7 @@ def get_reward_and_num(mm, gifts):
             equip_name = game_config.equip[item_id]['name']
             reward = get_str_words(mm.user.language_sort, equip_name)
         elif _sort == 7:  # 点赞数
-            reward = i18n_msg[1007]
+            reward = i18n_msg.get(1007, lan)
         elif _sort == 8:  # 艺人
             card_name = game_config.card_basis[item_id]['name']
             reward = get_str_words(mm.user.language_sort, card_name)
@@ -809,30 +809,30 @@ def get_reward_and_num(mm, gifts):
             equip_piece_name = game_config.equip_piece[item_id]['name']
             reward = get_str_words(mm.user.language_sort, equip_piece_name)
         elif _sort == 11:  # 玩家经验
-            reward = i18n_msg[1011]
+            reward = i18n_msg.get(1011, lan)
         elif _sort == 12:  # 公会资金
-            reward = i18n_msg[1012]
+            reward = i18n_msg.get(1012, lan)
         elif _sort == 13:  # 公会贡献
-            reward = i18n_msg[1013]
+            reward = i18n_msg.get(1013, lan)
         elif _sort == 14:  # vip经验
-            reward = i18n_msg[1014]
+            reward = i18n_msg.get(1014, lan)
         elif _sort == 15:  # 获得可拍摄剧本
-            reward = i18n_msg[1015]
+            reward = i18n_msg.get(1015, lan)
         if _sort == 16:  # 点赞
-            reward = i18n_msg[1016]
+            reward = i18n_msg.get(1016, lan)
         elif _sort == 18:  # 增加艺人名片
-            reward = i18n_msg[1018]
+            reward = i18n_msg.get(1018, lan)
         elif _sort == 19:  # 关注度
-            reward = i18n_msg[1019]
+            reward = i18n_msg.get(1019, lan)
         elif _sort == 20:  # 卡牌人气
-            reward = i18n_msg[1020]
+            reward = i18n_msg.get(1020, lan)
         elif _sort == 21:  # 导演
             director_name = game_config.director[item_id]['name']
             reward = get_str_words(mm.user.language_sort, director_name)
         elif _sort == 102:  # 成就点
-            reward = i18n_msg[1102]
+            reward = i18n_msg.get(1102, lan)
         elif _sort == 101:  # 目标点
-            reward = i18n_msg[1101]
+            reward = i18n_msg.get(1101, lan)
 
         if reward:
             msg += u'%(reward)s * %(gift_num)s ' % {'reward': reward, 'gift_num': gift_num}

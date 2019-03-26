@@ -693,7 +693,7 @@ class UserLogic(object):
             return 1, {}    # 名字不合法
 
         if self.user.reg_name:
-            return 'error_21', {'custom_msg':i18n_msg[1209]}    # 已经有名字了
+            return 'error_21', {'custom_msg': i18n_msg.get(1209, lan)}    # 已经有名字了
         if not role:
             return 4, {}    # 请选择一个角色
         if self.user.set_name_unique(name):

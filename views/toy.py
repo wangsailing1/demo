@@ -6,8 +6,9 @@ from logics.toy import Toy
 def index(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
+    lan = hm.get_argument('lan', 0, is_int=True)
     toy = Toy(mm, sort)
-    rc, data = toy.index()
+    rc, data = toy.index(lan)
     return rc, data
 
 
@@ -16,24 +17,27 @@ def get_toy(hm):
     catch = hm.get_argument('catch', is_int=True)
     sort = hm.get_argument('sort', is_int=True)
     reward_id = hm.get_argument('reward_id', is_int=True)
+    lan = hm.get_argument('lan', 0, is_int=True)
     toy = Toy(mm, sort)
-    rc, data = toy.get_toy(catch, reward_id)
+    rc, data = toy.get_toy(catch, reward_id, lan)
     return rc, data
 
 
 def refresh(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
+    lan = hm.get_argument('lan', 0, is_int=True)
     toy = Toy(mm, sort)
-    rc, data = toy.refresh()
+    rc, data = toy.refresh(lan)
     return rc, data
 
 
 def get_rank_reward(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
+    lan = hm.get_argument('lan', 0, is_int=True)
     if sort != 1:
         return 0, {}
     toy = Toy(mm, sort)
-    rc, data = toy.get_rank_reward()
+    rc, data = toy.get_rank_reward(lan)
     return rc, data
