@@ -3,12 +3,14 @@
 __author__ = 'sm'
 
 import time
+import urllib
 import traceback
 import json
 import settings
 
 from lib.utils.sensitive import replace_sensitive
 from lib.utils.debug import print_log
+from lib.utils.encoding import force_unicode, force_str
 from models.user import User as UserM
 
 
@@ -132,8 +134,10 @@ class Client(object):
             try:
                 json_msg = json.loads(json_msg_str)
                 # 屏蔽字
+                # 中文前端做urllib.quote 转码了
                 if json_msg.get('msg') and json_msg.get('kqgFlag') != 'system':
-                    json_msg['msg'] = replace_sensitive(json_msg['msg'], self.lan)
+                    _msg = force_unicode(urllib.unquote(force_str(json_msg['msg'])))
+                    json_msg['msg'] = replace_sensitive(_msg, self.lan)
                 json_msg['dsign'] = int(time.time())
                 json_msg_str = json.dumps(json_msg)
                 self.msg = self.format_str % (len(json_msg_str), json_msg_str)
