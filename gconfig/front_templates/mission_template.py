@@ -80,4 +80,5 @@ new_guide_mission = {
     'reward': ('reward', 'int_list'),  # 奖励
     'guide': ('guide', 'int'),  # 解锁等级
     'next_guide': ('next_guide', 'int'),  # 解锁等级
+    'mission_des': ('mission_des', 'str'),  # 任务描述
 }
