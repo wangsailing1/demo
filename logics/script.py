@@ -788,7 +788,7 @@ class ScriptLogic(object):
         # 读取剧本的人气要求属性，(1+(艺人总人气^总人气指数/(艺人总人气^总人气指数+剧本人气要求)- 人气计算常数)* 人气系数)
         # 所得到的值就是关注度加成系数。
         # 总人气指数，人气计算常数，人气系数读取common表/100，（common表34,35,36行，计算后结果值为1.5,0.49，0.2）
-
+        all_popularity = all_popularity if all_popularity > 0 else 0
         attention_rate = 1
         if all_popularity ** all_popularity_rate != 0:
             attention_rate = 1 + (all_popularity ** all_popularity_rate / (
