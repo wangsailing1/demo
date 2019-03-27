@@ -94,6 +94,8 @@ return_msg_config = {
     'error_food_enough': u'食品仓库已满',
     'error_assistant': u'请先聘请终身助理',
     'error_superplayer': u'活动未开启',
+    'error_sensitive_name': u'名字不合法',
+
 }
 
 account_msg = {

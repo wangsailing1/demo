@@ -19,6 +19,7 @@ from tools.gift import add_mult_gift, del_mult_goods
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
+from lib.utils.sensitive import is_sensitive
 
 from models import vip_company
 from models.script import Script
@@ -147,6 +148,9 @@ class ScriptLogic(object):
         :param is_sequel:   是否续集
         :return:
         """
+        if is_sensitive(name):
+            return 'error_sensitive_name', {}
+
         user = self.mm.user
         script = self.mm.script
         script_config = game_config.script[script_id]

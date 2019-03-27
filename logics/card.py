@@ -16,6 +16,7 @@ from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import add_dict
+from lib.utils.sensitive import is_sensitive
 from tools.gift import del_mult_goods
 import math
 
@@ -419,6 +420,9 @@ class CardLogic(object):
         return 0, {'reward': reward}
 
     def set_name(self, card_oid, name):
+        if is_sensitive(name):
+            return 'error_sensitive_name', {}
+
         card = self.mm.card
         card_dict = card.cards.get(card_oid)
         if not card_dict:

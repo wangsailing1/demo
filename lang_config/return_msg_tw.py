@@ -93,6 +93,8 @@ return_msg_config = {
     'error_popularity': u'人氣不足',
     'error_food_enough': u'食品倉庫已滿',
     'error_assistant': u'請先聘請終身助理',
+    'error_sensitive_name': u'名字不合法',
+
 }
 
 account_msg = {
