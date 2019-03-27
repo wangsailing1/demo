@@ -22,8 +22,8 @@ CURRENCY_RATE = {
 }
 
 APP_ID = {
-    'tw': 'twcjyxlmios2',
-    'cn': 'cncjyxlmios',
+    'tw': 'popstar.ios.tw',
+    'cn': 'popstar.ios.cn',
 }
 
 if 'tw' in settings.URL_PARTITION or 'taiwan' in settings.URL_PARTITION:

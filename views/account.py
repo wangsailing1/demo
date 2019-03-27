@@ -372,7 +372,8 @@ def get_user_server_list(hm, account=None):
                 if u.name:
                     # if u.device and u.device == device_mark:
                     #     continue
-                    u.device = device_mark
+                    if device_mark:
+                        u.device = device_mark
                     u.mk = mk
                     u.save()
     # 合并服务器列表
