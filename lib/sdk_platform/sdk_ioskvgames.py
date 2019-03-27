@@ -60,6 +60,10 @@ def login_verify(req, params=None):
             'session_id': req.get_argument('session_id', ''),
             'uid': req.get_argument('user_id', ''),
         }
+    return {
+        'openid': params['uid'],           # 平台标识
+        'openname': '',    # 平台昵称
+    }
 
     params['appid'] = APP_ID['cn']
 
@@ -100,6 +104,10 @@ def login_verify_tw(req, params=None):
             'session_id': req.get_argument('session_id', ''),
             'user_id': req.get_argument('user_id', ''),
         }
+    return {
+        'openid': params['user_id'],  # 平台标识
+        'openname': '',  # 平台昵称
+    }
     params['app_id'] = APP_ID['tw']
 
     sign = make_sign(params)
