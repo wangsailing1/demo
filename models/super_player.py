@@ -129,7 +129,8 @@ class SuperPlayer(ModelBase):
 
     def add_send_notice(self):
         server_name = self._server_name
-        msg = i18n_msg.get(1208, self.mm.lan) % (server_name, self.mm.user.name)
+        lan = getattr(self.mm, 'lan', 1)
+        msg = i18n_msg.get(1208, lan) % (server_name, self.mm.user.name)
         data_ = {
             'msg': msg,
             'notice_lv': 6,

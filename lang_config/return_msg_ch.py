@@ -940,6 +940,31 @@ rmb_foundation_msg = {
     },
 }
 
+foundation_msg = {
+    'foundation.foundation_index': {
+        1: u'活动未开启',
+    },
+    'foundation.withdraw': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该基金未激活',
+        4: u'无奖励可领取',
+        5: u'基金活动配置错误',
+    },
+}
+
+payment_msg = {
+    'payment.get_first_charge': {
+        1: u'奖励已领取',
+        3: u'未达到条件',
+    },
+    'payment.add_recharge_index': {
+        1: u'活动未开启',
+        2: u'奖励已领取',
+        3: u'未达到条件',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',

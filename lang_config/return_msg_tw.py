@@ -939,7 +939,30 @@ rmb_foundation_msg = {
     },
 }
 
+foundation_msg = {
+    'foundation.foundation_index': {
+        1: u'活動未開啟',
+    },
+    'foundation.withdraw': {
+        1: u'活動未開啟',
+        2: u'參數錯誤',
+        3: u'該基金未啟動',
+        4: u'無獎勵可領取',
+        5: u'基金活動配寘錯誤',
+    },
+}
 
+payment_msg = {
+    'payment.get_first_charge':{
+        1: u'獎勵已領取',
+        3: u'未達到條件',
+    },
+    'payment.add_recharge_index':{
+        1: u'活動未開啟',
+        2: u'獎勵已領取',
+        3: u'未達到條件',
+    },
+}
 
 i18n = {
     'user_name': u'明日之星',
