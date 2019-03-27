@@ -13,8 +13,8 @@ APP_ID = 'popstar'
 SECRET_KEY = 'b4c9ab67bec00df240119825f8cd1c05'
 
 # 台湾sdk
-VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/backend_account_check/'
-TEST_VERIFT = 'http://apptest.tw.hi365.com/backend_account_check/'
+VERIFY_SESSIONID_URI = 'http://app.tw.hi365.com/taiwan/backend_account_check/'
+TEST_VERIFT = 'http://apptest.tw.hi365.com/taiwan/backend_account_check/'
 
 # 大陆sdk
 # VERIFY_SESSIONID_URI = 'http://app.cn.hi365.com/backend_account_check/'
