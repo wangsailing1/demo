@@ -940,11 +940,11 @@ class User(ModelBase):
             self.save()
 
         # 记录累积消耗体力
-        self.mm.task_data.add_task_data('other_chapter', 107)
+        # self.mm.task_data.add_task_data('other_chapter', 107)
 
         # 消耗体力任务
-        task_event_dispatch = self.mm.get_event('task_event_dispatch')
-        task_event_dispatch.call_method('use_action_point', point)
+        # task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        # task_event_dispatch.call_method('use_action_point', point)
 
         return True
 
