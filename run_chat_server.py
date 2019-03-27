@@ -122,7 +122,7 @@ ps.subscribe(channel_name, **{channel_name: handle_channel_message})
 ps.run_in_thread()
 
 client_manager = ClientManager()
-content_factory = ContentFactory(settings.SERVERS['master']['redis'])
+content_factory = ContentFactory(settings.chat_config)
 
 
 def request_handler(client_socket, addr):
