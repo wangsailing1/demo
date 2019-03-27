@@ -51,10 +51,10 @@ def login_verify(req, params=None, DEBUG=False):
         }
 
     # todo 先不做验证，等确定是接国内还是台湾的sdk服务
-    # return {
-    #     'openid': params['uid'],
-    #     'openname': '',
-    # }
+    return {
+        'openid': params['uid'],
+        'openname': '',
+    }
 
     params['appid'] = APP_ID
 
