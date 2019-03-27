@@ -47,22 +47,37 @@ def login_verify(req, params=None, DEBUG=False):
     if not params:
         params = {
             'session_id': req.get_argument('session_id', ''),
-            'uid': req.get_argument('user_id', ''),
+            'user_id': req.get_argument('user_id', ''),
         }
 
-    # todo 先不做验证，等确定是接国内还是台湾的sdk服务
-    return {
-        'openid': params['uid'],
-        'openname': '',
-    }
+    # 先不做验证，等确定是接国内还是台湾的sdk服务
+    # return {
+    #     'openid': params['uid'],
+    #     'openname': '',
+    # }
 
-    params['appid'] = APP_ID
+    # 两个地址，签名参数名 user_id, app_id 不同
+    # http://app.tw.hi365.com/taiwan/backend_account_check/
+    # {
+    #     'session_id': req.get_argument('session_id', ''),
+    #     'user_id': req.get_argument('user_id', ''),
+    #     'app_id': APP_ID,
+    # }
+
+    # http://app.tw.hi365.com/backend_account_check/
+    # {
+    #     'session_id': req.get_argument('session_id', ''),
+    #     'uid': req.get_argument('user_id', ''),
+    #     'appid': APP_ID,
+    # }
+
+    params['app_id'] = APP_ID
 
     sign = make_sign(params)
     query_data = urllib.urlencode({
-        'appid': APP_ID,
+        'app_id': APP_ID,
         'session_id': params['session_id'],
-        'uid': params['uid'],
+        'uid': params['user_id'],
         'sign': sign,
     })
 

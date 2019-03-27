@@ -18,12 +18,13 @@ class ServerUid(ModelTools):
     sorted set
 
     """
-    SERVER_NAME = 'master'
+    # SERVER_NAME = 'master'
 
     ONLINE_USERS_TIME_RANGE = 5 * 60            # 判断用户在线的时间参考
 
     def __init__(self, server):
         super(ServerUid, self).__init__()
+        self.SERVER_NAME = server
         self.server = server
         self._key = self.make_key(self.server, server_name=self.SERVER_NAME)
         self._redis = self.get_redis_client(self.SERVER_NAME)
