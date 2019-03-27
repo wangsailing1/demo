@@ -148,7 +148,7 @@ class ScriptLogic(object):
         :param is_sequel:   是否续集
         :return:
         """
-        if is_sensitive(name):
+        if is_sensitive(name, self.mm.lan):
             return 'error_sensitive_name', {}
 
         user = self.mm.user

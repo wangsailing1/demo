@@ -420,7 +420,7 @@ class CardLogic(object):
         return 0, {'reward': reward}
 
     def set_name(self, card_oid, name):
-        if is_sensitive(name):
+        if is_sensitive(name, self.mm.lan):
             return 'error_sensitive_name', {}
 
         card = self.mm.card

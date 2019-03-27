@@ -7,7 +7,7 @@ import os
 import inspect
 
 # 每个env都需要有的全局变量
-DEBUG = True        # debug模式
+DEBUG = False        # debug模式
 KVGAME_SDK_DEBUG = False     # 凯奇谷自有sdk 是否走测试环境验证
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
 BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
