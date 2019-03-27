@@ -7,8 +7,10 @@ try:
 except:
     jieba = None
 
+import urllib
 from gconfig import game_config
-import settings
+from lib.utils.encoding import force_str, force_unicode
+
 
 # 敏感词
 
@@ -24,6 +26,9 @@ def is_sensitive(word, lan):
     :param word:
     :return:
     """
+    # 处理下前端url encode编码的字符串
+    word = force_unicode(urllib.unquote(force_str(word)))
+
     str_or_unicode = isinstance(word, (str, unicode))
     tp = 'dirtyword_%s' % LANMAPPING[lan]
     WORDS = getattr(game_config, tp, {})
