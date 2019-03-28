@@ -49,7 +49,7 @@ class RmbFoundation(ModelBase):
         a_id, version = self.get_version()
         if self.version != version or self.a_id != a_id:
             self.refresh()
-        self.get_foundation_status()
+        # self.get_foundation_status()
         self.save()
 
     def get_version(self):
