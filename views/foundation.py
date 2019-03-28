@@ -9,7 +9,11 @@ def foundation_index(hm):
     mm = hm.mm
     # if not mm.foundation.is_open():
     #     return 1, {}  # 活动未开启
+
     foundation = Foundation(mm)
+    has_reward = mm.foundation.has_reward()
+    if not has_reward and not mm.foundation.is_open():
+        return 1, {}  # 活动未开启
     rc, data = foundation.foundation_index()
     return rc, data
 
