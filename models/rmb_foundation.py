@@ -37,6 +37,7 @@ class RmbFoundation(ModelBase):
             # 'withdraw_log': {},  # 领取基金信息
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
+            'a_id':0,
         }
 
         super(RmbFoundation, self).__init__(self.uid)
