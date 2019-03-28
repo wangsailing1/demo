@@ -59,8 +59,13 @@ def info(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
+    from models.ranking_list import BlockRank
     info_log = kwargs.get('info_log') or get_bi_logger_by_type('info')
 
+    block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                             'income')
+    br = BlockRank(block_rank_uid, mm.block._server_name)
+    income = br.get_score(mm.uid)
     user = mm.user
 
     name = str(user.name).replace('\n', '-n-', ).replace('\r', '-r-').replace('\t', '-t-')
@@ -96,6 +101,8 @@ def info(mm, **kwargs):
         'appid': user.package_appid,
         'dollar':user.dollar,
         'create_date': create_date_str,
+        'block_num': mm.block.block_num,
+        'income': income,
     }
 
     info_log.info(json.dumps(data, separators=[',', ':']))

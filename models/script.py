@@ -641,7 +641,6 @@ class Script(ModelBase):
 
         # 记录当天拍过的剧本
         self.mm.block.today_script.append(script_id)
-        self.mm.block.income += income
 
         self.mm.script_book.add_book(script_id)
         self.mm.script_book.add_script_group(script_id, True, income)
