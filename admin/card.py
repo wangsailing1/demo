@@ -50,7 +50,7 @@ def card_update(req, **kwargs):
         if modify:
             lv = int(req.get_argument('lv'))
             # star = int(req.get_argument('star'))
-            evo = int(req.get_argument('evo'))
+            # evo = int(req.get_argument('evo'))
             card_dict = mm.card.cards.get(card_oid)
             if not card_dict:
                 msg = 'fail'
