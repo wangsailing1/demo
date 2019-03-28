@@ -41,6 +41,9 @@ class Foundation(ModelBase):
     def pre_use(self):
         # if not self.is_open():
         if self.can_open():
+            if not self.a_id:
+                self.a_id, _ = self.get_version()
+                self.save()
             return
         if self.version != self.get_version():
             self.refresh()
