@@ -607,7 +607,7 @@ friend_msg = {
     },
     'friend.receive_gift': {
         1: u'沒有該好友',
-        2: u'沒有該好友贈送的膠囊',
+        2: u'沒有該好友贈送的體力',
         3: u'體力領取已達上限',
     },
     'friend.agree_friend': {

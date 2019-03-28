@@ -584,7 +584,7 @@ friend_msg = {
     },
     'friend.receive_gift': {
         1: u'没有该好友',
-        2: u'没有该好友赠送的胶囊',
+        2: u'没有该好友赠送的体力',
         3: u'体力领取已达上限',
     },
     'friend.agree_friend': {
