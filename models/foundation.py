@@ -53,8 +53,10 @@ class Foundation(ModelBase):
         return a_id, version
 
     def refresh(self):
+        if (self.a_id and self.version) or (not self.a_id and not self.version):
+            self.score = 0
         self.a_id, self.version = self.get_version()
-        self.score = 0
+
 
     def is_open(self):
         a_id , version = self.get_version()
