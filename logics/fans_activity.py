@@ -116,10 +116,11 @@ class FansActivity(object):
         if effect_activity_id not in effect_activity:
             effect_activity.append(effect_activity_id)
             effect_activity_gift, _ = self.mm.fans_activity.count_produce(get_reward=True,
-                                                                       activity_id=effect_activity_id,
-                                                                       is_save=False)
+                                                                          activity_id=effect_activity_id,
+                                                                          is_save=False)
             gift.extend(effect_activity_gift)
-        if effect_activity_id != activity_id and effect_activity_id:
+        if effect_activity_id != activity_id and effect_activity_id and \
+                self.mm.fans_activity.activity_log[effect_activity_id].get('cards'):
             self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
                 self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
         return gift
@@ -140,7 +141,7 @@ class FansActivity(object):
                 'remian_time': remian_time,
                 'cards': value['cards'],
                 'effect_id': value.get('effect_id', 0),
-                'card_effect':card_effect
+                'card_effect': card_effect
             }
             data['activity'] = self.mm.fans_activity.activity
             data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
