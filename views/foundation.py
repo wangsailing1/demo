@@ -23,6 +23,9 @@ def withdraw(hm):
         return 2, {}  # 参数错误
     if f_id not in mm.foundation.activate_mark:
         return 3, {}  # 该基金未激活
+    has_reward = mm.foundation.has_reward()
+    if not has_reward and not mm.foundation.is_open():
+        return 1, {}  # 活动未开启
     foundation = Foundation(mm)
     rc, data = foundation.withdraw(f_id, days)
     return rc, data

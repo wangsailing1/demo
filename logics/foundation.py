@@ -49,6 +49,6 @@ class Foundation(object):
         reward = foundation_info['day%s' % days]
         gift = add_mult_gift(self.mm, reward)
         self.mm.foundation.save()
-        rc, data = self.foundation_index()
+        _, data = self.foundation_index()
         data['reward'] = gift
-        return rc, data
+        return 0, data
