@@ -46,7 +46,7 @@
             <tr>
                 <td>今日累计充值:</td>
                 <td>
-                    {{len(user_pay)}} 人 - {{sum(user_pay.values())}} {{currency_type}}
+                    {{len(user_pay)}} 人 - {{sum(user_pay.values())}} {{currency_type}} / {{sum(user_money.values())}}
                 </td>
                 <td>
                     <a  href="/{{url_partition}}/admin/payment/pay_day/?day={{today}}">详情</a>
@@ -60,7 +60,8 @@
             </tr>
             <tr>
                 <td>充值No.1玩家：</td>
-                <td>{{big_brother_uid}} - {{big_brother_pay}} {{currency_type}} /{{big_brother_server}}</td>
+                <td>{{big_brother_uid}} / {{big_brother_server}}
+                    </br> {{big_brother_pay}} {{currency_type}} / {{big_brother_pay_money}}</td>
                 <td>
                 </td>
             </tr>
