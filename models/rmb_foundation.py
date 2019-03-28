@@ -63,6 +63,17 @@ class RmbFoundation(ModelBase):
             return True
         return False
 
+    def can_open(self):
+        tag = 0
+        for days, reward_list in self.reward_dict.iteritems():
+            if reward_list:
+                tag = 1
+                break
+        if tag or self.get_version():
+            return True
+        return False
+
+
     # def add_score(self, order_diamond):
     #     if not self.is_open():
     #         return
