@@ -285,7 +285,7 @@ class UserPayment(ModelBase):
             elif act_id == 2012:
                 if not act_item_id:
                     return add_diamond
-                rmbfoundation_version = self.mm.rmbfoundation.get_version()
+                _, rmbfoundation_version = self.mm.rmbfoundation.get_version()
                 config = game_config.get_rmbfoundation_mapping()
                 if not rmbfoundation_version or rmbfoundation_version not in config or \
                                 act_item_id not in config[rmbfoundation_version]:
