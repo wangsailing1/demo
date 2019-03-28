@@ -15,7 +15,7 @@ class RmbFoundation(object):
     def rmbfoundation_index(self):
         data = {}
         active_id, _ = get_version_by_active_id(active_id=self.mm.rmbfoundation.ACTIVE_TYPE)
-        end_date = game_config.active[active_id]['end_time']
+        end_date = game_config.active[self.mm.rmbfoundation.a_id]['end_time']
         end_time = int(time.mktime(time.strptime(end_date, '%Y-%m-%d %H:%M:%S')) - time.time())
         data['end_time'] = end_time
         data['version'] = self.mm.rmbfoundation.version

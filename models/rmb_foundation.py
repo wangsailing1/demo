@@ -42,24 +42,25 @@ class RmbFoundation(ModelBase):
         super(RmbFoundation, self).__init__(self.uid)
 
     def pre_use(self):
-        if not self.is_open():
+        # if not self.is_open():
+        if self.can_open():
             return
         if self.version != self.get_version():
             self.refresh()
-            # self.get_foundation_status()
-            self.save()
+        self.get_foundation_status()
+        self.save()
 
     def get_version(self):
-        _, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
-        return version
+        a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
+        return a_id, version
 
     def refresh(self):
-        self.version = self.get_version()
-        # self.activate_mark = {}
-        # self.reward_dict = {}
+        self.a_id, self.version = self.get_version()
+        self.score = 0
 
     def is_open(self):
-        if self.get_version():
+        a_id , version = self.get_version()
+        if version:
             return True
         return False
 
