@@ -264,6 +264,53 @@ def item(mm, **kwargs):
             # item_log.info('{uid}\t{act_time}\t{item_id}\t{item_num}\t{create_date}'.format(**data))
 
 
+def script(mm, **kwargs):
+    """ 剧本信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+    from gconfig import game_config
+    script = mm.script.own_script
+    config = game_config.script
+    script_log = kwargs.get('script_log') or get_bi_logger_by_type('script')
+    for script_id in script:
+
+        data = {
+            'user_id': mm.uid,
+            'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
+            'star': config.get(script_id, {}).get('star', 0),
+            'script_id': script_id
+        }
+
+        script_log.info(json.dumps(data, separators=[',', ':']))
+
+
+def building(mm, **kwargs):
+    """ 建筑信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+    from gconfig import game_config, get_str_words
+    building = mm.user.group_ids
+    config = game_config.building
+    building_log = kwargs.get('building_log') or get_bi_logger_by_type('building')
+    for group_id, info in building.iteritems():
+        config_build = config.get(info.get('build_id', 0), {})
+        data = {
+            'user_id': mm.uid,
+            'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
+            'group_id': group_id,
+            'lv': config_build.get('lv', 0),
+            'name': get_str_words('1', config_build.get('name', 0)),
+        }
+
+        building_log.info(json.dumps(data, separators=[',', ':']))
+
+
 def stones(mm, **kwargs):
     """ 灵魂石信息
 
@@ -307,6 +354,8 @@ def main():
         item_log=get_bi_logger_by_type('item'),
         equip_pieces_log=get_bi_logger_by_type('equip_pieces'),
         card_pieces_log=get_bi_logger_by_type('card_pieces'),
+        script_log=get_bi_logger_by_type('script'),
+        building_log=get_bi_logger_by_type('building'),
     )
     bdc_user_info_contents = []
     act_uids = act_user.get_act_all_user(today=today)
@@ -318,7 +367,7 @@ def main():
         except:
             continue
 
-        for func in (info, bdc_user_info, card, equip, item, equip_pieces, card_pieces):
+        for func in (info, bdc_user_info, card, equip, item, equip_pieces, card_pieces, script, building):
             try:
                 data = func(mm, **all_loggers)
                 # 发bdc userinfo

@@ -14,6 +14,7 @@ from lib.utils.active_inreview_tools import get_version_by_active_id
 from models.super_player import SuperPlayerShop, SuperPlayerRank, RedBag
 from lib.utils.time_tools import str2timestamp
 import datetime
+from return_msg_config import i18n_msg
 
 class SuperPlayer(object):
 
@@ -230,9 +231,10 @@ def active_reward():
         elif rank <= playrankreward_config.get(rank_id[4], {}).get('rank', [1])[-1]:
             reward =playrankreward_config.get(rank_id[4], {}).get('rank_reward', [])
         if reward:
-            msg = u'恭喜您在超级大玩家活动中发红包全服排名第%s名,获得奖励:'%rank
             mm = ModelManager(uid)
-            message = mm.mail.generate_mail(msg, unicode('att_reward', 'utf-8'), reward)
+            msg = i18n_msg.get(1213, mm.user.language_sort) % rank
+            title = i18n_msg.get(1214, mm.user.language_sort)
+            message = mm.mail.generate_mail(msg, title, reward)
             mm.mail.add_mail(message, save=True)
 
 
