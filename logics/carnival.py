@@ -33,25 +33,53 @@ def target_sort_num(mm, reward_obj, target_data, mission_id, target_data1):
 
 # 票房
 def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
-    target_value = target_data[1]
+    target_value = target_data1
     value = reward_obj.get_count(mission_id)
     return value >= target_value, value, target_value
 
-# 艺人好感度
+
+# 星级艺人总数
+def target_sort15(mm, reward_obj, target_data, mission_id, target_data1):
+    star, target_value = target_data[:2]
+    value = 0
+    for k, v in mm.card.cards.iteritems():
+        if v['star'] >= star:
+            value += 1
+    return value >= target_value, value, target_value
+
+
+# 星级剧本总数
+def target_sort16(mm, reward_obj, target_data, mission_id, target_data1):
+    star, target_value = target_data[:2]
+    value = 0
+    for script_id in mm.script.own_script:
+        script_config = game_config.script[script_id]
+        if script_config['star'] >= star:
+            value += 1
+    return value >= target_value, value, target_value
+
+
+# # 累计成就点 todo
+# def target_sort21(mm, reward_obj, target_data, mission_id, target_data1):
+#     pass
+
+
+# 艺人好感度  [好感度love数值， 达到要求好感度的卡牌数 ]
 def target_sort23(mm, reward_obj, target_data, mission_id, target_data1):
-    num = 0
-    config = game_config.card_basis
-    group_ids = []
+    love_exp, target_value = target_data[:2]
+    value = 0
+    for k, v in mm.card.cards.iteritems():
+        if v['love_exp'] >= love_exp:
+            value += 1
+    return value >= target_value, value, target_value
+
+
+# 是否建造建筑,target对应的建筑groupID是否存在，若存在，则任务完成
+def target_sort26(mm, reward_obj, target_data, mission_id, target_data1):
+    group_id = target_data[0]
+    value = 1 if group_id in mm.user.group_ids else 0
     target_value = target_data[1]
-    for card_id, value in mm.card.cards.iteritems():
-        group_id = config[value['id']]['group']
-        group_ids.append(group_id)
-        if value['love_exp'] >= target_data[0]:
-            num += 1
-    for g_id in mm.card.attr:
-        if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target_data[0]:
-            num += 1
-    return num >= target_value, num, target_value
+    return value >= target_value, value, target_value
 
 
 class Carnival(object):
@@ -68,7 +96,7 @@ class Carnival(object):
                    'carnival_step': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_step')),
                    'max_id': self.carnival.carnival_max_id(tp=tp),
                    'status': self.get_status_by_type(tp),
-                   'tp':tp}
+                   'tp': tp}
 
     def dice(self, tp=1):
         if tp == 1:
@@ -168,9 +196,10 @@ class Carnival(object):
         if mission_id in mission_obj.done.get(mission_obj.days, []) and not config['if_reuse']:
             status, value, need = -1, 1, 1
         else:
-            if target_sort not in [1, 2, 5, 23]:
+            func = globals().get('target_sort%s' % target_sort)
+            if not func:
                 target_sort = '_num'
-            func = globals()['target_sort%s' % target_sort]
+                func = globals()['target_sort%s' % target_sort]
             flag, value, need = func(self.mm, mission_obj, target_data, mission_id, target_data1)
             status = 1 if flag else 0
         return {

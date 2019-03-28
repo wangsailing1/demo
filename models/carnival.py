@@ -38,7 +38,6 @@ def func(hm, data, mission):
 #                               'star': star}, }
 
 
-
 # 推图
 def chapter_stage_args(hm, data, mission):
     type_hard = hm.get_argument('type_hard', 0, is_int=True)
@@ -47,7 +46,6 @@ def chapter_stage_args(hm, data, mission):
     target_sort_num = mission._CHAPTER_NUM
     return {target_sort_first: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},
             target_sort_num: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},}
-
 
 # 拍摄（type，style，income）
 def script_make(hm, data, mission):
@@ -59,12 +57,18 @@ def script_make(hm, data, mission):
     target_limit_actor = mission._LIMIT_ACTOR
     target_once = mission._ONCE
     target_first_income = mission._FIRST_INCOME
+    target_top_income = mission._TOPINCOME
     ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
     return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
             target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1, 'style': data['cur_script']['style']},
-            target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
-            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids, 'style': data['cur_script']['style']},
-            target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income'],
+            target_sort_income: {'target1': 0, 'end_lv': end_lv,
+                                 'value': data['cur_script']['finished_summary']['income']},
+            target_top_income: {'target1': data['cur_script']['finished_summary']['income'], 'end_lv': end_lv,
+                                 'value': 1},
+            target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids,
+                                 'style': data['cur_script']['style']},
+            target_once: {'target1': script_id, 'end_lv': end_lv,
+                          'value': data['cur_script']['finished_summary']['income'],
                           'style': data['cur_script']['style']},
             target_first_income: {'target1': script_id, 'end_lv': end_lv, 'style': data['cur_script']['style'],
                                   'value': data['cur_script']['finished_first_income']['first_income']}, }
@@ -204,6 +208,41 @@ def buy_point(hm, data, mission):
     mm = hm.mm
     return {mission._SHOP: {'target1': 1, 'value': 1}}
 
+# 完成任务次数
+def mission_num(hm, data, mission):
+    mm = hm.mm
+    tp_id = hm.get_argument('tp_id', 0, is_int=True)
+    return {mission._MISSIONNUM: {'target1': tp_id, 'value': 1}}
+
+
+# 建筑任务 所有建筑都通过models.user里的add_build完成，直接用装饰器对add_build处理
+# def building(func):
+#     def wrapper(*args, **kwargs):
+#         mm = args[0].mm
+#         if mm.mission.new_guide_data:
+#             save = False
+#             for mission_id in mm.mission.new_guide_data.keys():
+#                 print mission_id
+#                 try:
+#                     build_id = args[1]
+#                     group_id = game_config.building[build_id]['group']
+#                     target = game_config.new_guide_mission[mission_id]['target']
+#                     if group_id == target[0]:
+#                         mm.mission.new_guide_data[mission_id] = 1
+#                         save = True
+#                 except:
+#                     print 'building config is error'
+#             if save:
+#                 mm.mission.save()
+#         return func(*args, **kwargs)
+#     return wrapper
+
+# 建筑任务
+def build(hm, data, mission):
+    mm = hm.mm
+    group_id = data['group_id']
+    return {mission._BUILD: {'target1': group_id, 'value': 1}}
+
 
 # =================================需要自检的数值类任务func=================================
 
@@ -237,6 +276,7 @@ def target_sort2(mm, mission_obj, target):
 #     info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
 #     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
 #                                          'star': info1.get('star', 0)}}
+
 
 # 关卡通关
 def target_sort7(mm, mission_obj, target):
@@ -297,16 +337,26 @@ def target_sort23(mm, mission_obj, target):
     return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
 
+# 建造任务
+def target_sort26(mm, mission_obj, target):
+    build_info = mm.user.group_ids
+    info = target[0] in build_info
+    return {mission_obj._BUILD: {'target1': target[0], 'value': 1 if info else 0}}
+
+
 TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
 MULT_TYPE = 22  # 剧本拍摄多要求
 TYPE_STYLE = [24, 25]
-CHANGE_NUM = [1, 19, 21]  # 纯数值 玩家等级  公司市值
+CHANGE_NUM = [1, 19, 21, 15]  # 纯数值 玩家等级  公司市值
 CARD_LEVEL = 2  # 艺人等级
 FIRST_CHAPTER = 7  # 首次通关
 NUM_CHAPTER = 8  # 通关次数
 GACHA = [3, 4]
 GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
 FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
+BUILD = 26  # 建筑
+MISSIONNUM = 27  # 任务完成次数
+TOPINCOME = 28 # 单片最大票房次数
 
 
 class Carnival(ModelBase):
@@ -335,6 +385,9 @@ class Carnival(ModelBase):
         'shop.mystical_buy': shop_args,  # 神秘商店购买
         'shop.period_buy': shop_args,  # 限时商店购买
         'user.buy_point': buy_point,  # 购买体力
+        'fans_activity.unlock_activity': build,  # 建筑任务
+        'user.build': build,  # 建筑任务
+        'mission.get_reward': mission_num,  # 建筑任务
         # 'mission.get_reward': mission_args,                           # 成就
 
     }
@@ -559,7 +612,8 @@ class DoMission(object):
             script_style = value['style']
             if (script_type == target_data[0] or not target_data[0]) and (
                             script_style == target_data[3] or not target_data[3]) and \
-                            value['end_lv'] >= target_data[2] and self.check_limit_actor(target_data[4], value['value']):
+                            value['end_lv'] >= target_data[2] and self.check_limit_actor(target_data[4],
+                                                                                         value['value']):
                 if mission_id in self.data:
                     self.data[mission_id] += 1
                 else:
@@ -579,7 +633,8 @@ class DoMission(object):
                     self.data[mission_id].append(card_id)
 
         elif self.config[mission_id]['sort'] == FIRST_CHAPTER:
-            # if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= target_data[2]:
+            # if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1] and value['star'] >= \
+            #         target_data[2]:
             if value['stage_id'] >= target_data[0] and value['value'] >= target_data[1]:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
@@ -615,6 +670,29 @@ class DoMission(object):
                 self.data[mission_id] += num
             else:
                 self.data[mission_id] = num
+        # 建筑任务
+        elif self.config[mission_id]['sort'] == BUILD:
+            if target_data[0] and target_data[0] == value['target1']:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        # 完成任务次数
+        elif self.config[mission_id]['sort'] == MISSIONNUM:
+            if not target_data[0] or (target_data[0] and target_data[0] == value['target1']):
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
+
+        # 单片最大票房次数
+        elif self.config[mission_id]['sort'] == TOPINCOME:
+            if target_data[0] <= value['target1']:
+                if mission_id in self.data:
+                    self.data[mission_id] += value['value']
+                else:
+                    self.data[mission_id] = value['value']
 
         else:
             if mission_id in self.data:
@@ -630,12 +708,12 @@ class DoMission(object):
                 #     self.num += self.config[mission_id]['reward']
                 #     self.data[mission_id] = 0
 
+
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
-        # 获得艺人
         if sort == GACHA[0]:
             # config = game_config.coin_gacha[info]
-            if info and (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
+            if (isinstance(target[4], int) and (not target[4] or target[4] == tp)) or (
                         isinstance(target[4], list) and tp in target[4]):
                 if info[0][0] == 8:  # 整卡 道具类型
                     star = game_config.card_basis[info[0][1]]['star_level']
@@ -647,7 +725,6 @@ class DoMission(object):
                     if star >= target[2] and (not target[3] or target[3] == GACHA_MAPPING[9]) and (
                                     gacha_type == target[0] or not target[0]):
                         return 1
-        # 获得剧本
         else:
             script_id = info[0] if info else 0
             star = game_config.script.get(script_id, {}).get('star', 0)
@@ -669,7 +746,7 @@ class DoMission(object):
             profession_class = config['profession_class']
             for num, _target in enumerate(target, 1):
                 if (sex == _target[0] or not _target[0]) and (profession_type == _target[1] or not _target[1]) and (
-                        profession_class == _target[2] or not _target[2]):
+                                profession_class == _target[2] or not _target[2]):
                     data[num] -= 1
         for k, v in data.iteritems():
             if v > 0:
