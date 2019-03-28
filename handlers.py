@@ -448,6 +448,16 @@ class APIRequestHandler(BaseRequestHandler):
                     import traceback
                     print_log(traceback.print_exc())
 
+                # 判断颁奖是否开
+                from logics.block import Block
+                try:
+                    block = Block(self.hm.mm)
+                    block.check_has_ceremony()
+                    block.count_cup(is_save=True)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
                 # 检测新手引导关键步
                 try:
                     guide_team = self.get_argument('guide_team','')
