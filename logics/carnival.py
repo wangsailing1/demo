@@ -168,7 +168,7 @@ class Carnival(object):
         if mission_id in mission_obj.done.get(mission_obj.days, []) and not config['if_reuse']:
             status, value, need = -1, 1, 1
         else:
-            if target_sort not in [1, 2, 5]:
+            if target_sort not in [1, 2, 5, 23]:
                 target_sort = '_num'
             func = globals()['target_sort%s' % target_sort]
             flag, value, need = func(self.mm, mission_obj, target_data, mission_id, target_data1)
