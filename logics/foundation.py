@@ -18,8 +18,12 @@ class Foundation(object):
         can_open = self.mm.foundation.can_open()
         if not can_open:
             return 1, {}  # 活动未开启
-        end_date = game_config.active[self.mm.foundation.a_id]['end_time']
-        end_time = int(time.mktime(time.strptime(end_date, '%Y-%m-%d %H:%M:%S')) - time.time())
+        end_date = game_config.active.get(self.mm.foundation.a_id, {}).get('end_time', '')
+        if not end_date:
+            end_time = 0
+        else:
+            end_time = int(time.mktime(time.strptime(end_date, '%Y-%m-%d %H:%M:%S')) - time.time())
+            end_time = end_time if end_time > 0 else 0
         data['end_time'] = end_time
         data['version'] = self.mm.foundation.version
         data['score'] = self.mm.foundation.score
