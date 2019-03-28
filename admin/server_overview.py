@@ -112,7 +112,6 @@ def select(req):
         server_id = x['user_id'][:-7]
         if server_id in cur_uid_per_server:
             cur_uid_per_server[server_id]['pay_rmb'] += x['pay_rmb']
-            cur_uid_per_server[server_id]['order_money'] += x['order_money']
             cur_uid_per_server[server_id]['pay_users'].add(x['user_id'])
         else:
             cur_uid_per_server[server_id] = {'pay_rmb': x['pay_rmb'], 'user_count': 0, 'pay_users': set(x['user_id'])}
@@ -144,7 +143,7 @@ def select(req):
     result['big_brother_uid'] = big_brother_uid
     result['big_brother_pay'] = big_brother_pay
     result['big_brother_server'] = big_brother_server
-    result['big_brother_pay_money'] = user_money[big_brother_uid]
+    result['big_brother_pay_money'] = user_money.get(big_brother_uid, 0)
 
     # celery queue size
     celery_redis = get_redis_client(settings.celery_config)
