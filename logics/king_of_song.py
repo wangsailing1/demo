@@ -210,6 +210,7 @@ class KingOfSongLogics(object):
         data['continue_win_times'] = king.continue_win_times
         data.update(open_info)
 
+        king.battle_times += 1
         king.enemy_fight_data.clear()
         king.refresh_scripts()
         king.refresh_enemy()
