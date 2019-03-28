@@ -24,7 +24,8 @@ IN_MASTER_HOST = '10.10.4.11'          # 内网地址 备份用
 CHAT_IDS = [('164.52.8.250', 9999)]
 
 LANGUAGE = 'tw'
-CDN = 'big-sale-tw-test.hi365.com'
+# CDN = 'big-sale-tw-test.hi365.com'
+CDN = 'cdn-sale-tw.hi365.com'
 CONFIG_RESOURCE_OPEN = True
 CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址

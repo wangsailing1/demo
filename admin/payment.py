@@ -154,7 +154,9 @@ def select_pay(req, **kwargs):
     all_data = dict(all_pay_times=0, all_person_times=0,
                     all_pay_diamonds=0, all_pay_rmbs=0, all_pay_usd=0,
                     all_google_rmbs=0, all_apple_rmbs=0, all_mycard_rmbs=0,
-                    all_admin_pay_rmbs=0, all_platform_pay_rmbs=0)
+                    all_google_usd=0, all_apple_usd=0, all_mycard_usd=0,
+                    all_admin_pay_rmbs=0, all_platform_pay_rmbs=0,
+                    )
     for day, item_list in data.iteritems():
         user_ids, pay_diamonds, pay_rmbs, admin_pay_rmbs, really_pay_rmbs, pay_usd = set(), 0, 0, 0, 0, 0
         really_google_rmbs_EN, really_google_rmbs_CN, really_google_rmbs_TW = 0, 0, 0
@@ -181,6 +183,7 @@ def select_pay(req, **kwargs):
             really_google_rmbs_CN += item['order_money'] if str(
                 item.get('platform', '')) == 'google-kvgames' and item.get('currency') == 'CNY' else 0
             really_google_rmbs_TW += 0
+
             all_apple_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'apple' else 0
             really_apple_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get(
                 'currency') == 'USD' else 0
@@ -191,6 +194,7 @@ def select_pay(req, **kwargs):
                 'currency') == 'CNY' else 0
             really_apple_rmbs_TW += item['order_money'] if str(item.get('platform', '')) == 'apple' and item.get(
                 'currency') == 'TWD' else 0
+
             all_mycard_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'MyCard' else 0
             really_mycard_rmbs_EN += item['order_money'] if str(item.get('platform', '')) == 'MyCard' and item.get(
                 'currency') == 'USD' else 0
@@ -206,9 +210,14 @@ def select_pay(req, **kwargs):
         all_data['all_admin_pay_rmbs'] += admin_pay_rmbs
         all_data['all_platform_pay_rmbs'] += really_pay_rmbs
         all_data['all_pay_usd'] += pay_usd
+
         all_data['all_google_rmbs'] += all_google_rmbs
         all_data['all_apple_rmbs'] += all_apple_rmbs
         all_data['all_mycard_rmbs'] += all_mycard_rmbs
+
+        all_data['all_google_usd'] += really_google_rmbs_EN + really_google_rmbs_CN + really_google_rmbs_TW
+        all_data['all_apple_usd'] += really_apple_rmbs_EN + really_apple_rmbs_CN + really_apple_rmbs_TW
+        all_data['all_mycard_usd'] += really_mycard_rmbs_EN + really_mycard_rmbs_CN + really_mycard_rmbs_TW
 
         st_list_0.append({'day': day,
                           'pay_diamonds': pay_diamonds,

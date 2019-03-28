@@ -7,6 +7,7 @@ import datetime
 from admin import render
 from admin.decorators import require_permission
 from models.server import ServerConfig
+from lib.db import get_redis_client
 from lib.core.environ import ModelManager
 from lib.utils.online_user import get_all_server_recent_online_info
 from gconfig import game_config
@@ -93,6 +94,7 @@ def select(req):
 
     # 充值
     user_pay = {}
+    user_money = {}         # 原始货币
     big_brother_uid = ''
     big_brother_pay = 0
     big_brother_server = ''
@@ -110,13 +112,16 @@ def select(req):
         server_id = x['user_id'][:-7]
         if server_id in cur_uid_per_server:
             cur_uid_per_server[server_id]['pay_rmb'] += x['pay_rmb']
+            cur_uid_per_server[server_id]['order_money'] += x['order_money']
             cur_uid_per_server[server_id]['pay_users'].add(x['user_id'])
         else:
             cur_uid_per_server[server_id] = {'pay_rmb': x['pay_rmb'], 'user_count': 0, 'pay_users': set(x['user_id'])}
         if x['user_id'] in user_pay:
             user_pay[x['user_id']] += x['pay_rmb']
+            user_money[x['user_id']] += x['order_money']
         else:
             user_pay[x['user_id']] = x['pay_rmb']
+            user_money[x['user_id']] = x['order_money']
 
     if user_pay:
         big_brother_uid, big_brother_pay = max(user_pay.iteritems(), key=lambda x:x[1])
@@ -134,11 +139,16 @@ def select(req):
     result['currency_type'] = settings.CURRENCY_TYPE
 
     result['user_pay'] = user_pay
+    result['user_money'] = user_money
     result['pay_top_server'] = 0
     result['big_brother_uid'] = big_brother_uid
     result['big_brother_pay'] = big_brother_pay
     result['big_brother_server'] = big_brother_server
+    result['big_brother_pay_money'] = user_money[big_brother_uid]
 
+    # celery queue size
+    celery_redis = get_redis_client(settings.celery_config)
+    result['celey_queue_size'] = celery_redis.llen('celery')
     return render(req, 'admin/server_overview/index.html', **result)
 
 
