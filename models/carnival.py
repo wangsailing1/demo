@@ -395,7 +395,7 @@ class Carnival(ModelBase):
     MISSIONMAPPING = {1: 'server_arnival', 2: 'carnival_active'}
 
     # 数值类任务初始化时需要自检的
-    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
+    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]
     CONFIGMAPPING = {1: 'server_', 2: ''}
 
     # 配置target_sort映射
@@ -425,6 +425,9 @@ class Carnival(ModelBase):
     _ACTOR_LOVE = 23  # 艺人好感度
     _ONCE = 24  # 单次自制票房
     _FIRST_INCOME = 25  # 首映票房/收视
+    _BUILD = 26  # 建筑任务
+    _MISSIONNUM = 27  # 完成任务次数
+    _TOPINCOME = 28  # 单片最大收入
 
     def __init__(self, uid=None):
         self.uid = uid
