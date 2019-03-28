@@ -70,7 +70,8 @@ class Foundation(ModelBase):
             if reward_list:
                 tag = 1
                 break
-        if tag or self.get_version():
+        a_id, version = self.get_version()
+        if tag or version:
             return True
         return False
 
