@@ -104,7 +104,7 @@ class SuperPlayer(object):
         cost_ = abs(shop_goods[sort_id]['cost_coin'])
         if self.user.diamond < cost_:
             return 'error_diamond', {}  # 钻石不足
-        self.user.diamond -= cost_
+        self.user.deduct_diamond(cost_)
         self.superplayer.can_receive_times += superplayershop.shop_goods[sort_id]['time']
         if superplayershop.shop_goods[sort_id]['limit_type'] == 1:
             superplayershop.shop_goods[sort_id]['limit_num'] -= 1
