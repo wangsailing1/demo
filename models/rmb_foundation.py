@@ -37,19 +37,17 @@ class RmbFoundation(ModelBase):
             # 'withdraw_log': {},  # 领取基金信息
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
-            'a_id':0,
+            'a_id': 0,
         }
 
         super(RmbFoundation, self).__init__(self.uid)
 
     def pre_use(self):
         # if not self.is_open():
-        if self.can_open():
-            if not self.a_id:
-                self.a_id, _ = self.get_version()
-                self.save()
+        if self.has_reward():
             return
-        if self.version != self.get_version():
+        a_id, version = self.get_version()
+        if self.version != version or self.a_id != a_id:
             self.refresh()
         self.get_foundation_status()
         self.save()
@@ -68,14 +66,13 @@ class RmbFoundation(ModelBase):
             return True
         return False
 
-    def can_open(self):
+    def has_reward(self):
         tag = 0
         for days, reward_list in self.reward_dict.iteritems():
             if reward_list:
                 tag = 1
                 break
-        a_id, version = self.get_version()
-        if tag or version:
+        if tag:
             return True
         return False
 

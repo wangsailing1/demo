@@ -31,7 +31,7 @@ class Foundation(ModelBase):
             'score': 0,  # 本次活动期间充值钻石数
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
-            'a_id':0,
+            'a_id': 0,
             # 'score_anchor': None,  # to prevent score jump between multiple period of activity  #基金积分清除
             # 'mail_mark': False,  # 以邮件的形势发放
             # 'happy_ending': False,  # 最大奖的展示
@@ -40,12 +40,10 @@ class Foundation(ModelBase):
 
     def pre_use(self):
         # if not self.is_open():
-        if self.can_open():
-            if not self.a_id:
-                self.a_id, _ = self.get_version()
-                self.save()
+        if self.has_reward():
             return
-        if self.version != self.get_version():
+        a_id, version = self.get_version()
+        if self.version != version or self.a_id != a_id:
             self.refresh()
         self.get_foundation_status()
         self.save()
@@ -64,14 +62,13 @@ class Foundation(ModelBase):
             return True
         return False
 
-    def can_open(self):
+    def has_reward(self):
         tag = 0
         for days, reward_list in self.reward_dict.iteritems():
             if reward_list:
                 tag = 1
                 break
-        a_id, version = self.get_version()
-        if tag or version:
+        if tag :
             return True
         return False
 

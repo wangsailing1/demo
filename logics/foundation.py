@@ -15,8 +15,8 @@ class Foundation(object):
     def foundation_index(self):
         data = {}
         actice_id, _ = get_version_by_active_id(active_id=self.mm.foundation.ACTIVE_TYPE)
-        can_open = self.mm.foundation.can_open()
-        if not can_open:
+        has_reward = self.mm.foundation.has_reward()
+        if not has_reward and not self.mm.foundation.is_open():
             return 1, {}  # 活动未开启
         end_date = game_config.active.get(self.mm.foundation.a_id, {}).get('end_time', '')
         if not end_date:

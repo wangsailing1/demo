@@ -14,8 +14,7 @@ class RmbFoundation(object):
 
     def rmbfoundation_index(self):
         data = {}
-        active_id, _ = get_version_by_active_id(active_id=self.mm.rmbfoundation.ACTIVE_TYPE)
-        end_date = game_config.active.get(self.mm.foundation.a_id, {}).get('end_time', '')
+        end_date = game_config.active.get(self.mm.rmbfoundation.a_id, {}).get('end_time', '')
         if not end_date:
             end_time = 0
         else:
