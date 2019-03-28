@@ -7,7 +7,7 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from models.ranking_list import BlockRank
 
-REWARD_TIME = '22:30:00'
+REWARD_TIME = '21:00:00'
 REFRESH_TIME = '06:00:00'
 
 
