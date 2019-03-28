@@ -118,9 +118,9 @@ def card(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
-
+    from gconfig import game_config
     cards = mm.card.cards
-
+    config = game_config.card_basis
     card_log = kwargs.get('card_log') or get_bi_logger_by_type('card')
     for card_oid in cards:
         card_dict = cards[card_oid]
@@ -145,6 +145,7 @@ def card(mm, **kwargs):
             'gift_count': card_dict['gift_count'],
             'is_cold': card_dict['is_cold'],
             'create_date': create_date_str,
+            'qualityid': config[card_dict['id']]['qualityid']
         }
 
         card_log.info(json.dumps(data, separators=[',', ':']))
