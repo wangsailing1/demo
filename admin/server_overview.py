@@ -7,6 +7,7 @@ import datetime
 from admin import render
 from admin.decorators import require_permission
 from models.server import ServerConfig
+from lib.db import get_redis_client
 from lib.core.environ import ModelManager
 from lib.utils.online_user import get_all_server_recent_online_info
 from gconfig import game_config
@@ -139,6 +140,9 @@ def select(req):
     result['big_brother_pay'] = big_brother_pay
     result['big_brother_server'] = big_brother_server
 
+    # celery queue size
+    celery_redis = get_redis_client(settings.celery_config)
+    result['celey_queue_size'] = celery_redis.llen('celery')
     return render(req, 'admin/server_overview/index.html', **result)
 
 
