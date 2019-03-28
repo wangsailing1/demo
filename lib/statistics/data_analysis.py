@@ -530,7 +530,7 @@ def level_pass_rate(now=None):
 def update_lv_pass_rate_cache():
     """更新等级滞留率cache
     """
-    max_lv = max(game_config.hero_exp)
+    max_lv = max(game_config.player_level)
 
     global_cache = get_global_cache()
 
@@ -583,7 +583,7 @@ def lv_pass_rate(server='h1'):
         - all_uids: 全服人数
     """
     from models.ranking_list import LevelRank
-    max_lv = max(game_config.hero_exp)
+    max_lv = max(game_config.player_level)
     lv_pass_num = [0] * max_lv
 
     rank_obj = LevelRank(uid='', server=server)
