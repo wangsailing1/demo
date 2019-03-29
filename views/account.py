@@ -177,8 +177,8 @@ def new_user(hm):
     mm.user.set_tpid(tpid)
 
     mm.user.role = 0
-    mm.user.name = i18n_msg.get('user_name', mm.lan) + game_config.get_last_random_name(
-        mm.lan)
+    mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(
+        mm.user.language_sort)
     mm.user.register_ip = remote_ip
     # 发送等级为1的邮件
     mm.user.send_level_mail(0, 1)
