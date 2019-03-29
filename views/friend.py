@@ -579,10 +579,9 @@ def rename(hm):
     mm = hm.mm
     uid = hm.get_argument('uid', '')
     name = hm.get_argument('name', '')
-    lan = hm.get_argument('lan', '1')
     if not uid:
         return 1, {}  # 未指定好友
-    if is_sensitive(name, lan):
+    if is_sensitive(name, mm.lan):
         return 2, {}  # 名字不合法
     # 好友为艺人
     if uid.isdigit():

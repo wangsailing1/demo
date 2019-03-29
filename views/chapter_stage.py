@@ -48,7 +48,6 @@ def open_actor_chat(hm):
 
 # 扫荡
 def auto_sweep(hm):
-    lan = hm.get_argument('lan', is_int=True)
     mm = hm.mm
     if not mm.assistant.assistant:
         return 'error_assistant', {}  # 请先聘请终身助理
@@ -58,7 +57,7 @@ def auto_sweep(hm):
     align = hm.get_argument('align', '')
     if times == 10 and not chapterstage_fastten(mm.user):
         lv = unlock_func_lv('chapterstage_fastten')
-        return 2, {'custom_msg': i18n_msg.get(1210, lan) % lv}  #
+        return 2, {'custom_msg': i18n_msg.get(1210, mm.lan) % lv}  #
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.chapter_stage_fight_new(stage, type_hard, auto=True, times=times, align=align)
     return rc, data

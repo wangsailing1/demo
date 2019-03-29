@@ -775,8 +775,9 @@ def has_goods(mm, gift_sort, gift_config):
     return True
 
 
-def get_reward_and_num(mm, gifts, lan):
+def get_reward_and_num(mm, gifts):
     msg = ''
+    lan = mm.lan
     for gift in gifts:
         _sort = gift[0]
         item_id = gift[1]
