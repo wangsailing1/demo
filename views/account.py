@@ -123,6 +123,7 @@ def new_user(hm):
     channel = hm.get_argument('pt')
     appid = hm.get_argument('appd', '')
     uuid = hm.get_argument('uuid', '')
+    lan = hm.get_argument('lan', 1)
     remote_ip = hm.req.request.headers.get('X-Real-Ip', '') or hm.req.request.remote_ip
 
     if not role or not server or not account:
@@ -206,7 +207,7 @@ def new_user(hm):
     #         pass
 
     # 测试服，创建指定账号
-    test_init(mm)
+    test_init(mm, lan)
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -272,7 +273,7 @@ def new_user(hm):
     # return 0, data
 
 
-def test_init(mm):
+def test_init(mm, lan):
     """
     测试服，创建指定账号
     :param mm:
@@ -309,7 +310,7 @@ def test_init(mm):
     if card_config:
         # id, 等级，好感，羁绊
         for cid, lv, love_exp, love_lv in card_config:
-            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp)
+            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp,lan=lan)
         mm.card.save()
 
 
@@ -578,9 +579,10 @@ def check_session(hm):
 
 
 def notice(hm):
+    lan = hm.get_argument('lan', '1')
     config = copy.deepcopy(game_config.welfare_notice)
     info = {}
-    lan = MUITL_LAN[hm.mm.lan]
+    lan = MUITL_LAN[lan]
     now = int(time.time())
     for k, v in config.iteritems():
         if not v['start_time'] or not v['end_time']:
