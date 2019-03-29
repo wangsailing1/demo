@@ -68,6 +68,7 @@ card_basis = {
     'skill': ('skill', 'int_list'),  # 技能
     'adle_action1': ('adle_action1', 'str'),  # 待机动画
     'adle_action_img': ('adle_action_img', 'str'),  # 待机动画
+    'card_kind': ('card_kind', 'int'),  # 艺人种类
 }
 
 card_level = {
