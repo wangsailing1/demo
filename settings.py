@@ -141,7 +141,7 @@ REGISTER_TOOLS_STATUS = False
 
 LANG = 'ch'  # 语言: ch 简体中文
 LAN_SORT = 1    # 语言: 1:中文简体，0:台湾
-CURRENCY_TYPE = u'RMB'  # 货币类型
+CURRENCY_TYPE = u'RMB'  # 后台数据统计显示的 货币类型
 
 ENV_NAME = ''
 SERVERS = {}
