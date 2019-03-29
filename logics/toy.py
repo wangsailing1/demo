@@ -41,11 +41,11 @@ class Toy(object):
             lv += 1
         return lv
 
-    def index(self, lan):
+    def index(self):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': i18n_msg.get(1210, lan) % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg.get(1210, self.mm.lan) % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         if self.check_done():
@@ -72,11 +72,11 @@ class Toy(object):
             rank += 1
         return info
 
-    def get_toy(self, catch, reward_id, lan):
+    def get_toy(self, catch, reward_id):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': i18n_msg.get(1210, lan) % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg.get(1210, self.mm.lan) % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha'))
@@ -95,7 +95,7 @@ class Toy(object):
             self.toy.toy_num += 1
             self.toy.all_toy_num += 1
             self.toy.save()
-            _, data = self.index(lan)
+            _, data = self.index()
             data['reward'] = reward
             data['got'] = False
             return 0, data
@@ -132,7 +132,7 @@ class Toy(object):
         self.toy.save()
         if self.sort == 1 and self.toy.catch_num:
             self.toy.add_rank(self.mm.uid, self.toy.catch_num)
-        _, data = self.index(lan)
+        _, data = self.index()
         data['reward'] = reward
         data['got'] = got
         return 0, data
@@ -161,11 +161,11 @@ class Toy(object):
         rate = undrop_rate_dict.get(reward_need_num)
         return rate >= random.randint(1, 10000)
 
-    def refresh(self, lan):
+    def refresh(self):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': i18n_msg.get(1210, lan) % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg.get(1210, self.mm.lan) % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_control_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_control'))
@@ -180,14 +180,14 @@ class Toy(object):
         del_mult_goods(self.mm, cost)
         self.toy.refresh_reward()
         self.toy.save()
-        _, data = self.index(lan)
+        _, data = self.index()
         return 0, data
 
-    def get_rank_reward(self, lan):
+    def get_rank_reward(self):
         status = self.is_open()
         if status == -1:
             lv = self.unlock_lv()
-            return 11, {'custom_msg': i18n_msg.get(1210, lan) % lv}  # vip等级不够
+            return 11, {'custom_msg': i18n_msg.get(1210, self.mm.lan) % lv}  # vip等级不够
         if not status:
             return 1, {}  # 活动未开启
         gacha_rank_config = getattr(game_config, '%s%s' % (self.pre_str, 'gacha_rank'))

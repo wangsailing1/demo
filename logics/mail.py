@@ -108,7 +108,7 @@ class MailLogic(object):
 
         return 0, result
 
-    def send(self, uid, content, sort, lan):
+    def send(self, uid, content, sort):
         """
         发送邮件
         :param uid:
@@ -116,7 +116,7 @@ class MailLogic(object):
         :param sort: 1: 好友邮件, 2: 公会邮件
         :return:
         """
-        if is_sensitive(content,lan):
+        if is_sensitive(content, self.mm.lan):
             return 1, {}    # 内容不合法
 
         if sort == 1:

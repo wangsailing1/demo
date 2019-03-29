@@ -371,10 +371,9 @@ def register_name(hm):
 
     name = hm.get_argument('name', mm.uid)
     role = hm.get_argument('role', 1, is_int=True)
-    lan = hm.get_argument('lan', '1')
 
     ul = UserLogic(mm)
-    rc, data = ul.register_name(name, role, lan)
+    rc, data = ul.register_name(name, role)
     if rc != 0:
         return rc, {}
     return 0, data
@@ -388,13 +387,12 @@ def charge_name(hm):
     """
     mm = hm.mm
     name = hm.get_argument('name', mm.uid)
-    lan = hm.get_argument('lan', '1')
 
     if not name:
         return 'error_100', {}
 
     ul = UserLogic(mm)
-    rc, data = ul.charge_name(name,lan)
+    rc, data = ul.charge_name(name)
     if rc != 0:
         return rc, {}
 

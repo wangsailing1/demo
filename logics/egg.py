@@ -97,7 +97,7 @@ class Egg(object):
             self.egg.save()
         return 0, {}
 
-    def open_egg(self, egg_type, is_super, egg_sort, lan):
+    def open_egg(self, egg_type, is_super, egg_sort):
         if not self.is_open():
             return 4, {}  # 活动未开启
         reward = []
@@ -119,8 +119,8 @@ class Egg(object):
                 if rc != 0:
                     return rc, {}
                 # data['refresh_flog'] = 1
-                reward_msg = get_reward_and_num(self.mm, [reward_best], lan)
-                log_ = i18n_msg.get(1301, lan) % (self.mm.user.name, reward_msg)
+                reward_msg = get_reward_and_num(self.mm, [reward_best])
+                log_ = i18n_msg.get(1301, self.mm.lan) % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 need_diamond = egg_diamond_info.get('need_recharge')
@@ -146,8 +146,8 @@ class Egg(object):
                         return rc, {}
                     # data['refresh_flog'] = 1
                 if reward_choice == self.egg.egg_diamond_reward_best:
-                    reward_msg = get_reward_and_num(self.mm, reward, lan)
-                    log_ = i18n_msg.get(1302, lan) % (self.mm.user.name, reward_msg)
+                    reward_msg = get_reward_and_num(self.mm, reward)
+                    log_ = i18n_msg.get(1302, self.mm.lan) % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
 
         elif egg_type == 2:  # 彩蛋
@@ -163,8 +163,8 @@ class Egg(object):
                 if rc != 0:
                     return rc, {}
                 # data['refresh_flog'] = 1
-                reward_msg = get_reward_and_num(self.mm, [reward_best], lan)
-                log_ = i18n_msg.get(1303, lan) % (self.mm.user.name, reward_msg)
+                reward_msg = get_reward_and_num(self.mm, [reward_best])
+                log_ = i18n_msg.get(1303, self.mm.lan) % (self.mm.user.name, reward_msg)
                 self.egg.add_log(log_)
             else:
                 # need_num = egg_item_info.get('need_recharge')
@@ -186,8 +186,8 @@ class Egg(object):
                         return rc, {}
                     # data['refresh_flog'] = 1
                 if reward[0] == self.egg.egg_item_reward_best:
-                    reward_msg = get_reward_and_num(self.mm, [self.egg.egg_item_reward_best], lan)
-                    log_ = i18n_msg.get(1304, lan) % (self.mm.user.name, reward_msg)
+                    reward_msg = get_reward_and_num(self.mm, [self.egg.egg_item_reward_best])
+                    log_ = i18n_msg.get(1304, self.mm.lan) % (self.mm.user.name, reward_msg)
                     self.egg.add_log(log_)
         gift = add_mult_gift(self.mm, reward)
         data['gift'] = gift
