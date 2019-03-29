@@ -231,7 +231,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0, lan=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -245,6 +245,8 @@ class Card(ModelBase):
         init_star = star or 0
         init_love_lv = love_lv or 0
         init_love_exp = love_exp or 0
+        if not lan:
+            lan = self.mm.lan
 
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
@@ -267,7 +269,7 @@ class Card(ModelBase):
                                                  love_exp=init_love_exp,
                                                  mm=self.mm,
                                                  popularity=popularity,
-                                                 lan=self.mm.lan,
+                                                 lan=lan,
                                                  )
 
         self.mm.card_book.add_book(group_id)

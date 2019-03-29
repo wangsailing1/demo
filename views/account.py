@@ -310,7 +310,7 @@ def test_init(mm, lan):
     if card_config:
         # id, 等级，好感，羁绊
         for cid, lv, love_exp, love_lv in card_config:
-            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp,lan=lan)
+            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp, lan=lan)
         mm.card.save()
 
 
