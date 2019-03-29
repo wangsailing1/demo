@@ -120,7 +120,8 @@ class FansActivity(object):
                                                                           is_save=False)
             gift.extend(effect_activity_gift)
         if effect_activity_id != activity_id and effect_activity_id and \
-                self.mm.fans_activity.activity_log[effect_activity_id].get('cards'):
+                self.mm.fans_activity.activity_log[effect_activity_id].get('cards') and \
+                        card_id in self.mm.fans_activity.activity_log[effect_activity_id].get('cards'):
             self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
                 self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
         return gift
