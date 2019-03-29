@@ -422,13 +422,26 @@ class KingOfSongLogics(object):
         return 0, data
 
     def buy_battle_times(self):
-        # todo 扣钱
+        # 扣钱
+        cost_list = [(v['pvp_cost']) for k, v in sorted(game_config.price_ladder.items(), key=lambda x: x[0])]
+        cost_list.sort(key=lambda x: x[0])
+
         buy_pvp = vip_company.buy_pvp(self.mm.user)
         king = self.mm.king_of_song
-        if king.buy_times >= buy_pvp:
+        cost_idx = buy_times = king.buy_times
+        if buy_times >= buy_pvp:
             return 1, {}
 
+        if cost_idx >= len(cost_list):
+            cost_idx = -1
+        cost = cost_list[cost_idx]
+
+        user = self.mm.user
+        if not user.is_diamond_enough(cost):
+            return 'error_diamond', {}
+        user.deduct_diamond(cost)
         king.buy_times += 1
         king.save()
+        user.save()
         rc, data = self.index()
         return rc, data

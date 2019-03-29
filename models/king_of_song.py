@@ -33,6 +33,8 @@ class KingOfSong(ModelBase):
     MAX_TIMES = 5
     ENEMY_COUNT = 3
 
+    BUY_ADD_BATTLE_TIMES = 5        # 每次购买添加的战斗次数
+
     def __init__(self, uid=None):
         """
         :param uid:
@@ -143,7 +145,7 @@ class KingOfSong(ModelBase):
         return rank_down
 
     def left_battle_times(self):
-        return self.MAX_TIMES + self.buy_times - self.battle_times
+        return self.MAX_TIMES + self.buy_times * self.BUY_ADD_BATTLE_TIMES - self.battle_times
 
     def choice_scripts(self, num=3):
         rank_config = game_config.pvp_rank[self.rank]
