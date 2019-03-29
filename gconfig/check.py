@@ -147,12 +147,12 @@ def check_reward(lens=3, is_random=False):
                         sort, tid, num, lv = reward
                 sort = int(sort)
 
-                if sort in (1, 2, 13, 18, 20, 21, 23, 24, 25, 27, 28, 29, 30):  # 货币挑战券之类
+                if sort in (1, 2, 3, 4, 7, 11, 12, 13, 14, 18, 20, 21, 23, 24, 25, 27, 28, 29, 30):  # 货币挑战券之类
                     num = int(num)
                     if num <= 0:
                         message = 'wrong number of reward!!!'
                         return message
-                elif sort == 3:  # 道具
+                elif sort == 5:  # 道具
                     num = int(num)
                     if num <= 0:
                         message = 'wrong number of reward!!!'
@@ -161,57 +161,73 @@ def check_reward(lens=3, is_random=False):
                     if tid not in game_config.use_item.keys():
                         message = 'No reward in config!!!'
                         return message
-
-                elif sort == 4:  # 灵魂石
-                    num = int(num)
-                    if num <= 0:
-                        message = 'wrong number of reward!!!'
-                        return message
-                    tid = int(tid)
-                    if tid not in game_config.hero_stone.keys():
-                        message = 'No reward in config!!!'
-                        return message
-                elif sort == 5:  # 采集物
-                    pass
+                #
+                # elif sort == 4:  # 美元
+                #     num = int(num)
+                #     if num <= 0:
+                #         message = 'wrong number of reward!!!'
+                #         return message
+                    # tid = int(tid)
+                    # if tid not in game_config.hero_stone.keys():
+                    #     message = 'No reward in config!!!'
+                    #     return message
+                # elif sort == 5:  # 采集物
+                #     pass
                 # elif sort == 6:  # 装备
                 #     return False
-                elif sort == 6:  # 基因
+                elif sort == 6:  # 装备
                     num = int(num)
                     if num <= 0:
                         message = 'wrong number of reward!!!'
                         return message
                     tid = int(tid)
-                    if tid not in game_config.gene_basis.keys():
+                    if tid not in game_config.equip.keys():
                         message = 'No reward in config!!!'
                         return message
 
-                elif sort == 7:  # 进阶材料
+                # elif sort == 7:  # 进阶材料
+                #     num = int(num)
+                #     if num <= 0:
+                #         message = 'wrong number of reward!!!'
+                #         return message
+                #     tid = int(tid)
+                #     if tid not in game_config.grade_lvlup_item.keys():
+                #         message = 'No reward in config!!!'
+                #         return message
+                # elif sort == 8:  # 增加英雄经验, 需要在调用地方单独加
+                #     pass
+
+                elif sort == 8:  # 艺人
                     num = int(num)
                     if num <= 0:
                         message = 'wrong number of reward!!!'
                         return message
                     tid = int(tid)
-                    if tid not in game_config.grade_lvlup_item.keys():
+                    if tid not in game_config.card_basis.keys():
                         message = 'No reward in config!!!'
                         return message
-                elif sort == 8:  # 增加英雄经验, 需要在调用地方单独加
-                    pass
 
-                elif sort == 9:  # 英雄
+                elif sort == 9:  # 艺人碎片
                     num = int(num)
                     if num <= 0:
                         message = 'wrong number of reward!!!'
                         return message
                     tid = int(tid)
-                    if tid not in game_config.hero_basis.keys():
+                    if tid not in game_config.card_piece.keys():
                         message = 'No reward in config!!!'
                         return message
-
-                elif sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
-                    pass
-
-                elif sort == 11:  # 公会礼物道具
-                    pass
+                elif sort == 10:  # 装备碎片
+                    num = int(num)
+                    if num <= 0:
+                        message = 'wrong number of reward!!!'
+                        return message
+                    tid = int(tid)
+                    if tid not in game_config.equip_piece.keys():
+                        message = 'No reward in config!!!'
+                        return message
+                #
+                # elif sort == 11:  # 公会礼物道具
+                #     pass
                 elif sort == 12:  # 觉醒材料
                     num = int(num)
                     if num <= 0:
