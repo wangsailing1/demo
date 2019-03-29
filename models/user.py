@@ -907,7 +907,7 @@ class User(ModelBase):
         config = game_config.main_hero
         if not self.role:
             return 0
-        if not self.role not in config:
+        if self.role not in config:
             return 0
         return config[self.role]['sex']
 

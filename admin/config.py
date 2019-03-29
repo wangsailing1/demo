@@ -35,9 +35,9 @@ now = time.time()
 config_data = {}
 for abs_path, dirs, files in os.walk(path):
     for file_name in files:
-        config_name, _ = file_name.rsplit('_', 1)
-        file_path = os.path.join(abs_path, file_name)
         try:
+            config_name, _ = file_name.rsplit('_', 1)
+            file_path = os.path.join(abs_path, file_name)
             st = os.stat(file_path)
             if config_name not in config_data:
                 config_data[config_name] = {
