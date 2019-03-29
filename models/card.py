@@ -51,7 +51,6 @@ class Card(ModelBase):
     CHAR_PRO_NAME_PRO_ID_MAPPING = {name: pro_id for pro_id, name in enumerate(CHAR_PRO_NAME, start=1)}
     RESTMAPPING = {1: 'physical', 2: 'mood'}
 
-
     _need_diff = ('cards', 'pieces', 'attr', 'training_room')
 
     # 新用户给的卡牌
@@ -71,7 +70,7 @@ class Card(ModelBase):
             'card_box': 0,
             'training_room': {
                 1: {
-                    'status': 0   # 0 表示可使用，1 表示训练完成，2 表示正在训练中
+                    'status': 0  # 0 表示可使用，1 表示训练完成，2 表示正在训练中
                 },
             },
         }
@@ -88,7 +87,8 @@ class Card(ModelBase):
         return '%s-%s-%s' % (card_id, int(time.time()), salt_generator())
 
     @classmethod
-    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0, lan=None):
+    def generate_card(cls, card_id, card_config=None, lv=1, love_lv=0, love_exp=0, evo=0, star=0, mm=None, popularity=0,
+                      lan=None):
         card_oid = cls._make_oid(card_id)
         card_config = card_config or game_config.card_basis[card_id]
         if not lan:
@@ -109,7 +109,7 @@ class Card(ModelBase):
             'love_lv': love_lv,  # 羁绊等级
             'gift_count': 0,  # 礼物数量
             'equips': [],  # 装备id
-            'equips_used':{}, #升格调消耗掉的装备
+            'equips_used': {},  # 升格调消耗掉的装备
 
             'evo': evo,
             'star': card_config.get('star_level', 1),
@@ -122,10 +122,10 @@ class Card(ModelBase):
             'style_pro': {},  # 擅长类型{pro_id: {'exp': 0, 'lv': 0}}
             'style_income': {},  # 拍片类型票房
             'style_film_num': {},  # 拍片类型数量
-            'type_income':{}, #拍片种类票房
-            'type_film_num':{}, #拍片种类次数
+            'type_income': {},  # 拍片种类票房
+            'type_film_num': {},  # 拍片种类次数
             'physical': card_config.get('physical', 1),  # 体力
-            'mood': card_config.get('mood', 1),   # 心情
+            'mood': card_config.get('mood', 1),  # 心情
             'health': card_config.get('health', 1),  # 健康
             'skill': {},  # 技能
             'skill_exp': 0,  # 技能经验
@@ -231,7 +231,7 @@ class Card(ModelBase):
 
         return True
 
-    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None,source=0, lan=None):
+    def add_card(self, card_id, lv=None, evo=None, love_lv=None, love_exp=None, star=None, source=0, lan=None):
         """添加卡牌
         :param card_id:
         :param lv:
@@ -246,15 +246,15 @@ class Card(ModelBase):
         init_love_lv = love_lv or 0
         init_love_exp = love_exp or 0
         if not lan:
-            lan = self.mm.lan
+            lan = getattr(self.mm, 'lan', None) or self.mm.user.language_sort
 
         card_config = game_config.card_basis[card_id]
         group_id = card_config['group']
         if group_id not in self.attr:
             self.attr[group_id] = {}
-        self.attr[group_id]['like'] = self.attr.get(group_id,{}).get('like', 0) + init_love_exp
+        self.attr[group_id]['like'] = self.attr.get(group_id, {}).get('like', 0) + init_love_exp
         init_love_exp = self.attr.get(group_id, {})['like']
-        popularity = self.attr.get(group_id,{}).get('popularity', 0)
+        popularity = self.attr.get(group_id, {}).get('popularity', 0)
 
         if self.has_card_with_group_id(card_id):
             p_num = card_config['star_cost'] if source == 1 else card_config['star_giveback']
@@ -273,7 +273,7 @@ class Card(ModelBase):
                                                  )
 
         self.mm.card_book.add_book(group_id)
-        self.mm.friend.new_actor(group_id,is_save=True)
+        self.mm.friend.new_actor(group_id, is_save=True)
         self.cards[card_oid] = card_dict
 
         if lv != 1:
@@ -315,7 +315,7 @@ class Card(ModelBase):
 
         return True
 
-    def get_card(self, card_oid,is_battle=False):
+    def get_card(self, card_oid, is_battle=False):
         """获取卡牌详情 """
         card_info = dict(self.cards[card_oid])
         battle_info = self.calc_card_battle_info(card_info)
@@ -332,7 +332,7 @@ class Card(ModelBase):
         cur_lv = card_info['lv']
 
         card_config = game_config.card_basis[card_info['id']]
-        #count_lv 用于计算格调成长等级
+        # count_lv 用于计算格调成长等级
         count_lv = cur_lv - card_config['last_lv']
 
         base_char_pro = card_config['char_pro']
@@ -371,7 +371,7 @@ class Card(ModelBase):
         if card_info['love_lv'] == 0:
             add_percent = 0
 
-        #武器加成
+        # 武器加成
         equip_config = game_config.equip
         for equip_id in card_info['equips']:
             equip_attr = equip_config[equip_id]['add_attr']
@@ -381,8 +381,6 @@ class Card(ModelBase):
             for equip_id in value:
                 equip_attr = equip_config[equip_id]['add_attr']
                 char_pro = [char_pro[i] + equip_attr[i] if char_pro[i] != -1 else -1 for i in range(6)]
-
-
 
         # 礼物属性加成
         for gift_id, info in card_info['love_gift_pro'].iteritems():
@@ -593,7 +591,7 @@ class Card(ModelBase):
                     card_dict['love_exp'] += v
                     if card_dict['love_exp'] < 0:
                         card_dict['love_exp'] = 0
-                else :
+                else:
                     card_dict[attr] += v
                     if card_dict[attr] < 0:
                         card_dict[attr] = 0
@@ -628,7 +626,7 @@ class Card(ModelBase):
         max_num = self.mm.user.build_effect.get(9, 10) + vip_company.card_max(self.mm.user)
         return max_num + self.card_box > len(self.get_can_use_card())
 
-    def get_rest_effect(self,card_id):
+    def get_rest_effect(self, card_id):
         card_info = self.cards[card_id]
         effect = {}
         card_config = game_config.card_basis[card_info['id']]
@@ -638,7 +636,7 @@ class Card(ModelBase):
             max_num = card_config[attr]
             rate = int(num * 100 / max_num)
             print rate
-            for _ ,value in rest_config.iteritems():
+            for _, value in rest_config.iteritems():
                 if value['type'] == type and value['rank'][0] <= rate <= value['rank'][1]:
                     effect[attr] = value['effect']
                     break
@@ -648,7 +646,7 @@ class Card(ModelBase):
         info = {}
         for card in self.mm.rest_restaurant.get_rest_cards():
             info[card] = 1
-        for card in  self.mm.rest_bar.get_rest_cards():
+        for card in self.mm.rest_bar.get_rest_cards():
             info[card] = 2
         for card in self.mm.rest_hospital.get_rest_cards():
             info[card] = 3
@@ -662,13 +660,13 @@ class Card(ModelBase):
         unlock_config = game_config.card_skill_unlock
         skill_list = game_config.card_basis[card_id]['skill']
 
-        for id in range(1, len(skill_list)+1):
-            if skill_list[id-1] in skills:
+        for id in range(1, len(skill_list) + 1):
+            if skill_list[id - 1] in skills:
                 continue
 
             unlock_lv = unlock_config[id]['lv']
             if lv >= unlock_lv:
-                skills[skill_list[id-1]] = {'lv': 1}
+                skills[skill_list[id - 1]] = {'lv': 1}
 
         if is_save:
             self.save()
@@ -731,7 +729,6 @@ class Card(ModelBase):
                 result = False
 
         return result
-
 
     def is_skill_exp_enough(self, card_oid, extra_exp=0):
         card_info = self.cards[card_oid]
@@ -862,7 +859,7 @@ class Card(ModelBase):
         result['skilltype'] = skill_info['skilltype']
         result['computing_method'] = skill_info['computing_method']
         skill_lv = self.cards[self_card_oid]['skill'][skill_id]['lv']
-        result['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv-1]
+        result['skilllevel_value'] = skill_info['skilllevel_value'][skill_lv - 1]
         # result['skilltarget_oid'] = {}
         type = skill_info['skilltarget_type']
         skilltarget_oid_list = []
@@ -882,14 +879,14 @@ class Card(ModelBase):
         # for target_oid in skilltarget_oid_list:
         #     result['skilltarget_oid'][target_oid] = {}
         #     all_char_pro = self.mm.card.get_card(target_oid)['all_char_pro']
-            # for skilltype in skill_info['skilltype']:
-            #     if all_char_pro[skilltype-1] == -1:
-            #         continue
-                # if skill_info['computing_method'] == 1:
-                #     result['skilltarget_oid'][target_oid][skilltype] = result['skilllevel_value']
-                # else:
-                #     real_value = math.ceil(all_char_pro[skilltype - 1] * result['skilllevel_value'] / 10000)
-                #     result['skilltarget_oid'][target_oid][skilltype] = real_value
+        # for skilltype in skill_info['skilltype']:
+        #     if all_char_pro[skilltype-1] == -1:
+        #         continue
+        # if skill_info['computing_method'] == 1:
+        #     result['skilltarget_oid'][target_oid][skilltype] = result['skilllevel_value']
+        # else:
+        #     real_value = math.ceil(all_char_pro[skilltype - 1] * result['skilllevel_value'] / 10000)
+        #     result['skilltarget_oid'][target_oid][skilltype] = real_value
 
         return result
 
@@ -970,12 +967,15 @@ class Card(ModelBase):
                     for skill_type in skilltype:
                         if skill_type not in total_effect[target_oid]:
                             total_effect[target_oid][skill_type] = {}
-                        total_effect[target_oid][skill_type][computing_method] = total_effect[target_oid][skill_type].get(computing_method, 0) + skilllevel_value
+                        total_effect[target_oid][skill_type][computing_method] = total_effect[target_oid][
+                                                                                     skill_type].get(computing_method,
+                                                                                                     0) + skilllevel_value
 
         for card_oid, effect in total_effect.iteritems():
             if effect:
                 result[card_oid]['effect'] = effect
 
         return result
+
 
 ModelManager.register_model('card', Card)
