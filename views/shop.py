@@ -263,7 +263,7 @@ def mystical_refresh(hm):
     need_coin = config[times]['mystical_store_cost']
     if need_coin > mm.user.diamond:
         return 3, {}  # 钻石不足
-    mm.user.diamond -= need_coin
+    mm.user.deduct_diamond(need_coin)
     refresh_time, next_time = mm.mystical_shop.get_refresh_time()
     mm.mystical_shop.next_time = int(time.mktime(time.strptime(next_time, mm.mystical_shop.FORMAT)))
     mm.mystical_shop.save()
