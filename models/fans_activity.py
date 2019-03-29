@@ -54,7 +54,7 @@ class FansActivity(ModelBase):
             self.save()
 
     # 检测并更新粉丝建筑是否正常
-    def unlock_build(self):
+    def check_unlock_build(self):
         config = game_config.fans_activity
         all_filed = range(201, 209)
         save = False

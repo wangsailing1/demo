@@ -46,7 +46,7 @@ def main(hm):
 
     # 刷新解锁建筑物
     refresh_unlock_build(mm)
-    mm.fans_activity.unlock_build()
+    mm.fans_activity.check_unlock_build()
 
     # 触发通关任务
     task_event_dispatch = mm.get_event('task_event_dispatch')
