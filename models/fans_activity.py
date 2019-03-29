@@ -9,7 +9,8 @@ from gconfig import game_config
 from lib.utils import weight_choice
 from tools.gift import calc_gift
 from models.vip_company import bussiness_gold
-
+import settings
+from lib.utils.mail import send_dingtalk
 
 class FansActivity(ModelBase):
     # NEED_MAPPING = ['演技', '歌艺', '气质', '动感', '艺术'，'娱乐',性别，类型，分类，人气]
@@ -51,6 +52,28 @@ class FansActivity(ModelBase):
 
         if save:
             self.save()
+
+    # 检测并更新粉丝建筑是否正常
+    def unlock_build(self):
+        config = game_config.fans_activity
+        all_filed = range(201, 209)
+        save = False
+        build_list = []
+        for group_id, fans_id in self.activity.iteritems():
+            build_id = config[fans_id]['build_id']
+            if build_id not in self.mm.user._build:
+                has_build_field = [v['field_id'] for v in self.mm.user._build.values()]
+                field_id = min(set(all_filed) - set(has_build_field))
+                self.mm.user.add_build(build_id, field_id, save=False)
+                build_list.append(build_id)
+                save = True
+        if save:
+            self.mm.user.save()
+            subject = '[%s ERROR MAIL] - %s' % (
+                settings.ENV_NAME, 'build_unlock')
+            s = 'uid:%s ,build:%s' % (self.mm.user.uid, '-'.join((str(i) for i in build_list)))
+            send_dingtalk(settings.DINGTALK_URL, subject, s)
+
 
     def count_produce(self, get_reward=False, activity_id=0, is_save=True):
         if activity_id not in self.activity_log:
