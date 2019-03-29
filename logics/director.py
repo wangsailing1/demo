@@ -122,7 +122,9 @@ class Director(object):
 
     def buy_more_gacha_times(self):
         cost_config = game_config.price_ladder
-        cost = cost_config[self.director.add_gacha_times + 1]['director_gacha_buy']
+        max_time = self.director.add_gacha_times + 1
+        times = max(cost_config) if max_time > max(cost_config) else max_time
+        cost = cost_config[times]['director_gacha_buy']
         if not self.mm.user.is_diamond_enough(cost):
             return 13, {}  # 钻石不足
         self.mm.user.deduct_diamond(cost)
