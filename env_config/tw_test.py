@@ -27,7 +27,8 @@ LANGUAGE = 'tw'
 # CDN = 'big-sale-tw-test.hi365.com'
 CDN = 'cdn-sale-tw.hi365.com'
 CONFIG_RESOURCE_OPEN = True
-CURRENCY_TYPE = u'RMB'  # 货币类型
+CURRENCY_TYPE = u'USD'  # 后台数据统计显示的 货币类型
+
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']

@@ -113,14 +113,6 @@ def error_mail(debug, addr_list):
                     l.append('%s: "%s"' % (k, v))
                 s = '\n'.join(l)
                 import settings
-                # 开发环境error先发出来方便查错
-                if settings.IMMEDIATE_DINGTALK_ERROR_MAIL:
-                    subject = '[%s ERROR MAIL] - %s' % (
-                    settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
-                    try:
-                        send_dingtalk(settings.DINGTALK_URL, subject, s)
-                    except:
-                        pass
 
                 if debug:
                     subject = '[%s ERROR MAIL] - %s' % (settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
@@ -136,6 +128,13 @@ def error_mail(debug, addr_list):
                             send_dingtalk(settings.DINGTALK_URL, subject, s)
                         except:
                             pass
+                elif settings.IMMEDIATE_DINGTALK_ERROR_MAIL:    # 开发环境error先发出来方便查错
+                    subject = '[%s ERROR MAIL] - %s' % (
+                    settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
+                    try:
+                        send_dingtalk(settings.DINGTALK_URL, subject, s)
+                    except:
+                        pass
                 else:
                     rc = 0
                     print_log('error_mail %s rc: %s' % (s, str(rc)))

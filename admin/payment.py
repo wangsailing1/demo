@@ -177,7 +177,9 @@ def select_pay(req, **kwargs):
                 admin_pay_rmbs += charge_config.get(item['product_id'], {}).get('price_TW', 0)
             else:
                 pay_rmbs += float(item['order_rmb'] or 0)
-                pay_usd += round(float(item['order_rmb'] or 0) / currencys.get(CURRENCY_USD, 1), 2)
+                # pay_usd += round(float(item['order_rmb'] or 0) / currencys.get(CURRENCY_USD, 1), 2)
+                pay_usd += charge_config.get(item['product_id'], {}).get('price_TW', 0)
+
                 really_pay_rmbs = pay_usd
             all_google_rmbs += item['order_rmb'] if str(item.get('platform', '')) == 'google-kvgames' else 0
             really_google_rmbs_CN += item['order_money'] if str(

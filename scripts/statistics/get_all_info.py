@@ -166,19 +166,23 @@ def equip(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
+    from gconfig import game_config
 
     equip_log = kwargs.get('equip_log') or get_bi_logger_by_type('equip')
     act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    config = game_config.equip
     for eid, num in mm.equip.equips.iteritems():
+
         if num <= 0:
             continue
-
+        config_e_id = config[eid]
         data = {
             'user_id': mm.uid,
             'act_time': act_time,
             'item_id': eid,
             'item_num': num,
             'create_date': create_date_str,
+            'star': config_e_id['star']
         }
 
         equip_log.info(json.dumps(data, separators=[',', ':']))
@@ -193,18 +197,22 @@ def card_pieces(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
+    from gconfig import game_config
 
     card_pieces_log = kwargs.get('card_pieces_log') or get_bi_logger_by_type('card_pieces')
     act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    config = game_config.card_piece
     for cid, num in mm.card.pieces.iteritems():
         if num <= 0:
             continue
+        config_c_id = config[cid]
         data = {
             'user_id': mm.uid,
             'act_time': act_time,
             'item_id': cid,
             'item_num': num,
             'create_date': create_date_str,
+            'star': config_c_id['star'],
         }
 
         card_pieces_log.info(json.dumps(data, separators=[',', ':']))
@@ -219,19 +227,23 @@ def equip_pieces(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
+    from gconfig import game_config
 
     equip_pieces_log = kwargs.get('equip_pieces_log') or get_bi_logger_by_type('equip_pieces')
     act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    config = game_config.equip_piece
     for eid, num in mm.equip.equip_pieces.iteritems():
+
         if num <= 0:
             continue
-
+        config_e_id = config[eid]
         data = {
             'user_id': mm.uid,
             'act_time': act_time,
             'item_id': eid,
             'item_num': num,
             'create_date': create_date_str,
+            'star': config_e_id['star']
         }
 
         equip_pieces_log.info(json.dumps(data, separators=[',', ':']))
