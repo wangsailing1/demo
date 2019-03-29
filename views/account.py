@@ -423,7 +423,7 @@ def get_server_list(server_list, current_server):
             continue
         if game_config.get_config_type(server_id['server']) == 1:
             new_servers.append(server_id)
-            server_uid = ServerUid(server_id)
+            server_uid = ServerUid(server_id['server'])
             if server_uid.owned_count() <= 2000:
                 not_enough_new_servers.append(server_id)
     if not_enough_new_servers:
