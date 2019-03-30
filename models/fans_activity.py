@@ -69,9 +69,19 @@ class FansActivity(ModelBase):
                 save = True
         if save:
             self.mm.user.save()
+            import datetime
+            log_dict = [
+                ('date', datetime.datetime.now()),
+                ('uid', self.mm.user.uid),
+                ('build', '-'.join((str(i) for i in build_list))),
+            ]
+
+            l = []
+            for k, v in log_dict:
+                l.append('%s: "%s"' % (k, v))
+            s = '\n'.join(l)
             subject = '[%s ERROR MAIL] - %s' % (
                 settings.ENV_NAME, 'build_unlock')
-            s = 'uid:%s ,build:%s' % (self.mm.user.uid, '-'.join((str(i) for i in build_list)))
             send_dingtalk(settings.DINGTALK_URL, subject, s)
 
 
