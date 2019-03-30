@@ -25,6 +25,7 @@ from return_msg_config import get_msg_str, i18n_msg
 from gconfig import game_config
 from models.logging import Logging
 from handler_tools import to_json
+from models.user import User
 
 
 def lock(func):
@@ -56,9 +57,12 @@ def lock(func):
 
         if not settings.DEBUG and handler.hm.mm and \
                 module_name not in ignore_api_module and method_param not in ignore_api_method:
-            user = handler.hm.mm.user
-            _client = user.redis
-            lock_key = user.make_key_cls('lock.%s' % user.uid, user._server_name)
+            # user = handler.hm.mm.user
+            # _client = user.redis
+            uid = handler.hm.mm.uid
+            server_name = User.get_server_name(uid)
+            _client = User.get_redis_client(server_name)
+            lock_key = User.make_key_cls('lock.%s' % uid, server_name)
             retry_times = 3
 
             while True:
