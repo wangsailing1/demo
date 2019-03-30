@@ -35,6 +35,8 @@ cup_num = {
     'sort': ('sort', 'int'),
     'icon': ('icon', 'str'),
     'des': ('des', 'str'),
+    'des1': ('des1', 'str'),
+    'des2': ('des2', 'str'),
 }
 
 # #颁奖设置
