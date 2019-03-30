@@ -69,23 +69,27 @@ class FansActivity(ModelBase):
                 save = True
         if save:
             self.mm.user.save()
-            import datetime
-            from lib.utils.debug import LOCAL_IP_STR
-            import socket
-            log_dict = [
-                ('date', datetime.datetime.now()),
-                ('hostname', LOCAL_IP_STR if LOCAL_IP_STR else socket.gethostname()),
-                ('uid', self.mm.user.uid),
-                ('build', '-'.join((str(i) for i in build_list))),
-            ]
+            try:
+                import datetime
+                from lib.utils.debug import LOCAL_IP_STR
+                import socket
+                log_dict = [
+                    ('date', datetime.datetime.now()),
+                    ('hostname', LOCAL_IP_STR if LOCAL_IP_STR else socket.gethostname()),
+                    ('uid', self.mm.user.uid),
+                    ('build', '-'.join((str(i) for i in build_list))),
+                ]
 
-            l = []
-            for k, v in log_dict:
-                l.append('%s: "%s"' % (k, v))
-            s = '\n'.join(l)
-            subject = '[%s ERROR MAIL] - %s' % (
-                settings.ENV_NAME, 'build_unlock')
-            send_dingtalk(settings.DINGTALK_URL, subject, s)
+                l = []
+                for k, v in log_dict:
+                    l.append('%s: "%s"' % (k, v))
+                s = '\n'.join(l)
+                subject = '[%s ERROR MAIL] - %s' % (
+                    settings.ENV_NAME, 'build_unlock')
+                send_dingtalk(settings.DINGTALK_URL, subject, s)
+            except:
+                from lib.utils.debug import print_log
+                print_log('build_unlock_err')
 
 
     def count_produce(self, get_reward=False, activity_id=0, is_save=True):
