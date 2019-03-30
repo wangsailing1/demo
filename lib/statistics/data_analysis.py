@@ -207,6 +207,8 @@ def update_cache_statistics_data(query_datetime, data):
             if query_daystr == regist_day:
                 p_result['regist_uid_pay_num'] += 1
 
+        # 指定日期跑数据，只计算查询日期以前的数据
+        pay_award_daily = {k: v for k, v in pay_award_daily.items() if k <= query_daystr}
         if len(pay_award_daily) == 1 and query_daystr in pay_award_daily and uid in pay_data:
             p_result['first_uid_pay_num'] += 1
             p_result['first_uid_pay_rmb'] += pay_money
@@ -411,6 +413,8 @@ def update_cache_statistics_data_for_account(query_datetime, data):
                 if query_daystr == regist_day:
                     p_result['regist_uid_pay_num'] += 1
 
+            # 指定日期跑数据，只计算查询日期以前的数据
+            pay_award_daily = {k: v for k, v in pay_award_daily.items() if k <= query_daystr}
             if len(pay_award_daily) == 1 and query_daystr in pay_award_daily and uid in pay_data:
                 p_result['first_uid_pay_num'] += 1
                 p_result['first_uid_pay_rmb'] += pay_money
