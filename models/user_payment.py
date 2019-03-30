@@ -12,7 +12,7 @@ from lib.utils.active_inreview_tools import get_version_by_active_id
 from lib.utils.time_tools import str2timestamp
 from return_msg_config import i18n_msg
 from lib.utils.debug import print_log
-from models.payment import CURRENCY_VIP_EXP
+from models.payment import CURRENCY_VIP_EXP, Payment
 import math
 
 
@@ -156,6 +156,15 @@ class UserPayment(ModelBase):
         if is_save:
             self.save()
 
+    def data_update_func_1(self):
+        if self.charge_price:
+            payment = Payment()
+            for item in payment.find_by_uid(self.uid):
+                order_date = item['order_time'][:10]
+                order_rmb = float(item['order_rmb'])
+                self.daily[order_date] = self.daily.get(order_date, 0) + order_rmb
+            self.save()
+
     def get_double_pay(self):
         """ 获取首冲双倍数据
 
@@ -220,6 +229,10 @@ class UserPayment(ModelBase):
         :param product_id:
         :return:
         """
+        if order_rmb > 0:
+            today = time.strftime('%F')
+            self.daily[today] = self.daily.get(today, 0) + order_rmb
+
         if can_open_gift:   # 实付金额大于或等于订单金额才会给gift
             now = int(time.time())
             add_diamond = int(math.ceil(order_rmb * CURRENCY_VIP_EXP.get(currency, 1)))

@@ -695,7 +695,8 @@ function compareEle(iCol, dataType) {
 </script>
 
 <body>
-
+{% from lib.statistics.data_analysis import get_process_done_time %}
+统计更新时间： {{get_process_done_time()}}
 {% block fieldbody %} {% end %}
 
 </body>

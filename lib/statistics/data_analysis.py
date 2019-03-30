@@ -32,9 +32,21 @@ DATA_STATISTICS_CHANNEL_DAILY_KEY = ModelTools.make_key_cls('data_statistics_cha
 DATA_ONE_DAY_LEVEL_RANK_KEY = ModelTools.make_key_cls('data_one_day_level_rank_key', 'public')
 PASS_RATE_KEY = ModelTools.make_key_cls('pass_rate_key', 'public')
 
+DATA_PROCESS_DONE_KEY = ModelTools.make_key_cls('data_process_done_key', 'public')
+
 
 def get_global_cache():
     return get_redis_client(settings.SERVERS['public']['redis'])
+
+
+def set_process_done_time():
+    cache = get_global_cache()
+    cache.set(DATA_PROCESS_DONE_KEY, time.strftime('%F %T'))
+
+
+def get_process_done_time():
+    cache = get_global_cache()
+    return cache.get(DATA_PROCESS_DONE_KEY) or ''
 
 
 def do_data_process_hourly(now=None):
@@ -207,6 +219,8 @@ def update_cache_statistics_data(query_datetime, data):
             if query_daystr == regist_day:
                 p_result['regist_uid_pay_num'] += 1
 
+        # 指定日期跑数据，只计算查询日期以前的数据
+        pay_award_daily = {k: v for k, v in pay_award_daily.items() if k <= query_daystr}
         if len(pay_award_daily) == 1 and query_daystr in pay_award_daily and uid in pay_data:
             p_result['first_uid_pay_num'] += 1
             p_result['first_uid_pay_rmb'] += pay_money
@@ -411,6 +425,8 @@ def update_cache_statistics_data_for_account(query_datetime, data):
                 if query_daystr == regist_day:
                     p_result['regist_uid_pay_num'] += 1
 
+            # 指定日期跑数据，只计算查询日期以前的数据
+            pay_award_daily = {k: v for k, v in pay_award_daily.items() if k <= query_daystr}
             if len(pay_award_daily) == 1 and query_daystr in pay_award_daily and uid in pay_data:
                 p_result['first_uid_pay_num'] += 1
                 p_result['first_uid_pay_rmb'] += pay_money
