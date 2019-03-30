@@ -104,7 +104,8 @@ def up_activity(hm):
     mm.fans_activity.change_card_mapping(activity_id,next_id)
 
     # mm.user.dollar -= cost
-    mm.user.up_build(build_id,is_save=True)
+    if mm.user.up_build(build_id, is_save=True):
+        return 6, {}  #
     mm.fans_activity.save()
     mm.user.save()
     fa = FansActivity(mm)

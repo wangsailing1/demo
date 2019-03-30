@@ -33,7 +33,7 @@ def target_sort_num(mm, reward_obj, target_data, mission_id, target_data1):
 
 # 票房
 def target_sort5(mm, reward_obj, target_data, mission_id, target_data1):
-    target_value = target_data1
+    target_value = target_data[1]
     value = reward_obj.get_count(mission_id)
     return value >= target_value, value, target_value
 
