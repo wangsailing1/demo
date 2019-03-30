@@ -17,9 +17,10 @@ import settings
 env = sys.argv[1]
 settings.set_env(env)
 
-from lib.statistics.data_analysis import do_data_process_hourly
+from lib.statistics.data_analysis import do_data_process_hourly, set_process_done_time
 
 
 if __name__ == '__main__':
     do_data_process_hourly()
+    set_process_done_time()
 
