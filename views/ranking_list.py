@@ -183,7 +183,7 @@ def get_user_info(hm):
         'group_info': mm.script.get_scrip_info_by_num(is_type=2),
         'script_info': mm.script.get_scrip_info_by_num(),
         'name': mm.user.name,
-        'vip': mm.user.vip,
+        'vip': mm.user.company_vip,
         'guild_name': mm.user.guild_name,
         'actor_num': len(mm.card.cards),
         'level': mm.user.level,
