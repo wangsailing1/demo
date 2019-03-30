@@ -492,8 +492,8 @@ class Mission(ModelBase):
             # if not self.guide_done and not self.guide_data:
             #     self.get_guide_mission()
             self.get_all_random_mission()
-            if not self.achieve_done and not self.achieve_data:
-                self.get_achieve_mission()
+            # if not self.achieve_done and not self.achieve_data:
+            self.get_achieve_mission()
             is_save = True
         if self.mm.user.level >= 5 and not self.box_office_last_date:
             self.box_office_done = []
@@ -512,7 +512,20 @@ class Mission(ModelBase):
             self.save()
 
     def get_achieve_mission(self):
+        own_group = []
+        config = game_config.achieve_mission
+        for a_id in self.achieve_data:
+            group_id = config.get(a_id,{}).get('group', 0)
+            if group_id and group_id not in own_group:
+                own_group.append(group_id)
+        for a_id in self.achieve_done:
+            group_id = config.get(a_id, {}).get('group', 0)
+            if group_id and group_id not in own_group:
+                own_group.append(group_id)
+
         for group, value in game_config.get_achieve_mission_mapping().iteritems():
+            if group in own_group:
+                continue
             if value['unlock_lvl'] > self.mm.user.level:
                 continue
             self.achieve_data[min(value.keys())] = 0
