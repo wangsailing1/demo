@@ -70,8 +70,11 @@ class FansActivity(ModelBase):
         if save:
             self.mm.user.save()
             import datetime
+            from lib.utils.debug import LOCAL_IP_STR
+            import socket
             log_dict = [
                 ('date', datetime.datetime.now()),
+                ('hostname', LOCAL_IP_STR if LOCAL_IP_STR else socket.gethostname()),
                 ('uid', self.mm.user.uid),
                 ('build', '-'.join((str(i) for i in build_list))),
             ]
