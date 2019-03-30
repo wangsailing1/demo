@@ -477,6 +477,8 @@ class Mission(ModelBase):
         today = time.strftime('%F')
         box_office_time = time.strftime('%T')
         is_save = False
+        if self.get_achieve_mission():
+            s_save = True
         if not self.new_guide_data and not self.new_guide_done:
             for i in range(1,4):
                 self.new_guide_data[i] = 0
@@ -514,6 +516,7 @@ class Mission(ModelBase):
     def get_achieve_mission(self):
         own_group = []
         config = game_config.achieve_mission
+        save = False
         for a_id in self.achieve_data:
             group_id = config.get(a_id,{}).get('group', 0)
             if group_id and group_id not in own_group:
@@ -530,6 +533,8 @@ class Mission(ModelBase):
                 continue
             self.achieve_data[min(value.keys())] = 0
             self.check_and_do_achive_mission(min(value.keys()))
+            save= True
+        return save
 
     # 获取成就目标id
     def get_achieve_id(self):
