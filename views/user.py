@@ -156,9 +156,9 @@ def game_info(hm):
     #                  citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
     #                  aitem=mm.awaken_item.items, )
     item_info = dict(item=mm.item.items)
-    block = Block(mm)
-    block.check_has_ceremony()
-    block.count_cup(is_save=True)
+    # block = Block(mm)
+    # block.check_has_ceremony()
+    # block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
     info['skip_dialouge'] = mm.user.skip_dialouge
