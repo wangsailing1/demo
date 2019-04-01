@@ -44,6 +44,7 @@ def choice_winner(hm):
     mm = hm.mm
     tp = hm.get_argument('tp', 0, is_int=True)
     uid = hm.get_argument('uid', '')
+    rid = hm.get_argument('rid', '')
     if not tp:
         return 1, {}  # 选择类型错误
     if not uid:
@@ -53,6 +54,7 @@ def choice_winner(hm):
                                        tp_rank)
     date = get_date_before()
     br = BlockRank(rank_uid, mm.block._server_name, date)
+    uid = "%s_%s" % (uid, rid)
     if br.get_rank(uid) == 1:
         gift = game_config.cup_num.get(tp, {}).get('like_num', [])
         reward = add_mult_gift(mm, gift)
