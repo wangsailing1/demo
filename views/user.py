@@ -56,7 +56,7 @@ def main(hm):
     # mm.user.send_vip_daily_reward()
 
     # vip专属通知
-    mm.user.send_vip_exclusive_notice()
+    # mm.user.send_vip_exclusive_notice()
 
     # 全服邮件
     mm.user.send_system_mail()
