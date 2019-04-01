@@ -344,7 +344,7 @@ class Chapter_stage(object):
 
         for times_ in xrange(1, times + 1):
             gift[times_] = copy.deepcopy(stage_config['fight_reward'])
-            print gift
+            # print gift
             for i in range(1, 4):
                 random_num = 'random_num%s' % i
                 random_reward = 'random_reward%s' % i

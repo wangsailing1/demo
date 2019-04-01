@@ -635,7 +635,6 @@ class Card(ModelBase):
             num = card_info[attr]
             max_num = card_config[attr]
             rate = int(num * 100 / max_num)
-            print rate
             for _, value in rest_config.iteritems():
                 if value['type'] == type and value['rank'][0] <= rate <= value['rank'][1]:
                     effect[attr] = value['effect']

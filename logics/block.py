@@ -113,7 +113,7 @@ class Block(object):
         robot_data = []
         if robot_num >= 0:
             script_list = game_config.script.keys()
-            print script_list
+            # print script_list
             for _ in range(robot_num):
                 name = game_config.get_random_name(self.mm.user.language_sort)
                 script_id = random.choice(script_list)

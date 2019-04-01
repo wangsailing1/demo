@@ -1390,7 +1390,7 @@ class User(ModelBase):
         # 2018.05.19 缩短session长度,做个兼容
         long_value = len(session) == 42  # long value: md5 + int(time.time())
         sid = sid_generate(self.account, str(ts), long_value)
-        print session, sid, long_value
+        # print session, sid, long_value
         # 检验是否过期及sid正确性
         if expired < time.time():
             return True

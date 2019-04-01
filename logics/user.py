@@ -422,7 +422,7 @@ class UserLogic(object):
         :param skip:
         :return:
         """
-        print sort, guide_id, skip
+        # print sort, guide_id, skip
         flag = self.do_guide(sort, guide_id, skip, save=False)
 
         data = {'sort': sort, 'guide_id': guide_id}
