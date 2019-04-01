@@ -49,7 +49,11 @@ def choice_winner(hm):
         return 1, {}  # 选择类型错误
     if not uid:
         return 2, {}  # 未选人
+    if mm.block.choice_winner:
+        return 3, {}  # 已选择过获奖者
     tp_rank = mm.block.RANK[tp]
+    mm.block.choice_winner = 1
+    mm.block.save()
     rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
                                        tp_rank)
     date = get_date_before()
