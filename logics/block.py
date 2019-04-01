@@ -186,6 +186,7 @@ class Block(object):
                         data[tp_num] = {
                             'name': self.mm.user.name,
                             'card_cid': card_info['id'],
+                            'card_id': card_id,
                             'card_name': card_info['name'],
                             'score': score,
                             'reward_type': reward_type,
