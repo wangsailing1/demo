@@ -101,7 +101,7 @@ class UserPayment(ModelBase):
 
         today = time.strftime('%F')
 
-        if self.last_day == today:
+        if self.last_day == today and self.first_charge_show != 0:
             self.first_charge_show = 0
             is_save = True
         if self.last_day != today:
