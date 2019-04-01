@@ -173,7 +173,6 @@ def refresh_unlock_build(mm):
     for unlock_type in unlock_build_type.values():
         unlock_mapping = game_config.get_building_unlock_mapping(unlock_type)
         for unlock_id, unlock_config in unlock_mapping.iteritems():
-            print unlock_id
             unlock_limit = unlock_config['unlock_lvl']
             # guide_team = unlock_config['unlock_guide_team']
             if unlock_id not in mm.user.unlock_build:
