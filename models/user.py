@@ -1442,8 +1442,8 @@ class User(ModelBase):
 
         self.vip_exp = next_exp
         self.vip = next_level
-        if cur_level < 8 <= self.vip:
-            self.send_vip_exclusive_notice()
+        # if cur_level < 8 <= self.vip:
+        #     self.send_vip_exclusive_notice()
 
         if is_uplevel:
             vip_info = VipInfo('', self.father_server_name)
