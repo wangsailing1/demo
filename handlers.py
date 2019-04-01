@@ -33,7 +33,7 @@ def lock(func):
     ignore_api_module = []
     ignore_api_method = ['user.get_red_dot', 'star_reward.index', 'endless.index', 'big_world.login', 'big_world.battle_data']
     # 需要排队的接口
-    retry_module = ['big_world', 'user']
+    retry_module = ['big_world']
     retry_api_method = ['user.guide']
 
     def error(handler, msg=''):
@@ -77,7 +77,7 @@ def lock(func):
                     if flag or (now > float(_client.get(lock_key)) and now > float(_client.getset(lock_key, ts))):
                         break
                     else:
-                        if module_name in retry_module and method_param in retry_api_method and retry_times > 0:
+                        if (module_name in retry_module or method_param in retry_api_method) and retry_times > 0:
                             time.sleep(0.05)
                         else:
                             error(handler, i18n_msg.get(19, handler.hm.req.get_argument('lan', '1')))
