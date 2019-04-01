@@ -46,21 +46,21 @@ SLG_RESPONE = dict(SLG_REDIS_DEFAULT, db=3)
 
 
 # master配置
-master = {'host': '10.10.4.11', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+master = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
 # 公共配置
-public = {'host': '10.10.4.11', 'port': 6300, 'socket_timeout': 5, 'db': 1, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+public = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 1, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
 # 聊天
-chat_config = {'host': '10.10.4.11', 'port': 6300, 'socket_timeout': 5, 'db': 2, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+chat_config = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 2, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
 # celery
-celery_config = {'host': '10.10.4.11', 'port': 6300, 'socket_timeout': 5, 'db': 14, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+celery_config = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 14, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
 
 # 每个app配置
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
-    ('tw1', 'net1', '10.10.4.11', 6300, 3),
-    ('tw2', 'net1', '10.10.4.11', 6301, 3),
-    ('tw3', 'net1', '10.10.4.11', 6302, 3),
-    ('tw4', 'net1', '10.10.4.11', 6303, 3),
+    ('tw1', 'net1', '10.10.4.14', 6300, 3),
+    ('tw2', 'net1', '10.10.4.14', 6301, 3),
+    ('tw3', 'net1', '10.10.4.14', 6302, 3),
+    ('tw4', 'net1', '10.10.4.14', 6303, 3),
 ]
 
 
@@ -77,41 +77,41 @@ config_resource = [
 payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
-    'host': '10.10.4.11',
+    'host': '10.10.4.14',
     'user': 'root',
-    'passwd': 'w34QB8jK01HAlYT2KH6Z',
+    'passwd': '1MRzvCJZa0S0K6h929cT',
     'db': 'sale_tw',
     'table_prefix': 'payment',
 }
 
 SPEND_CONFIG = {
-    'host': '10.10.4.11',
+    'host': '10.10.4.14',
     'user': 'root',
-    'passwd': 'w34QB8jK01HAlYT2KH6Z',
+    'passwd': '1MRzvCJZa0S0K6h929cT',
     'db': 'sale_tw',
     'table_prefix': 'spend',
 }
 
 EARN_CONFIG = {
-    'host': '10.10.4.11',
+    'host': '10.10.4.14',
     'user': 'root',
-    'passwd': 'w34QB8jK01HAlYT2KH6Z',
+    'passwd': '1MRzvCJZa0S0K6h929cT',
     'db': 'sale_tw',
     'table_prefix': 'earn',
 }
 
 QUEST_CONFIG = {
-    'host': '10.10.4.11',
+    'host': '10.10.4.14',
     'user': 'root',
-    'passwd': 'w34QB8jK01HAlYT2KH6Z',
+    'passwd': '1MRzvCJZa0S0K6h929cT',
     'db': 'sale_tw',
     'table_prefix': 'quest',
 }
 
 GS_HOST = {
-    'host': '10.10.4.11',
+    'host': '10.10.4.14',
     'user': 'root',
-    'passwd': 'w34QB8jK01HAlYT2KH6Z',
+    'passwd': '1MRzvCJZa0S0K6h929cT',
     'db': 'sale_tw',
     'table_prefix': 'client_service',
 }
