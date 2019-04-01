@@ -110,7 +110,7 @@ class OnePieceLogic(object):
             self.one_piece.open_times += 1
 
             # 获取免费宝箱
-            print self.one_piece_config
+            # print self.one_piece_config
             free_reward = self.one_piece_config['free_reward']
             _gift_config = weight_choice(free_reward)
             gifts = copy.deepcopy([_gift_config[:3]])

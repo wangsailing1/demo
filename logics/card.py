@@ -358,7 +358,7 @@ class CardLogic(object):
         card_config = game_config.card_basis[card_id]
         piece_id = card_config['piece_id']
         cost = card_config['star_cost']
-        print piece_id, card.pieces
+        # print piece_id, card.pieces
         if card.get_piece(piece_id) < cost:
             return 'error_card_piece', {}
         if not self.mm.card.can_add_new_card() and not self.mm.card.has_card_with_group_id(card_id):
@@ -382,7 +382,7 @@ class CardLogic(object):
 
         equip_id = piece_config['equip_id']
         cost = piece_config['use_num']
-        print equip_id, equip.equip_pieces
+        # print equip_id, equip.equip_pieces
         if equip.get_piece(equip_piece_id) < cost * num:
             return 'error_equip_piece', {}
 

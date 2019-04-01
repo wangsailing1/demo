@@ -86,8 +86,12 @@ def error_mail(debug, addr_list):
                 result = func(self, *args, **kwargs)
             except:
                 import traceback, resource
+                import settings
+
                 tb = traceback.format_exc()
                 form = ''
+                subject = '[%s ERROR MAIL] - %s' % (settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
+
                 if len(self.request.arguments) > 0:
                     form_list = []
                     for k, v in self.request.arguments.iteritems():
@@ -106,16 +110,16 @@ def error_mail(debug, addr_list):
                     ('', '\n\n'),
                     ('class_method', "%s.%s" % (self.__class__.__module__, self.__class__.__name__)),
                     ('tb', tb),
+                    ('', ''),
+                    (subject, ''),
                 ]
 
                 l = []
                 for k, v in log_dict:
                     l.append('%s: "%s"' % (k, v))
                 s = '\n'.join(l)
-                import settings
 
                 if debug:
-                    subject = '[%s ERROR MAIL] - %s' % (settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
                     # subject = '[ERROR MAIL] '+settings.ENV_NAME+': '+socket.gethostname()+': '+tb.splitlines()[-1]
                     # 发邮件(相同的报错内容一天只发5次)
                     content_md5 = md5(tb)
