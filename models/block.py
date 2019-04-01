@@ -39,6 +39,7 @@ class Block(ModelBase):
             'rank_reward_date': '',  # 领奖时间
             'today_card': [],  # 当天拍过片的艺人
             'today_script': [],  # 当天拍过的剧本
+            'choice_winner': 0   # 选择获奖者
         }
 
         super(Block, self).__init__(self.uid)
@@ -55,6 +56,7 @@ class Block(ModelBase):
             self.reward_data = {}
             self.today_card = []
             self.today_script = []
+            self.choice_winner = 0
             save = True
         last_date = get_date_before(REFRESH_TIME)
         if last_date != self.rank_reward_date:
