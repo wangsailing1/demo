@@ -324,7 +324,7 @@ class ModelBase(ModelTools):
         self.redis.set(_key, s)
 
         if settings.DEBUG:
-            print 'model save : ', _key
+            print 'model save : ', _key, 'length: %s' % len(s)
 
     @classmethod
     def get(cls, uid, server_name='', mm=None, *args, **kwargs):
