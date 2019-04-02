@@ -960,10 +960,13 @@ payment_msg = {
         1: u'獎勵已領取',
         3: u'未達到條件',
     },
-    'payment.add_recharge_index':{
+    'payment.get_add_recharge':{
         1: u'活動未開啟',
         2: u'獎勵已領取',
         3: u'未達到條件',
+    },
+    'payment.add_recharge_index': {
+        1: u'活動未開啟',
     },
 }
 
