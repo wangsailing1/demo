@@ -5,7 +5,7 @@ import copy
 
 from models.ranking_list import BlockRank
 from lib.core.environ import ModelManager
-from models.block import get_date_before
+from models.block import get_date_before, get_date
 from gconfig import game_config, get_str_words
 from tools.gift import add_mult_gift
 
@@ -96,10 +96,13 @@ class Block(object):
             self.block.save()
         return data
 
-    def get_big_sale_info(self):
+    def get_big_sale_info(self, today=False):
         data = []
         check_data = {}
-        date = get_date_before()
+        if today:
+            date = get_date()
+        else:
+            date = get_date_before()
         info = copy.deepcopy(self.block.top_script.get(date, {}))
         while len(data) < 10:
             for script_id, value in info.iteritems():
@@ -306,6 +309,6 @@ class Block(object):
                         'script_name': script_name,
                         'score': score
                     }
-        big_sale_info = self.get_big_sale_info()
+        big_sale_info = self.get_big_sale_info(today=True)
         data['big_sale_info'] = big_sale_info
         return data
