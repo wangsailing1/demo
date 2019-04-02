@@ -22,7 +22,6 @@ from lib.utils import fake_deepcopy
 from models.ranking_list import BlockRank
 from logics.mission import Mission
 from return_msg_config import i18n_msg
-from logics.foundation import Foundation
 
 
 def refresh_roulette_ranktime():
@@ -68,7 +67,6 @@ class UserLogic(object):
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
         result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
-        foundation = Foundation(self.mm)
         has_reward = self.mm.foundation.has_reward()
         if not has_reward and not self.mm.foundation.is_open():
             if 2009 in result['active_switch']:
