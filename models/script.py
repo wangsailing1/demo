@@ -539,7 +539,7 @@ class Script(ModelBase):
                 self.mm.block.top_script[date] = {}
             big_sale = self.mm.block.top_script[date].get(script_id, {}).get('big_sale_num', 0)
             self.mm.block.top_script[date][script_id] = dict(film_info)
-            if film_info.get('big_sale', 0) >= 6:
+            if film_info.get('end_lv', 0) >= 6:
                 big_sale += 1
                 self.block.big_sale += 1
             self.mm.block.top_script[date][script_id]['big_sale_num'] = big_sale
