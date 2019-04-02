@@ -67,12 +67,12 @@ class UserLogic(object):
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
         result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
-        has_reward = self.mm.foundation.has_reward()
-        if not has_reward and not self.mm.foundation.is_open():
-            if 2009 in result['active_switch']:
-                result['active_switch'].remove(2009)
-            if 2009 in result['active_remain_time']:
-                result['active_remain_time'].remove(2009)
+        # has_reward = self.mm.foundation.has_reward()
+        # if not has_reward and not self.mm.foundation.is_open():
+        #     if 2009 in result['active_switch']:
+        #         result['active_switch'].remove(2009)
+        #     if 2009 in result['active_remain_time']:
+        #         result['active_remain_time'].remove(2009)
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
 
