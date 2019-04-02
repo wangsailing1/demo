@@ -168,7 +168,7 @@
         type: 'line',
         data: {
             labels: [
-                {% for step in sorted(recent_online_info) %}
+                {% for step in sorted(yestoday_online_info or recent_online_info) %}
                     "{{step}}",
                 {% end %}
             ],
@@ -179,10 +179,23 @@
                     'rgba(54, 162, 235, 0.2)',
                 ],
                 borderColor: [
-                    'rgba(54, 162, 235, 1)',
+                    'rgba(54, 162, 235, 2)',
                 ],
                 borderWidth: 1
-            }]
+            },
+            {
+                label: '# yestoday online user',
+                data: {{[int(v) for k, v in sorted(yestoday_online_info.items(), key=lambda x: x[0])]}},
+                backgroundColor: [
+                    'rgba(248,248,255, 0.2)',
+                    // 'rgba(178,34,34, 10)',
+                ],
+                borderColor: [
+                    'rgba(178,34,34, 1)',
+                ],
+                borderWidth: 0.5
+            },
+            ]
         },
         options: {
             scales: {

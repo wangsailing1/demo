@@ -127,7 +127,9 @@ def select(req):
         big_brother_server = cur_uid_per_server.get(big_brother_uid[:-7], {}).get('server_name', big_brother_server)
 
     recent_online_info = get_all_server_recent_online_info()
+    yestoday_online_info = get_all_server_recent_online_info(today - datetime.timedelta(days=1))
     result['recent_online_info'] = recent_online_info
+    result['yestoday_online_info'] = yestoday_online_info
     result['cur_uid_per_server'] = cur_uid_per_server
     result['today_online_users_count'] = today_online_users_count
     result['redis_server_memory_info'] = redis_server_memory_info
