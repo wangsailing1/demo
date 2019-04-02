@@ -76,7 +76,7 @@ from lib.utils.online_user import backup_all_server_online_count
 # from logics.decisive_battle import mapping_battle_uid, send_duel_rank_award
 # from logics.decisive_battle import one_server_battle, vip_auto_enroll
 from logics.super_player import super_player_refresh_time, active_reward_time, refresh, active_reward
-
+from logics.server_super_player import server_super_player_refresh_time, server_active_reward_time, server_refresh, server_active_reward
 JOBS_RUNTIME_KEY = 'jobs_runtime_key'
 # 任务配置，添加分服或任务后，需要重启进程使之生效
 TIMEZONE = 'Asia/Harbin'
@@ -112,6 +112,9 @@ DATE_LIST_JOBS = (
     (super_player_refresh_time                  , refresh           , 1),
     # 超级大玩家发奖
     (active_reward_time                         , active_reward     , 1),
+    (server_super_player_refresh_time           , server_refresh           , 0),
+    # 超级大玩家发奖
+    (server_active_reward_time                  , server_active_reward     , 0),
 )
 
 

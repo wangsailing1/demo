@@ -238,3 +238,11 @@ class Payment(object):
         """
         for table in ['%s_%s' % (self.table_prefix, x) for x in xrange(self.TABLE_COUNT)]:
             yield table
+
+    # 按订单删除充值数据，谨慎操作
+    def delete_order(self, order_id, commit=False):
+        table = self.generate_table(order_id)
+        sql = 'delete from %s where order_id=%s' % (table, order_id)
+        self.cursor.execute(sql)
+        if commit:
+            self.conn.commit()

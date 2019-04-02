@@ -480,7 +480,7 @@ def split_timedelta(tm):
 
 
 # 分隔时间如 1 00:00:00-15 00:00:00 的格式的时间范围， 支持以逗号分隔的多组
-def split_time_list(tm, open_dt):
+def split_time_list(tm, open_dt, diff_hour=0):
     intervals = tm.split(',')  # 取出开服活动的每一个时间段
     s_time = datetime.datetime.now()
     e_time = datetime.datetime.now()
@@ -490,6 +490,7 @@ def split_time_list(tm, open_dt):
         e_day, e_hour, e_minute, e_seconds = split_timedelta(end)
         s_delta = datetime.timedelta(s_day - 1)  # 开服后第几天开始的数值
         e_delta = datetime.timedelta(e_day - 1)
+        e_hour -= diff_hour
         s_day = open_dt + s_delta
         e_day = open_dt + e_delta
         s_clock = datetime.time(s_hour, s_minute, s_seconds)  # 开始的具体时刻
@@ -503,12 +504,12 @@ def split_time_list(tm, open_dt):
 
 
 # 获取inreview表的活动时间确定版本信息
-def get_inreview_version(user, active_id):
+def get_inreview_version(user, active_id, diff_hour=0):
     opening = user.server_opening_time_info()
     open_time = opening['open_time']
     open_dt = datetime.datetime.strptime(open_time, "%Y-%m-%d")  # 开服时间
     time_list = game_config.server_inreview[active_id]['name']
-    version, s_time, e_time = split_time_list(time_list, open_dt)
+    version, s_time, e_time = split_time_list(time_list, open_dt, diff_hour=diff_hour)
     new_server = 0  # 是否为开服活动期间
     if version:
         new_server = 1

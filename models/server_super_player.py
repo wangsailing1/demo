@@ -12,7 +12,7 @@ from lib.db import ModelBase, ModelTools
 from lib.core.environ import ModelManager
 from lib.utils import generate_rank_score
 from lib.utils.debug import print_log
-from lib.utils.active_inreview_tools import get_version_by_active_id, get_inreview_version
+from lib.utils.active_inreview_tools import get_inreview_version
 from chat.to_server import send_to_all
 from lib.utils.time_tools import strftimestamp, datetime_to_timestamp
 
@@ -91,7 +91,7 @@ class ServerSuperPlayer(ModelBase):
 
     def add_day_spend(self, coin_num):
         if self.version:
-            super_player_config = game_config.player.get(self.version)
+            super_player_config = game_config.server_player.get(self.version)
             if super_player_config:
                 FORMAT = '%Y-%m-%d %H:%M:%S'
                 start_time = self.start_time
