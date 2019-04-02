@@ -70,9 +70,9 @@ class UserLogic(object):
         has_reward = self.mm.foundation.has_reward()
         if not has_reward and not self.mm.foundation.is_open():
             if 2009 in result['active_switch']:
-                result['active_switch'].remove(2009)
+                result['active_switch'].pop(2009)
             if 2009 in result['active_remain_time']:
-                result['active_remain_time'].remove(2009)
+                result['active_remain_time'].pop(2009)
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
 
