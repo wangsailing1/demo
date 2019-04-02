@@ -254,7 +254,7 @@ def server_active_reward(server):
 def server_super_player_refresh_time(server):
     config_type = game_config.get_config_type(server)
     if config_type != 1:
-        return
+        return []
     uid = '%s1234567'%server
     mm = ModelManager(uid)
 
@@ -287,7 +287,7 @@ def server_super_player_refresh_time(server):
 def server_active_reward_time(server):
     config_type = game_config.get_config_type(server)
     if config_type != 1:
-        return
+        return []
     uid = '%s1234567' % server
     mm = ModelManager(uid)
 
