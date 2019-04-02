@@ -960,6 +960,9 @@ payment_msg = {
     },
     'payment.add_recharge_index': {
         1: u'活动未开启',
+    },
+    'payment.get_add_recharge': {
+        1: u'活动未开启',
         2: u'奖励已领取',
         3: u'未达到条件',
     },
