@@ -158,7 +158,7 @@ def get_statistics_retention_data(query_date):
             user_data[uid] = {
                 'server_id': mm.user._server_name,                  # 分服id
                 'token': token,                                     # token
-                'device': mm.user.device,                                     # device
+                'device': mm.user.device.replace('-', ''),                                     # device
                 'channel': channel,                                 # 渠道
                 'appid': mm.user.appid,                             # appid标示 区分ios与安卓
                 'package_appid': mm.user.package_appid,              # 包类型 twjjwsshb
