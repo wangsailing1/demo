@@ -112,9 +112,9 @@ DATE_LIST_JOBS = (
     (super_player_refresh_time                  , refresh           , 1),
     # 超级大玩家发奖
     (active_reward_time                         , active_reward     , 1),
-    (server_super_player_refresh_time           , server_refresh           , 0),
-    # 超级大玩家发奖
-    (server_active_reward_time                  , server_active_reward     , 0),
+    # (server_super_player_refresh_time           , server_refresh           , 0),
+    # # 超级大玩家发奖
+    # (server_active_reward_time                  , server_active_reward     , 0),
 )
 
 
