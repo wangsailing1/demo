@@ -98,22 +98,18 @@ class Block(object):
 
     def get_big_sale_info(self, today=False):
         data = []
-        check_data = {}
         if today:
             date = get_date()
         else:
             date = get_date_before()
         info = copy.deepcopy(self.block.top_script.get(date, {}))
-        while len(data) < 10:
+        while True:
             for script_id, value in info.iteritems():
                 if value['big_sale_num'] >= 1:
                     data.append([self.mm.user.name, value['name']])
-                    value['big_sale_num'] -= 1
-                    check_data[script_id] = value['big_sale_num']
                 if len(data) >= 10:
                     break
-            if sum(check_data.values()) <= 0:
-                break
+            break
         robot_num = 10 - len(data)
         robot_data = []
         if robot_num >= 0:
@@ -249,16 +245,15 @@ class Block(object):
         # self.block.save()
         # return True
 
-        block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
-                                                             'income')
-        date = get_date_before()
-        bir = BlockRank(block_income_rank_uid, self.mm.script._server_name, date)
-        user_num = len(bir.get_all_user(0, 4))
-        if user_num == 5:
-            self.block.has_ceremony = 1
-            self.block.save()
-            return True
-        return False
+        # block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
+        #                                                      'income')
+        # date = get_date_before()
+        # bir = BlockRank(block_income_rank_uid, self.mm.script._server_name, date)
+        # user_num = len(bir.get_all_user(0, 4))
+        self.block.has_ceremony = 1
+        self.block.save()
+        return True
+        # return False
 
     def get_ranking_info(self):
         data = {}
