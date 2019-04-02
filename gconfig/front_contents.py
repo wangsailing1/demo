@@ -618,6 +618,11 @@ super_player_mapping = {
     'play_shop': ('play_shop', True),
     'play_rankreward': ('play_rankreward', True),
     'play_points': ('play_points', True),
+    'server_player': ('server_player', True),
+    'server_play_redbag': ('server_play_redbag', True),
+    'server_play_shop': ('server_play_shop', True),
+    'server_play_rankreward': ('server_play_rankreward', True),
+    'server_play_points': ('server_play_points', True),
 }
 # 注册需要写到最下面
 register_handler()

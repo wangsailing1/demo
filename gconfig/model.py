@@ -334,6 +334,10 @@ class GameConfigMixIn(object):
         self.play_rankreward_mapping = {}
         self.play_points_mapping = {}
         self.rmb_foundation_mapping = {}
+        self.server_play_shop_mapping = {}
+        self.server_play_redbag_mapping = {}
+        self.server_play_rankreward_mapping = {}
+        self.server_play_points_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -434,6 +438,10 @@ class GameConfigMixIn(object):
         self.play_rankreward_mapping.clear()
         self.play_points_mapping.clear()
         self.rmb_foundation_mapping.clear()
+        self.server_play_shop_mapping.clear()
+        self.server_play_redbag_mapping.clear()
+        self.server_play_rankreward_mapping.clear()
+        self.server_play_points_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2575,6 +2583,50 @@ class GameConfigMixIn(object):
                     self.play_points_mapping[version] = {}
                 self.play_points_mapping[version][i] = j
         return self.play_points_mapping
+
+    # 新服超级大玩家mapping
+    def get_server_play_shop_mapping(self):
+        if not self.server_play_shop_mapping:
+            for i, j in self.server_play_shop.iteritems():
+                version = j['version']
+                sort = j['sort']
+                j['id'] = i
+                if version not in self.server_play_shop_mapping:
+                    self.server_play_shop_mapping[version] = {}
+                if sort not in self.server_play_shop_mapping[version]:
+                    self.server_play_shop_mapping[version][sort] = {}
+                self.server_play_shop_mapping[version][sort][i] = j
+        return self.server_play_shop_mapping
+
+    def get_server_play_redbag_mapping(self):
+        if not self.server_play_redbag_mapping:
+            for i, j in self.server_play_redbag.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.server_play_redbag_mapping:
+                    self.server_play_redbag_mapping[version] = {}
+                self.server_play_redbag_mapping[version][i] = j
+        return self.server_play_redbag_mapping
+
+    def get_server_play_rankreward_mapping(self):
+        if not self.server_play_rankreward_mapping:
+            for i, j in self.server_play_rankreward.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.server_play_rankreward_mapping:
+                    self.server_play_rankreward_mapping[version] = {}
+                self.server_play_rankreward_mapping[version][i] = j
+        return self.server_play_rankreward_mapping
+
+    def get_server_play_points_mapping(self):
+        if not self.server_play_points_mapping:
+            for i, j in self.server_play_points.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.server_play_points_mapping:
+                    self.server_play_points_mapping[version] = {}
+                self.server_play_points_mapping[version][i] = j
+        return self.server_play_points_mapping
 
 
     def get_rmbfoundation_mapping(self):

@@ -16,10 +16,18 @@ import settings
 
 env = sys.argv[1]
 filename = sys.argv[2]
+ts = 0
+if len(sys.argv) == 4:
+    ts = sys.argv[3]
 settings.set_env(env)
 
 from models.server import ServerConfig
 from models.user import RegistUsers
+from lib.utils.time_tools import str2timestamp
+if ts:
+    if len(ts) == 8:
+        ts = '%s000000'%ts
+    ts = str2timestamp(ts,fmt='%Y%m%d%H%M%S')
 
 
 

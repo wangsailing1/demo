@@ -29,6 +29,8 @@ from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from lib.db import get_redis_client
 from lib.utils.crypto import md5
+from lib.utils.time_tools import datetime_from_timestamp, str2timestamp
+
 # from models.mission import building
 
 BAN_INFO_MESSAGE = {
@@ -40,12 +42,12 @@ BAN_INFO_MESSAGE = {
     'basic_end': u'如有疑问，请联系官方客服Q群：{}，感谢您的支持！',
 }
 
+
 # 建筑解锁条件（等级）
-def lvlup_condition_1(mm,num):
+def lvlup_condition_1(mm, num):
     if mm.user.level < num:
         return 101
     return 0
-
 
 
 class User(ModelBase):
@@ -216,7 +218,7 @@ class User(ModelBase):
             'vip_exp': 0,
             'company_vip_exp': 0,
             'company_vip': 1,
-            'company_vip_reward': [], # 已领取的vip礼包
+            'company_vip_reward': [],  # 已领取的vip礼包
             'active_time': 0,
             'online_time': 0,
             'login_days': [],
@@ -291,9 +293,8 @@ class User(ModelBase):
     @classmethod
     def get_name_unique_key(cls, name, k=None):
         if not k:
-            k = int(md5(name),16) % 20
-        return 'models.user||User||public||NameUnique||%s'%k
-
+            k = int(md5(name), 16) % 20
+        return 'models.user||User||public||NameUnique||%s' % k
 
     @classmethod
     def set_name_unique(cls, name):
@@ -428,7 +429,7 @@ class User(ModelBase):
         week = time.strftime('%W')
         if not self.company_vip:
             self.company_vip = 1
-            is_save= True
+            is_save = True
         if not self.skip_dialouge:
             if vip_company.if_skip_story(self):
                 self.skip_dialouge = vip_company.if_skip_story(self)
@@ -1132,7 +1133,7 @@ class User(ModelBase):
             spend_event = self.mm.get_event('spend_event')
             spend_event.record(diamond)
 
-            #超级大玩家
+            # 超级大玩家
             self.mm.superplayer.add_day_spend(diamond)
             # 消耗钻石活动
             # if self.mm.action not in settings.SPEND_IGNORE_METHOD:
@@ -1463,7 +1464,7 @@ class User(ModelBase):
         special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='VIP'))
 
     # 增加company_vip经验
-    def add_company_vip_exp(self,add_exp, is_save=False):
+    def add_company_vip_exp(self, add_exp, is_save=False):
         if not add_exp:
             return False
         next_exp = self.company_vip_exp + add_exp
@@ -1500,7 +1501,6 @@ class User(ModelBase):
     def can_get_company_vip_reward(self):
         reward_list = range(1, self.company_vip + 1)
         return list(set(reward_list) - set(self.company_vip_reward))
-
 
     def add_player_exp(self, add_exp):
         """ 增加战队经验
@@ -1602,7 +1602,7 @@ class User(ModelBase):
             'change_type': 'EXP',  # 级别经验类型 玩家经验、等级
         }
         gift = []
-        for i in xrange(cur_level +1 , self.level + 1):
+        for i in xrange(cur_level + 1, self.level + 1):
             level_gift = game_config.player_level.get(i, {}).get('award')
             gift.extend(level_gift)
         add_mult_gift(self.mm, gift)
@@ -1612,12 +1612,12 @@ class User(ModelBase):
 
     def can_buy_level_gift(self, level_id):
         if level_id not in self.level_gift:
-            return 0   # 可充值
+            return 0  # 可充值
         if self.level_gift[level_id]['status'] != 0:
-            return 11   # 已充值
+            return 11  # 已充值
         now = int(time.time())
-        if now > self.level_gift[level_id]['expire'] :
-            return 12   # 已过期
+        if now > self.level_gift[level_id]['expire']:
+            return 12  # 已过期
         return 0
 
     def level_gift_red_dot(self):
@@ -1870,13 +1870,12 @@ class User(ModelBase):
 
         return True
 
-    def check_guide_done(self,guide_id):
+    def check_guide_done(self, guide_id):
         guide_step = self.guide.get(guide_id, 0)
         config = game_config.guide.get(guide_step, {})
         if not config:
             return 0
         return config['aim']
-
 
     def send_vip_daily_reward(self):
         """
@@ -1984,10 +1983,17 @@ class User(ModelBase):
         """
         today = datetime.datetime.today()
         today_str = today.strftime('%F')
-        server_opening_award_expire = self.SERVER_OPENING_AWARD_EXPIRE
         server_open_time = serverM.get_server_config(self._server_name)['open_time']
         open_time = datetime.datetime.fromtimestamp(server_open_time)
-        close_time = open_time + datetime.timedelta(days=server_opening_award_expire - 1)
+        server_num = settings.get_server_num(self._server_name)
+        close_time = game_config.server_type.get(server_num, {}).get('time', '')
+        if close_time:
+            close_time = str2timestamp(close_time)
+            close_time = datetime_from_timestamp(close_time)
+            close_time = close_time + datetime.timedelta(days=-1)
+        else:
+            server_opening_award_expire = self.SERVER_OPENING_AWARD_EXPIRE
+            close_time = open_time + datetime.timedelta(days=server_opening_award_expire - 1)
 
         open_times_str = open_time.strftime('%F')
         close_time_str = close_time.strftime('%F')
@@ -2130,7 +2136,7 @@ class User(ModelBase):
             if stats:
                 return stats
         else:
-            return 201 # 没有配置
+            return 201  # 没有配置
         return 0
 
     @property
@@ -2176,7 +2182,7 @@ class OnlineUsers(ModelTools):
     活跃玩家
     """
     ONLINE_USERS_PREFIX = 'online_users'
-    DELETED_USER_PREFIX = 'deleted_users'    # redis 中 存放已经删除的用户的key
+    DELETED_USER_PREFIX = 'deleted_users'  # redis 中 存放已经删除的用户的key
 
     ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
     FORMAT = '%Y%m%d'
