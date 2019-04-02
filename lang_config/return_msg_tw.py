@@ -45,7 +45,7 @@ return_msg_config = {
     'error_diamond': u"鑽石不足",
     'error_coin': u"金幣不足",
     'error_dollar': u"美元不足",
-    'error_no_ceremony': u'參賽人數少於五人，本屆頒獎典禮取消',
+    'error_no_ceremony': u'敬請期待明天晚上九點的頒獎典禮',
 
     'error_card_cold': u'藝人被雪藏中',
     'error_card_piece': u'藝人碎片不足',
