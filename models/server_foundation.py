@@ -7,9 +7,10 @@ from lib.db import ModelBase
 from gconfig import game_config
 from lib.core.environ import ModelManager
 from lib.utils.active_inreview_tools import get_inreview_version
+from lib.utils.time_tools import strftimestamp, datetime_to_timestamp
 
 # 钻石福利基金
-class Foundation(ModelBase):
+class ServerFoundation(ModelBase):
     """
     User make foundation for themselves
     """
@@ -28,34 +29,32 @@ class Foundation(ModelBase):
             'score': 0,  # 本次活动期间充值钻石数
             'activate_mark': {},  # 各类基金激活的日期
             'reward_dict': {},  # 统计未被领取的奖励
-            'a_id': 0,
+            'start_time': '',  # 开启时间
+            'end_time': '',  # 结束时间
         }
-        super(Foundation, self).__init__(self.uid)
+        super(ServerFoundation, self).__init__(self.uid)
 
     def pre_use(self):
         if self.has_reward():
             self.get_foundation_status()
             self.save()
             return
-        a_id, version = self.get_version()
-        if self.version != version or self.a_id != a_id:
-            self.refresh()
+        version, new_server, s_time, e_time = self.get_version()
+        if self.version != version:
+            self.version = version
+            self.start_time = strftimestamp(datetime_to_timestamp(s_time))
+            self.end_time = strftimestamp(datetime_to_timestamp(e_time))
+            self.save()
         self.get_foundation_status()
         self.save()
 
     def get_version(self):
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
-        return a_id, version
-
-    def refresh(self):
-        if (self.a_id and self.version) or (not self.a_id and not self.version):
-            self.score = 0
-        self.a_id, self.version = self.get_version()
+        return version, new_server, s_time, e_time
 
 
     def is_open(self):
-        a_id , version = self.get_version()
-        if version:
+        if self.version:
             return True
         return False
 
@@ -76,7 +75,7 @@ class Foundation(ModelBase):
         self.save()
 
     def get_foundation_status(self):
-        for f_id, foundation_info in game_config.foundation.iteritems():
+        for f_id, foundation_info in game_config.server_foundation.iteritems():
             if foundation_info['version'] != self.version:
                 continue
 
@@ -89,4 +88,4 @@ class Foundation(ModelBase):
                         reward_dict.append(day)
                 self.reward_dict[f_id] = sorted(reward_dict)
 
-ModelManager.register_model('foundation', Foundation)
+ModelManager.register_model('serverfoundation', ServerFoundation)
