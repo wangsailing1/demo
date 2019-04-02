@@ -69,8 +69,8 @@ celery_config = {'host': '10.10.4.10', 'port': 6402, 'socket_timeout': 5, 'db': 
 # 每个app配置
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
-    ('vr1', 'net1', '10.10.4.10', 6402, 3),
-    ('vr2', 'net1', '10.10.4.10', 6402, 3),
+    ('tws1', 'net1', '10.10.4.10', 6402, 3),
+    ('tws2', 'net1', '10.10.4.10', 6402, 3),
 ]
 
 
