@@ -181,7 +181,9 @@
                 borderColor: [
                     'rgba(54, 162, 235, 2)',
                 ],
-                borderWidth: 1
+                // borderWidth: 1,
+                fill: false,
+
             },
             {
                 label: '# yestoday online user',
@@ -193,18 +195,41 @@
                 borderColor: [
                     'rgba(178,34,34, 1)',
                 ],
-                borderWidth: 0.5
+                borderWidth: 0.5,
+                fill: false,
+
             },
             ]
         },
         options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }]
-            }
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        // scaleLabel: {
+                        //     display: true,
+                        //     // labelString: 'Count'
+                        // },
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                        },
+                        ticks: {
+                            beginAtZero:true
+                        }
+
+                    }]
+                }
         }
     });
     var my_redis = new Chart(redis_ctx, {
