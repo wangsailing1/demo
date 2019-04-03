@@ -174,7 +174,8 @@ class SpendEvent(EventBase):
         """
         args = copy.deepcopy(self.mm.args)
         for i in {"device_mk", "platform_channel", "device_mem", "user_token",
-                  "version", "mk", "method", "device_mark", "cjyx2", '__ts', 'ks'}:
+                  "version", "mk", "method", "device_mark", "cjyx2", '__ts', 'ks',
+                  "device", "lan", "pt", "appid"}:
             args.pop(i, None)
         data = {
             'diamond_1st': self.mm.user.diamond + cost,
