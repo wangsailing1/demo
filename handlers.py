@@ -481,23 +481,25 @@ class APIRequestHandler(BaseRequestHandler):
                 self.hm.mm.do_save()
 
                 # 关于客户端数据缓存的更新
+                l = []
                 for k, obj in self.hm.mm._model.iteritems():
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         if obj._model_name == 'mission':
                             from logics.mission import Mission as LMission
                             mission = LMission(self.hm.mm)
-                            l = []
                             for m_id, m_value in obj._client_cache_update()['achieve_data']['update'].items():
                                 if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
                                     l.append(m_id)
-                            for d_m_id in l:
-                                obj._client_cache_update()['achieve_data']['update'].pop(d_m_id)
-                            if not obj._client_cache_update()['achieve_data']['update']:
-                                client_cache_udpate.pop('mission')
 
                         old_data[k] = getattr(obj, '_old_data', {})
-
+                if l:
+                    for d_m_id in l:
+                        if d_m_id in client_cache_udpate.get('mission', {}).get('achieve_data', {}).get('update', {}):
+                            client_cache_udpate['mission']['achieve_data']['update'].pop(d_m_id)
+                    if not client_cache_udpate.get('mission', {}).get('achieve_data', {}).get('update', {})\
+                            and 'mission' in client_cache_udpate:
+                        client_cache_udpate.pop('mission')
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
