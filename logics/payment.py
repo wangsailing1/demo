@@ -541,6 +541,7 @@ def pay_apple(hm):
         'lan_sort': lan_sort,
         'act_id': act_id,
         'act_item_id': act_item_id,
+        'currency': lan_sort
     }
     return pay_apply(hm.mm, obj, charge_config)
 

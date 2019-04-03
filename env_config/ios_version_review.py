@@ -29,7 +29,7 @@ CONFIG_RESOURCE_OPEN = True
 CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
-APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
+APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos', 'com.mancala.starcontract']
 
 # 前端热更资源地址
 # resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
