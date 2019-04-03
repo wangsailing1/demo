@@ -91,14 +91,17 @@ class Foundation(ModelBase):
             f_active_date = self.activate_mark[id]
             f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
             days = (datetime.date.today() - f_active_date).days + 1
+            for d in range(1, days):
+                if d in self.reward_dict.get(id, []):
+                    self.reward_dict[id].remove(d)
             if self.score >= foundation_info['need_coin'] and id not in self.reward_dict:
                 self.activate_mark[id] = time.strftime('%F')
                 reward_dict = []
                 for key, value in foundation_info.iteritems():
                     if key.startswith('day'):
                         day = int(key.split('day')[1])
-                        if day < days:
-                            continue
+                        # if day < days:
+                        #     continue
                         reward_dict.append(day)
                 self.reward_dict[id] = sorted(reward_dict)
 
