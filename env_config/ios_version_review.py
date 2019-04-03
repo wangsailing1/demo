@@ -17,7 +17,7 @@ BDC_PLATFORM = 'SERVER'
 
 PLATFORM = 'ios_version_review'    # 平台标示
 URL_PARTITION = 'big_sale'
-MASTER_HOST = '164.52.10.227'
+MASTER_HOST = 'bigsale-tw-inreview.hi365.com'
 IN_MASTER_HOST = '10.10.4.10'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
