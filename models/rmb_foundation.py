@@ -79,6 +79,12 @@ class RmbFoundation(ModelBase):
                     reward_list.remove(day)
             if reward_list:
                 tag = 1
+
+        # 暂时刷新数据
+        if not tag and self.is_open():
+            self.reward_dict = {}
+            self.activate_mark = {}
+
         if tag:
             return True
         return False
