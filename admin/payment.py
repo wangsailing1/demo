@@ -279,7 +279,7 @@ def pay_day(req):
         x['rmb'] = float(x['order_rmb'] or 0)
         add_diamond += x['order_diamond']
         x['name'] = mm.get_mm(x['user_id']).user.name
-        x['usd'] = round(x['rmb'] / currencys.get(CURRENCY_USD, 1), 2)
+        x['usd'] = charge_config.get(x['product_id'], {}).get('price_TW', 0)
         if str(x.get('platform', '')) == 'google-kvgames' and x.get('currency') in ['USD', 'TWD']:
             x['currency'] = 'USD'
             x['usd'] = charge_config.get(x['product_id'], {}).get('price_TW', 0)
