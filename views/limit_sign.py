@@ -11,7 +11,8 @@ def limit_sign_index(hm):
         return 1, {}
     return 0, {'version': limit_sign.version,
                'reward_dict': limit_sign.reward_dict,
-               'score': limit_sign.score}
+               'score': limit_sign.score,
+               'remain_time': limit_sign.get_remain_time()}
 
 def get_reward(hm):
     mm = hm.mm
