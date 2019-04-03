@@ -46,6 +46,7 @@ class RmbFoundation(ModelBase):
     def pre_use(self):
         # if not self.is_open():
         if self.has_reward():
+            self.save()
             return
         a_id, version = self.get_version()
         if self.version != version or self.a_id != a_id:
