@@ -69,7 +69,7 @@ class RmbFoundation(ModelBase):
 
     def has_reward(self):
         tag = 0
-        for days, reward_list in self.reward_dict.iteritems():
+        for id, reward_list in self.reward_dict.iteritems():
             if reward_list:
                 tag = 1
                 break

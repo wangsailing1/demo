@@ -7,6 +7,7 @@ from lib.db import ModelBase
 from gconfig import game_config
 from lib.core.environ import ModelManager
 from lib.utils.active_inreview_tools import get_version_by_active_id
+import datetime
 
 
 # 钻石福利基金
@@ -87,12 +88,17 @@ class Foundation(ModelBase):
             if foundation_info['version'] != self.version:
                 continue
             id = foundation_info['id']
+            f_active_date = self.activate_mark[id]
+            f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
+            days = (datetime.date.today() - f_active_date).days + 1
             if self.score >= foundation_info['need_coin'] and id not in self.reward_dict:
                 self.activate_mark[id] = time.strftime('%F')
                 reward_dict = []
                 for key, value in foundation_info.iteritems():
                     if key.startswith('day'):
                         day = int(key.split('day')[1])
+                        if day < days:
+                            continue
                         reward_dict.append(day)
                 self.reward_dict[id] = sorted(reward_dict)
 
