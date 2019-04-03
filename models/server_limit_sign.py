@@ -6,7 +6,7 @@ from lib.db import ModelBase
 from gconfig import game_config, MUITL_LAN
 from lib.core.environ import ModelManager
 from lib.utils.active_inreview_tools import get_inreview_version
-
+from lib.utils.time_tools import datetime_to_timestamp
 
 # 限时签约
 class ServerLimitSign(ModelBase):
@@ -52,6 +52,15 @@ class ServerLimitSign(ModelBase):
                 self.mm.mail.add_mail(message, save=False)
                 value['status'] = 1
         self.mm.mail.save()
+
+    def get_remain_time(self):
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
+        end_time = datetime_to_timestamp(e_time)
+        now = int(time.time())
+        if not version:
+            return -1
+        remain_time = end_time - now
+        return remain_time if remain_time > 0 else 0
 
     def is_open(self):
         version = self.get_version()
