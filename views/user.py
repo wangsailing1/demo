@@ -60,6 +60,8 @@ def main(hm):
 
     # 全服邮件
     mm.user.send_system_mail()
+    mm.limit_sign.is_open()
+    mm.server_limit_sign.is_open()
 
 
     result = ul.main()
