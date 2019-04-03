@@ -164,7 +164,6 @@
 <script>
     var redis_ctx = document.getElementById("redis_chart").getContext('2d');
     var ctx = document.getElementById("myChart").getContext('2d');
-    {% set steps = sorted(yestoday_online_info or recent_online_info) %}
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
