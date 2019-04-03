@@ -2,6 +2,7 @@
 __author__ = 'kaiqigu'
 
 import time
+import datetime
 
 from lib.core.environ import ModelManager
 from lib.db import ModelTools
@@ -207,6 +208,41 @@ class GuildTaskRank(AllRank):
     """
     公会boss降临活动排行榜
     """
+
+
+class KingOfSongRank(AllRank):
+    """
+    歌王降临活动排行榜
+    """
+    def __init__(self, uid='', server='', *args, **kwargs):
+        super(KingOfSongRank, self).__init__(uid, server, *args, **kwargs)
+        self.father_server = settings.get_father_server(server)
+        self._key = self.get_key()
+        # self.fredis =
+
+    def get_key(self, season_date=None):
+        if season_date is None:
+            season_date = datetime.datetime.now()
+        season = season_date.strftime('%Y-%m')
+        return self.make_key('%s_%s' % (self.__class__.__name__, season), server_name=self.father_server)
+
+    def add_rank(self, uid, star, rank):
+        """
+        增加排名
+        :param uid:
+        :param star:
+        :param rank:
+        :return:
+        """
+        score = rank * 1000 + star
+        self.fredis.zadd(self._key, uid, generate_rank_score(score))
+        self.fredis.expire(self._key, 30 * 24 * 3600)
+
+    def parse_star_rank(self, score):
+        if score is None:
+            return 0, 1
+        rank, star = divmod(score, 1000)
+        return star, rank
 
 
 class LevelRank(AllRank):
@@ -653,3 +689,5 @@ ModelManager.register_model_base_tools('appeal_rank', AppealRank)
 ModelManager.register_model_base_tools('output_rank', OutPutRank)
 ModelManager.register_model_base_tools('alloutput_rank', AllOutPutRank)
 ModelManager.register_model_base_tools('block_rank', BlockRank)
+ModelManager.register_model_base_tools('king_of_song_rank', KingOfSongRank)
+
