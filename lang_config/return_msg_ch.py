@@ -970,6 +970,30 @@ payment_msg = {
     },
 }
 
+limit_sign_msg = {
+    'limit_sign.limit_sign_index': {
+        1: u'活动未开启',
+    },
+    'limit_sign.get_reward': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该奖励未激活',
+        4: u'该奖励已经领取',
+    },
+}
+
+server_limit_sign_msg = {
+    'server_limit_sign.limit_sign_index': {
+        1: u'活动未开启',
+    },
+    'server_limit_sign.get_reward': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该奖励未激活',
+        4: u'该奖励已经领取',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',

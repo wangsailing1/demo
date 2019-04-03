@@ -971,3 +971,18 @@ add_recharge = {
     'reward':           ('reward',          'int_list'),    # 奖励[类型，id，数量]
     'des':              ('des',          'str'),            # des
 }
+
+# 限时累充活动
+add_recharge_limit = {
+    'uk':               ('id',              'int'),         # 序号
+    'version':          ('version',         'int'),                # 版本号
+    'type':             ('type',            'int'),                # 充值类型
+    'number':           ('number',          'int'),              # 充值类型
+    'reward':           ('reward',          'int_list'),    # 奖励[类型，id，数量]
+    'card_id':          ('card_id',         'int'),            # 对应卡牌
+    'mail_name':        ('mail_name',       'str'),            # 邮件标题
+    'mail_des':         ('mail_des',        'str'),            # 邮件内容
+}
+
+# 限时累充活动
+server_add_recharge_limit = add_recharge_limit

@@ -24,7 +24,7 @@ class ServerSuperPlayer(ModelBase):
     ADD_CAN_RECEIVED_TIME = 10
     SPEND_SEND_NEED = 5000
     PAY_SEND_NEED = 300
-    ACTIVE_ID = 2013
+    ACTIVE_ID = 40000
 
     def __init__(self, uid=None):
         """
