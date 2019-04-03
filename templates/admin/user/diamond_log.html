@@ -37,7 +37,7 @@
           <td align="center" width="0">{{st['diamond_num'] if st['flag'] < 0 else ''}}</td>
           <td align="center" width="0">{{st['diamond_1st'] if st['flag'] < 0 else st['old_diamond']}}</td>
           <td align="center" width="0">{{st['diamond_2nd'] if st['flag'] < 0 else st['old_diamond'] + st['diamond_num']}}</td>
-          <td align="center" width="0">{{st.get('args')}}</td>
+          <td align="center" width="0" style="word-break: break-word">{{st.get('args')}}</td>
                   </tr>
         {% end %}
         <tr>
