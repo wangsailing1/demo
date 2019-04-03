@@ -68,7 +68,7 @@
         </table>
 
         <br>
-        <div><canvas id="myChart" width="200" height="50" style="display: none;"></canvas></div>
+        <div><canvas id="myChart" width="200" height="50" style="display: ;"></canvas></div>
         <table width="50%">
             <tr>
                 <td>昨日平均一回：</td><td>0</td>
@@ -164,17 +164,23 @@
 <script>
     var redis_ctx = document.getElementById("redis_chart").getContext('2d');
     var ctx = document.getElementById("myChart").getContext('2d');
+    {% set steps = sorted(yestoday_online_info or recent_online_info) %}
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: [
-                {% for step in sorted(yestoday_online_info or recent_online_info) %}
+                {% for step in steps %}
                     "{{step}}",
                 {% end %}
             ],
             datasets: [{
                 label: '# 今日',
-                data: {{[int(v) for k, v in sorted(recent_online_info.items(), key=lambda x: x[0])]}},
+                data: [
+                    {% for step in steps %}
+                        {{recent_online_info.get(step, '')}},
+                    {% end %}
+                ],
+                // {{[int(v) for k, v in sorted(recent_online_info.items(), key=lambda x: x[0])]}},
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.2)',
                 ],
@@ -187,7 +193,12 @@
             },
             {
                 label: '# 昨日',
-                data: {{[int(v) for k, v in sorted(yestoday_online_info.items(), key=lambda x: x[0])]}},
+                data: [
+                    {% for step in steps %}
+                        {{yestoday_online_info.get(step, '')}},
+                    {% end %}
+                ],
+                // {{[int(v) for k, v in sorted(yestoday_online_info.items(), key=lambda x: x[0])]}},
                 backgroundColor: [
                     'rgba(248,248,255, 0.2)',
                     // 'rgba(178,34,34, 10)',
@@ -201,7 +212,12 @@
             },
             {
                 label: '# 上周同期',
-                data: {{[int(v) for k, v in sorted(one_week_ago_online_info.items(), key=lambda x: x[0])]}},
+                data: [
+                    {% for step in steps %}
+                        {{one_week_ago_online_info.get(step, '')}},
+                    {% end %}
+                ],
+                // {{[int(v) for k, v in sorted(one_week_ago_online_info.items(), key=lambda x: x[0])]}},
                 backgroundColor: [
                     'rgba(248,248,255, 0.2)',
                     // 'rgba(178,34,34, 10)',

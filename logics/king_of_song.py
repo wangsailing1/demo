@@ -202,6 +202,8 @@ class KingOfSongLogics(object):
             gift = add_mult_gift(self.mm, rank_config['award_lose'])
             data['rank_down'] = rank_down
 
+        self.add_rank()
+
         data['gift'] = gift
         data['rank'] = king.rank
         data['star'] = king.star
@@ -216,6 +218,11 @@ class KingOfSongLogics(object):
         king.refresh_enemy()
         king.save()
         return 0, data
+
+    def add_rank(self):
+        king = self.mm.king_of_song
+        rank_obj = self.mm.get_obj_tools('king_of_song_rank')
+        rank_obj.add_rank(king.uid, king.star, king.rank)
 
     @staticmethod
     def get_judge_rating(all_score):

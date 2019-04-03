@@ -468,7 +468,7 @@ def top_rank(hm):
     mm = hm.mm
     NEW_RANK_KEY = {'combat', 'endless', 'level', 'single_hero', 'high_ladder', 'home_flower', 'guild_level',
                     'private_city_star',
-                    'decisive_battle', 'dark_street', 'big_world_power'}
+                    'decisive_battle', 'dark_street', 'big_world_power', 'king_of_song_rank'}
 
     sort = hm.get_argument('sort', '')
     page = hm.get_argument('page', is_int=True)

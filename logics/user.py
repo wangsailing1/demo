@@ -3,6 +3,7 @@
 __author__ = 'sm'
 
 import random
+import itertools
 
 from tools.user import user_info
 from gconfig import game_config
@@ -827,6 +828,9 @@ class UserLogic(object):
         elif tp == 'big_world_power':
             rank_obj = self.mm.get_obj_tools('big_world_power_rank')
 
+        elif tp == 'king_of_song_rank':
+            rank_obj = self.mm.get_obj_tools('king_of_song_rank')
+
         else:
             rank_obj = None
 
@@ -869,6 +873,12 @@ class UserLogic(object):
                 self_info['hero'] = info[0]
             else:
                 self_info['hero'] = {}
+
+        # 歌王 积分转换成star，rank
+        if tp == 'king_of_song_rank':
+            for user_info in itertools.chain(users, [self_info]):
+                star, rank = rank_obj.parse_star_rank(user_info['score'])
+                user_info['king_of_song_star'], user_info['king_of_song_rank'] = star, rank
 
         data = {
             'top': users,
