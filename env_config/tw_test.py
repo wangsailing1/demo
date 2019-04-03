@@ -29,7 +29,7 @@ CONFIG_RESOURCE_OPEN = True
 CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
-APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
+APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos', 'com.mancala.starcontract']
 
 # DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
