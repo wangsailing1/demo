@@ -71,6 +71,7 @@ class RmbFoundation(ModelBase):
     def has_reward(self):
         tag = 0
         for id, reward_list in self.reward_dict.iteritems():
+            f_active_date = self.activate_mark[id]
             f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
             days = (datetime.date.today() - f_active_date).days + 1
             for day in range(days):
