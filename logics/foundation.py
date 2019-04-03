@@ -32,11 +32,12 @@ class Foundation(object):
         return 0, data
 
     def withdraw(self, f_id, days):
-        f_active_date = self.mm.foundation.activate_mark[f_id]
+        foundation = self.mm.foundation
+        f_active_date = foundation.activate_mark[f_id]
         f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
         active_days = (datetime.date.today() - f_active_date).days + 1
-        reward_list = self.mm.foundation.reward_dict[f_id]
-        foundation_info = game_config.foundation[f_id]
+        reward_list = foundation.reward_dict[f_id]
+        foundation_info = game_config.get_foundation_mapping().get(foundation.version)[f_id]
 
         if days not in reward_list or active_days < days:
             return 4, {}  # 无奖励可领取
