@@ -173,7 +173,7 @@
                 {% end %}
             ],
             datasets: [{
-                label: '# online user',
+                label: '# 今日',
                 data: {{[int(v) for k, v in sorted(recent_online_info.items(), key=lambda x: x[0])]}},
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.2)',
@@ -186,7 +186,7 @@
 
             },
             {
-                label: '# yestoday online user',
+                label: '# 昨日',
                 data: {{[int(v) for k, v in sorted(yestoday_online_info.items(), key=lambda x: x[0])]}},
                 backgroundColor: [
                     'rgba(248,248,255, 0.2)',
@@ -196,6 +196,20 @@
                     'rgba(178,34,34, 1)',
                 ],
                 borderWidth: 0.5,
+                fill: false,
+
+            },
+            {
+                label: '# 上周同期',
+                data: {{[int(v) for k, v in sorted(one_week_ago_online_info.items(), key=lambda x: x[0])]}},
+                backgroundColor: [
+                    'rgba(248,248,255, 0.2)',
+                    // 'rgba(178,34,34, 10)',
+                ],
+                borderColor: [
+                    'rgba(72,44,34, 10)',
+                ],
+                borderWidth: 0.3,
                 fill: false,
 
             },
