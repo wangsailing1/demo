@@ -55,7 +55,8 @@ class Client(object):
 
     def disconnect(self):
         try:
-            print_log('client %s disconnect, ttl %s' % (self.socket.getpeername(), self.ttl), self.fileno)
+            online_time = int(time.time()) - (self.ttl - self.CLIENT_TIMEOUT)
+            print_log('client %s disconnect, ttl %s' % (self.socket.getpeername(), self.ttl), self.fileno, online_time)
         except:
             print_log('[%s] %s disconnet err' % (get_datetime_str(), self.uid))
             traceback.print_exc()
