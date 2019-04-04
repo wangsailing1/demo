@@ -433,7 +433,7 @@ def get_server_list(server_list, current_server):
         return [random.choice(new_servers)]
     # all_list = server_list[-2:] if len(server_list) >= 2 else server_list
     # return [random.choice(all_list)]
-    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['server']))
+    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['open_time']))
     return [server_list[-1]]
 
 

@@ -49,7 +49,6 @@ class Block(ModelBase):
         if self.last_date != get_date():
             self.last_date = get_date()
 
-            self.big_sale = 0
             self.award_ceremony = 0
             self.has_ceremony = 0
             self.is_count = 0
