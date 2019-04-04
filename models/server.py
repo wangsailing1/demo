@@ -252,7 +252,7 @@ class ServerConfig(ModelBase):
                 if not need_filter:
                     info.update(include_pt=include_pt, exclude_pt=exclude_pt)   # , elites_account=elites_account)
                 l.append(info)
-        l.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], x['server']))
+        l.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], settings.get_server_num(x['server'])))
         return l
 
     def get_server(self, server_name):
