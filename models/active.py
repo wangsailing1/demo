@@ -164,6 +164,12 @@ class SevenLogin(ModelBase):
     #     #     # self.days += 1
     #     #     self.save()
 
+    def data_update_func_1(self):
+        self.days = 1
+        self.got = []
+        self.refresh = ''
+        self.save()
+
     def get_next_reward_day(self):
         """获取下次可以领取的天数"""
         day = 0
