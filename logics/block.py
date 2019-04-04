@@ -234,6 +234,7 @@ class Block(object):
                     data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         self.block.is_count = 1
+        self.big_sale = 0
         if is_save:
             self.block.save()
 
