@@ -498,6 +498,14 @@ class Carnival(ModelBase):
         if save:
             self.save()
 
+    def data_update_func_1(self):
+        if self._server_name == 'tw1':
+            self.carnival_data = {}
+            self.carnival_done = {}
+            self.dice_num = 0
+            self.carnival_days = 0
+            self.carnival_step = 1
+
     def carnival_max_id(self, tp=1):
         if tp == 1:
             config = game_config.carnival_new_reward
