@@ -351,6 +351,7 @@ class Carnival(ModelBase):
             'carnival_days': 0,
             'carnival_step': 1,
             'reward_data': [],
+            'start_time': '',
         }
 
         super(Carnival, self).__init__(self.uid)
@@ -358,14 +359,16 @@ class Carnival(ModelBase):
     def pre_use(self, save=False):
         server_days = self.server_carvical_open()
         carnival_days = self.server_carvical_open(tp=2)
-        if not server_days and self.server_carnival_days:
+        start_time = game_config.carnival_days[2]['open'].split(' ')[0]
+        if not server_days:
             self.server_carnival_data = {}
             self.server_carnival_done = {}
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 1
             save = True
-        if not carnival_days and self.carnival_days:
+        if start_time != self.start_time:
+            self.start_time = start_time
             self.carnival_data = {}
             self.carnival_done = {}
             self.dice_num = 0
