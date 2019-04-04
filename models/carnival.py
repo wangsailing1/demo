@@ -360,6 +360,11 @@ class Carnival(ModelBase):
         server_days = self.server_carvical_open()
         carnival_days = self.server_carvical_open(tp=2)
         start_time = game_config.carnival_days[2]['open'].split(' ')[0]
+
+        if not self.start_time and carnival_days:
+            self.start_time = start_time
+            save = True
+            
         if not server_days:
             self.server_carnival_data = {}
             self.server_carnival_done = {}
@@ -367,7 +372,7 @@ class Carnival(ModelBase):
             self.server_carnival_days = 0
             self.server_carnival_step = 1
             save = True
-        if start_time != self.start_time:
+        if start_time != self.start_time and self.start_time and carnival_days:
             self.start_time = start_time
             self.carnival_data = {}
             self.carnival_done = {}
