@@ -482,9 +482,10 @@ class APIRequestHandler(BaseRequestHandler):
 
                 # 关于客户端数据缓存的更新
                 l = []
-                for k, obj in self.hm.mm._model.iteritems():
+                for k, obj in self.hm.mm._model.items():
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
+                        # todo mission client_cache 处理得优化
                         if obj._model_name == 'mission':
                             from logics.mission import Mission as LMission
                             mission = LMission(self.hm.mm)

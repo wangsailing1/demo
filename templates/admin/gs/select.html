@@ -1,23 +1,28 @@
 
 <body >
+{% from scripts.server_config.ipip import get_ip_addr %}
+{% from lib.utils import encoding %}
+
     {% if msg %}
     <div style="color: red">{{msg}}</div>
     {% end %}
-    <table style="width: 100%", border="1">
+    <table style="width: 100%", border="1" cellpadding="2" cellspacing="0" >
         <tr>
             <th>账号</th>
             <th>邮箱</th>
             <th>最后登录ip</th>
+            <th>最后登录地址</th>
             <th>最后登录时间</th>
             <th>操作</th>
         </tr>
         {% for user, info in all_user.iteritems() %}
             <tr>
-                <td style="width:20%;border-width:2px; border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/gs_admin/?username={{user}}">{{user}}</a> </td>
-                <td style="width:20%;border-width:2px; border-style:solid; text-align:center">{{info.get('email')}}</td>
-                <td style="width:20%;border-width:2px; border-style:solid; text-align:center">{{info.get('last_ip')}}</td>
-                <td style="width:20%;border-width:2px; border-style:solid; text-align:center">{{str(info.get('last_login'))}}</td>
-                <td style="width:20%;border-width:2px; border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/delete_admin/?username={{user}}">删除</a> </td>
+                <td style="border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/gs_admin/?username={{user}}">{{user}}</a> </td>
+                <td style="border-style:solid; text-align:center">{{info.get('email')}}</td>
+                <td style="border-style:solid; text-align:center">{{info.get('last_ip')}}</td>
+                <td style="border-style:solid; text-align:center">{{ encoding.force_str(get_ip_addr(info.get('last_ip'))) }}</td>
+                <td style="border-style:solid; text-align:center">{{str(info.get('last_login'))}}</td>
+                <td style="border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/delete_admin/?username={{user}}">删除</a> </td>
             </tr>
         {% end %}
     </table>

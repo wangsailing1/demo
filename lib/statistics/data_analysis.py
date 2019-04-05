@@ -353,7 +353,10 @@ def get_statistics_retention_data_for_account(all_data, target='token'):
         # print account_data, data['login_days']      # debug_flag
         account_data.setdefault('login_days', set()).update(data['login_days'])
         account_data.setdefault('pay_award_daily', {})
-        account_data['regist_time'] = time.strftime("%F %T", time.localtime(data['account_regist_time']))
+        # 一个设备或账号对应多个uid，取最早的 regist_time 作为设备或账号的注册时间
+        regist_time = time.strftime("%F %T", time.localtime(data['account_regist_time']))
+        if account_data.get('regist_time') < regist_time:
+            account_data['regist_time'] = regist_time
         merge_dict(account_data['pay_award_daily'], data['pay_award_daily'])
 
     pay_data = defaultdict(int)
