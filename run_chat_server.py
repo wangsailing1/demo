@@ -465,7 +465,7 @@ def close():
 
 def socket_server(host, port):
     print_log(__file__, '[%s] start handler_client server on port %s:%s' % (get_datetime_str(), host, port))
-    server = StreamServer((host, int(port)), request_handler)
+    server = StreamServer((host, int(port)), request_handler, spawn=10000)
     gevent.signal(signal.SIGTERM, close)
     gevent.signal(signal.SIGINT, close)
     server.serve_forever()
