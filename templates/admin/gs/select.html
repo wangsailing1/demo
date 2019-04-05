@@ -20,7 +20,7 @@
                 <td style="border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/gs_admin/?username={{user}}">{{user}}</a> </td>
                 <td style="border-style:solid; text-align:center">{{info.get('email')}}</td>
                 <td style="border-style:solid; text-align:center">{{info.get('last_ip')}}</td>
-                <td style="border-style:solid; text-align:center">{{ encoding.force_str(info.get('last_ip')) }}</td>
+                <td style="border-style:solid; text-align:center">{{ encoding.force_str(get_ip_addr(info.get('last_ip'))) }}</td>
                 <td style="border-style:solid; text-align:center">{{str(info.get('last_login'))}}</td>
                 <td style="border-style:solid; text-align:center"><a href="/{{url_partition}}/admin/gs/delete_admin/?username={{user}}">删除</a> </td>
             </tr>
