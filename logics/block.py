@@ -176,7 +176,7 @@ class Block(object):
                         uid, card_id = uid_card_id.split('_')
                         if self.mm.uid != uid:
                             continue
-                        rank = br.get_rank(uid)
+                        rank = br.get_rank(uid_card_id)
                         card_info = self.card.cards[card_id]
                         reward_type = 'win_cup_num'
                         if rank > 1:
@@ -205,7 +205,7 @@ class Block(object):
                         uid, script_id = uid_script_id.split('_')
                         if self.mm.uid != uid:
                             continue
-                        rank = br.get_rank(uid)
+                        rank = br.get_rank(uid_script_id)
                         script_id = int(script_id)
                         script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                         if not script_name:
