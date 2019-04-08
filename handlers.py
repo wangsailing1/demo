@@ -485,15 +485,25 @@ class APIRequestHandler(BaseRequestHandler):
                 for k, obj in self.hm.mm._model.items():
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
-                        # todo mission client_cache 处理得优化
-                        if obj._model_name == 'mission':
-                            from logics.mission import Mission as LMission
-                            mission = LMission(self.hm.mm)
-                            for m_id, m_value in obj._client_cache_update()['achieve_data']['update'].items():
-                                if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
-                                    l.append(m_id)
-
+#                         # todo mission client_cache 处理得优化
+#                         if obj._model_name == 'mission':
+#                             from logics.mission import Mission as LMission
+#                             mission = LMission(self.hm.mm)
+#                             for m_id, m_value in obj._client_cache_update()['achieve_data']['update'].items():
+#                                 if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
+#                                     l.append(m_id)
+#
                         old_data[k] = getattr(obj, '_old_data', {})
+
+
+                for model_name ,value in client_cache_udpate:
+                    if model_name == 'mission':
+                        from logics.mission import Mission as LMission
+                        mission = LMission(self.hm.mm)
+                        for m_id, m_value in client_cache_udpate['achieve_data']['update'].items():
+                            if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
+                                l.append(m_id)
+
                 if l:
                     for d_m_id in l:
                         if d_m_id in client_cache_udpate.get('mission', {}).get('achieve_data', {}).get('update', {}):
