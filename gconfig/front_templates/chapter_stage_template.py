@@ -34,7 +34,6 @@ chapter_stage = {
     'icon': ('icon', 'str'),  # 剧本图标
     'tag': ('tag', 'str'),  # 标签
     'script_icon': ('script_icon', 'str'),  # 图片icon
-    'noticie': ('noticie', 'str'),  # 解锁章节
 
 }
 
@@ -64,6 +63,7 @@ chapter = {
     'chapter_icon': ('chapter_icon', 'str'),  # 章节图标
     'preincome': ('preincome', 'int'),  # 章节进入前提-最高票房
     'prelv': ('prelv', 'int'),  # 章节进入前提-等级
+    'noticie': ('noticie', 'str'),  # 解锁章节
 
 }
 

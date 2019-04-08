@@ -470,6 +470,7 @@ class Mission(ModelBase):
             'achieve': 0,
             'new_guide_data': {},
             'new_guide_done': [],
+
         }
         super(Mission, self).__init__(self.uid)
 
