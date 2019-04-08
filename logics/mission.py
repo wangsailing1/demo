@@ -137,6 +137,7 @@ class Mission(object):
                     continue
                 data[type] = self.get_status_by_type(type)
             data['liveness'] = self.get_status_liveness()
+            data['performance'] = self.get_status_performance()
         else:
             type = self.mm.mission.MISSIONMAPPING[tp_id]
             data[type] = self.get_status_by_type(type)
@@ -179,6 +180,12 @@ class Mission(object):
         #         data[id] = [self.mm.mission.liveness,value['need_liveness'],0]
         return {'liveness': self.mm.mission.liveness,
                 'done': done}
+
+    def get_status_performance(self):
+        done = self.mm.mission.performance_done
+        return {'performance': self.mm.mission.performance,
+                'done': done}
+
 
     def get_status_by_type(self, type='daily'):
         mission_obj = getattr(self.mission, type)

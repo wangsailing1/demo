@@ -350,6 +350,15 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None,source=0):
             add_dict(data, 'liveness', add_num)
         mm.mission.save()
 
+    elif gift_sort == 103:  # 业绩
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_performance(add_num)
+            add_dict(data, 'performance', add_num)
+        mm.mission.save()
+
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
     #         guild_exp = pkg[1]
