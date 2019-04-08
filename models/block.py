@@ -22,7 +22,7 @@ class Block(ModelBase):
         self._attrs = {
             'block_num': 1,
             'cup': 0,
-            'block_group': 1,
+            'block_group': 0,
             'top_script': {},
             'big_sale': 0,
             'last_date': '',  # 最进操作时间
@@ -46,6 +46,10 @@ class Block(ModelBase):
 
     def pre_use(self):
         save = False
+        if not self.block_group:
+            self.count_group()
+            save = True
+
         if self.last_date != get_date():
             self.last_date = get_date()
 
@@ -64,6 +68,15 @@ class Block(ModelBase):
             save = True
         if save:
             self.save()
+
+    def count_group(self):
+        key_uid = self.get_key_profix(self.block_num)
+        b = BlockRank(key_uid, self._server_name)
+        if not b.check_user_exist_by_block(self.mm.uid):
+            num = b.get_num()
+            b.add_user_by_block(self.mm.uid, num)
+            group = b.get_group(self.mm.uid)
+            self.block_group = group
 
     def up_block(self, cup, is_save=False):
         config = game_config.dan_grading_list
