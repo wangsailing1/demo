@@ -60,6 +60,7 @@ class Block(ModelBase):
             self.today_card = []
             self.today_script = []
             self.choice_winner = []
+            self.get_award_ceremony = 0
             save = True
         last_date = get_date_before(REFRESH_TIME)
         if last_date != self.rank_reward_date:
