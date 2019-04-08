@@ -32,6 +32,21 @@ def get_reward(hm):
         data = mission.mission_index()
         data['reward'] = reward
         return 0, data
+
+    if tp_id == 8:  # 业绩目标
+        config = game_config.random_reward[mission_id]
+        if mission_id in mm.mission.performance_done:
+            return 3, {}  # 已领
+        if mission.get_status_performance()['performance'] < config['need_random']:
+            return 4, {}  # 未完成
+        gift = config['reward']
+        reward = add_mult_gift(mm, gift)
+        mm.mission.performance_done.append(mission_id)
+        mm.mission.save()
+        data = mission.mission_index()
+        data['reward'] = reward
+        return 0, data
+
     m_type = mm.mission.MISSIONMAPPING[tp_id]
     if not tp_id or not mission_id:
         return 1, {}  # 参数错误
@@ -58,6 +73,10 @@ def get_reward(hm):
         # mm.mission.achieve += achieve_point
         # a_id = mm.mission.get_achieve_id()
         # mm_obj.data[a_id] = mm.mission.achieve
+
+    if tp_id == 4:
+        achieve_point = mm_obj.config[mission_id]['random_liveness']
+        gift.append([103, 0, achieve_point])
     reward = add_mult_gift(mm, gift)
     mm.mission.save()
     if tp_id == 2:

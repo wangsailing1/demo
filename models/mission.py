@@ -470,6 +470,8 @@ class Mission(ModelBase):
             'achieve': 0,
             'new_guide_data': {},
             'new_guide_done': [],
+            'performance': 0, # 业绩
+            'performance_done': []  #
 
         }
         super(Mission, self).__init__(self.uid)
@@ -492,6 +494,8 @@ class Mission(ModelBase):
             self.live_done = []
             self.liveness = 0
             self.refresh_times = 0
+            self.performance = 0
+            self.performance_done = []
             # if not self.guide_done and not self.guide_data:
             #     self.get_guide_mission()
             self.get_all_random_mission()
@@ -626,6 +630,12 @@ class Mission(ModelBase):
     # 增加目标
     def add_liveness(self, point, save=False):
         self.liveness += point
+        if save:
+            self.save()
+
+    # 增加业绩
+    def add_performance(self, point, save=False):
+        self.performance += point
         if save:
             self.save()
 

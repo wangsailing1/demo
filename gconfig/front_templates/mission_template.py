@@ -52,6 +52,7 @@ random_mission = {
     'weight': ('weight', 'int'),  # 权重
     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
     'name': ('name', 'str'),  # 名字
+    'random_liveness': ('random_liveness', 'int'),  # 业绩点
 }
 
 # 成就任务
@@ -81,4 +82,11 @@ new_guide_mission = {
     'guide': ('guide', 'int'),  # 解锁等级
     'next_guide': ('next_guide', 'int'),  # 解锁等级
     'mission_des': ('mission_des', 'str'),  # 任务描述
+}
+
+# 业绩奖励
+random_reward = {
+    'uk': ('id', 'int'),
+    'need_random': ('need_random', 'int'),  # 所需活跃度
+    'reward': ('reward', 'int_list'),  # 奖励
 }
