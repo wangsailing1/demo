@@ -167,7 +167,6 @@ class Block(object):
             for tp in self.block.rank_list:
                 rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                      tp)
-                data = {}
                 date = get_date_before()
                 br = BlockRank(rank_uid, self.block._server_name, date)
                 nomination = br.get_all_user(0, 4, withscores=True)
