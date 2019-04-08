@@ -34,6 +34,7 @@ chapter_stage = {
     'icon': ('icon', 'str'),  # 剧本图标
     'tag': ('tag', 'str'),  # 标签
     'script_icon': ('script_icon', 'str'),  # 图片icon
+    'noticie': ('noticie', 'str'),  # 解锁章节
 
 }
 
