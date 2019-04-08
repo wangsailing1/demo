@@ -131,8 +131,8 @@ def rank_index(hm):
         return 0, {
             'rank_list': alloutput_rank_list,
             'rank_own': alloutput_rank_own_list,
-            'rank_before':rank_before,
-            'rank_reward_got':rank_reward_got,
+            'rank_before': rank_before,
+            'rank_reward_got': rank_reward_got,
         }
 
 
