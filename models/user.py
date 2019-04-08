@@ -2516,7 +2516,7 @@ class GSMessage(object):
         platform = user.account.split('_')[0] if user.account.split('_')[0] else ''
         data = {
             'user_id': "'" + user.uid + "'",
-            'vip_level': user.vip,
+            'vip_level': user.company_vip,
             'msg': "'" + msg + "'",
             'msg_type': msg_type,
             'ask_time': "'" + ask_time + "'",
@@ -2528,10 +2528,9 @@ class GSMessage(object):
             ",".join(["%s=%s" % (k, v) for k, v in data.iteritems()]),
         )
         print 'x' * 20, sql
-        conn = self.get_conn()
 
-        conn.cursor().execute(sql)
-        conn.commit()
+        self.cursor.execute(sql)
+        self.conn.commit()
 
     def get_conn(self):
         """ 创建mysql连接
