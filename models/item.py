@@ -108,11 +108,11 @@ class Item(ModelBase):
     def check_item_enough(self, gift):
         config = game_config.use_item
         add_food_num = 0
-        item = gift[0]
-        if item[0] == 5 and config[item[1]]['type'] == 2:
-            add_food_num += item[2]
-            if self.check_food_enough(add_food_num):
-                return 'error_food_enough'
+        for item in gift:
+            if item[0] == 5 and config[item[1]]['type'] == 2:
+                add_food_num += item[2]
+                if self.check_food_enough(add_food_num):
+                    return 'error_food_enough'
         return 0
 
     def check_food_enough(self, add_num=0):
