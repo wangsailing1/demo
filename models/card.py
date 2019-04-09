@@ -185,7 +185,7 @@ class Card(ModelBase):
                 v['skill_exp'] = 0
 
         # 刷新训练室状态
-        self.change_training_room_status(is_save=True)
+        self.change_training_room_status()
 
     def init_card(self):
         return
@@ -673,9 +673,9 @@ class Card(ModelBase):
 
     def change_training_room_status(self, is_save=False):
         training_room = self.training_room
-        build_effect = self.mm.user.build_effect.get(11)
-        if not build_effect:
-            return
+        # build_effect = self.mm.user.build_effect.get(11)
+        # if not build_effect:
+        #     return
 
         for key, info in training_room.items():
             status = info.get('status')
@@ -691,8 +691,8 @@ class Card(ModelBase):
                 if remain_time <= 0:
                     info['status'] = 1
 
-        if is_save:
-            self.save()
+        # if is_save:
+        #     self.save()
 
     def choice_train_card(self):
         result = []
