@@ -639,6 +639,7 @@ class Script(ModelBase):
             # 记录当天拍过片的艺人
             if card_id not in self.mm.block.today_card:
                 self.mm.block.today_card.append(card_id)
+                save = True
 
         # 记录当天拍过的剧本
         self.mm.block.today_script.append(script_id)
