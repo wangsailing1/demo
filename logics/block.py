@@ -10,7 +10,7 @@ from gconfig import game_config, get_str_words
 from tools.gift import add_mult_gift
 from models.card import Card
 from models.user import User
-from models.block import Block
+from models.block import Block as MBlock
 
 
 class Block(object):
@@ -73,7 +73,7 @@ class Block(object):
                     # umm = ModelManager(uid)
                     u = User.get(uid, from_req=False)
                     name = u.name
-                    block = Block.get(uid)
+                    block = MBlock.get(uid)
                     script_id = int(script_id)
                     script_name = block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not script_name:
@@ -302,7 +302,7 @@ class Block(object):
                     # umm = ModelManager(uid)
                     u = User.get(uid, from_req=False)
                     name = u.name
-                    block = Block.get(uid)
+                    block = MBlock.get(uid)
                     script_id = int(script_id)
                     script_name = block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not script_name:
