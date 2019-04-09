@@ -1012,6 +1012,7 @@ class FriendLogic(object):
         # if config[choice_id]['is_end']:
         #     self.friend.phone_daily_times += 1
         self.friend.save()
+        self.mm.card.save()
         if group_id not in self.mm.card.group_ids:
             love_lv = 0
         else:
