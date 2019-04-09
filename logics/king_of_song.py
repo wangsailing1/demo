@@ -213,6 +213,7 @@ class KingOfSongLogics(object):
         data.update(open_info)
 
         king.battle_times += 1
+        king.last_battle_team = [card_id for _, card_id in role_card]
         king.enemy_fight_data.clear()
         king.refresh_scripts()
         king.refresh_enemy()

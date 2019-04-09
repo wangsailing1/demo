@@ -8,6 +8,9 @@ from lib.core.environ import ModelManager
 from models.block import get_date_before, get_date
 from gconfig import game_config, get_str_words
 from tools.gift import add_mult_gift
+from models.card import Card
+from models.user import User
+from models.block import Block as MBlock
 
 
 class Block(object):
@@ -31,11 +34,13 @@ class Block(object):
                     data[tp_num] = {'win': {}, 'nomination': {}}
                 for uid_card_id, score in nomination:
                     uid, card_id = uid_card_id.split('_')
-                    umm = ModelManager(uid)
-                    name = umm.user.name
-                    if card_id not in umm.card.cards:
+                    # umm = ModelManager(uid)
+                    u = User.get(uid, from_req=False)
+                    name = u.name
+                    card = Card.get(uid)
+                    if card_id not in card.cards:
                         continue
-                    card_info = umm.card.cards[card_id]
+                    card_info = card.cards[card_id]
                     if not data[tp_num]['win']:
                         data[tp_num]['win'] = {
                             'uid': uid,
@@ -65,10 +70,12 @@ class Block(object):
                     data[tp_num] = {'win': {}, 'nomination': {}}
                 for uid_script_id, score in nomination:
                     uid, script_id = uid_script_id.split('_')
-                    umm = ModelManager(uid)
-                    name = umm.user.name
+                    # umm = ModelManager(uid)
+                    u = User.get(uid, from_req=False)
+                    name = u.name
+                    block = MBlock.get(uid)
                     script_id = int(script_id)
-                    script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    script_name = block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not script_name:
                         script_name = game_config.script[script_id]['name']
                         script_name = get_str_words(self.mm.user.language_sort, script_name)
@@ -269,11 +276,13 @@ class Block(object):
                     data[tp_num] = {}
                 for id, (uid_card_id, score) in enumerate(nomination, 1):
                     uid, card_id = uid_card_id.split('_')
-                    umm = ModelManager(uid)
-                    name = umm.user.name
-                    if card_id not in umm.card.cards:
+                    # umm = ModelManager(uid)
+                    u = User.get(uid, from_req=False)
+                    name = u.name
+                    card = Card.get(uid)
+                    if card_id not in card.cards:
                         continue
-                    card_info = umm.card.cards[card_id]
+                    card_info = card.cards[card_id]
                     data[tp_num][id] = {
                         'uid': uid,
                         'name': name,
@@ -290,13 +299,16 @@ class Block(object):
                     data[tp_num] = {}
                 for id, (uid_script_id, score) in enumerate(nomination, 1):
                     uid, script_id = uid_script_id.split('_')
-                    umm = ModelManager(uid)
-                    name = umm.user.name
+                    # umm = ModelManager(uid)
+                    u = User.get(uid, from_req=False)
+                    name = u.name
+                    block = MBlock.get(uid)
                     script_id = int(script_id)
-                    script_name = umm.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
+                    script_name = block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not script_name:
                         script_name = game_config.script[script_id]['name']
-                        script_name = get_str_words(self.mm.user.language_sort, script_name)
+                        lan = getattr(self.mm, 'lan', 1)
+                        script_name = get_str_words(lan, script_name)
                     data[tp_num][id] = {
                         'uid': uid,
                         'name': name,

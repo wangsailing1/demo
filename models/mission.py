@@ -481,11 +481,13 @@ class Mission(ModelBase):
         box_office_time = time.strftime('%T')
         is_save = False
         if self.get_achieve_mission():
-            s_save = True
+            is_save = True
         if not self.new_guide_data and not self.new_guide_done:
             for i in range(1,4):
                 self.new_guide_data[i] = 0
                 self.check_new_guide_mission(i)
+            is_save = True
+        if self.get_all_random_mission():
             is_save = True
         if self.date != today:
             self.date = today
@@ -498,7 +500,6 @@ class Mission(ModelBase):
             self.performance_done = []
             # if not self.guide_done and not self.guide_data:
             #     self.get_guide_mission()
-            self.get_all_random_mission()
             # if not self.achieve_done and not self.achieve_data:
             self.get_achieve_mission()
             is_save = True
@@ -557,6 +558,14 @@ class Mission(ModelBase):
         for k, v in config.iteritems():
             need_liveness = v['need_liveness']
             if self.liveness >= need_liveness and k not in self.live_done:
+                return True
+        return False
+
+    def get_performance_red_dot(self):
+        config = game_config.random_reward
+        for k, v in config.iteritems():
+            need_liveness = v['need_random']
+            if self.performance >= need_liveness and k not in self.performance_done:
                 return True
         return False
 
@@ -639,7 +648,19 @@ class Mission(ModelBase):
         if save:
             self.save()
 
+    def refresh_performance(self, mission_id, save=False):
+        config = game_config.random_reward
+        if not config:
+            return
+        if mission_id != max(config.keys()):
+            return
+        self.performance = 0
+        self.performance_done = []
+        if save:
+            self.save()
+
     def get_all_random_mission(self):
+        save = False
         if not self.random_data:
             for _ in xrange(4):
                 while True:
@@ -649,6 +670,7 @@ class Mission(ModelBase):
                     self.random_data[mission_id] = 0
                     break
                 self.check_and_do_random_mission(mission_id)
+                save = True
         else:
             now = int(time.time())
             del_dict = {}
@@ -660,11 +682,14 @@ class Mission(ModelBase):
                             continue
                         del_dict[mission_id] = k
                         break
+                    save = True
             if del_dict:
                 for add_key, del_key in del_dict.iteritems():
                     self.random_data.pop(del_key)
                     self.random_data[add_key] = 0
                     self.check_and_do_random_mission(add_key)
+                    save = True
+        return save
 
     def refresh_time(self):
         return self.RANDOMREFRESHTIME - task_cd(self.mm.user) * 60

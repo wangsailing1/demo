@@ -266,6 +266,7 @@ class UserLogic(object):
             'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
             'business': ('business', 'get_red_dot'),  # 公司事务
             'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
+            'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
         }
 
         # 特殊的几个红点,todo
@@ -883,6 +884,13 @@ class UserLogic(object):
             for user_info in itertools.chain(users, [self_info]):
                 star, rank = rank_obj.parse_star_rank(user_info['score'])
                 user_info['king_of_song_star'], user_info['king_of_song_rank'] = star, rank
+
+                uid = user_info['user']['uid']
+                mm = self.mm.get_mm(uid)
+                battle_team = {}
+                for card_id in mm.king_of_song.last_battle_team:
+                    battle_team[card_id] = mm.card.cards[card_id]
+                user_info['battle_team'] = battle_team
 
         data = {
             'top': users,

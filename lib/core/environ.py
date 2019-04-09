@@ -136,6 +136,7 @@ class ModelManager(object):
 
     def __init__(self, uid, async_save=False):
         self.uid = uid
+        self.lan = 0
         self.server = self.uid[:-7]
         self.async_save = async_save
         self.action = ''

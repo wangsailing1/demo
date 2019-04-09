@@ -53,6 +53,7 @@ class KingOfSong(ModelBase):
 
             'last_date': '',            # 上次更新时间
             'battle_times': 0,          # 当天挑战次数
+            'last_battle_team': [],     # 最近一次的战斗队伍
             'buy_times': 0,             # 购买次数
             'enemy': {},                # 可选对手uid列表 {uid: {'script_id': '', 'cards': {}}}
             'script_pool': [],          # 自己的可选剧本
@@ -68,6 +69,7 @@ class KingOfSong(ModelBase):
         if self.season != season:
             self.last_season_info = [self.season, self.rank]
             self.season = season
+            self.last_battle_team = []
 
             self.star = 0
             self.rank = 1
