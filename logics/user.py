@@ -3,6 +3,8 @@
 __author__ = 'sm'
 
 import random
+import time
+import datetime
 import itertools
 
 from tools.user import user_info
@@ -93,6 +95,11 @@ class UserLogic(object):
         result['guild_name'] = self.user.name
         result['server_open_time'] = serverM.get_server_config(self.mm.user._server_name)['open_time']
         result['question_done'] = self.user.question_done
+
+        #  赠送体力
+        reward_gift_status = self.reward_gift_status()
+        if reward_gift_status:
+            result['reward_gift_status'] = reward_gift_status
 
         result['script_continued_summary'] = self.mm.script.script_continued_summary()
 
@@ -1231,3 +1238,43 @@ class UserLogic(object):
         }
 
         return 0, data
+
+    def reward_gift_status(self):
+        """获取登陆奖励状态
+        """
+        awards = {}
+        for gift_id, config in game_config.reward_gift.iteritems():
+            if self.has_gift_award(gift_id):
+                awards[gift_id] = 1
+        return awards
+
+    def get_gift_award(self, gift_id, config=None):
+        user = self.mm.user
+        config = config or game_config.reward_gift[gift_id]
+        reward = add_mult_gift(self.mm, config['reward'])
+        user.reward_gift[gift_id] = int(time.time())
+        user.save()
+        return reward
+
+    def has_gift_award(self, gift_id):
+        """判断是否登陆有奖
+        args:
+            gift_id: reward_gift配置id
+            config: 配置
+        """
+        user = self.mm.user
+        if gift_id in user.reward_gift:
+            return 0
+
+        config = game_config.reward_gift.get(gift_id)
+        if not config:
+            return 0
+
+        FORMAT = '%H:%M:%S'
+        now = datetime.datetime.now()
+        hour_minute_sec = now.strftime(FORMAT)
+        _open, _close = config['time'].split('-')
+        print _open, _close, hour_minute_sec
+        if _open <= hour_minute_sec <= _close:
+            return (datetime.datetime.strptime(_close, FORMAT) - datetime.datetime.strptime(hour_minute_sec, FORMAT)).total_seconds()
+        return 0

@@ -699,3 +699,11 @@ assistant = {
     'chargeid2': ('chargeid2', 'int'),
     'gift': ('gift', 'int_list'),
 }
+
+
+reward_gift = {
+    'uk': ('id', 'int'),
+    'reward': ('reward', 'int_list'),
+    'time': ('time', 'str'),
+}
+

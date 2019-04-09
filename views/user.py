@@ -865,3 +865,25 @@ def can_buy_level_gift(hm):
     return 0, {'level_limit_gift':level_gift_data,
                'level_flag': rc}
 
+
+def gift_award(hm):
+    """登录有奖
+    args:
+        award_id: reward_gift奖励配置id
+    """
+    award_id = hm.get_argument('award_id', is_int=True)
+    mm = hm.mm
+
+    userL = UserLogic(mm)
+    config = game_config.reward_gift.get(award_id)
+    if not config:
+        return 1, {}    # 没这个奖励的配置
+
+    if not userL.has_gift_award(award_id):
+        return 2, {}    # 没这个奖励的配置
+
+    reward = userL.get_gift_award(award_id, config)
+
+    return 0, {
+        'reward': reward,
+    }
