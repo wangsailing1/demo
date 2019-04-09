@@ -280,6 +280,7 @@ user_config_mapping = {
     'login_reward_id': ('login_reward_id', True),
     'money_guide': ('money_guide', True),
     'assistant': ('assistant', True),
+    'reward_gift': ('reward_gift', True),
 }
 
 #

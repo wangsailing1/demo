@@ -211,6 +211,10 @@ user_msg = {
         2: u'禮包已領取',
         4: u'vip等級錯誤',
     },
+    'user.gift_award': {
+        1: u'配置錯誤',
+        2: u'禮包已領取',
+    },
 }
 
 card_msg = {

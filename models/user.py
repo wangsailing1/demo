@@ -281,6 +281,7 @@ class User(ModelBase):
             'dialogue': [],  # 剧情信息
             'skip_dialouge': 0,
             'skip_battle': 0,
+            'reward_gift': {},        # 每日登录奖励领取状态
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -476,6 +477,7 @@ class User(ModelBase):
                     self.script_license += 1
             self.license_recover_times = 0
             self.license_update_time = now
+            self.reward_gift = {}
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
