@@ -75,7 +75,7 @@ def get_reward(hm):
         # a_id = mm.mission.get_achieve_id()
         # mm_obj.data[a_id] = mm.mission.achieve
 
-    if tp_id == 4:
+    if tp_id == 8:
         achieve_point = mm_obj.config[mission_id].get('random_liveness', 0)
         gift.append([103, 0, achieve_point])
     reward = add_mult_gift(mm, gift)
