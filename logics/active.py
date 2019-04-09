@@ -4,6 +4,7 @@ import time
 
 from gconfig import game_config
 from tools.gift import add_mult_gift
+from logics.user import UserLogic
 
 
 class ActiveCard(object):
@@ -162,6 +163,7 @@ class MonthlySignLogic(object):
         :return:
         """
 
+        userL = UserLogic(self.mm)
         monthly_sign = self.monthly_sign.monthly_sign
         result = {
             'today_can_sign': self.monthly_sign.today_can_sign(red_dot=False),
@@ -169,6 +171,7 @@ class MonthlySignLogic(object):
             # 'usable_days': monthly_sign['usable_days'],
             'config': monthly_sign['reward'],
             'box_got': monthly_sign.get('box_got', {}),
+            'reward_gift_status': userL.reward_gift_status(),
         }
         return result
 
