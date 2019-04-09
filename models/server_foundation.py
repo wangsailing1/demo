@@ -71,6 +71,9 @@ class ServerFoundation(ModelBase):
     def add_score(self, order_diamond):
         if not self.is_open():
             return
+        version, new_server, s_time, e_time = self.get_version()
+        if self.has_reward() and self.version != version:
+            return
         self.score += order_diamond
         self.save()
 
