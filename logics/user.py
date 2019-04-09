@@ -1263,7 +1263,6 @@ class UserLogic(object):
         now = datetime.datetime.now()
         hour_minute_sec = now.strftime(FORMAT)
         _open, _close = config['time'].split('-')
-        print _open, _close, hour_minute_sec
         if _open <= hour_minute_sec <= _close:
             return (datetime.datetime.strptime(_close, FORMAT) - datetime.datetime.strptime(hour_minute_sec, FORMAT)).total_seconds()
         return 0
