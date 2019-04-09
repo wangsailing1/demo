@@ -880,6 +880,13 @@ class UserLogic(object):
                 star, rank = rank_obj.parse_star_rank(user_info['score'])
                 user_info['king_of_song_star'], user_info['king_of_song_rank'] = star, rank
 
+                uid = user_info['user']['uid']
+                mm = self.mm.get_mm(uid)
+                battle_team = {}
+                for card_id in mm.king_of_song.last_battle_team:
+                    battle_team[card_id] = mm.card.cards[card_id]
+                user_info['battle_team'] = battle_team
+
         data = {
             'top': users,
             'self_info': self_info,
