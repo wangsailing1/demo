@@ -307,7 +307,8 @@ class Block(object):
                     script_name = block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                     if not script_name:
                         script_name = game_config.script[script_id]['name']
-                        script_name = get_str_words(self.mm.user.language_sort, script_name)
+                        lan = getattr(self.mm, 'lan', 1)
+                        script_name = get_str_words(lan, script_name)
                     data[tp_num][id] = {
                         'uid': uid,
                         'name': name,
