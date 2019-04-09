@@ -102,9 +102,9 @@ def pay_apply(mm, obj, charge_config):
         except:
             print_log(traceback.format_exc())
 
-        # 钻石福利基金
+        # 新服钻石福利基金
         try:
-            mm.server_foundation.add_score(order_diamond)
+            mm.serverfoundation.add_score(order_diamond)
         except:
             print_log(traceback.format_exc())
 
