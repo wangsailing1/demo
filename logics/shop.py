@@ -221,7 +221,7 @@ class ShopLogics(object):
 
         # 给bdc eventinfo用
         data["_bdc_event_info"] = {'cost': cost, 'goods_id': good_id, 'num': 1}
-        data['shop_id'] = goods['shop_id']
+        data['goods_config_id'] = goods['shop_id']
         return rc, data
 
     def get_company_vip_num(self, goods_id):

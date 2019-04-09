@@ -180,8 +180,8 @@ def stat(func):
         rc, data, msg, mm = func(self, *args, **kwargs)
 
         ###########################################################
-        if data.get('shop_id', 0):
-            arguments['shop_id'] = data.get('shop_id', 0)
+        if data.get('goods_config_id', 0):
+            arguments['goods_config_id'] = data.get('goods_config_id', 0)
 
         body = {
             'a_rst': [],
