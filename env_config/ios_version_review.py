@@ -7,31 +7,41 @@ import os
 import inspect
 
 # 每个env都需要有的全局变量
-DEBUG = False        # debug模式
+DEBUG = True        # debug模式
 KVGAME_SDK_DEBUG = False     # 凯奇谷自有sdk 是否走测试环境验证
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
-BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+BDC_LOG_SEND_TO_ALIYUN = False   # bdc日志开关，是否发往阿里云
 # 日志平台类型  SERVER|SERVER_TEST 正式|测试
 BDC_PLATFORM = 'SERVER'
 
 
-PLATFORM = 'tw_test'    # 平台标示
-URL_PARTITION = 'big_sale_tw'
-MASTER_HOST = '164.52.8.250'
-IN_MASTER_HOST = '10.10.4.11'          # 内网地址 备份用
+PLATFORM = 'ios_version_review'    # 平台标示
+URL_PARTITION = 'big_sale'
+MASTER_HOST = 'bigsale-tw-inreview.hi365.com'
+IN_MASTER_HOST = '10.10.4.10'          # 内网地址 备份用
 # CHAT_HOST = '192.168.1.9'
 # CHAT_IDS = [('192.168.1.9', 9079)]
-CHAT_IDS = [('164.52.8.250', 9999)]
+CHAT_IDS = [('164.52.10.227', 9977)]
 
-LANGUAGE = 'tw'
-# CDN = 'big-sale-tw-test.hi365.com'
-CDN = 'cdn-sale-tw.hi365.com'
+LANGUAGE = 'ch'
+CDN = 'bigsale-tw-inreview.hi365.com'
 CONFIG_RESOURCE_OPEN = True
-CURRENCY_TYPE = u'USD'  # 后台数据统计显示的 货币类型
-
+CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos', 'com.mancala.starcontract']
+
+# 前端热更资源地址
+# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+
+resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
+# 前端热更配置地址
+config_resource = [
+    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
+]
+
+payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 # DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=e5739a6ec80b8e5215bdf95a52f08ce7ccb167192bb656272a2d3b6eb9f600f1'
 
@@ -48,81 +58,59 @@ SLG_RESPONE = dict(SLG_REDIS_DEFAULT, db=3)
 
 
 # master配置
-master = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+master = {'host': '10.10.4.10', 'port': 6402, 'socket_timeout': 5, 'db': 0, 'password': 'ga00qHZEj8uvTu62jz40'}
 # 公共配置
-public = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 1, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+public = {'host': '10.10.4.10', 'port': 6402, 'socket_timeout': 5, 'db': 1, 'password': 'ga00qHZEj8uvTu62jz40'}
 # 聊天
-chat_config = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 2, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+chat_config = {'host': '10.10.4.10', 'port': 6402, 'socket_timeout': 5, 'db': 2, 'password': 'ga00qHZEj8uvTu62jz40'}
 # celery
-celery_config = {'host': '10.10.4.14', 'port': 6300, 'socket_timeout': 5, 'db': 14, 'password': 'HXeOrXEEls7ObAF3Xmy3'}
+celery_config = {'host': '10.10.4.10', 'port': 6402, 'socket_timeout': 5, 'db': 14, 'password': 'ga00qHZEj8uvTu62jz40'}
 
 # 每个app配置
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
-    ('tw1', 'net1', '10.10.4.14', 6301, 0),
-    ('tw2', 'net1', '10.10.4.14', 6302, 0),
-    ('tw3', 'net1', '10.10.4.14', 6303, 0),
-    ('tw4', 'net1', '10.10.4.14', 6304, 0),
-    ('tw5', 'net1', '10.10.4.14', 6305, 0),
-
-    ('tw6', 'net1', '10.10.4.14', 6306, 0),
-    ('tw7', 'net1', '10.10.4.14', 6307, 0),
-    ('tw8', 'net1', '10.10.4.14', 6308, 0),
-    ('tw9', 'net1', '10.10.4.14', 6309, 0),
-    ('tw10', 'net1', '10.10.4.14', 6310, 0),
-
+    ('tws1', 'net1', '10.10.4.10', 6402, 3),
+    ('tws2', 'net1', '10.10.4.10', 6402, 3),
 ]
 
-
-# 前端热更资源地址
-# resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-
-resource ='http://%s/%s/lr' % (CDN, URL_PARTITION)
-# 前端热更配置地址
-config_resource = [
-    'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
-    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
-]
-
-payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
-    'host': '10.10.4.14',
-    'user': 'root',
-    'passwd': '1MRzvCJZa0S0K6h929cT',
-    'db': 'sale_tw',
+    'host': '10.10.4.10',
+    'user': 'tw_ts',
+    'passwd': 'tw_ts_pass',
+    'db': 'big_tw_ts',
     'table_prefix': 'payment',
 }
 
 SPEND_CONFIG = {
-    'host': '10.10.4.14',
-    'user': 'root',
-    'passwd': '1MRzvCJZa0S0K6h929cT',
-    'db': 'sale_tw',
+    'host': '10.10.4.10',
+    'user': 'tw_ts',
+    'passwd': 'tw_ts_pass',
+    'db': 'big_tw_ts',
     'table_prefix': 'spend',
 }
 
 EARN_CONFIG = {
-    'host': '10.10.4.14',
-    'user': 'root',
-    'passwd': '1MRzvCJZa0S0K6h929cT',
-    'db': 'sale_tw',
+    'host': '10.10.4.10',
+    'user': 'tw_ts',
+    'passwd': 'tw_ts_pass',
+    'db': 'big_tw_ts',
     'table_prefix': 'earn',
 }
 
 QUEST_CONFIG = {
-    'host': '10.10.4.14',
-    'user': 'root',
-    'passwd': '1MRzvCJZa0S0K6h929cT',
-    'db': 'sale_tw',
+    'host': '10.10.4.10',
+    'user': 'tw_ts',
+    'passwd': 'tw_ts_pass',
+    'db': 'big_tw_ts',
     'table_prefix': 'quest',
 }
 
 GS_HOST = {
-    'host': '10.10.4.14',
-    'user': 'root',
-    'passwd': '1MRzvCJZa0S0K6h929cT',
-    'db': 'sale_tw',
+    'host': '10.10.4.10',
+    'user': 'tw_ts',
+    'passwd': 'tw_ts_pass',
+    'db': 'big_tw_ts',
     'table_prefix': 'client_service',
 }
 
@@ -157,7 +145,7 @@ for k, i in enumerate(apps):
     SERVERS[i[0]] = {
         # 'server': 'http://%s/%s/' % (MASTER_HOST, i[0]),
         'server': 'http://%s/%s/' % (MASTER_HOST, URL_PARTITION),
-        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'HXeOrXEEls7ObAF3Xmy3'},
+        'redis': {'host': i[2], 'port': i[3], 'socket_timeout': 5, 'db': i[4], 'password': 'ga00qHZEj8uvTu62jz40'},
         # 'long_addr': long_net_config.get(i[1], long_net_config.values()[0]),
         'cpp_addr': {'ip': "192.168.1.9", "port": "8000"},
         'net_name': i[1],

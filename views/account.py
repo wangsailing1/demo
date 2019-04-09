@@ -25,6 +25,7 @@ import hashlib
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from lib.utils.time_tools import str2timestamp
 import copy
+from lib.utils import weight_choice
 
 
 def generate_mk(account):
@@ -430,8 +431,11 @@ def get_server_list(server_list, current_server):
         return [random.choice(not_enough_new_servers)]
     if new_servers:
         return [random.choice(new_servers)]
-    all_list = server_list[-2:] if len(server_list) >= 2 else server_list
-    return [random.choice(all_list)]
+    # all_list = server_list[-2:] if len(server_list) >= 2 else server_list
+    # return [random.choice(all_list)]
+    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['open_time']))
+    return [server_list[-1]]
+
 
 
 def get_another_list(hm, flag=None):

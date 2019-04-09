@@ -407,7 +407,7 @@ def bdc_user_info(mm, **kwargs):
 
         'userlast_active_time': user.active_time,
         'bag_info': {},             # todo 玩家物品json格式、如果为空 填{}
-        'total_charge': mm.user_payment.charge_price,        # 累计充值金额
+        'total_charge': round(mm.user_payment.charge_price, 2),        # 累计充值金额
         'union_id': user.guild_id or 0,                      # 公会id
         'currency_info': {},                                 # 角色截止当前各类代币持有数量 json，如果为空，请填{}
     }

@@ -3,6 +3,7 @@
 __author__ = 'sm'
 
 import random
+import itertools
 
 from tools.user import user_info
 from gconfig import game_config
@@ -67,7 +68,12 @@ class UserLogic(object):
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
         result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
-
+        has_reward = self.mm.foundation.has_reward()
+        if not has_reward and not self.mm.foundation.is_open():
+            if 2009 in result['active_switch']:
+                result['active_switch'].pop(2009)
+            if 2009 in result['active_remain_time']:
+                result['active_remain_time'].pop(2009)
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
 
@@ -259,6 +265,7 @@ class UserLogic(object):
             'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
             'business': ('business', 'get_red_dot'),  # 公司事务
             'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
+            'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
         }
 
         # 特殊的几个红点,todo
@@ -822,6 +829,9 @@ class UserLogic(object):
         elif tp == 'big_world_power':
             rank_obj = self.mm.get_obj_tools('big_world_power_rank')
 
+        elif tp == 'king_of_song_rank':
+            rank_obj = self.mm.get_obj_tools('king_of_song_rank')
+
         else:
             rank_obj = None
 
@@ -864,6 +874,12 @@ class UserLogic(object):
                 self_info['hero'] = info[0]
             else:
                 self_info['hero'] = {}
+
+        # 歌王 积分转换成star，rank
+        if tp == 'king_of_song_rank':
+            for user_info in itertools.chain(users, [self_info]):
+                star, rank = rank_obj.parse_star_rank(user_info['score'])
+                user_info['king_of_song_star'], user_info['king_of_song_rank'] = star, rank
 
         data = {
             'top': users,

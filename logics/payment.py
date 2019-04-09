@@ -156,6 +156,9 @@ def pay_apply(mm, obj, charge_config):
         # 首充礼包
         mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
         mm.user_payment.add_add_recharge(price_dict={1:order_diamond,2:order_rmb})
+
+        mm.limit_sign.add_score(order_diamond, order_money)
+        mm.server_limit_sign.add_score(order_diamond, order_money)
         # # 超值签到
         # mm.pay_sign.set_pay_sign_status(order_money+gift_diamond, product_id)
 
@@ -538,6 +541,7 @@ def pay_apple(hm):
         'lan_sort': lan_sort,
         'act_id': act_id,
         'act_item_id': act_item_id,
+        'currency': lan_sort
     }
     return pay_apply(hm.mm, obj, charge_config)
 

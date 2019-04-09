@@ -45,7 +45,7 @@ return_msg_config = {
     'error_diamond': u"鑽石不足",
     'error_coin': u"金幣不足",
     'error_dollar': u"美元不足",
-    'error_no_ceremony': u'參賽人數少於五人，本屆頒獎典禮取消',
+    'error_no_ceremony': u'敬請期待明天晚上九點的頒獎典禮',
 
     'error_card_cold': u'藝人被雪藏中',
     'error_card_piece': u'藝人碎片不足',
@@ -960,10 +960,37 @@ payment_msg = {
         1: u'獎勵已領取',
         3: u'未達到條件',
     },
-    'payment.add_recharge_index':{
+    'payment.get_add_recharge':{
         1: u'活動未開啟',
         2: u'獎勵已領取',
         3: u'未達到條件',
+    },
+    'payment.add_recharge_index': {
+        1: u'活動未開啟',
+    },
+}
+
+limit_sign_msg = {
+    'limit_sign.limit_sign_index': {
+        1: u'活動未開啟',
+    },
+    'limit_sign.get_reward': {
+        1: u'活動未開啟',
+        2: u'參數錯誤',
+        3: u'該獎勵未啟動',
+        4: u'該獎勵已經領取',
+    },
+}
+
+server_limit_sign_msg = {
+    'server_limit_sign.limit_sign_index': {
+        1: u'活動未開啟',
+    },
+    'server_limit_sign.get_reward': {
+        1: u'活動未開啟',
+        2: u'參數錯誤',
+        3: u'該獎勵未啟動',
+        4: u'該獎勵已經領取',
     },
 }
 

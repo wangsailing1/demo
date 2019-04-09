@@ -45,7 +45,7 @@ return_msg_config = {
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
     'error_dollar': u"美元不足",
-    'error_no_ceremony': u'参赛人数少于五人，本届颁奖典礼取消',
+    'error_no_ceremony': u'敬请期待明天晚上九点的颁奖典礼',
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',
@@ -962,8 +962,35 @@ payment_msg = {
     },
     'payment.add_recharge_index': {
         1: u'活动未开启',
+    },
+    'payment.get_add_recharge': {
+        1: u'活动未开启',
         2: u'奖励已领取',
         3: u'未达到条件',
+    },
+}
+
+limit_sign_msg = {
+    'limit_sign.limit_sign_index': {
+        1: u'活动未开启',
+    },
+    'limit_sign.get_reward': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该奖励未激活',
+        4: u'该奖励已经领取',
+    },
+}
+
+server_limit_sign_msg = {
+    'server_limit_sign.limit_sign_index': {
+        1: u'活动未开启',
+    },
+    'server_limit_sign.get_reward': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该奖励未激活',
+        4: u'该奖励已经领取',
     },
 }
 

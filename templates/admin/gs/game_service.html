@@ -1,3 +1,6 @@
+{% extends "../fields.html" %}
+{% block fieldbody %}
+
 <body>
     <h2>客服&gt;&gt;玩家问题</h2>
     <form action="/{{url_partition}}/admin/gs/game_service" method="get">
@@ -51,7 +54,9 @@
         {% for v in gs_data %}
         <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
             <td style="width:40px;">{{v[0]}}</td>
-            <td style="width:80px;">{{v[1]}}</td>
+            <td style="width:80px;">
+                <a href="/{{url_partition}}/admin/user/select/?uid={{v[1]}}">{{v[1]}}</a>
+            </td>
             <td style="width:40px;">{{v[2]}}</td>
             <td style="width:80px;">{{v[3]}}</td>
             <td style="width:40px;">
@@ -122,3 +127,4 @@
         }
     </script>
 </body>
+{% end %}

@@ -401,6 +401,8 @@ active_mapping = {
     'sign_daily_normal': ('sign_daily_normal', True),
     'active': ('active', True),
     'add_recharge': ('add_recharge', True),
+    'add_recharge_limit': ('add_recharge_limit', True),
+    'server_add_recharge_limit': ('server_add_recharge_limit', True),
 }
 
 daily_activity_mapping = {
@@ -523,6 +525,7 @@ mission_mapping = {
     'random_mission': ('random_mission', True),
     'achieve_mission': ('achieve_mission', True),
     'new_guide_mission': ('new_guide_mission', True),
+    'random_reward': ('random_reward', True),
 }
 
 build_mapping = {

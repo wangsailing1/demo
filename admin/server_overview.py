@@ -128,8 +128,12 @@ def select(req):
 
     recent_online_info = get_all_server_recent_online_info()
     yestoday_online_info = get_all_server_recent_online_info(today - datetime.timedelta(days=1))
+    one_week_ago_online_info = get_all_server_recent_online_info(today - datetime.timedelta(days=7))
     result['recent_online_info'] = recent_online_info
     result['yestoday_online_info'] = yestoday_online_info
+    result['one_week_ago_online_info'] = one_week_ago_online_info
+    result['steps'] = sorted(set(recent_online_info.keys() + yestoday_online_info.keys() + one_week_ago_online_info.keys()))
+
     result['cur_uid_per_server'] = cur_uid_per_server
     result['today_online_users_count'] = today_online_users_count
     result['redis_server_memory_info'] = redis_server_memory_info

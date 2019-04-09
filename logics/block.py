@@ -167,7 +167,6 @@ class Block(object):
             for tp in self.block.rank_list:
                 rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                      tp)
-                data = {}
                 date = get_date_before()
                 br = BlockRank(rank_uid, self.block._server_name, date)
                 nomination = br.get_all_user(0, 4, withscores=True)
@@ -177,7 +176,7 @@ class Block(object):
                         uid, card_id = uid_card_id.split('_')
                         if self.mm.uid != uid:
                             continue
-                        rank = br.get_rank(uid)
+                        rank = br.get_rank(uid_card_id)
                         card_info = self.card.cards[card_id]
                         reward_type = 'win_cup_num'
                         if rank > 1:
@@ -206,7 +205,7 @@ class Block(object):
                         uid, script_id = uid_script_id.split('_')
                         if self.mm.uid != uid:
                             continue
-                        rank = br.get_rank(uid)
+                        rank = br.get_rank(uid_script_id)
                         script_id = int(script_id)
                         script_name = self.block.top_script.get(date, {}).get(script_id, {}).get('name', '')
                         if not script_name:
@@ -234,6 +233,7 @@ class Block(object):
                     data['big_sale_cup'] = self.block.big_sale
         self.block.reward_data = data
         self.block.is_count = 1
+        self.block.big_sale = 0
         if is_save:
             self.block.save()
 
@@ -260,7 +260,7 @@ class Block(object):
         for tp in self.block.rank_list:
             rank_uid = self.block.get_key_profix(self.block.block_num, self.block.block_group,
                                                  tp)
-            date = get_date_before()
+            date = get_date()
             br = BlockRank(rank_uid, self.block._server_name, date)
             nomination = br.get_all_user(0, 4, withscores=True)
             if tp in ['nv', 'nan']:

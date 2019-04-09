@@ -99,14 +99,17 @@ class Friend(ModelBase):
         week = datetime.datetime.now().strftime('%Y-%W')
         is_save = False
 
-        if week != self.last_week:
-            self.last_week = week
-            # self.tourism_times = 0
-            # self.tourism_log = {}
+        # if week != self.last_week:
+        #     self.last_week = week
+        #     # self.tourism_times = 0
+        #     # self.tourism_log = {}
+        #     self.appointment_times = 0
+        #     self.appointment_log = {}
+        #     is_save = True
+        if now != self.last_refresh_date:
             self.appointment_times = 0
             self.appointment_log = {}
-            is_save = True
-        if now != self.last_refresh_date:
+
             self.battle_friend = []
             self.parised_friend = []
             self.sweep_workbench = {}

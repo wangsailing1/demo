@@ -16,8 +16,6 @@ class FansActivity(object):
             return 12, {}  # 没有艺人参加
         config = game_config.fans_activity.get(activity_id, {})
         cost = config['cost']
-        if self.mm.user.dollar < cost:
-            return 17, {}  # 美元不足
         card_config = game_config.card_basis
         value = self.mm.fans_activity.activity_log.get(activity_id, {})
         all_time = config['time'] * 60
@@ -65,6 +63,9 @@ class FansActivity(object):
             _, data = self.fans_index()
             data['reward'] = reward
             return 0, data
+
+        if self.mm.user.dollar < cost:
+            return 17, {}  # 美元不足
 
         gift = []
         for k, card_id in enumerate(cards):

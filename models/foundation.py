@@ -86,14 +86,14 @@ class Foundation(ModelBase):
         for f_id, foundation_info in game_config.foundation.iteritems():
             if foundation_info['version'] != self.version:
                 continue
-
-            if self.score >= foundation_info['need_coin'] and f_id not in self.reward_dict:
-                self.activate_mark[f_id] = time.strftime('%F')
+            id = foundation_info['id']
+            if self.score >= foundation_info['need_coin'] and id not in self.reward_dict:
+                self.activate_mark[id] = time.strftime('%F')
                 reward_dict = []
                 for key, value in foundation_info.iteritems():
                     if key.startswith('day'):
                         day = int(key.split('day')[1])
                         reward_dict.append(day)
-                self.reward_dict[f_id] = sorted(reward_dict)
+                self.reward_dict[id] = sorted(reward_dict)
 
 ModelManager.register_model('foundation', Foundation)

@@ -338,6 +338,9 @@ class GameConfigMixIn(object):
         self.server_play_redbag_mapping = {}
         self.server_play_rankreward_mapping = {}
         self.server_play_points_mapping = {}
+        self.add_recharge_limit_mapping = {}
+        self.server_add_recharge_limit_mapping = {}
+        self.foundation_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -442,6 +445,9 @@ class GameConfigMixIn(object):
         self.server_play_redbag_mapping.clear()
         self.server_play_rankreward_mapping.clear()
         self.server_play_points_mapping.clear()
+        self.add_recharge_limit_mapping.clear()
+        self.server_add_recharge_limit_mapping.clear()
+        self.foundation_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2638,6 +2644,35 @@ class GameConfigMixIn(object):
                     self.rmb_foundation_mapping[version] = {}
                 self.rmb_foundation_mapping[version][j['id']] = j
         return self.rmb_foundation_mapping
+
+    # 限时累充（限时签约）mapping
+    def get_add_recharge_limit_mapping(self):
+        if not self.add_recharge_limit_mapping:
+            for i, j in self.add_recharge_limit.iteritems():
+                if j['version'] not in self.add_recharge_limit_mapping:
+                    self.add_recharge_limit_mapping[j['version']] = {}
+                self.add_recharge_limit_mapping[j['version']][i] = j
+        return self.add_recharge_limit_mapping
+
+    # 限时累充（限时签约）mapping
+    def get_server_add_recharge_limit_mapping(self):
+        if not self.server_add_recharge_limit_mapping:
+            for i, j in self.server_add_recharge_limit.iteritems():
+                if j['version'] not in self.server_add_recharge_limit_mapping:
+                    self.server_add_recharge_limit_mapping[j['version']] = {}
+                self.server_add_recharge_limit_mapping[j['version']][i] = j
+        return self.server_add_recharge_limit_mapping
+
+
+    def get_foundation_mapping(self):
+        if not self.foundation_mapping:
+            for i, j in self.foundation.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.foundation_mapping:
+                    self.foundation_mapping[version] = {}
+                self.foundation_mapping[version][j['id']] = j
+        return self.foundation_mapping
 
 
 

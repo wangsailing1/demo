@@ -7,6 +7,7 @@ from lib.db import ModelBase
 # from gconfig import game_config
 from lib.core.environ import ModelManager
 from lib.utils.active_inreview_tools import get_version_by_active_id
+import datetime
 
 
 # 钻石福利基金
@@ -45,6 +46,7 @@ class RmbFoundation(ModelBase):
     def pre_use(self):
         # if not self.is_open():
         if self.has_reward():
+            self.save()
             return
         a_id, version = self.get_version()
         if self.version != version or self.a_id != a_id:
@@ -69,10 +71,21 @@ class RmbFoundation(ModelBase):
 
     def has_reward(self):
         tag = 0
-        for days, reward_list in self.reward_dict.iteritems():
+        for id, reward_list in self.reward_dict.iteritems():
+            f_active_date = self.activate_mark[id]
+            f_active_date = datetime.datetime.strptime(f_active_date, '%Y-%m-%d').date()
+            days = (datetime.date.today() - f_active_date).days + 1
+            for day in range(days):
+                if day in reward_list:
+                    reward_list.remove(day)
             if reward_list:
                 tag = 1
-                break
+
+        # 暂时刷新数据
+        if not tag and self.is_open():
+            self.reward_dict = {}
+            self.activate_mark = {}
+
         if tag:
             return True
         return False

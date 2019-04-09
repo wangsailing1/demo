@@ -534,14 +534,15 @@ class Script(ModelBase):
         # 记录当天街区拍片记录
         cur_block_top_script = self.mm.block.top_script.get(date, {}).get(script_id, {})
         top_block_script_income = cur_block_top_script.get('finished_summary', {'income': 0})['income']
-        if top_block_script_income < income:
+        if top_block_script_income < income or film_info.get('end_lv', 0) >= 6:
             if date not in self.mm.block.top_script:
                 self.mm.block.top_script[date] = {}
             big_sale = self.mm.block.top_script[date].get(script_id, {}).get('big_sale_num', 0)
-            self.mm.block.top_script[date][script_id] = dict(film_info)
+            if top_block_script_income < income:
+                self.mm.block.top_script[date][script_id] = dict(film_info)
             if film_info.get('end_lv', 0) >= 6:
                 big_sale += 1
-                self.block.big_sale += 1
+                self.mm.block.big_sale += 1
             self.mm.block.top_script[date][script_id]['big_sale_num'] = big_sale
             if len(self.mm.block.top_script) >= 2:
                 del_date = min(self.mm.block.top_script.items(), key=lambda x: x[0])[0]

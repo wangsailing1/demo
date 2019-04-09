@@ -508,6 +508,9 @@ def get_inreview_version(user, active_id, diff_hour=0):
     opening = user.server_opening_time_info()
     open_time = opening['open_time']
     open_dt = datetime.datetime.strptime(open_time, "%Y-%m-%d")  # 开服时间
+    if active_id not in game_config.server_inreview:
+        now = datetime.datetime.now()
+        return 0, 0, now, now
     time_list = game_config.server_inreview[active_id]['name']
     version, s_time, e_time = split_time_list(time_list, open_dt, diff_hour=diff_hour)
     new_server = 0  # 是否为开服活动期间

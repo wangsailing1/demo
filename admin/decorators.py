@@ -128,7 +128,7 @@ class Logging(ModelTools):
             'ip': request.request.headers.get('X-Real-Ip', ''),
         }
         self.redis.lpush(self._key, pickle.dumps(result, pickle.HIGHEST_PROTOCOL))
-        self.redis.expire(self._key, self.EXPIRE_DAY * 3)
+        self.redis.expire(self._key, 3600 * 24 * self.EXPIRE_DAY * 2)
 
     def get_all_logging(self, day=EXPIRE_DAY):
         data = []

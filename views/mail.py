@@ -137,7 +137,7 @@ def delete_all(hm):
     mm = hm.mm
 
     ml = MailLogic(mm)
-    rc, data = ml.delete_all()
+    rc, data = ml.delete_all_read_mail()
     if rc != 0:
         return rc, {}
 
