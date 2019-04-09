@@ -15,7 +15,7 @@ class ServerFoundation(ModelBase):
     User make foundation for themselves
     """
     # _need_diff = ('items',)
-    ACTIVE_TYPE = 2014
+    ACTIVE_TYPE = 2016
 
     def __init__(self, uid=None):
         """
