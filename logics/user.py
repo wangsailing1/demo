@@ -95,12 +95,6 @@ class UserLogic(object):
         result['guild_name'] = self.user.name
         result['server_open_time'] = serverM.get_server_config(self.mm.user._server_name)['open_time']
         result['question_done'] = self.user.question_done
-
-        #  赠送体力
-        reward_gift_status = self.reward_gift_status()
-        if reward_gift_status:
-            result['reward_gift_status'] = reward_gift_status
-
         result['script_continued_summary'] = self.mm.script.script_continued_summary()
 
         # 竞技场第一
@@ -330,6 +324,9 @@ class UserLogic(object):
             # data['hero'] = hero
             # data['gene'] = gene
 
+        #  赠送体力
+        if self.reward_gift_status():
+            data['reward_gift_status'] = True
 
         return data
 
