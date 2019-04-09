@@ -571,7 +571,7 @@ def get_deploy(req):
         for i in time_sort[keep_num:]:
             p = os.path.join(file_address, i)
             os.remove(p)
-        file_name_sort.extend(v[:show_num])
+        file_name_sort.extend(time_sort[:show_num])
 
     return render(req, 'admin/config/deploy_download.html', **{
         'file_name': file_name_sort,
