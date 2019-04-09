@@ -9,7 +9,7 @@ from lib.core.environ import ModelManager
 from lib.utils.active_inreview_tools import get_inreview_version
 from lib.utils.time_tools import strftimestamp, datetime_to_timestamp
 
-# 钻石福利基金
+# 新服钻石福利基金
 class ServerFoundation(ModelBase):
     """
     User make foundation for themselves
@@ -49,7 +49,7 @@ class ServerFoundation(ModelBase):
         self.save()
 
     def get_version(self):
-        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
         return version, new_server, s_time, e_time
 
 
@@ -78,14 +78,14 @@ class ServerFoundation(ModelBase):
         for f_id, foundation_info in game_config.server_foundation.iteritems():
             if foundation_info['version'] != self.version:
                 continue
-
-            if self.score >= foundation_info['need_coin'] and f_id not in self.reward_dict:
-                self.activate_mark[f_id] = time.strftime('%F')
+            id = foundation_info['id']
+            if self.score >= foundation_info['need_coin'] and id not in self.reward_dict:
+                self.activate_mark[id] = time.strftime('%F')
                 reward_dict = []
                 for key, value in foundation_info.iteritems():
                     if key.startswith('day'):
                         day = int(key.split('day')[1])
                         reward_dict.append(day)
-                self.reward_dict[f_id] = sorted(reward_dict)
+                self.reward_dict[id] = sorted(reward_dict)
 
 ModelManager.register_model('serverfoundation', ServerFoundation)

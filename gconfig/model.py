@@ -341,6 +341,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping = {}
         self.server_add_recharge_limit_mapping = {}
         self.foundation_mapping = {}
+        self.server_foundation_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -448,6 +449,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping.clear()
         self.server_add_recharge_limit_mapping.clear()
         self.foundation_mapping.clear()
+        self.server_foundation_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2673,6 +2675,16 @@ class GameConfigMixIn(object):
                     self.foundation_mapping[version] = {}
                 self.foundation_mapping[version][j['id']] = j
         return self.foundation_mapping
+
+    def get_server_foundation_mapping(self):
+        if not self.server_foundation_mapping:
+            for i, j in self.server_foundation.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.server_foundation_mapping:
+                    self.server_foundation_mapping[version] = {}
+                self.server_foundation_mapping[version][j['id']] = j
+        return self.server_foundation_mapping
 
 
 
