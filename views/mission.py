@@ -42,6 +42,7 @@ def get_reward(hm):
         gift = config['reward']
         reward = add_mult_gift(mm, gift)
         mm.mission.performance_done.append(mission_id)
+        mm.mission.refresh_performance(mission_id)
         mm.mission.save()
         data = mission.mission_index()
         data['reward'] = reward
