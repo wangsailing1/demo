@@ -613,6 +613,7 @@ foundation_mapping = {
     'foundation': ('foundation', True),
     'rmb_foundation': ('rmb_foundation', True),
     'server_foundation': ('server_foundation', True),
+    'server_rmb_foundation': ('server_rmb_foundation', True),
 }
 
 super_player_mapping = {

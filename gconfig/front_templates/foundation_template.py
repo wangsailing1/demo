@@ -38,3 +38,4 @@ rmb_foundation = {
 }
 
 server_foundation = foundation
+server_rmb_foundation = rmb_foundation
