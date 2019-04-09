@@ -78,7 +78,10 @@ def trans_config(filename, sort, xl=None):
         config = trans(sheet_title, mapping, sheet_iter, m, special_func_name)
 
         m.update(repr(config))
-        result.append((config_name, m.hexdigest(), config))
+        # 只返回用最终的配置生成的md5，与后台local_config_back.py上传配置时md5算法版本一致
+        only_config_md5 = hashlib.md5(repr(config)).hexdigest()
+
+        result.append((config_name, only_config_md5, config))
 
     return result
 
