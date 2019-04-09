@@ -560,6 +560,14 @@ class Mission(ModelBase):
                 return True
         return False
 
+    def get_performance_red_dot(self):
+        config = game_config.random_reward
+        for k, v in config.iteritems():
+            need_liveness = v['need_random']
+            if self.performance >= need_liveness and k not in self.performance_done:
+                return True
+        return False
+
     # 到时间刷新任务目标
     def init_box_office(self):
         config = game_config.box_office
