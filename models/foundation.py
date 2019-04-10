@@ -41,14 +41,14 @@ class Foundation(ModelBase):
     def pre_use(self):
         # if not self.is_open():
         if self.has_reward():
-            self.get_foundation_status()
-            self.save()
+            # self.get_foundation_status()
+            # self.save()
             return
         a_id, version = self.get_version()
         if self.version != version or self.a_id != a_id:
             self.refresh()
-        self.get_foundation_status()
-        self.save()
+        # self.get_foundation_status()
+        # self.save()
 
     def get_version(self):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
@@ -82,6 +82,7 @@ class Foundation(ModelBase):
         if not self.is_open():
             return
         self.score += order_diamond
+        self.get_foundation_status()
         self.save()
 
     def get_foundation_status(self):
