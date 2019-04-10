@@ -36,8 +36,6 @@ class ServerFoundation(ModelBase):
 
     def pre_use(self):
         if self.has_reward():
-            self.get_foundation_status()
-            self.save()
             return
         version, new_server, s_time, e_time = self.get_version()
         if self.version != version:
@@ -46,9 +44,6 @@ class ServerFoundation(ModelBase):
             self.end_time = strftimestamp(datetime_to_timestamp(e_time))
             self.activate_mark = {}
             self.reward_dict = {}
-            self.save()
-        self.get_foundation_status()
-        self.save()
 
     def get_version(self):
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
@@ -77,6 +72,7 @@ class ServerFoundation(ModelBase):
         if self.has_reward() and self.version != version:
             return
         self.score += order_diamond
+        self.get_foundation_status()
         self.save()
 
     def get_foundation_status(self):

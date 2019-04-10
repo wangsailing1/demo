@@ -48,7 +48,6 @@ class ServerRmbFoundation(ModelBase):
             self.version = version
             self.start_time = strftimestamp(datetime_to_timestamp(s_time))
             self.end_time = strftimestamp(datetime_to_timestamp(e_time))
-            save = True
         if save:
             self.save()
 
