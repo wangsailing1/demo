@@ -31,7 +31,7 @@ class Business(ModelBase):
             self.last_recover_time = int(timestamp_day())
             self.recover_times = 0
             self.business_done = []
-            save = True
+            # save = True
         recover_need_time = self.business_recover_need_time()
         if recover_need_time:
             div, mod = divmod(now - self.last_recover_time, recover_need_time)
@@ -48,7 +48,7 @@ class Business(ModelBase):
                 div, mod = divmod(now - self.last_recover_time, recover_need_time)
             if not self.can_recover_business_times():
                 self.last_recover_time = now
-            save = True
+            # save = True
         if self.business_times and not self.business_id:
             self.business_id = self.get_business_id()
             self.business_log = []
