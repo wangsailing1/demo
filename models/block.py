@@ -45,10 +45,7 @@ class Block(ModelBase):
         super(Block, self).__init__(self.uid)
 
     def pre_use(self):
-        save = False
-        if not self.block_group:
-            self.count_group()
-            save = True
+        # save = False
 
         if self.last_date != get_date():
             self.last_date = get_date()
@@ -61,16 +58,19 @@ class Block(ModelBase):
             self.today_script = []
             self.choice_winner = []
             self.get_award_ceremony = 0
-            save = True
+            # save = True
+
         last_date = get_date_before(REFRESH_TIME)
         if last_date != self.rank_reward_date:
             self.rank_reward_date = last_date
             self.rank_reward_got = []
-            save = True
-        if save:
-            self.save()
+        #     save = True
+        # if save:
+        #     self.save()
 
     def count_group(self):
+        if self.block_group:
+            return
         key_uid = self.get_key_profix(self.block_num)
         b = BlockRank(key_uid, self._server_name)
         if not b.check_user_exist_by_block(self.mm.uid):
