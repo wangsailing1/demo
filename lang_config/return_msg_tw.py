@@ -998,6 +998,15 @@ server_limit_sign_msg = {
     },
 }
 
+mail_msg = {
+    'mail.delete_all': {
+        1: u'郵箱已空空如也',
+    },
+    'mail.get_reward': {
+        1: u'郵箱已空空如也',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂臺',
