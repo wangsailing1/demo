@@ -997,6 +997,14 @@ server_limit_sign_msg = {
         4: u'该奖励已经领取',
     },
 }
+mail_msg = {
+    'mail.delete_all': {
+        1: u'邮箱已空空如也',
+    },
+    'mail.get_reward': {
+        1: u'邮箱已空空如也',
+    },
+}
 
 i18n = {
     'user_name': u'明日之星',
