@@ -461,7 +461,6 @@ class User(ModelBase):
         #     self.refresh_week = week
         #     self.vip_exclusive_notice = False
         #     is_save = True
-        data = int(time.mktime(time.strptime(time.strftime('%F') + ' ' + '00:00:00', '%Y-%m-%d %H:%M:%S')))
         if self.refresh_date != today:
             self.refresh_date = today
             self.add_guild_exp = 0
