@@ -295,6 +295,7 @@ def recent_event(hm):
 def get_rank_info(hm):
     mm = hm.mm
     block = Block(mm)
+    mm.script.cur_script
     data = {}
     rank_info = block.get_ranking_info()
     own_info = mm.block.get_own_max_rank_by_tp()
