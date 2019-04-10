@@ -1,5 +1,7 @@
+
 <body >
     {% import time %}
+    {% from scripts.server_config.ipip import get_ip_addr %}
     {% if message %}
         <p style="color:red;"> {{message}}</p>
     {% end %}
@@ -18,6 +20,7 @@
             <td style="text-align:center; width: 80px;">账号</td>
             <td style="text-align:center; width: 30px;">状态</td>
             <td style="text-align:center; width: 100px;">IP</td>
+            <td style="text-align:center; width: 100px;">位置</td>
             <td style="text-align:center; width: 150px;">操作时间</td>
             <td style="text-align:center; width: 200px;">操作</td>
             <td style="text-align:center">数据</td>
@@ -28,6 +31,7 @@
                 <td style="text-align:center; width: 80px;">{{info['admin']}}</td>
                 <td style="text-align:center; width: 30px;">{{info['status']}}</td>
                 <td style="text-align:center; width: 100px;">{{info.get('ip', '')}}</td>
+                <td style="text-align:center; width: 100px;">{{get_ip_addr(info.get('ip'))}}</td>
                 <td style="text-align:center; width: 150px;">{{info['dt']}}</td>
                 <td style="text-align:center; width: 200px;">{{info['action']}}</td>
                 <td style="text-align:center">{{info['args']}}</td>
