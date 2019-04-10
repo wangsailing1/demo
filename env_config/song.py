@@ -25,7 +25,7 @@ local_ip = get_host_ip() or '127.0.0.1'
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
-BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+BDC_LOG_SEND_TO_ALIYUN = False   # bdc日志开关，是否发往阿里云
 
 PLATFORM = 'song'    # 平台标示
 URL_PARTITION = 'big_sale'
