@@ -39,16 +39,13 @@ class Block(ModelBase):
             'rank_reward_date': '',  # 领奖时间
             'today_card': [],  # 当天拍过片的艺人
             'today_script': [],  # 当天拍过的剧本
-            'choice_winner': []   # 选择获奖者
+            'choice_winner': []  # 选择获奖者
         }
 
         super(Block, self).__init__(self.uid)
 
     def pre_use(self):
-        save = False
-        if not self.block_group:
-            self.count_group()
-            save = True
+        # save = False
 
         if self.last_date != get_date():
             self.last_date = get_date()
@@ -61,16 +58,19 @@ class Block(ModelBase):
             self.today_script = []
             self.choice_winner = []
             self.get_award_ceremony = 0
-            save = True
+            # save = True
+
         last_date = get_date_before(REFRESH_TIME)
         if last_date != self.rank_reward_date:
             self.rank_reward_date = last_date
             self.rank_reward_got = []
-            save = True
-        if save:
-            self.save()
+            #     save = True
+            # if save:
+            #     self.save()
 
     def count_group(self):
+        if self.block_group:
+            return
         key_uid = self.get_key_profix(self.block_num)
         b = BlockRank(key_uid, self._server_name)
         if not b.check_user_exist_by_block(self.mm.uid):
@@ -122,11 +122,9 @@ class Block(ModelBase):
             return True
         return False
 
-
     def block_reward_red_hot(self):
         now = time.strftime('%F')
         return now != self.reward_daily
-
 
     # 获取 7种排行榜 自己的信息
     def get_own_max_rank_by_tp(self, rank_tp=None):
@@ -148,7 +146,7 @@ class Block(ModelBase):
                     if not rank:
                         continue
                     score = br.get_score(c_uid)
-                    data[tp_num][card_id] = {'rank': rank, 'score':score}
+                    data[tp_num][card_id] = {'rank': rank, 'score': score}
             else:
                 tp_num = tp
                 if tp in ['medium', 'audience']:
@@ -163,9 +161,6 @@ class Block(ModelBase):
                     score = br.get_score(br_uid)
                     data[tp_num][script_id] = {'rank': rank, 'score': score}
         return data
-
-
-
 
 
 # 获取日期

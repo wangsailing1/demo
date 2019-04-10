@@ -244,6 +244,7 @@ class MailLogic(object):
         for k in del_list:
             if k in self.mail.mail:
                 self.mail.mail.pop(k)
+        self.mail.save()
         return 0, {'mail': self.mail.mail}
 
 
