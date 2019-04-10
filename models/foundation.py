@@ -58,6 +58,8 @@ class Foundation(ModelBase):
         if (self.a_id and self.version) or (not self.a_id and not self.version):
             self.score = 0
         self.a_id, self.version = self.get_version()
+        self.activate_mark = {}
+        self.reward_dict = {}
 
 
     def is_open(self):
