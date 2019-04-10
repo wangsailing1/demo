@@ -16,6 +16,7 @@ from lib.utils.active_inreview_tools import active_inreview_version
 from lib.utils.active_inreview_tools import active_inreview_start_end_time
 from lib.utils.active_inreview_tools import format_time_active_version
 from tools.gift import add_mult_gift, add_gift_by_weights
+from lib.utils.time_tools import str2timestamp
 from lib.utils.debug import print_log
 from lib.core.environ import ModelManager
 
@@ -80,7 +81,7 @@ class OnePieceLogic(object):
             return 0
         if self.one_piece_config:
             end_time = self.one_piece_config['end_time']
-            end_time = time.mktime(time.strptime(end_time, self.one_piece.TIME_FORMAT))
+            end_time = str2timestamp(end_time, self.one_piece.TIME_FORMAT)
             return max(int(end_time - time.time()), 0)
         return 0
 

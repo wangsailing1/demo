@@ -41,14 +41,15 @@ def active_inreview_open_and_close(active_config=None, server_type='', server_nu
         # 每个活动的时间点
         time_list = {}
         now = time.time()
+        FORMAT = '%Y-%m-%d %H:%M:%S'
         # for id, name_config_time in enumerate(config_time):
         for name_config_time in config_time:
             if not name_config_time:
                 continue
             start_time, end_time = name_config_time.split('/')
             # 字符串转成时间戳
-            start_time_stamp = time.mktime(time.strptime(start_time, '%Y-%m-%d %H:%M:%S'))
-            end_time_stamp = time.mktime(time.strptime(end_time, '%Y-%m-%d %H:%M:%S'))
+            start_time_stamp = str2timestamp(start_time, FORMAT)
+            end_time_stamp = str2timestamp(end_time, FORMAT)
 
             if start_time_stamp > end_time_stamp:
                 return {}  # 时间的配置的不对
@@ -102,14 +103,10 @@ def get_active_inreview_start_end_time(config, server=None, channel_id=None, con
         start_time = value['start_time']
         if not start_time:
             return 0, 0, 0
-        # s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        # start_time_stamp = time.mktime(s_time)
         start_time_stamp = str2timestamp(start_time)
         end_time = value['end_time']
         if not end_time:
             return 0, 0, 0
-        # e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        # end_time_stamp = time.mktime(e_time)
         end_time_stamp = str2timestamp(end_time)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             if value.get('version', 0):
@@ -135,13 +132,11 @@ def get_active_inreview_start_end_time_diff_time(config, diff_time=0, server=Non
         start_time = value['start_time']
         if not start_time:
             return 0, 0, 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0, 0, 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time)
+        end_time_stamp = str2timestamp(end_time)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             return value['version'], start_time_stamp, end_time_stamp
     return 0, 0, 0
@@ -183,11 +178,9 @@ def get_server_active_start_end_time(user, config, start_arg='start_time', end_a
         active_start_time = active_open_time_ + datetime.timedelta(days=int(open_day) - 1)
         active_end_time = active_end_time_ + datetime.timedelta(days=int(end_day) - 1)
 
-        s_time = time.strptime(active_start_time.strftime(_format), _format)
-        start_time_stamp = time.mktime(s_time)
+        start_time_stamp = time.mktime(active_start_time.timetuple())
 
-        e_time = time.strptime(active_end_time.strftime(_format), _format)
-        end_time_stamp = time.mktime(e_time)
+        end_time_stamp = time.mktime(active_end_time.timetuple())
 
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             if value.get('version', 0):
@@ -212,13 +205,11 @@ def active_inreview_start_end_time(config, format='%Y-%m-%d %H:%M:%S'):
         start_time = value['start_time']
         if not start_time:
             return 0
-        s_time = time.strptime(start_time, format)
-        start_time_stamp = time.mktime(s_time)
+        start_time_stamp = str2timestamp(start_time, format)
         end_time = value['end_time']
         if not end_time:
             return 0
-        e_time = time.strptime(end_time, format)
-        end_time_stamp = time.mktime(e_time)
+        end_time_stamp = str2timestamp(end_time, format)
         if start_time_stamp <= now <= end_time_stamp:
             return value['version']
     return 0
@@ -248,6 +239,7 @@ def get_active_inreview_version_start_end_time(config, active_id=0):
     :return: 版本号,开始时间,结束时间
     """
     now = time.time()
+    FORMAT = '%Y-%m-%d %H:%M:%S'
     for version, value in config.iteritems():
         if value['active_type'] != active_id:
             continue
@@ -256,13 +248,11 @@ def get_active_inreview_version_start_end_time(config, active_id=0):
         start_time = value['start_time']
         if not start_time:
             return 0, 0, 0, 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0, 0, 0, 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time, FORMAT)
+        end_time_stamp = str2timestamp(end_time, FORMAT)
         if start_time_stamp <= now <= end_time_stamp:
             version_id = version if not value.get('active_version', 0) else value.get('active_version', 0)
             return version, version_id, start_time_stamp, end_time_stamp
@@ -296,13 +286,11 @@ def active_inreview_version(config, diff_time=0, server_id='', active_id=0):
         start_time = value['start_time']
         if not start_time:
             return 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time)
+        end_time_stamp = str2timestamp(end_time)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             version = version if not value.get('active_version', 0) else value.get('active_version', 0)
             return version
@@ -341,13 +329,11 @@ def format_time_active_version(config, format, differ_time=0):
         start_time = value['start_time']
         if not start_time:
             return 0
-        s_time = time.strptime(start_time, format)
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0
-        e_time = time.strptime(end_time, format)
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time, format)
+        end_time_stamp = str2timestamp(end_time, format)
         if start_time_stamp <= now - differ_time <= end_time_stamp:
             return version
     return 0
@@ -368,13 +354,12 @@ def format_time_active_config_version(config, format, differ_time=0):
         start_time = value['start_time']
         if not start_time:
             return 0
-        s_time = time.strptime(start_time, format)
-        start_time_stamp = time.mktime(s_time)
+
         end_time = value['end_time']
         if not end_time:
             return 0
-        e_time = time.strptime(end_time, format)
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time, format)
+        end_time_stamp = str2timestamp(end_time, format)
         if start_time_stamp <= now - differ_time <= end_time_stamp:
             return value['version']
     return 0
@@ -387,6 +372,7 @@ def active_inreview_version_mapping(config, diff_time=0, server_type=''):
     :return: 版本号
     """
     now = time.time()
+    FORMAT = '%Y-%m-%d %H:%M:%S'
     for version, data in config.iteritems():
         value_id = min(data)
         value = data[value_id]
@@ -395,13 +381,11 @@ def active_inreview_version_mapping(config, diff_time=0, server_type=''):
         start_time = value['start_time']
         if not start_time:
             return 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time, FORMAT)
+        end_time_stamp = str2timestamp(end_time, FORMAT)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             return version
     return 0
@@ -441,13 +425,11 @@ def active_inreview_version_and_start_and_end_mapping(config, diff_time=0):
         start_time = value['start_time']
         if not start_time:
             return 0, 0, 0
-        s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-        start_time_stamp = time.mktime(s_time)
         end_time = value['end_time']
         if not end_time:
             return 0, 0, 0
-        e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time)
+        end_time_stamp = str2timestamp(end_time)
         if start_time_stamp <= now - diff_time <= end_time_stamp:
             return version, start_time_stamp, end_time_stamp
     return 0, 0, 0
@@ -462,10 +444,8 @@ def active_is_open(start_time, end_time, now=None):
     :return:
     """
     now = now or time.time()
-    s_time = time.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-    start_time_stamp = time.mktime(s_time)
-    e_time = time.strptime(end_time, '%Y-%m-%d %H:%M:%S')
-    end_time_stamp = time.mktime(e_time)
+    start_time_stamp = str2timestamp(start_time)
+    end_time_stamp = str2timestamp(end_time)
     if start_time_stamp <= now <= end_time_stamp:
         return True
     else:
@@ -540,13 +520,12 @@ def get_version_by_active_id(format='%Y-%m-%d %H:%M:%S', active_id=0, differ_tim
         start_time = value['start_time']
         if not start_time:
             return 0, 0
-        s_time = time.strptime(start_time, format)
-        start_time_stamp = time.mktime(s_time)
+
         end_time = value['end_time']
         if not end_time:
             return 0, 0
-        e_time = time.strptime(end_time, format)
-        end_time_stamp = time.mktime(e_time)
+        start_time_stamp = str2timestamp(start_time, format)
+        end_time_stamp = str2timestamp(end_time, format)
         if start_time_stamp <= now - differ_time <= end_time_stamp:
             return version, value['active_version']
     return 0, 0

@@ -189,15 +189,15 @@ def is_open_from_week(start_week_int, start_time_str, end_week_int, end_time_str
             # 当前星期在开始星期和结束星期中
             d_date = cur_date.date() + datetime_module.timedelta(days=end_week - cur_week)
             open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-            return time.mktime(time.strptime(open_str, FORMAT_DATE))
+            return str2timestamp(open_str, FORMAT_DATE)
         elif start_week == cur_week and start_time < cur_date.time():
             d_date = cur_date.date() + datetime_module.timedelta(days=end_week - cur_week)
             open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-            return time.mktime(time.strptime(open_str, FORMAT_DATE))
+            return str2timestamp(open_str, FORMAT_DATE)
         elif end_week == cur_week and end_time > cur_date.time():
             d_date = cur_date.date()
             open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-            return time.mktime(time.strptime(open_str, FORMAT_DATE))
+            return str2timestamp(open_str, FORMAT_DATE)
         else:
             return 0
     elif start_week == end_week:
@@ -207,7 +207,7 @@ def is_open_from_week(start_week_int, start_time_str, end_week_int, end_time_str
             if start_week == cur_week and start_time < cur_date.time() < end_time:
                 d_date = cur_date.date()
                 open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-                return time.mktime(time.strptime(open_str, FORMAT_DATE))
+                return str2timestamp(open_str, FORMAT_DATE)
             else:
                 return 0
         elif start_time > end_time:
@@ -217,7 +217,7 @@ def is_open_from_week(start_week_int, start_time_str, end_week_int, end_time_str
             else:
                 d_date = cur_date.date() + datetime_module.timedelta(days=7)
                 open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-                return time.mktime(time.strptime(open_str, FORMAT_DATE))
+                return str2timestamp(open_str, FORMAT_DATE)
         else:
             # 数据有问题
             return 0
@@ -227,24 +227,24 @@ def is_open_from_week(start_week_int, start_time_str, end_week_int, end_time_str
             # 开始星期大于当前星期
             d_date = cur_date.date() + datetime_module.timedelta(days=7 - cur_week + end_week)
             open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-            return time.mktime(time.strptime(open_str, FORMAT_DATE))
+            return str2timestamp(open_str, FORMAT_DATE)
         elif start_week == cur_week:
             if start_time < cur_date.time():
                 d_date = cur_date.date() + datetime_module.timedelta(days=7 - cur_week + end_week)
                 open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-                return time.mktime(time.strptime(open_str, FORMAT_DATE))
+                return str2timestamp(open_str, FORMAT_DATE)
             else:
                 return 0
         elif cur_week < end_week:
             # 当前星期小于结束日期
             d_date = cur_date.date() + datetime_module.timedelta(days=end_week - cur_week)
             open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-            return time.mktime(time.strptime(open_str, FORMAT_DATE))
+            return str2timestamp(open_str, FORMAT_DATE)
         elif cur_week == end_week:
             if end_time > cur_date.time():
                 d_date = cur_date.date()
                 open_str = '%s-%s-%s %s' % (d_date.year, d_date.month, d_date.day, end_time_str)
-                return time.mktime(time.strptime(open_str, FORMAT_DATE))
+                return str2timestamp(open_str, FORMAT_DATE)
             else:
                 return 0
         else:
@@ -378,8 +378,8 @@ def analyze_config_time(config_time, time_format='%Y-%m-%d %H:%M:%S', now=None):
     start_and_end_time = config_time.split(',')
     for s in start_and_end_time:
         start_time, end_time = s.split('-')
-        start_timestamp = time.mktime(time.strptime(start_time, time_format))
-        end_timestamp = time.mktime(time.strptime(end_time, time_format))
+        start_timestamp = str2timestamp(start_time, time_format)
+        end_timestamp = str2timestamp(end_time, time_format)
         if start_timestamp <= now < end_timestamp:
             return int(end_timestamp - now)
 

@@ -12,6 +12,7 @@ from lib.core.environ import ModelManager
 
 from lib.utils import generate_rank_score, round_float_or_str
 from lib.utils.active_inreview_tools import get_active_inreview_version_start_end_time
+from lib.utils.time_tools import str2timestamp
 from lib.utils.debug import print_log
 
 
@@ -85,12 +86,10 @@ class OnePiece(ModelBase):
 
         start_time = config.get('start_time')
         if start_time:
-            s_time = time.strptime(start_time, self.TIME_FORMAT)
-            start_time = time.mktime(s_time)
+            start_time = str2timestamp(start_time, self.TIME_FORMAT)
         end_time = config.get('end_time')
         if end_time:
-            e_time = time.strptime(end_time, self.TIME_FORMAT)
-            end_time = time.mktime(e_time)
+            end_time = str2timestamp(end_time, self.TIME_FORMAT)
         if not start_time < now < end_time:
             return 0
         else:
