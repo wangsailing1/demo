@@ -30,11 +30,11 @@ from models.user import User
 
 def lock(func):
     ignore_api_module = []
-    ignore_api_method = ['user.get_red_dot', 'star_reward.index', 'endless.index', 'big_world.login',
+    ignore_api_method = ['user.guide','user.get_red_dot', 'star_reward.index', 'endless.index', 'big_world.login',
                          'big_world.battle_data']
     # 需要排队的接口
     retry_module = ['big_world']
-    retry_api_method = ['user.guide']
+    retry_api_method = []
 
     def error(handler, msg=''):
         d = {
