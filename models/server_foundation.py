@@ -44,6 +44,8 @@ class ServerFoundation(ModelBase):
             self.version = version
             self.start_time = strftimestamp(datetime_to_timestamp(s_time))
             self.end_time = strftimestamp(datetime_to_timestamp(e_time))
+            self.activate_mark = {}
+            self.reward_dict = {}
             self.save()
         self.get_foundation_status()
         self.save()
