@@ -314,7 +314,7 @@ def get_server_activity_time(config_id, server_id, now=None):
     """
     now = now if now else time.time()
     server_open_time = serverM.get_server_config(server_id).get('open_time')
-    config_relative_time = game_config.server_inreview.get(config_id, {}).get('name', '')
+    config_relative_time = game_config.server_inreview.get(config_id, {}).get('name1', '')
     if server_open_time is None or server_open_time <= 0 or config_relative_time == '':
         return 0, 0
     if not game_config.server_inreview.get(config_id, {}).get('is_open', 0):
