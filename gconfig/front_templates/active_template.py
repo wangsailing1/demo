@@ -972,6 +972,8 @@ add_recharge = {
     'des':              ('des',          'str'),            # des
 }
 
+server_add_recharge = add_recharge
+
 # 限时累充活动
 add_recharge_limit = {
     'uk':               ('id',              'int'),         # 序号

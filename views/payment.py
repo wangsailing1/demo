@@ -153,6 +153,50 @@ def get_add_recharge(hm):
     return 0, result
 
 
+def server_add_recharge_index(hm):
+    mm = hm.mm
+    if not mm.server_user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    return 0, {'add_recharge': mm.server_user_payment.add_recharge_done,
+               'remain_time':mm.server_user_payment.get_add_recharge_remain_time(),
+               'version': mm.server_user_payment.add_recharge_version,
+               'price': mm.server_user_payment.add_recharge_price}
+
+def server_get_add_recharge(hm):
+    mm = hm.mm
+    if not mm.server_user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    reward_id = hm.get_argument('reward_id', is_int=True)
+
+    if reward_id <= 0:
+        return 'error_100', {}
+
+    add_recharge_config = game_config.server_add_recharge.get(reward_id)
+    if not add_recharge_config:
+        return 'error_config', {}
+
+    if mm.server_user_payment.get_add_recharge_status(reward_id) == 2:
+        return 2, {}  # 奖励已领取
+
+    if mm.server_user_payment.get_add_recharge_status(reward_id) == 0:
+        return 3, {}  # 未达到条件
+
+    mm.server_user_payment.add_add_recharge_done(reward_id)
+    reward = add_mult_gift(mm, add_recharge_config['reward'])
+
+    mm.server_user_payment.save()
+
+    result = {
+        'reward': reward,
+        'add_recharge_red_dot': mm.server_user_payment.get_add_recharge_red_dot()
+    }
+    result.update(server_add_recharge_index(hm)[1])
+
+    return 0, result
+
+
 def notify_url(hm):
     """ 回调地址
 

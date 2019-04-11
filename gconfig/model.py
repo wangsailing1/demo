@@ -342,6 +342,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping = {}
         self.server_add_recharge_limit_mapping = {}
         self.foundation_mapping = {}
+        self.server_add_recharge_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -449,6 +450,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping.clear()
         self.server_add_recharge_limit_mapping.clear()
         self.foundation_mapping.clear()
+        self.server_add_recharge_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2544,6 +2546,15 @@ class GameConfigMixIn(object):
                     self.add_recharge_mapping[j['version']] = {}
                 self.add_recharge_mapping[j['version']][i] = j
         return self.add_recharge_mapping
+
+    # 新服累充mapping
+    def get_server_add_recharge_mapping(self):
+        if not self.server_add_recharge_mapping:
+            for i, j in self.server_add_recharge.iteritems():
+                if j['version'] not in self.server_add_recharge_mapping:
+                    self.server_add_recharge_mapping[j['version']] = {}
+                self.server_add_recharge_mapping[j['version']][i] = j
+        return self.server_add_recharge_mapping
 
     # 超级大玩家mapping
     def get_play_shop_mapping(self):
