@@ -216,7 +216,10 @@ menu_config = {
         }],
         'gs': [{
             'name': u"客服",
-            'sub': [('game_service', u'客服', 1)],
+            'sub': [
+                ('game_service', u'客服', 1),
+                ('send_gs_notify', u'客服回复', 1)
+            ],
         }],
         'user': [{
             'name': u"封号记录",

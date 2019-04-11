@@ -13,6 +13,7 @@ from gconfig import back_contents
 from gconfig import front_contents
 from gconfig.check import check_reward_counts
 from lib.utils.debug import print_log
+from lib.utils import config_md5
 
 
 class TableColError(BufferError):
@@ -79,7 +80,7 @@ def trans_config(filename, sort, xl=None):
 
         m.update(repr(config))
         # 只返回用最终的配置生成的md5，与后台local_config_back.py上传配置时md5算法版本一致
-        only_config_md5 = hashlib.md5(repr(config)).hexdigest()
+        only_config_md5 = config_md5(config)
 
         result.append((config_name, only_config_md5, config))
 

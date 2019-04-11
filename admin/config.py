@@ -18,7 +18,7 @@ from gconfig.back_contents import mapping_config as back_mapping_config
 from gconfig.front_contents import mapping_config as front_mapping_config
 from models.config import Config, FrontConfig
 from gconfig import game_config, front_game_config
-from lib.utils import change_time
+from lib.utils import change_time, config_md5
 from models.config import ChangeTime, ResourceVersion, ConfigRefresh
 from models.server import ServerConfig, ServerUidList, ServerUid
 from lib.utils.timelib import datetime_str_to_timestamp, timestamp_to_datetime_str
@@ -456,7 +456,7 @@ def upload_local_config(req):
         cv = FrontConfigVersion.get()
         ConfigModel = FrontConfig
     for config_name, config in config_data.iteritems():
-        m = hashlib.md5(repr(config)).hexdigest()
+        m = config_md5(config)
         if cv.versions.get(config_name) == m:
             continue
         c = ConfigModel.get(config_name)
