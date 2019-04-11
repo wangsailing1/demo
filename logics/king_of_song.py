@@ -415,7 +415,7 @@ class KingOfSongLogics(object):
 
         win_times = 0
         for k, v in king.rank_win_times.items():
-            if rank >= k:
+            if k >= rank:
                 win_times += v
 
         if win_times < game_config.common[77]:
