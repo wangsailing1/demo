@@ -319,7 +319,7 @@ class UserPayment(ModelBase):
             elif act_id == 2017:
                 if not act_item_id:
                     return add_diamond
-                if not self.mm.serverrmbfoundation.open_foundation(act_item_id):
+                if not self.mm.serverrmbfoundation.open_foundation(act_item_id, save=True):
                     return add_diamond
 
             return 0

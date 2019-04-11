@@ -90,8 +90,9 @@ class ServerRmbFoundation(ModelBase):
 
         return save
 
-    def open_foundation(self, act_item_id):
+    def open_foundation(self, act_item_id,save=False):
         version, new_server, s_time, e_time = self.get_version()
+        print 11111111111
         config = game_config.get_server_rmbfoundation_mapping()
         if not version or version not in config or \
                         act_item_id not in config[version]:
@@ -105,6 +106,8 @@ class ServerRmbFoundation(ModelBase):
                     day = int(key.split('day')[1])
                     reward_dict.append(day)
             self.reward_dict[act_item_id] = sorted(reward_dict)
+            if save:
+                self.save()
             return True
         return False
 
