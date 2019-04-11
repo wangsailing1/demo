@@ -39,8 +39,8 @@ class ServerEgg(ModelBase):
         super(ServerEgg, self).__init__(self.uid)
 
     def get_version(self):
-        # 砸金蛋 active_type 为 2011
-        version, new_server, start_time, end_time = get_inreview_version(active_id=self.ACTIVE_ID)
+        # 新服砸金蛋 active_type 为 2018
+        version, new_server, start_time, end_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
         return version
 
     def pre_use(self):
