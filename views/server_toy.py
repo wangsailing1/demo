@@ -3,7 +3,7 @@
 from logics.server_toy import ServerToy
 
 
-def index(hm):
+def server_index(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
     toy = ServerToy(mm, sort)
@@ -11,7 +11,7 @@ def index(hm):
     return rc, data
 
 
-def get_toy(hm):
+def server_get_toy(hm):
     mm = hm.mm
     catch = hm.get_argument('catch', is_int=True)
     sort = hm.get_argument('sort', is_int=True)
@@ -21,7 +21,7 @@ def get_toy(hm):
     return rc, data
 
 
-def refresh(hm):
+def server_refresh(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
     toy = ServerToy(mm, sort)
@@ -29,7 +29,7 @@ def refresh(hm):
     return rc, data
 
 
-def get_rank_reward(hm):
+def server_get_rank_reward(hm):
     mm = hm.mm
     sort = hm.get_argument('sort', is_int=True)
     if sort != 1:
