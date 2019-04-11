@@ -207,6 +207,7 @@ def delete_admin(req):
         return select(req, msg='success')
 
 
+@require_permission
 def game_service(req):
     """
     客服回复首页
