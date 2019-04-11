@@ -498,7 +498,6 @@ class UserPayment(ModelBase):
 
 # 新服充值活动
 class ServerUserPayment(ModelBase):
-
     ADD_RECHARGE_ID = 2027  # 活动id
 
     def __init__(self, uid):
@@ -531,7 +530,6 @@ class ServerUserPayment(ModelBase):
             is_save = True
             if mail_save:
                 self.mm.mail.save()
-
 
     # 添加累充礼包
     def add_add_recharge(self, price_dict):
