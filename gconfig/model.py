@@ -17,6 +17,7 @@ from gconfig.back_contents import mapping_config as back_mapping_config
 from gconfig.front_contents import mapping_config as front_mapping_config
 from gconfig.trans import trans_config
 from lib.utils.debug import print_log
+from lib.utils import config_md5
 import settings
 from lib.utils.singleton import Singleton
 from handler_tools import to_json
@@ -2803,7 +2804,7 @@ class GameConfig(GameConfigMixIn):
                     for one_fake_list in fake_config_list:
                         if len(one_fake_list) != 2:
                             continue
-                        md5_value = hashlib.md5(repr(one_fake_list[1])).hexdigest()
+                        md5_value = config_md5(one_fake_list[1])
                         if cv.versions.get(one_fake_list[0]) == md5_value:
                             continue
                         c = FrontConfig.get(one_fake_list[0])
@@ -2983,7 +2984,7 @@ class FrontGameConfig(GameConfigMixIn):
                     for one_fake_list in fake_config_list:
                         if len(one_fake_list) != 2:
                             continue
-                        md5_value = hashlib.md5(repr(one_fake_list[1])).hexdigest()
+                        md5_value = config_md5(one_fake_list[1])
                         if cv.versions.get(one_fake_list[0]) == md5_value:
                             continue
                         c = FrontConfig.get(one_fake_list[0])
@@ -3042,7 +3043,7 @@ class FrontGameConfig(GameConfigMixIn):
                 else:
                     r[key][k] = v
             for k, v in r.iteritems():
-                md5_value = hashlib.md5(repr(v)).hexdigest()
+                md5_value = config_md5(v)
                 if cv.versions.get(k) == md5_value:
                     continue
                 c = config_instance.get(k)

@@ -115,6 +115,16 @@ def md5(s):
     return hashlib.md5(str(s)).hexdigest()
 
 
+def config_md5(s):
+    """# md5: docstring
+    args:
+        s:    ---    arg
+    returns:
+        0    ---
+    """
+    return hashlib.md5(json.dumps(s, separators=(',', ':'), sort_keys=True)).hexdigest()
+
+
 def sid_generate(account, cur_time, long_value=False):
     """
      api session验证 根据帐号标识和时间戳生成md5
