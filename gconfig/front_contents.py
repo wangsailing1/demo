@@ -564,6 +564,14 @@ toy_mapping = {
     'free_gacha_cost': ('free_gacha_cost', True),
     'free_gacha_control': ('free_gacha_control', True),
     'rmb_gacha_rank': ('rmb_gacha_rank', True),
+
+    'server_rmb_gacha': ('server_rmb_gacha', True),
+    'server_rmb_gacha_cost': ('server_rmb_gacha_cost', True),
+    'server_rmb_gacha_control': ('server_rmb_gacha_control', True),
+    'server_free_gacha': ('server_free_gacha', True),
+    'server_free_gacha_cost': ('server_free_gacha_cost', True),
+    'server_free_gacha_control': ('server_free_gacha_control', True),
+    'server_rmb_gacha_rank': ('server_rmb_gacha_rank', True),
 }
 
 gift_center_mapping = {

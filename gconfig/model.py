@@ -341,6 +341,9 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping = {}
         self.server_add_recharge_limit_mapping = {}
         self.foundation_mapping = {}
+        self.server_free_reward_weight_mapping = {}
+        self.server_rmb_reward_weight_mapping = {}
+
 
     def reset(self):
         """ 配置更新后重置数据
@@ -448,6 +451,9 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping.clear()
         self.server_add_recharge_limit_mapping.clear()
         self.foundation_mapping.clear()
+        self.server_free_reward_weight_mapping.clear()
+        self.server_rmb_reward_weight_mapping.clear()
+
 
     def update_funcs_version(self, config_name):
         """
@@ -2673,6 +2679,27 @@ class GameConfigMixIn(object):
                     self.foundation_mapping[version] = {}
                 self.foundation_mapping[version][j['id']] = j
         return self.foundation_mapping
+
+
+    def server_toy_free_reward_weight_mapping(self):
+        if not self.server_free_reward_weight_mapping:
+            for k, v in self.server_free_gacha.iteritems():
+                if v['library_id'] not in self.server_free_reward_weight_mapping:
+                    self.server_free_reward_weight_mapping[v['library_id']] = {}
+                if v['group'] not in self.server_free_reward_weight_mapping[v['library_id']]:
+                    self.server_free_reward_weight_mapping[v['library_id']][v['group']] = []
+                self.server_free_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
+        return self.server_free_reward_weight_mapping
+
+    def server_toy_rmb_reward_weight_mapping(self):
+        if not self.server_rmb_reward_weight_mapping:
+            for k, v in self.server_rmb_gacha.iteritems():
+                if v['library_id'] not in self.server_rmb_reward_weight_mapping:
+                    self.server_rmb_reward_weight_mapping[v['library_id']] = {}
+                if v['group'] not in self.server_rmb_reward_weight_mapping[v['library_id']]:
+                    self.server_rmb_reward_weight_mapping[v['library_id']][v['group']] = []
+                self.server_rmb_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
+        return self.server_rmb_reward_weight_mapping
 
 
 

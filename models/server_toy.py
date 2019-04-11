@@ -7,10 +7,12 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import generate_rank_score, round_float_or_str, weight_choice
 import settings
-from lib.utils.active_inreview_tools import get_version_by_active_id
+from lib.utils.active_inreview_tools import get_inreview_version
 
 
 class ServerToy(ModelBase):
+    ACTIVE_ID = 2021
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
@@ -30,7 +32,7 @@ class ServerToy(ModelBase):
         self.fredis = self.get_father_redis(father_server)
 
     def pre_use(self):
-        version, new_server, s_time, e_time = self.get_version()
+        version = self.get_version()
         save = False
         now = int(time.time())
         if version and version != self.version:
@@ -57,7 +59,8 @@ class ServerToy(ModelBase):
         return self._key
 
     def get_version(self):
-        return get_version_by_active_id(active_id=2021)
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
+        return version
 
     def is_free_refresh(self):
         return int(time.time()) >= self.last_refresh_time + self.get_refresh_time()
@@ -67,7 +70,7 @@ class ServerToy(ModelBase):
         return max(remain_time, 0)
 
     def get_refresh_time(self):
-        config = game_config.rmb_gacha_control[self.version]
+        config = game_config.server_rmb_gacha_control[self.version]
         return config['cd'] * 60
 
     def init_reward(self, save=False):
@@ -75,15 +78,15 @@ class ServerToy(ModelBase):
         :param save: 
         :return: 
         """
-        action_config_id, _ = self.get_version()
-        config = game_config.rmb_gacha_control[self.version]
-        toy_reward_weight = game_config.toy_rmb_reward_weight_mapping()[game_config.active[action_config_id]['param1']]
+        config = game_config.server_rmb_gacha_control[self.version]
+        reward_list_id = game_config.server_inreview[self.ACTIVE_ID]['param1'][self.version - 1]
+        toy_reward_weight = game_config.server_toy_rmb_reward_weight_mapping()[reward_list_id]
         num = 1
         for group_id, group_num in config['group_num']:
             for _ in range(group_num):
                 weight_config = toy_reward_weight[group_id]
                 reward_id = weight_choice(weight_config)[0]
-                self.toy_list[num] = {'reward_id': reward_id, 'num': 0 , 'flag': 0}
+                self.toy_list[num] = {'reward_id': reward_id, 'num': 0, 'flag': 0}
                 num += 1
         if save:
             self.save()
@@ -120,14 +123,17 @@ class ServerToy(ModelBase):
 
 
 class ServerFreeToy(ServerToy):
+    ACTIVE_ID = 2022
+
     def __int__(self, uid):
         super(ServerToy, self).__init__(self.uid)
 
     def get_version(self):
-        return get_version_by_active_id(active_id=2022)
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
+        return version
 
     def get_refresh_time(self):
-        config = game_config.free_gacha_control[self.version]
+        config = game_config.server_free_gacha_control[self.version]
         return config['cd'] * 60
 
     def init_reward(self, save=False):
@@ -135,9 +141,9 @@ class ServerFreeToy(ServerToy):
         :param save: 
         :return: 
         """
-        action_config_id, _ = self.get_version()
-        config = game_config.free_gacha_control[self.version]
-        toy_reward_weight = game_config.toy_free_reward_weight_mapping()[game_config.active[action_config_id]['param1']]
+        config = game_config.server_free_gacha_control[self.version]
+        reward_list_id = game_config.server_inreview[self.ACTIVE_ID]['param1'][self.version - 1]
+        toy_reward_weight = game_config.server_toy_rmb_reward_weight_mapping()[reward_list_id]
         num = 1
         for group_id, group_num in config['group_num']:
             for _ in range(group_num):
@@ -149,5 +155,5 @@ class ServerFreeToy(ServerToy):
             self.save()
 
 
-ModelManager.register_model('toy', ServerToy)
-ModelManager.register_model('freetoy', ServerFreeToy)
+ModelManager.register_model('servertoy', ServerToy)
+ModelManager.register_model('serverfreetoy', ServerFreeToy)
