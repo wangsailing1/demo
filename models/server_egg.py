@@ -3,7 +3,6 @@
 
 import time
 from lib.db import ModelBase
-from gconfig import game_config
 from lib.db import get_redis_client
 import settings
 from lib.utils.active_inreview_tools import get_inreview_version

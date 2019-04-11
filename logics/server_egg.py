@@ -20,8 +20,8 @@ class ServerEgg(object):
         return False
 
     def index(self):
-        egg_item_info = game_config.egg_item.get(self.serveregg.version)
-        egg_diamond_info = game_config.egg_diamond.get(self.serveregg.version)
+        egg_item_info = game_config.server_egg_item.get(self.serveregg.version)
+        egg_diamond_info = game_config.server_egg_diamond.get(self.serveregg.version)
         data = {'egg_item': {}, 'egg_diamond': {}}
         data['version'] = self.serveregg.version
         data['egg_item']['reward_show_item'] = [i[:3] for i in self.serveregg.egg_item_reward_list]
@@ -47,7 +47,7 @@ class ServerEgg(object):
         if not self.is_open():
             return
         # payment = 0
-        config_item = game_config.egg_item.get(self.serveregg.get_version(), {})
+        config_item = game_config.server_egg_item.get(self.serveregg.get_version(), {})
         if not config_item:
             return  # 没有配置
         need_recharge = config_item.get('need_recharge', 0)
@@ -62,8 +62,8 @@ class ServerEgg(object):
         self.serveregg.save()
 
     def init_reward(self, egg_type=0, save=False):
-        config_item = game_config.egg_item.get(self.serveregg.version, {})
-        config_diamond = game_config.egg_diamond.get(self.serveregg.version, {})
+        config_item = game_config.server_egg_item.get(self.serveregg.version, {})
+        config_diamond = game_config.server_egg_diamond.get(self.serveregg.version, {})
         config_item_list = []
         config_diamond_list = []
         if egg_type == 0 or egg_type == 2:
@@ -103,7 +103,7 @@ class ServerEgg(object):
         # data = {'refresh_flog': 0}
         data = {}
         if egg_type == 1:  # 金蛋
-            egg_diamond_info = game_config.egg_diamond.get(self.serveregg.version)
+            egg_diamond_info = game_config.server_egg_diamond.get(self.serveregg.version)
             if is_super:
                 item_id = egg_diamond_info.get('super_item_higher')[0][1]
                 num_ = self.mm.item.get_item(item_id)
@@ -150,7 +150,7 @@ class ServerEgg(object):
                     self.serveregg.add_log(log_)
 
         elif egg_type == 2:  # 彩蛋
-            egg_item_info = game_config.egg_item.get(self.serveregg.version)
+            egg_item_info = game_config.server_egg_item.get(self.serveregg.version)
             if is_super:
                 if not self.serveregg.egg_item_super_times:
                     return 7, {}  # 高级彩锤不足

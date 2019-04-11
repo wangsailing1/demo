@@ -599,6 +599,9 @@ egg_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'egg_item': ('egg_item', True),
     'egg_diamond': ('egg_diamond', True),
+
+    'server_egg_item': ('server_egg_item', True),
+    'server_egg_diamond': ('server_egg_diamond', True),
 }
 
 one_piece_mapping = {
