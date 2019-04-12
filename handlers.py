@@ -481,7 +481,7 @@ class APIRequestHandler(BaseRequestHandler):
                     print_log(traceback.print_exc())
 
                 if method_param == 'user.guide':
-                    self.hm.mm._model.pop('%s_user'%self.hm.mm.uid)
+                    self.hm.mm._model.pop('%s_user' % self.hm.mm.uid)
                 # 执行成功保存数据
                 self.hm.mm.do_save()
 
