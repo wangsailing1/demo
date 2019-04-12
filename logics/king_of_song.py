@@ -415,7 +415,7 @@ class KingOfSongLogics(object):
 
         win_times = 0
         for k, v in king.rank_win_times.items():
-            if rank >= k:
+            if k >= rank:
                 win_times += v
 
         if win_times < game_config.common[77]:
@@ -432,7 +432,7 @@ class KingOfSongLogics(object):
     def buy_battle_times(self):
         # 扣钱
         cost_list = [(v['pvp_cost']) for k, v in sorted(game_config.price_ladder.items(), key=lambda x: x[0])]
-        cost_list.sort(key=lambda x: x[0])
+        # cost_list.sort(key=lambda x: x[0])
 
         buy_pvp = vip_company.buy_pvp(self.mm.user)
         king = self.mm.king_of_song
