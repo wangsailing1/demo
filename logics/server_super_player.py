@@ -11,7 +11,7 @@ from gconfig import game_config
 from math import ceil
 from tools.gift import add_mult_gift
 from lib.utils.active_inreview_tools import get_version_by_active_id, get_inreview_version
-from models.super_player import SuperPlayerShop, SuperPlayerRank, RedBag
+from models.server_super_player import ServerSuperPlayerShop, ServerSuperPlayerRank, ServerRedBag
 from lib.utils.time_tools import str2timestamp, strftimestamp, datetime_to_timestamp
 import datetime
 from return_msg_config import i18n_msg
@@ -46,7 +46,7 @@ class ServerSuperPlayer(object):
         shop_config = game_config.get_server_play_shop_mapping().get(self.serversuperplayer.version, {})
         if not shop_config:
             return -1
-        superplayershop = SuperPlayerShop.get(self.serversuperplayer.version)
+        superplayershop = ServerSuperPlayerShop.get(self.serversuperplayer.version)
         for i in range(1, 4):
             shop_id_cong = shop_config.get(i, {})
             good_ids = shop_id_cong.keys()
@@ -61,10 +61,10 @@ class ServerSuperPlayer(object):
 
     def index(self):
         # 初始刷新商店
-        superplayershop = SuperPlayerShop.get(self.serversuperplayer.version)
+        superplayershop = ServerSuperPlayerShop.get(self.serversuperplayer.version)
         if not superplayershop.refresh_times or not superplayershop.shop_goods:
             rc = self.refresh()
-            superplayershop = SuperPlayerShop.get(self.serversuperplayer.version)
+            superplayershop = ServerSuperPlayerShop.get(self.serversuperplayer.version)
             self.serversuperplayer.clear()
             if rc:
                 return 1, {}  # 没有配置, 活动未开启
@@ -76,7 +76,7 @@ class ServerSuperPlayer(object):
         data['shop_goods'] = superplayershop.shop_goods
         data['shop_id'] = superplayershop.shop_id
         data['shop_buy_times'] = self.serversuperplayer.shop_buy_times
-        super_rank = SuperPlayerRank(self.serversuperplayer.version)
+        super_rank = ServerSuperPlayerRank(self.serversuperplayer.version)
         data['send_bag_times'] = int(ceil(super_rank.get_user_score(self.user)))
         data['reward_step'] = self.serversuperplayer.reward_step
         rank_notice = []
@@ -92,7 +92,7 @@ class ServerSuperPlayer(object):
         return 0, data
 
     def buy_goods(self, sort_id, good_id):
-        superplayershop = SuperPlayerShop.get(self.serversuperplayer.version)
+        superplayershop = ServerSuperPlayerShop.get(self.serversuperplayer.version)
         shop_goods = superplayershop.shop_goods
         print shop_goods
         if good_id != shop_goods[sort_id]['id']:
@@ -120,7 +120,7 @@ class ServerSuperPlayer(object):
         return 0, data
 
     def get_rank_info(self, num=10):
-        super_rank = SuperPlayerRank(self.serversuperplayer.version)
+        super_rank = ServerSuperPlayerRank(self.serversuperplayer.version)
         mytimes = int(ceil(super_rank.get_user_score(self.user)))
         myrank = super_rank.get_user_score_rank(self.user)
         rank_uids = super_rank.get_users_rank(num)
@@ -136,7 +136,7 @@ class ServerSuperPlayer(object):
         if self.serversuperplayer.reward_step.get(step, 0):
             return -2, {}  # 该奖励已领取
         reward = []
-        super_rank = SuperPlayerRank(self.serversuperplayer.version)
+        super_rank = ServerSuperPlayerRank(self.serversuperplayer.version)
         mytimes = int(ceil(super_rank.get_user_score(self.user)))
         active_config = game_config.get_server_play_points_mapping().get(self.serversuperplayer.version, {})
         need_point = active_config.get(reward_id, {}).get('point', 0)
@@ -154,7 +154,7 @@ class ServerSuperPlayer(object):
         return 0, data
 
     def get_red_bag(self, num=10):
-        redbags = RedBag(self.serversuperplayer.version)
+        redbags = ServerRedBag(self.serversuperplayer.version)
         codes = redbags.get_red_num_code(num)
         redbag_info = []
         for code_ in codes:
@@ -171,7 +171,7 @@ class ServerSuperPlayer(object):
         new_time = time.time()
         if new_time < self.serversuperplayer.get_time:
             return 2, {}
-        redbags = RedBag(self.serversuperplayer.version)
+        redbags = ServerRedBag(self.serversuperplayer.version)
         num = redbags.get_redbag(red_code)
         if not num:
             return 3, {}
@@ -204,7 +204,7 @@ def server_refresh(server):
     if version:
         shop_config = game_config.get_server_play_shop_mapping().get(version, {})
     if shop_config:
-        superplayershop = SuperPlayerShop.get(version)
+        superplayershop = ServerSuperPlayerShop.get(version)
         for i in range(1, 4):
             shop_id_cong = shop_config.get(i, {})
             good_ids = shop_id_cong.keys()
@@ -223,7 +223,7 @@ def server_active_reward(server):
     mm = ModelManager(uid)
 
     version, new_server, s_time, e_time = get_inreview_version(mm.user, mm.serversuperplayer.ACTIVE_ID,diff_hour=1)
-    super_rank = SuperPlayerRank(version)
+    super_rank = ServerSuperPlayerRank(version)
     uids_rank = super_rank.get_users_rank(100)
     playrankreward_config = game_config.get_server_play_rankreward_mapping().get(version, {})
     rank_id = playrankreward_config.keys()
