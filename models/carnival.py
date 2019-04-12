@@ -529,7 +529,7 @@ class Carnival(ModelBase):
         title = config['title']
         content = config['content']
         lan = getattr(self.mm,'lan', 1)
-        lan = MUITL_LAN(lan)
+        lan = MUITL_LAN[lan]
         title = game_config.get_language_config(lan)[title]
         content = game_config.get_language_config(lan)[content]
         msg = self.mm.mail.generate_mail(content, title=title, gift=gift)
