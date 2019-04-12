@@ -89,6 +89,7 @@ class Carnival(object):
 
     def index(self, tp=1):
         pre_str = self.carnival.CONFIGMAPPING[tp]
+        start_time, end_time = self.carnival.get_start_end_time(tp)
         return 0, {'carnival_data': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_data')),
                    'carnival_done': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_done')),
                    'dice_num': getattr(self.carnival, '%s%s' % (pre_str, 'dice_num')),
@@ -96,7 +97,9 @@ class Carnival(object):
                    'carnival_step': getattr(self.carnival, '%s%s' % (pre_str, 'carnival_step')),
                    'max_id': self.carnival.carnival_max_id(tp=tp),
                    'status': self.get_status_by_type(tp),
-                   'tp': tp}
+                   'tp': tp,
+                   'start_time': start_time,
+                   'end_time': end_time,}
 
     def dice(self, tp=1):
         if tp == 1:
