@@ -267,8 +267,8 @@ def reset_guide(req, **kwargs):
         else:
             value[v['sort']] = k
 
-    mm.user.guide = value
-    mm.user.save()
+    mm.user.user_guide.set_guide_data(value)
+    # mm.user.save()
 
     msg = 'success'
 

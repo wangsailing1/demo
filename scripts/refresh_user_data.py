@@ -93,8 +93,8 @@ def refresh_guide(uid):
         key = guide_ids[-1]
         value[sort] = key
 
-    mm.user.guide = value
-    mm.user.save()
+    mm.user.user_guide.set_guide_data(value)
+    # mm.user.save()
     return uid
 
 
