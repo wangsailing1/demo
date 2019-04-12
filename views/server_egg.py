@@ -17,8 +17,8 @@ def server_egg_index(hm):
             return rc, {}
 
     data = egg.index()
-    data['reward_log'] = mm.egg.get_log()
-    data['version'] = mm.egg.version
+    data['reward_log'] = mm.serveregg.get_log()
+    data['version'] = mm.serveregg.version
     return 0, data
 
 
@@ -38,7 +38,7 @@ def server_open_egg(hm):
     data = egg.index()
     data['reward'] = reward['gift']
     # data['refresh_flog'] = reward['refresh_flog']
-    data['reward_log'] = mm.egg.get_log()
+    data['reward_log'] = mm.serveregg.get_log()
     return 0, data
 
 
@@ -63,9 +63,9 @@ def server_refresh_egg(hm):
     if rc != 0:
         return rc, {}
     mm.user.deduct_diamond(need_num)
-    mm.server_egg.save()
+    mm.serveregg.save()
     mm.user.save()
 
     data = egg.index()
-    data['reward_log'] = mm.egg.get_log()
+    data['reward_log'] = mm.serveregg.get_log()
     return 0, data
