@@ -38,6 +38,9 @@ carnival_days = {
     'time_format': ('time_format', 'int'),  # 时间格式，1是新服嘉年华，2是普通嘉年华
     'open': ('open', 'str'),  # 开启时间
     'close': ('close', 'str'),  # 结束时间
+    'title': ('title', 'str'),  # 邮件镖旗
+    'content': ('content', 'str'),  # 邮件内容
+    'reward': ('reward', 'str'),  # 奖励
 }
 
 carnival_random = ({

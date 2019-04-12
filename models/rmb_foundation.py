@@ -82,7 +82,8 @@ class RmbFoundation(ModelBase):
                 tag = 1
 
         # 暂时刷新数据
-        if not tag and self.is_open():
+        a_id, version = self.get_version()
+        if not tag and self.is_open() and self.version != version:
             self.reward_dict = {}
             self.activate_mark = {}
 

@@ -5,9 +5,12 @@ import time
 import random
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from lib.utils import weight_choice
-from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days
+from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days, \
+    timestamp_from_relative_time, strftimestamp
+from models import server as serverM
+
 
 """
 任务对应个个接口的返回数据
@@ -392,7 +395,7 @@ class Carnival(ModelBase):
 
     }
     # mission_mapping
-    MISSIONMAPPING = {1: 'server_arnival', 2: 'carnival_active'}
+    MISSIONMAPPING = {1: 'server_carnival', 2: 'carnival_active'}
 
     # 数值类任务初始化时需要自检的
     NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]
@@ -461,6 +464,9 @@ class Carnival(ModelBase):
         if not server_days:
             self.server_carnival_data = {}
             self.server_carnival_done = {}
+            if self.server_dice_num:
+                # todo 发送邮件
+                self.send_mail(self.dice_num, 1)
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 1
@@ -469,6 +475,9 @@ class Carnival(ModelBase):
             self.start_time = start_time
             self.carnival_data = {}
             self.carnival_done = {}
+            if self.dice_num:
+                # todo 发送邮件
+                self.send_mail(self.dice_num, 2)
             self.dice_num = 0
             self.carnival_days = 0
             self.carnival_step = 1
@@ -514,6 +523,21 @@ class Carnival(ModelBase):
             self.carnival_days = 0
             self.carnival_step = 1
 
+    def send_mail(self, num, tp, save=True):
+        config = game_config.carnival_days[tp]
+        gift = config['reward'] * num
+        title = config['title']
+        content = config['content']
+        lan = getattr(self.mm,'lan', 1)
+        lan = MUITL_LAN[lan]
+        title = game_config.get_language_config(lan)[title]
+        content = game_config.get_language_config(lan)[content]
+        msg = self.mm.mail.generate_mail(content, title=title, gift=gift)
+        self.mm.mail.add_mail(msg)
+        if save:
+            self.mm.mail.save()
+
+
     def carnival_max_id(self, tp=1):
         if tp == 1:
             config = game_config.carnival_new_reward
@@ -545,8 +569,23 @@ class Carnival(ModelBase):
                 return timestamp_different_days(start, now) + 1
             return 0
 
+    def get_start_end_time(self, tp):
+        config = game_config.carnival_days[tp]
+        if tp == 1:
+            server_open_time = serverM.get_server_config('gtt1').get('open_time')
+            start_time = config['open']
+            end_time = config['close']
+            start_time = strftimestamp(timestamp_from_relative_time(server_open_time, start_time))
+            end_time = strftimestamp(timestamp_from_relative_time(server_open_time, end_time))
+
+        elif tp == 2:
+            start_time = config['open']
+            end_time = config['close']
+        return start_time, end_time
+
+
     @property
-    def server_arnival(self):
+    def server_carnival(self):
         if not hasattr(self, '_server_carnival'):
             self._server_carnival = ServerCarnival(self)
         return self._server_carnival
@@ -579,7 +618,7 @@ class Carnival(ModelBase):
         for k, value in self.server_carnival_data.iteritems():
             sort = game_config.carnival_mission[k]['sort']
             if sort in kwargs:
-                self.server_arnival.add_count(k, kwargs[sort])
+                self.server_carnival.add_count(k, kwargs[sort])
 
         for k, value in self.carnival_data.iteritems():
             sort = game_config.carnival_mission[k]['sort']
