@@ -78,6 +78,7 @@ class Block(ModelBase):
             b.add_user_by_block(self.mm.uid, num)
             group = b.get_group(self.mm.uid)
             self.block_group = group
+            self.save()
 
     def up_block(self, cup, is_save=False):
         config = game_config.dan_grading_list
