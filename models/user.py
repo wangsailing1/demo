@@ -1854,6 +1854,10 @@ class User(ModelBase):
     def user_guide(self):
         return self.mm.get_obj_tools('user_guide')
 
+    def data_update_func_1(self):
+        if self.guide:
+            self.user_guide.set_guide_data(self.guide)
+
     def finish_guide(self):
         """
         跳过新手引导
