@@ -59,7 +59,7 @@ def user_status(mm):
         'guild_id': user.guild_id,
         'guild_name': guild_name,
         'unlock_build': user.unlock_build,
-        'guide': user.guide,
+        'guide': user.user_guide.get_guide_data(),
         'action_point': user.action_point,
         'action_point_updatetime': user.action_point_updatetime,
 

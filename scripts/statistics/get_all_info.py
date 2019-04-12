@@ -92,7 +92,7 @@ def info(mm, **kwargs):
         # 'diamond_ticket': user.diamond_ticket,
         # 'dark_coin': mm.user.dark_coin,
         # 'challenge': mm.user.challenge,
-        'guide': user.guide,
+        'guide': user.user_guide.get_guide_data(),
         'uuid': user.uuid,  # 设备唯一标识
         # 'combat': mm.hero.get_max_combat(),
         'server': user._server_name,
