@@ -125,6 +125,8 @@ class ServerEgg(object):
                 need_diamond = egg_diamond_info.get('need_recharge')
                 if not self.mm.user.is_diamond_enough(need_diamond):
                     return 3, {}  # 钻石不足
+                if egg_sort == self.serveregg.egg_sort_used[egg_type]:
+                    return 11, {}  # 已经开过这个了
 
                 self.mm.user.deduct_diamond(need_diamond)
                 self.serveregg.egg_diamond_times += 1
@@ -169,6 +171,8 @@ class ServerEgg(object):
                 # need_num = egg_item_info.get('need_recharge')
                 if not self.serveregg.egg_item_times - self.serveregg.egg_item_used_times:
                     return 5, {}  # 彩锤不足
+                if egg_sort == self.serveregg.egg_sort_used[egg_type]:
+                    return 11, {} # 已经开过了
                 self.serveregg.egg_item_used_times += 1
                 # self.serveregg.egg_item_open_times += 1
                 self.serveregg.egg_sort_used[egg_type] = egg_sort
