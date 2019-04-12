@@ -7,7 +7,10 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config, MUITL_LAN
 from lib.utils import weight_choice
-from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days
+from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days, \
+    timestamp_from_relative_time, strftimestamp
+from models import server as serverM
+
 
 """
 任务对应个个接口的返回数据
@@ -464,6 +467,21 @@ class Carnival(ModelBase):
             if start <= now <= end:
                 return timestamp_different_days(start, now) + 1
             return 0
+
+    def get_start_end_time(self, tp):
+        config = game_config.carnival_days[tp]
+        if tp == 1:
+            server_open_time = serverM.get_server_config('gtt1').get('open_time')
+            start_time = config['open']
+            end_time = config['close']
+            start_time = strftimestamp(timestamp_from_relative_time(server_open_time, start_time))
+            end_time = strftimestamp(timestamp_from_relative_time(server_open_time, end_time))
+
+        elif tp == 2:
+            start_time = config['open']
+            end_time = config['close']
+        return start_time, end_time
+
 
     @property
     def server_carnival(self):
