@@ -422,7 +422,7 @@ class APIRequestHandler(BaseRequestHandler):
             old_data = {}
 
             if self.hm.mm:
-                if method_param not in ['user.get_red_dot', 'user.game_info']:
+                if method_param not in ['user.get_red_dot', 'user.game_info', 'user.guide']:
                     cur_lan_sort = self.get_argument('lan', '1')
                     if cur_lan_sort != self.hm.mm.user.language_sort:
                         self.hm.mm.user.language_sort = cur_lan_sort

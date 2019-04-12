@@ -304,7 +304,6 @@ class ModelBase(ModelTools):
         :param server_name:
         :return:
         """
-
         if server_name:
             if server_name not in settings.SERVERS:
                 raise KeyError('ERROR SERVER NAME: %s' % server_name)

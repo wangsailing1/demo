@@ -462,7 +462,7 @@ class UserLogic(object):
             if not self.user.finish_guide():
                 return False
         else:
-            if guide_id > self.user.guide.get(sort, 0):
+            if guide_id > self.user.user_guide[sort]:
                 guide_config = game_config.guide.get(guide_id)
                 if guide_config is None:
                     return False
@@ -470,7 +470,7 @@ class UserLogic(object):
                 if sort != guide_config['sort']:
                     return False
 
-                self.user.guide[sort] = guide_id
+                self.user.user_guide[sort] = guide_id
 
         if save:
             self.user.save()

@@ -281,7 +281,7 @@ class User(ModelBase):
             'dialogue': [],  # 剧情信息
             'skip_dialouge': 0,
             'skip_battle': 0,
-            'reward_gift': {},        # 每日登录奖励领取状态
+            'reward_gift': {},  # 每日登录奖励领取状态
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
@@ -454,8 +454,8 @@ class User(ModelBase):
                 continue
             if status == 1:
                 continue
-            # self.level_gift.pop(lv)
-            # is_save = True
+                # self.level_gift.pop(lv)
+                # is_save = True
 
         # if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
         #     self.refresh_week = week
@@ -1850,6 +1850,14 @@ class User(ModelBase):
         # return max_point_buy_times
         return vip_company.buy_point(self)
 
+    @property
+    def user_guide(self):
+        return self.mm.get_obj_tools('user_guide')
+
+    def data_update_func_1(self):
+        if self.guide:
+            self.user_guide.set_guide_data(self.guide)
+
     def finish_guide(self):
         """
         跳过新手引导
@@ -1864,15 +1872,15 @@ class User(ModelBase):
             elif value[sort] < k:
                 value[sort] = k
 
-        old_guide = copy.deepcopy(self.guide)
-        self.guide.update(value)
-        if old_guide == self.guide:
+        old_guide = copy.deepcopy(self.user_guide.get_guide_data())
+        self.user_guide.set_guide_data(value)
+        if old_guide == self.user_guide.get_guide_data():
             return False
 
         return True
 
     def check_guide_done(self, guide_id):
-        guide_step = self.guide.get(guide_id, 0)
+        guide_step = self.user_guide[guide_id]
         config = game_config.guide.get(guide_step, {})
         if not config:
             return 0
@@ -2673,7 +2681,39 @@ class GSMessage(object):
             yield table
 
 
+class Guide(ModelTools):
+    def __init__(self, uid, server, *args, **kwargs):
+        super(Guide, self).__init__()
+        self._key = self.make_key(uid, server_name=server)
+        self.redis = self.get_father_redis(server)
+
+    def __getitem__(self, item):
+        value = self.redis.hget(self._key, item)
+        return 0 if value is None else int(value)
+
+    def __setitem__(self, key, value):
+        self.redis.hset(self._key, key, value)
+
+    def __delitem__(self, key):
+        self.redis.hdel(self._key, key)
+
+    def get_guide_data(self):
+        d = self.redis.hgetall(self._key)
+        d2 = {}
+        for i, j in d.iteritems():
+            d2[int(i)] = int(j)
+
+        return d2
+
+    def clear_guide_data(self):
+        self.redis.delete(self._key)
+
+    def set_guide_data(self, data):
+        self.redis.hmset(self._key, data)
+
+
 ModelManager.register_model('user', User)
 ModelManager.register_model_base_tools('online_users', OnlineUsers)
 ModelManager.register_model_base_tools('checkin_users', CheckinUsers)
 ModelManager.register_model_base_tools('regist_users', RegistUsers)
+ModelManager.register_model_base_tools('user_guide', Guide)
