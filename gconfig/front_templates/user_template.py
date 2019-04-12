@@ -571,6 +571,10 @@ server_inreview = {
     # 'default': ('default', 'unicode'),
     'show_lv': ('show_lv', 'int'),
     # 'sort': ('sort', 'int'),
+    'name_show': ('name_show', 'str'),
+    'param1': ('param1', 'int_list'),
+    'param2': ('param2', 'int'),
+    'param3': ('param3', 'int'),
 }
 
 # 称号

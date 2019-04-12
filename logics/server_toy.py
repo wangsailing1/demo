@@ -28,7 +28,7 @@ class ServerToy(object):
         fun = getattr(module, method)
         if not fun(self.mm.user):
             return -1
-        version = self.servertoy.get_version()
+        version = self.toy.get_version()
         return version
 
     def unlock_lv(self):
