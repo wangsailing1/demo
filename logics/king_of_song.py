@@ -39,13 +39,15 @@ class KingOfSongLogics(object):
         king = self.mm.king_of_song
         # 从view层index接口进来检查赛季奖励
         season_award = {}
+        last_season_info = []
         if check_season_award:
-            season_award = self.check_last_season_award()
+            season_award, last_season_info = self.check_last_season_award()
         open_info = self.open_info()
 
         data = {
             'season': king.season,
             'season_award': season_award,
+            'last_season_info': last_season_info,
             'battle_times': king.battle_times,
             'left_times': king.left_battle_times(),
             'buy_times': king.buy_times,
@@ -66,8 +68,10 @@ class KingOfSongLogics(object):
         season_award = {}
         king = self.mm.king_of_song
         open_info = self.open_info()
+        last_season_info = []
         if king.last_season_info or not open_info['open']:
             season, rank = king.last_season_info or (king.season, king.rank)
+            last_season_info = [season, rank]
             if season not in king.season_reward_log:
                 rank_config = game_config.pvp_rank[rank]
                 season_award = add_mult_gift(self.mm, rank_config['award_end'], season_award)
@@ -76,7 +80,7 @@ class KingOfSongLogics(object):
                 king.season_reward_log = king.season_reward_log[-2:]
                 king.save()
 
-        return season_award
+        return season_award, last_season_info
 
     def enemy_battle(self, target_uid):
         """对手拍片
