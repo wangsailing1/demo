@@ -53,7 +53,7 @@ def get_reward(hm):
         return 1, {}  # 参数错误
     if not mission.has_reward_by_type(m_type, mission_id):
         return 2, {}  # 未完成
-    if mission.get_done_mission(m_type, mission_id):
+    if tp_id != 4 and mission.get_done_mission(m_type, mission_id):
         return 3, {}  # 已领
     mm_obj = getattr(mm.mission, m_type)
     mm_obj.done_task(mission_id)
