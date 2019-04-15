@@ -51,10 +51,10 @@ def server_refresh_egg(hm):
         return 1, {}  # 活动未开启
     if egg_type not in [1, 2]:
         return 4, {}  # 参数错误
-    egg_diamond_info = game_config.egg_diamond.get(mm.egg.version)
+    egg_diamond_info = game_config.server_egg_diamond.get(mm.egg.version)
     if egg_type == 1:
         need_num = egg_diamond_info.get('refresh_price')
-    egg_item_info = game_config.egg_item.get(mm.egg.version)
+    egg_item_info = game_config.server_egg_item.get(mm.egg.version)
     if egg_type == 2:
         need_num = egg_item_info.get('refresh_price')
     if not mm.user.is_diamond_enough(need_num):
