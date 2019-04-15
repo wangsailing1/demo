@@ -40,7 +40,7 @@ carnival_days = {
     'close': ('close', 'str'),  # 结束时间
     'title': ('title', 'str'),  # 邮件镖旗
     'content': ('content', 'str'),  # 邮件内容
-    'reward': ('reward', 'str'),  # 奖励
+    'reward': ('reward', 'int_list'),  # 奖励
 }
 
 carnival_random = ({

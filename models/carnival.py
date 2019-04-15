@@ -10,6 +10,7 @@ from lib.utils import weight_choice
 from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days, \
     timestamp_from_relative_time, strftimestamp
 from models import server as serverM
+from tools.gift import calc_gift
 
 
 """
@@ -465,20 +466,23 @@ class Carnival(ModelBase):
             self.server_carnival_data = {}
             self.server_carnival_done = {}
             if self.server_dice_num:
-                # todo 发送邮件
-                self.send_mail(self.dice_num, 1)
+                self.send_mail(self.server_dice_num, 1)
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 1
             save = True
+        if not carnival_days or start_time != self.start_time:
+            if self.dice_num:
+                self.send_mail(self.dice_num, 2)
+                self.dice_num = 0
+                save = True
         if start_time != self.start_time and self.start_time and carnival_days:
             self.start_time = start_time
             self.carnival_data = {}
             self.carnival_done = {}
-            if self.dice_num:
-                # todo 发送邮件
-                self.send_mail(self.dice_num, 2)
-            self.dice_num = 0
+            # if self.dice_num:
+            #     self.send_mail(self.dice_num, 2)
+            # self.dice_num = 0
             self.carnival_days = 0
             self.carnival_step = 1
             save = True
@@ -526,6 +530,7 @@ class Carnival(ModelBase):
     def send_mail(self, num, tp, save=True):
         config = game_config.carnival_days[tp]
         gift = config['reward'] * num
+        gift = calc_gift(gift)
         title = config['title']
         content = config['content']
         lan = getattr(self.mm,'lan', 1)
@@ -572,7 +577,7 @@ class Carnival(ModelBase):
     def get_start_end_time(self, tp):
         config = game_config.carnival_days[tp]
         if tp == 1:
-            server_open_time = serverM.get_server_config('gtt1').get('open_time')
+            server_open_time = serverM.get_server_config(self._server_name).get('open_time')
             start_time = config['open']
             end_time = config['close']
             start_time = strftimestamp(timestamp_from_relative_time(server_open_time, start_time))
