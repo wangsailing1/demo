@@ -1004,6 +1004,9 @@ mail_msg = {
     'mail.get_reward': {
         1: u'邮箱已空空如也',
     },
+    'mail.receive_all': {
+        1: u'邮箱已空空如也',
+    },
 }
 
 i18n = {

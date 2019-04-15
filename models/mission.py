@@ -1198,7 +1198,7 @@ class MissionRandom(DoMission):
         """完成任务
         """
         now = int(time.time())
-        self.done.append(mission_id)
+        # self.done.append(mission_id)
         for key in range(1, 5):
             refresh_key = '%s%s' % ('refresh_ts', key)
             if refresh_key not in self.data:
