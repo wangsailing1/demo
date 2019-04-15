@@ -59,6 +59,9 @@ class ServerToy(object):
             data['rank'] = self.get_all_rank_user_info()
             data['own_rank'] = self.toy.get_rank(self.mm.uid)
             data['own_score'] = self.toy.get_score(self.mm.uid)
+        start_time, end_time = self.toy.get_start_time_end_time()
+        data['start_time'] = start_time
+        data['end_time'] = end_time
         return 0, data
 
     def get_all_rank_user_info(self):
