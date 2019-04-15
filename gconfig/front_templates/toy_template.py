@@ -19,12 +19,14 @@ rmb_gacha = {
     'award_action':     ('award_action',    'str_list'),            # 奖品动画
     'color':            ('color',           'int'),                 # 颜色
 }
+server_rmb_gacha = rmb_gacha
 
 # 付费娃娃机消耗
 rmb_gacha_cost = {
     'uk':               ('id',              'int'),                 # id
     'cost':             ('cost',            'int_list'),            # 奖券消耗
 }
+server_rmb_gacha_cost = rmb_gacha_cost
 
 # 付费娃娃机消耗
 rmb_gacha_control = {
@@ -37,6 +39,8 @@ rmb_gacha_control = {
     'compensate':           ('compensate',          'int_list'),       # 补偿奖励
 }
 
+server_rmb_gacha_control = rmb_gacha_control
+
 # 付费娃娃机排行
 rmb_gacha_rank = {
     'uk':                   ('id',                  'int'),             # id
@@ -45,6 +49,8 @@ rmb_gacha_rank = {
     'mail_title':           ('mail_title',          'str'),             # 邮件名称
     'mail_content':         ('mail_content',        'str'),             # 邮件内容
 }
+
+server_rmb_gacha_rank = rmb_gacha_rank
 
 # 免费娃娃机
 free_gacha = {
@@ -59,12 +65,15 @@ free_gacha = {
     'award_action':     ('award_action',    'str_list'),            # 奖品动画
     'color':            ('color',           'int'),                 # 颜色
 }
+server_free_gacha = free_gacha
 
 # 免费娃娃机消耗
 free_gacha_cost = {
     'uk':               ('id',              'int'),                 # id
     'cost':             ('cost',            'int_list'),            # 奖券消耗
 }
+
+server_free_gacha_cost = free_gacha_cost
 
 # 免费娃娃机消耗
 free_gacha_control = {
@@ -76,3 +85,5 @@ free_gacha_control = {
     'group_mustgetnum':     ('group_mustgetnum',    'int_list'),       # 组不空抓取在第几次必不脱钩（仅对准任意奖品）
     'compensate':           ('compensate',          'int_list'),       # 补偿奖励
 }
+
+server_free_gacha_control = free_gacha_control
