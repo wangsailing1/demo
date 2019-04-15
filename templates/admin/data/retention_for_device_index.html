@@ -45,27 +45,27 @@
 </div>
 
 <hr/>
-<p>分渠道留存统计</p>
-<form action="/{{url_partition}}/admin/data/retention_channel/" method="get">
-<input type="hidden" name="for_device" value="1">
-<table id="data">
-<tr>
-    <td>
-        选择日期:
-        <select name="day" value="1">
-            {% for day in sorted(retention_data, reverse=True) %}
-                {% if day == select_day %}
-                <option value="{{ day }}" selected>{{ day }}</option>
-                {% else %}
-                <option value="{{ day }}">{{ day }}</option>
-                {% end %}
-            {% end %}
-        </select>
-    </td>
-    <td><button type="submit" style="color: red;">查询</button></td>
-</tr>
-</table>
-</form>
+<!--<p>分渠道留存统计</p>-->
+<!--<form action="/{{url_partition}}/admin/data/retention_channel/" method="get">-->
+<!--<input type="hidden" name="for_device" value="1">-->
+<!--<table id="data">-->
+<!--<tr>-->
+    <!--<td>-->
+        <!--选择日期:-->
+        <!--<select name="day" value="1">-->
+            <!--{% for day in sorted(retention_data, reverse=True) %}-->
+                <!--{% if day == select_day %}-->
+                <!--<option value="{{ day }}" selected>{{ day }}</option>-->
+                <!--{% else %}-->
+                <!--<option value="{{ day }}">{{ day }}</option>-->
+                <!--{% end %}-->
+            <!--{% end %}-->
+        <!--</select>-->
+    <!--</td>-->
+    <!--<td><button type="submit" style="color: red;">查询</button></td>-->
+<!--</tr>-->
+<!--</table>-->
+<!--</form>-->
 
 <table id="data">
     <tr>
@@ -99,28 +99,28 @@
 </table>
 
 <hr/>
-<p>分IP地域留存统计</p>
-<form action="/{{url_partition}}/admin/data/retention_ip/" method="get">
-<input type="hidden" name="for_device" value="1">
-<input type="hidden" name="for_ip" value="1">
-<table id="data">
-<tr>
+<!--<p>分IP地域留存统计</p>-->
+<!--<form action="/{{url_partition}}/admin/data/retention_ip/" method="get">-->
+<!--<input type="hidden" name="for_device" value="1">-->
+<!--<input type="hidden" name="for_ip" value="1">-->
+<!--<table id="data">-->
+<!--<tr>-->
 
-    <td>
-        选择日期:
-        <select name="day" value="1">
-            {% for day in sorted(retention_data, reverse=True) %}
-                {% if day == select_day %}
-                <option value="{{ day }}" selected>{{ day }}</option>
-                {% else %}
-                <option value="{{ day }}">{{ day }}</option>
-                {% end %}
-            {% end %}
-        </select>
-    </td>
-    <td><button type="submit" style="color: red;">查询</button></td>
-</tr>
-</table>
-</form>
+    <!--<td>-->
+        <!--选择日期:-->
+        <!--<select name="day" value="1">-->
+            <!--{% for day in sorted(retention_data, reverse=True) %}-->
+                <!--{% if day == select_day %}-->
+                <!--<option value="{{ day }}" selected>{{ day }}</option>-->
+                <!--{% else %}-->
+                <!--<option value="{{ day }}">{{ day }}</option>-->
+                <!--{% end %}-->
+            <!--{% end %}-->
+        <!--</select>-->
+    <!--</td>-->
+    <!--<td><button type="submit" style="color: red;">查询</button></td>-->
+<!--</tr>-->
+<!--</table>-->
+<!--</form>-->
 
 {% end %}
