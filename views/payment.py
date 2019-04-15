@@ -29,7 +29,7 @@ def index(hm):
         'double': double,
         # 'week_status': week_status,
         # 'month_status': month_status,
-        'buy_log': mm.user_payment.buy_log.keys(),     # 充值购买id记录
+        'buy_log': mm.user_payment.buy_log.keys(),  # 充值购买id记录
         'vip_gift': mm.user.vip_gift,  # 已购买的特权礼包id
     }
     if 'ios' in mm.user.appid:
@@ -37,7 +37,6 @@ def index(hm):
             'ios_pay': mm.user.ios_payment,  # iOS小额充值信息
             'limit_times': {8: 3, 9: 3},  # 购买上限 todo 小额充值的商品id需要改
         })
-
 
     return 0, result
 
@@ -57,9 +56,9 @@ def first_recharge(hm):
     price = round(mm.user_payment.charge_price / currencys.get(currency, 1), 2)
 
     data = {
-        'charge_done': mm.user_payment.first_charge_done,   # 已领过奖励的id
+        'charge_done': mm.user_payment.first_charge_done,  # 已领过奖励的id
         # 'price': price,             # 已充值金额
-        'currency': currency,       # 货币
+        'currency': currency,  # 货币
         # 'first_remain_time': mm.user_payment.get_first_charge_remain_time(),  # 首充倒计时
     }
 
@@ -115,9 +114,10 @@ def add_recharge_index(hm):
         return 1, {}  # 活动未开启
 
     return 0, {'add_recharge': mm.user_payment.add_recharge_done,
-               'remain_time':mm.user_payment.get_add_recharge_remain_time(),
+               'remain_time': mm.user_payment.get_add_recharge_remain_time(),
                'version': mm.user_payment.add_recharge_version,
                'price': mm.user_payment.add_recharge_price}
+
 
 def get_add_recharge(hm):
     mm = hm.mm
@@ -149,6 +149,51 @@ def get_add_recharge(hm):
         'add_recharge_red_dot': mm.user_payment.get_add_recharge_red_dot()
     }
     result.update(add_recharge_index(hm)[1])
+
+    return 0, result
+
+
+def server_add_recharge_index(hm):
+    mm = hm.mm
+    if not mm.server_user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    return 0, {'add_recharge': mm.server_user_payment.add_recharge_done,
+               'remain_time': mm.server_user_payment.get_add_recharge_remain_time(),
+               'version': mm.server_user_payment.add_recharge_version,
+               'price': mm.server_user_payment.add_recharge_price}
+
+
+def server_get_add_recharge(hm):
+    mm = hm.mm
+    if not mm.server_user_payment.add_recharge_version:
+        return 1, {}  # 活动未开启
+
+    reward_id = hm.get_argument('reward_id', is_int=True)
+
+    if reward_id <= 0:
+        return 'error_100', {}
+
+    add_recharge_config = game_config.server_add_recharge.get(reward_id)
+    if not add_recharge_config:
+        return 'error_config', {}
+
+    if mm.server_user_payment.get_add_recharge_status(reward_id) == 2:
+        return 2, {}  # 奖励已领取
+
+    if mm.server_user_payment.get_add_recharge_status(reward_id) == 0:
+        return 3, {}  # 未达到条件
+
+    mm.server_user_payment.add_add_recharge_done(reward_id)
+    reward = add_mult_gift(mm, add_recharge_config['reward'])
+
+    mm.server_user_payment.save()
+
+    result = {
+        'reward': reward,
+        'add_recharge_red_dot': mm.server_user_payment.get_add_recharge_red_dot()
+    }
+    result.update(server_add_recharge_index(hm)[1])
 
     return 0, result
 
@@ -205,6 +250,7 @@ def pay_order(hm):
 
     return 0, rs
 
+
 def balance(hm):
     """ 余额
 
@@ -231,7 +277,7 @@ def callback(request, tp=None):
     :param tp:
     :return:
     """
-    pay_status = payment_verify(request,tp)
+    pay_status = payment_verify(request, tp)
     return pay_status
 
 
@@ -336,7 +382,6 @@ def ysdk_pay(hm):
     # result_data['step'] = env.user.shop.vip_record_data
     result_data['double_pay'] = hm.mm.user_payment.get_double_pay()
     return 0, result_data
-
 
 
 def ysdk_balance(hm):
@@ -484,4 +529,3 @@ def get_order_uc(hm):
     return 0, {
         'sign': sign,
     }
-

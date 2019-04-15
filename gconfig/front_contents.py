@@ -404,6 +404,7 @@ active_mapping = {
     'add_recharge': ('add_recharge', True),
     'add_recharge_limit': ('add_recharge_limit', True),
     'server_add_recharge_limit': ('server_add_recharge_limit', True),
+    'server_add_recharge': ('server_add_recharge', True),
 }
 
 daily_activity_mapping = {

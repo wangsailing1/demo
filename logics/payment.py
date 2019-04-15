@@ -111,7 +111,13 @@ def pay_apply(mm, obj, charge_config):
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
         if server_type == 1:
-            pass
+
+            # 新服累充
+            mm.server_user_payment.add_add_recharge(price_dict={1: order_diamond, 2: order_rmb})
+            # 新服限时签约
+            mm.server_limit_sign.add_score(order_diamond, order_money)
+
+            # pass
             # mm.server_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
             # # 每日充值活动记录钻石
             # mm.server_daily_recharge.reward(order_diamond + gift_diamond, product_id)
@@ -130,7 +136,7 @@ def pay_apply(mm, obj, charge_config):
             # # 天降红包
             # mm.server_red_bag.pay_trigger(product_id, amount)
         else:
-            pass
+            # pass
             # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
             # # 每日充值活动记录钻石
             # mm.active_daily_recharge.reward(order_diamond + gift_diamond, product_id)
@@ -149,22 +155,30 @@ def pay_apply(mm, obj, charge_config):
             # # 天降红包
             # mm.red_bag.pay_trigger(product_id, amount)
 
-        # mm.user.record_privilege_gift(charge_config=charge_config)
-        mm.superplayer.add_day_pay(order_diamond)
+            # mm.user.record_privilege_gift(charge_config=charge_config)
+
+            #超级大玩家
+            mm.superplayer.add_day_pay(order_diamond)
+
+            # 首充礼包
+            mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
+            # 累充
+            mm.user_payment.add_add_recharge(price_dict={1: order_diamond, 2: order_rmb})
+            # 限时签约
+            mm.limit_sign.add_score(order_diamond, order_money)
+            add_mult_gift(mm, gift)
+            mm.rmbfoundation.save()
+
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
-        add_mult_gift(mm, gift)
-        mm.user.save()
-        mm.rmbfoundation.save()
 
         # 购买商品日期记录，用于刷新次数
         mm.user_payment.add_buy_log(product_id)
+        mm.user_payment.save()
+        mm.user.save()
 
-        # 首充礼包
-        mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
-        mm.user_payment.add_add_recharge(price_dict={1:order_diamond,2:order_rmb})
 
-        mm.limit_sign.add_score(order_diamond, order_money)
-        mm.server_limit_sign.add_score(order_diamond, order_money)
+
+
         # # 超值签到
         # mm.pay_sign.set_pay_sign_status(order_money+gift_diamond, product_id)
 
