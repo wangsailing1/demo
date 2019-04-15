@@ -57,6 +57,9 @@ def main(hm):
     # 全服邮件
     mm.user.send_system_mail()
 
+    # 嘉年华剩余骰子 发邮件
+    mm.carnival
+
     result = ul.main()
 
     # 配置更新
