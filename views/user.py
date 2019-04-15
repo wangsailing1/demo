@@ -64,6 +64,9 @@ def main(hm):
     mm.server_limit_sign.is_open()
 
 
+    # 嘉年华剩余骰子 发邮件
+    mm.carnival
+
     result = ul.main()
 
     fa = FansActivity(mm)
