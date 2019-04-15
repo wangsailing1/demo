@@ -8,6 +8,8 @@ from gconfig import game_config
 from lib.utils import generate_rank_score, round_float_or_str, weight_choice
 import settings
 from lib.utils.active_inreview_tools import get_inreview_version
+from models import server as serverM
+from lib.utils.time_tools import strftimestamp, timestamp_from_relative_time
 
 
 class ServerToy(ModelBase):
@@ -57,6 +59,20 @@ class ServerToy(ModelBase):
         self._key = self.make_key(self.__class__.__name__, server_name=father_server)
         self._key = '%s%s' % (self._key, version)
         return self._key
+
+    def get_start_time_end_time(self):
+        server_open_time = serverM.get_server_config(self._server_name).get('open_time')
+        config = game_config.server_inreview.get(self.ACTIVE_ID, {})
+        name = config.get('name_show', '')
+        if not name:
+            return '', ''
+        name = name.split(',')[self.version - 1]
+        name = name.split('-')
+        start_time = name[0]
+        end_time = name[1]
+        start_time = strftimestamp(timestamp_from_relative_time(server_open_time, start_time))
+        end_time = strftimestamp(timestamp_from_relative_time(server_open_time, end_time))
+        return start_time, end_time
 
     def get_version(self):
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
