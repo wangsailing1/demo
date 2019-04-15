@@ -17,7 +17,7 @@ def index(hm):
     rc = super_user.is_enter()
     if rc != 0:
         return rc, {}
-    print_log('super_user',mm.superplayer.version)
+    print_log('server_super_user',mm.serversuperplayer.version)
 
     rc, data = super_user.index()
     if rc != 0:

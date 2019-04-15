@@ -24,7 +24,7 @@ class ServerSuperPlayer(ModelBase):
     ADD_CAN_RECEIVED_TIME = 10
     SPEND_SEND_NEED = 5000
     PAY_SEND_NEED = 300
-    ACTIVE_ID = 40000
+    ACTIVE_ID = 2030
 
     def __init__(self, uid=None):
         """
@@ -160,7 +160,7 @@ class ServerSuperPlayer(ModelBase):
 
 class ServerRedBag(ModelTools):
     SERVER_NAME = 'master'
-    KEYS = 'super_player_red_bag'
+    KEYS = 'server_super_player_red_bag'
     ALL_KEYS = 'all_red_bag'
 
     def __init__(self, version):
@@ -245,7 +245,7 @@ class ServerSuperPlayerShop(ModelBase):
 
     @classmethod
     def get(cls, version, server_name=''):
-        o = super(ServerSuperPlayerShop, cls).get('superplayershop%s' % version, server_name=cls.SERVER_NAME)
+        o = super(ServerSuperPlayerShop, cls).get('serversuperplayershop%s' % version, server_name=cls.SERVER_NAME)
         o.version = version
         return o
 
@@ -265,7 +265,7 @@ class ServerSuperPlayerRank(ModelTools):
     # 获取排行榜的keys
     def get_rank_key(self):
         if self.rank_key is None:
-            self.rank_key = self.make_key_cls('%s_%s' % ('superplayerrank', self.version), self.SERVER_NAME)
+            self.rank_key = self.make_key_cls('%s_%s' % ('serversuperplayerrank', self.version), self.SERVER_NAME)
         return self.rank_key
 
     # 获取玩家排名榜积分
