@@ -372,20 +372,23 @@ class Carnival(ModelBase):
             self.server_carnival_data = {}
             self.server_carnival_done = {}
             if self.server_dice_num:
-                # todo 发送邮件
                 self.send_mail(self.server_dice_num, 1)
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 1
             save = True
+        if not carnival_days or start_time != self.start_time:
+            if self.dice_num:
+                self.send_mail(self.dice_num, 2)
+                self.dice_num = 0
+                save = True
         if start_time != self.start_time and self.start_time and carnival_days:
             self.start_time = start_time
             self.carnival_data = {}
             self.carnival_done = {}
-            if self.dice_num:
-                # todo 发送邮件
-                self.send_mail(self.dice_num, 2)
-            self.dice_num = 0
+            # if self.dice_num:
+            #     self.send_mail(self.dice_num, 2)
+            # self.dice_num = 0
             self.carnival_days = 0
             self.carnival_step = 1
             save = True
