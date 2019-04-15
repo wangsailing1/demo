@@ -164,10 +164,10 @@ menu_config = {
         #     'name': u"送队长技能",
         #     'sub': [('add_leader_skill', u'送队长技能', 0)],
         # },
-            {
-            'name': u"送公会礼物道具",
-            'sub': [('add_ggitem', u'赠送公会礼物道具', 0)],
-        },
+        #     {
+        #     'name': u"送公会礼物道具",
+        #     'sub': [('add_ggitem', u'赠送公会礼物道具', 0)],
+        # },
         #     {
         #     'name': u"送觉醒道具",
         #     'sub': [('add_aitem', u'赠送觉醒道具', 0)],
