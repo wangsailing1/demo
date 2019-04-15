@@ -471,7 +471,7 @@ class Carnival(ModelBase):
     def get_start_end_time(self, tp):
         config = game_config.carnival_days[tp]
         if tp == 1:
-            server_open_time = serverM.get_server_config('gtt1').get('open_time')
+            server_open_time = serverM.get_server_config(self._server_name).get('open_time')
             start_time = config['open']
             end_time = config['close']
             start_time = strftimestamp(timestamp_from_relative_time(server_open_time, start_time))
