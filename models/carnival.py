@@ -10,6 +10,7 @@ from lib.utils import weight_choice
 from lib.utils.time_tools import get_server_days, str2timestamp, timestamp_different_days, \
     timestamp_from_relative_time, strftimestamp
 from models import server as serverM
+from tools.gift import calc_gift
 
 
 """
@@ -529,6 +530,7 @@ class Carnival(ModelBase):
     def send_mail(self, num, tp, save=True):
         config = game_config.carnival_days[tp]
         gift = config['reward'] * num
+        gift = calc_gift(gift)
         title = config['title']
         content = config['content']
         lan = getattr(self.mm,'lan', 1)
