@@ -58,6 +58,9 @@ class ServerToy(ModelBase):
         self._key = '%s%s' % (self._key, version)
         return self._key
 
+    def get_start_time_end_time(self):
+        pass
+
     def get_version(self):
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_ID)
         return version
