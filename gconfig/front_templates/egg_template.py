@@ -17,6 +17,8 @@ egg_item = {
     'best_reward': ('best_reward', 'int_list'),  # 最好奖励
 }
 
+server_egg_item = egg_item
+
 egg_diamond = {
     'uk': ('version', 'int'),  # 版本
     'type': ('type', 'int'),  # 活动类型
@@ -32,3 +34,5 @@ egg_diamond = {
     'notice': ('notice', 'int'),  # 说明
     'best_reward': ('best_reward', 'int_list'),  # 最好奖励
 }
+
+server_egg_diamond = egg_diamond
