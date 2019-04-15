@@ -373,7 +373,7 @@ class Carnival(ModelBase):
             self.server_carnival_done = {}
             if self.server_dice_num:
                 # todo 发送邮件
-                self.send_mail(self.dice_num, 1)
+                self.send_mail(self.server_dice_num, 1)
             self.server_dice_num = 0
             self.server_carnival_days = 0
             self.server_carnival_step = 1
