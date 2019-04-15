@@ -315,6 +315,13 @@ class UserPayment(ModelBase):
                     return 0
                 return add_diamond
 
+            # 新服人民币基金
+            elif act_id == 2017:
+                if not act_item_id:
+                    return add_diamond
+                if not self.mm.serverrmbfoundation.open_foundation(act_item_id, save=True):
+                    return add_diamond
+
             return 0
         else:
             return 0

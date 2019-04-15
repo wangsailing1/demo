@@ -959,6 +959,19 @@ foundation_msg = {
     },
 }
 
+server_foundation_msg = {
+    'server_foundation.server_foundation_index': {
+        1: u'活動未開啟',
+    },
+    'server_foundation.server_withdraw': {
+        1: u'活動未開啟',
+        2: u'參數錯誤',
+        3: u'該基金未啟動',
+        4: u'無獎勵可領取',
+        5: u'基金活動配寘錯誤',
+    },
+}
+
 payment_msg = {
     'payment.get_first_charge':{
         1: u'獎勵已領取',

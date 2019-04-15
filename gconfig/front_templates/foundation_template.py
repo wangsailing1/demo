@@ -36,3 +36,6 @@ rmb_foundation = {
     'day7': ('day7', 'int_list'),  # 第七天
     'notice': ('notice', 'int'),  # 说明
 }
+
+server_foundation = foundation
+server_rmb_foundation = rmb_foundation
