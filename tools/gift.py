@@ -370,6 +370,7 @@ def del_goods(mm, goods_sort, goods_config):
             item_num = pkg[1]
             if not mm.equip.del_equip(item_id, item_num):
                 return 'error_equip', 0
+        mm.equip.save()
     elif goods_sort == 7:  # 点赞
         for pkg in goods_config:
             del_num = pkg[1]

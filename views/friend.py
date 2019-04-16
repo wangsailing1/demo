@@ -8,6 +8,7 @@ from logics.friend import FriendLogic
 from tools.unlock_build import FRIEND_SORT
 from lib.utils.sensitive import is_sensitive
 from gconfig import game_config
+from tools.gift import del_mult_goods
 
 
 def check_unlock(func):
@@ -499,7 +500,26 @@ def rapport_index(hm):
     return 0, {'unlocked_appointment': mm.friend.unlocked_appointment,
                'chat_log': mm.friend.appointment_log,
                'appointment_times': mm.friend.appointment_times,
+               'unlocked_session': mm.friend.unlocked_session
                }
+
+# 消耗道具解锁约会
+def unlock_session(hm):
+    mm = hm.mm
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    if chapter_id not in mm.friend.unlocked_appointment:
+        return 1, {}  # 请先前往上一个约会地点
+    config = game_config.date_chapter
+    if chapter_id not in config:
+        return 2, {}  # 解锁的约会地点错误
+    need_item = config[chapter_id]['need_item']
+    rc, data = del_mult_goods(mm, need_item)
+    if rc:
+        return rc, {}  # 消耗不足
+    mm.friend.unlocked_session.append(chapter_id)
+    mm.friend.save()
+    _, data = rapport_index(hm)
+    return 0, data
 
 
 # 约会

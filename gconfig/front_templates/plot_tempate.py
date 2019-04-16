@@ -280,4 +280,9 @@ date_chapter = {
     'like': ('like', 'int'),
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),
+    'group': ('group', 'int'),
+    'section': ('section', 'int'),
+    'group_name': ('group_name', 'str'),
+    'bg': ('bg', 'str'),
+    'need_item': ('need_item', 'int_list'),
 }

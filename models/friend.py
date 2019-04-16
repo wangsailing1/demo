@@ -85,6 +85,7 @@ class Friend(ModelBase):
             'last_week': '',
             'got_point_daily': 0,
             'unlocked_appointment': [],
+            'unlocked_session': [],
 
         }
         super(Friend, self).__init__(self.uid)
