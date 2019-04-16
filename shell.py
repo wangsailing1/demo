@@ -2,7 +2,9 @@
 
 __author__ = 'sm'
 
+import os
 import sys
+import base64
 import json
 import random
 
@@ -26,6 +28,7 @@ settings.set_env(env)
 
 from lib.utils import zip_date
 from lib.utils.change_time import debug_sync_change_time
+from lib.db import *
 from lib.core.environ import ModelManager
 
 from gconfig import front_game_config as game_config
@@ -38,7 +41,7 @@ if settings.DEBUG:
     debug_sync_change_time()
 
 if settings.ENV_NAME in ['song', 'dev']:
-    mm = ModelManager('gtt11234567')
-    mm2 = ModelManager('gtt11234568')
+    mm = ModelManager('%s11234567' % settings.UID_PREFIX)
+    mm2 = ModelManager('%s11234568' % settings.UID_PREFIX)
 
     c = mm.user.redis

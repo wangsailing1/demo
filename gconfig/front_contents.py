@@ -149,6 +149,18 @@ script_mapping = {
     'audi_comment': ('audi_comment', True),
     'barrage': ('barrage', True),
 
+    'random_event': ('random_event', True),
+    'global_market': ('global_market', True),
+
+
+}
+
+king_of_song_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'pvp_rank': ('pvp_rank', True),
+    'pvp_robots': ('pvp_robots', True),
+    'singerking_rate': ('singerking_rate', False),
+    'pvp_dialogue': ('pvp_dialogue', True),
 }
 
 equip_mapping = {
@@ -213,6 +225,7 @@ user_config_mapping = {
     'tag_score': ('tag_score', True),
     'player_level': ('player_level', True),
     'vip': ('vip', True),
+    'vip_company': ('vip_company', True),
     'initial_account': ('initial_account', False),
     'main_hero': ('main_hero', True),
     'action_exp': ('action_exp', True),
@@ -223,6 +236,7 @@ user_config_mapping = {
     'building_unlock': ('building_unlock', True),
     'charge': ('charge', True),
     'month_privilege': ('month_privilege', True),
+    'bigmonth_privilege': ('bigmonth_privilege', True),
     'charge_ios': ('charge_ios', True),
     'currency_exchange': ('currency_exchange', True),
     'value': ('value', True),
@@ -240,12 +254,13 @@ user_config_mapping = {
     # 'drama': ('drama', True),
 
     # 'test_config': ('test_config', True),
-    # 'version': ('version', True),
+    'version': ('version', True),
     'team_skill': ('team_skill', True),
     'skill_stone': ('skill_stone', True),
     'title': ('title', True),
     'player_icon': ('player_icon', True),
-    # 'dirtyword_ch': ('dirtyword_ch', True),
+    'dirtyword_ch': ('dirtyword_ch', True),
+    'dirtyword_tw': ('dirtyword_tw', True),
     'homepage_button': ('homepage_button', True),
     'message': ('message', True),
     'common_attention': ('common_attention', True),
@@ -263,6 +278,8 @@ user_config_mapping = {
     'loading_gif': ('loading_gif', True),
     'help': ('help', True),
     'login_reward_id': ('login_reward_id', True),
+    'money_guide': ('money_guide', True),
+    'assistant': ('assistant', True),
 }
 
 #
@@ -358,7 +375,7 @@ active_mapping = {
     #     'gacha_reward_hero': ('gacha_reward_hero', True),
     #     'gacha_reward': ('gacha_reward', True),
     #     'month_card': ('month_card', True),
-    #     'active_inreview': ('active_inreview', True),
+        'active_inreview': ('active_inreview', True),
     #     'limit_weapon': ('limit_weapon', True),
     #     'limit_box_reward': ('limit_box_reward', True),
     #     'limit_box_shop': ('limit_box_shop', True),
@@ -382,6 +399,8 @@ active_mapping = {
     #     'honor_shop_new': ('honor_shop_new', True),
     'sign_first_week': ('sign_first_week', True),
     'sign_daily_normal': ('sign_daily_normal', True),
+    'active': ('active', True),
+    'add_recharge': ('add_recharge', True),
 }
 
 daily_activity_mapping = {
@@ -417,8 +436,8 @@ home_mapping = {
 
 language_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
-    'ZH_CN': ('ZH_CN', True),
-    'ZH_TW': ('ZH_TW', True),
+    'ZH_CN': ('ZH_CN', False),
+    'ZH_TW': ('ZH_TW', False),
     'ZH_CN_FOREND': ('ZH_CN_FOREND', True),
     'ZH_TW_FOREND': ('ZH_TW_FOREND', True),
     'ZH_TW_YUNYING': ('ZH_TW_YUNYING', True),
@@ -502,12 +521,18 @@ mission_mapping = {
     'box_office': ('box_office', True),
     'guide_mission': ('guide_mission', True),
     'random_mission': ('random_mission', True),
+    'achieve_mission': ('achieve_mission', True),
+    'new_guide_mission': ('new_guide_mission', True),
+    'random_reward': ('random_reward', True),
 }
 
 build_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'card_building': ('card_building', True),
     'building': ('building', True),
+    'field': ('field', True),
+    'functional_building': ('functional_building', True),
+    'rest': ('rest', True),
 }
 
 guide_mapping = {
@@ -516,6 +541,84 @@ guide_mapping = {
     'guide_team': ('guide_team', True),
     'dialogue_guide_team': ('dialogue_guide_team', True),
     'dialogue_guide': ('dialogue_guide', True),
+}
+
+carvinal_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'carnival_mission': ('carnival_mission', True),
+    'carnival_new_reward': ('carnival_new_reward', True),
+    'carnival_old_reward': ('carnival_old_reward', True),
+    'carnival_days': ('carnival_days', True),
+    'carnival_random': ('carnival_random', True),
+}
+
+toy_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'rmb_gacha': ('rmb_gacha', True),
+    'rmb_gacha_cost': ('rmb_gacha_cost', True),
+    'rmb_gacha_control': ('rmb_gacha_control', True),
+    'free_gacha': ('free_gacha', True),
+    'free_gacha_cost': ('free_gacha_cost', True),
+    'free_gacha_control': ('free_gacha_control', True),
+    'rmb_gacha_rank': ('rmb_gacha_rank', True),
+}
+
+gift_center_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'welfare_notice': ('welfare_notice', True),
+    'scroll_bar': ('scroll_bar', True),
+}
+
+business_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'business': ('business', True),
+    'business_times': ('business_times', True),
+}
+
+director_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'director': ('director', True),
+    'director_gacha': ('director_gacha', True),
+    'director_gacha_cost': ('director_gacha_cost', True),
+    'director_lv': ('director_lv', True),
+    'director_skill': ('director_skill', True),
+    'directing_policy': ('directing_policy', True),
+}
+
+skill_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'card_skill_unlock': ('card_skill_unlock', True),
+    'card_skill_level': ('card_skill_level', True),
+    'card_skill': ('card_skill', True),
+}
+
+egg_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'egg_item': ('egg_item', True),
+    'egg_diamond': ('egg_diamond', True),
+}
+
+one_piece_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'one_piece': ('one_piece', True),
+    'one_piece_rate': ('one_piece_rate', True),
+    'one_piece_exchange': ('one_piece_exchange', True),
+    'one_piece_rank_reward': ('one_piece_rank_reward', True),
+    'one_piece_reduce': ('one_piece_reduce', True),
+}
+
+foundation_mapping = {
+    'foundation': ('foundation', True),
+    'rmb_foundation': ('rmb_foundation', True),
+}
+
+super_player_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'player': ('player', True),
+    'play_redbag': ('play_redbag', True),
+    'play_shop': ('play_shop', True),
+    'play_rankreward': ('play_rankreward', True),
+    'play_points': ('play_points', True),
 }
 # 注册需要写到最下面
 register_handler()

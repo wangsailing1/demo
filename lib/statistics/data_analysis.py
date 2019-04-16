@@ -19,6 +19,10 @@ from lib.utils.time_tools import str2timestamp, strftimestamp
 
 DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_retention_daily_key_for_account', 'public')
 DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_retention_channel_daily_key_for_account', 'public')
+
+DATA_RETENTION_DAILY_KEY_FOR_DEVICE = ModelTools.make_key_cls('data_retention_daily_key_for_device', 'public')
+DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE = ModelTools.make_key_cls('data_retention_channel_daily_key_for_device', 'public')
+
 DATA_STATISTICS_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_statistics_daily_key_for_account', 'public')
 DATA_STATISTICS_CHANNEL_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_statistics_channel_key_for_account', 'public')
 DATA_RETENTION_DAILY_KEY = ModelTools.make_key_cls('data_retention_daily_key', 'public')
@@ -53,6 +57,10 @@ def do_data_process_hourly(now=None):
     all_data_for_account = get_statistics_retention_data_for_account(all_data)
     update_cache_statistics_data_for_account(query_datetime, all_data_for_account)
     update_cache_retention_data_for_account(query_datetime, all_data_for_account)
+
+    # 基于设备的留存
+    all_data_for_device = get_statistics_retention_data_for_account(all_data, target='device')
+    update_cache_retention_data_for_account(query_datetime, all_data_for_device, tp='device')
 
     # # 等级通过率
     # update_lv_pass_rate_cache()
@@ -138,6 +146,7 @@ def get_statistics_retention_data(query_date):
             user_data[uid] = {
                 'server_id': mm.user._server_name,                  # 分服id
                 'token': token,                                     # token
+                'device': mm.user.device,                                     # device
                 'channel': channel,                                 # 渠道
                 'appid': mm.user.appid,                             # appid标示 区分ios与安卓
                 'package_appid': mm.user.package_appid,              # 包类型 twjjwsshb
@@ -311,18 +320,19 @@ def update_cache_retention_data(query_datetime, data):
     print 'update_cache_retention_data done at: %s' % datetime.datetime.now()
 
 
-def get_statistics_retention_data_for_account(all_data):
+def get_statistics_retention_data_for_account(all_data, target='token'):
     """
     获取后台统计需要的所有数据(基于账号的)
     :param all_data: {
         "pay_data": {}
         "user_data": {}
     }
+        target: token 账号| device 设备码
     """
     from lib.utils import merge_dict
     user_data = defaultdict(dict)
     for uid, data in all_data['user_data'].iteritems():
-        account_data = user_data[data['token']]
+        account_data = user_data[data[target]]
         account_data['channel'] = data['channel']
         account_data['appid'] = data['appid']
         account_data['package_appid'] = data['package_appid']
@@ -436,7 +446,7 @@ def update_cache_statistics_data_for_account(query_datetime, data):
     return channel_result, sum_result
 
 
-def update_cache_retention_data_for_account(query_datetime, data):
+def update_cache_retention_data_for_account(query_datetime, data, tp='token'):
     """
     更新留存数据(基于账号的)
     :param query_datetime: datetime.datetime.now()
@@ -444,7 +454,15 @@ def update_cache_retention_data_for_account(query_datetime, data):
         "pay_data": {}
         "user_data": {}
     }
+        tp: token 账号 | device 设备码
     """
+    if tp == 'token':
+        channel_daily_key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
+        retention_daily_key = DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+    else:
+        channel_daily_key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE
+        retention_daily_key = DATA_RETENTION_DAILY_KEY_FOR_DEVICE
+
     cache = get_global_cache()
 
     add_data = {}
@@ -462,8 +480,8 @@ def update_cache_retention_data_for_account(query_datetime, data):
         return
 
     keys = add_data.keys()
-    channel_values = cache.hmget(DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT, keys)
-    total_values = cache.hmget(DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT, keys)
+    channel_values = cache.hmget(channel_daily_key, keys)
+    total_values = cache.hmget(retention_daily_key, keys)
 
     channel_new_data = {}
     total_new_data = {}
@@ -492,10 +510,10 @@ def update_cache_retention_data_for_account(query_datetime, data):
         channel_new_data[day] = encrypt_data_by_pickle(channel_old_value, 1)
         total_new_data[day] = encrypt_data_by_pickle(total_old_value, 1)
 
-    cache.hmset(DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT, channel_new_data)
-    cache.hmset(DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT, total_new_data)
+    cache.hmset(channel_daily_key, channel_new_data)
+    cache.hmset(retention_daily_key, total_new_data)
 
-    print 'update_cache_retention_data_for_account done at: %s' % datetime.datetime.now()
+    print 'update_cache_retention_data_for_account tp: %s done at: %s' % (tp, datetime.datetime.now())
     return channel_new_data, total_new_data
 
 
@@ -512,7 +530,7 @@ def level_pass_rate(now=None):
 def update_lv_pass_rate_cache():
     """更新等级滞留率cache
     """
-    max_lv = max(game_config.hero_exp)
+    max_lv = max(game_config.player_level)
 
     global_cache = get_global_cache()
 
@@ -565,7 +583,7 @@ def lv_pass_rate(server='h1'):
         - all_uids: 全服人数
     """
     from models.ranking_list import LevelRank
-    max_lv = max(game_config.hero_exp)
+    max_lv = max(game_config.player_level)
     lv_pass_num = [0] * max_lv
 
     rank_obj = LevelRank(uid='', server=server)
@@ -702,11 +720,17 @@ def get_statistics_channel_by_range_day(start_day, end_day, for_account=False):
     return result
 
 
-def get_retention_channel_by_day(select_day, for_account=False):
+def get_retention_channel_by_day(select_day, for_account=False, **kwargs):
     """获取分渠道留存分析数据
     """
     cache = get_global_cache()
-    key = DATA_RETENTION_CHANNEL_DAILY_KEY if not for_account else DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
+    for_device = kwargs.get('for_device')
+    if for_device:
+        key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE
+    elif for_account:
+        key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
+    else:
+        key = DATA_RETENTION_CHANNEL_DAILY_KEY
 
     raw_data = cache.hget(key, select_day)
     obj = dencrypt_data(raw_data) if raw_data else {}
@@ -793,11 +817,17 @@ def get_retention_channel_by_day_and_ip(select_day, for_account=True):
     return result
 
 
-def get_retention_data(days=30, for_account=False):
+def get_retention_data(days=30, for_account=False, **kwargs):
     """获取留存统计数据
     """
     cache = get_global_cache()
-    key = DATA_RETENTION_DAILY_KEY if not for_account else DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+    for_device = kwargs.get('for_device')
+    if for_device:
+        key = DATA_RETENTION_DAILY_KEY_FOR_DEVICE
+    elif for_account:
+        key = DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+    else:
+        key = DATA_RETENTION_DAILY_KEY
 
     now = datetime.datetime.now()
     now_str = now.strftime('%Y-%m-%d')

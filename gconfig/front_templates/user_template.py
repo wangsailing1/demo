@@ -60,11 +60,49 @@ initial_account = ({
                        'card': ('card', 'list_4'),  # 英雄
                    }, 'initial_account')
 
+# vip_company
+vip_company = {
+    'uk': ('vip_company', 'int'),  # VIP等级
+    'exp': ('exp', 'int'),  # 升至下级所需经验
+    'name': ('name', 'int'),
+    'icon': ('icon', 'str'),    # Vip等级图标
+    'des': ('des', 'int'),      # 特权描述
+    'vip_gift_icon': ('vip_gift_icon', 'str_list'),      # vip礼包为空时显示的图标
+    'vip_gift_des': ('vip_gift_des', 'str_list'),        # vip礼包为空时显示的图标tips
+    'reward': ('reward', 'int_list'),               # Vip特权奖励礼包（免费送）
+    'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),      # 免费招募次数积累上限
+    'buy_point': ('buy_point', 'int'),                              # 购买体力次数上限
+    'if_catcher': ('if_catcher', 'int'),                              # 是否解锁娃娃机
+    'if_super_catcher': ('if_super_catcher', 'int'),                  # 是否解锁超级娃娃机
+    'bussiness_gold': ('bussiness_gold', 'int'),                              # 明星活动金币收益+N%
+    # 'bussiness_exp': ('bussiness_exp', 'int'),                              # 明星活动公司经验收益+M%
+    'task_cd': ('task_cd', 'int'),                              # 随机任务刷新时间变快N分钟
+    # 'buy_gold': ('buy_gold', 'int'),                              # 兑换金币次数+N
+    'shop_num': ('shop_num', 'int_list'),                              # 商店限购物品个数+N
+    'if_skip_story': ('if_skip_story', 'int'),                              # 可使用跳过剧情功能
+    'if_skip_battle': ('if_skip_battle', 'int'),                              # 可使用跳过票房功能
+    'card_max': ('card_max', 'int'),                              # 可拥有艺人上限数量+N
+    'extra_script': ('extra_script', 'int_list'),                              # 续作拍摄上限
+    'more_license': ('more_license', 'int'),                              # 秘书每天申请许可证数量+L
+    'buy_pvp': ('buy_pvp', 'int'),                              # 谁是歌手每日购买次数上限
+    'scriptgacha_maxnum': ('scriptgacha_maxnum', 'int'),                              # 抽剧本可积攒的次数上限
+    'chapterstage_fastten': ('chapterstage_fastten', 'int'),                              # 快速工作10场
+    'script_reselectiontimes': ('script_reselectiontimes', 'int'),                              # 重新选择自制拍摄剧本次数
+    'avgdatetimes': ('avgdatetimes', 'int'),                              # 约会次数
+    'phonecalltimes': ('phonecalltimes', 'int'),                              # 手机聊天次数
+    'title': ('title', 'str'),                             # 标题
+    'half': ('half', 'str'),                             #
+    'background': ('background', 'str'),                             # 背景图
+    'name_icon': ('name_icon', 'str'),                             # 美术字设置
+
+}
+
 # VIP
 vip = {
     'uk': ('vip', 'int'),  # VIP等级
     'exp': ('exp', 'int'),  # 升至下级所需钻石
     'vip_coin_gacha_count': ('vip_coin_gacha_count', 'int'),  # 免费招募次数积累上限
+    'buy_point': ('buy_point', 'int'),  # 购买体力次数上限
 
     # 'des': ('des', 'unicode'),  # 特权描述
     # 'vip_buy_reward': ('vip_buy_reward', 'list_3'),  # vip特权礼包
@@ -132,49 +170,85 @@ vip_pay = {
 }
 
 # 支付表
+charge = {
+    'uk': ('buy_id', 'int'),  # 充值ID
+    'diamond': ('diamond', 'int'),  # 给予钻石数量
+    'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
+    'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
+    'is_double': ('is_double', 'int'),  # 是否首次双倍
+    'goodsId': ('goodsId', 'int'),
+    'cost': ('cost', 'str'),  # 商品id
+    'name': ('name', 'unicode'),  # 名字
+    'des': ('des', 'unicode'),  # 描述
+    'icon': ('icon', 'str'),  # ICON
+    'open_gift': ('open_gift', 'int'),  # 购买后开启奖励，0：不开启，1：月卡，2：季卡，3：充值限时礼包
+    'is_show': ('is_show', 'int'),  # 是否显示充值项
+    'gift_reward_id': ('gift_reward_id', 'int'),  # 限时礼包奖励
+    'charge_reward': ('charge_reward', 'list_3'),  # 充值项奖励
+    'charge_anim': ('charge_anim', 'str'),  # 充值项奖励的图或动画
+    'charge_icon': ('charge_icon', 'str'),
+    'price_CN': ('price_CN', 'float'),  # 所需金额
+    'price_TW': ('price_TW', 'float'),  # 所需金额
+    'price_TWD': ('price_TWD', 'float'),  # 所需金额
+    'charge_condition': ('charge_condition', 'int_list'),  # 充值限制（写谁，该充值项不算谁1累充，2.首充）
+    'sort': ('sort', 'int'),  # 购买类型
+    'vip_exp': ('vip_exp', 'int'),  # vip经验
+    'price_rmb': ('price_rmb', 'int'),  # 所需RMB
+    'price_dollar': ('price_dollar', 'float'),  # 所需美元
+    'gift': ('gift', 'int_list'),  #
+    'icon2': ('icon2', 'str'),  # 是否显示
+}
+
 # charge = {
-#     'uk': ('buy_id', 'int'),  # 充值ID
+#     'uk': ('buy_id', 'int'),  # id
+#     'sort': ('sort', 'int'),  # 购买类型
+#     'cost': ('cost', 'str'),  # 商品id
 #     'diamond': ('diamond', 'int'),  # 给予钻石数量
 #     'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
-#     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
 #     'is_double': ('is_double', 'int'),  # 是否首次双倍
-#     'goodsId': ('goodsId', 'int'),
-#     'cost': ('cost', 'str'),  # 商品id
-#     'name': ('name', 'unicode'),  # 名字
-#     'des': ('des', 'unicode'),  # 描述
-#     'icon': ('icon', 'str'),  # ICON
-#     'open_gift': ('open_gift', 'int'),  # 购买后开启奖励，0：不开启，1：月卡，2：季卡，3：充值限时礼包
-#     'is_show': ('is_show', 'int'),  # 是否显示充值项
-#     'gift_reward_id': ('gift_reward_id', 'int'),  # 限时礼包奖励
-#     'charge_reward': ('charge_reward', 'list_3'),  # 充值项奖励
-#     'charge_anim': ('charge_anim', 'str'),  # 充值项奖励的图或动画
-#     'charge_icon': ('charge_icon', 'str'),
+#     'vip_exp': ('vip_exp', 'int'),  # vip经验
+#     'price_rmb': ('price_rmb', 'int'),  # 所需RMB
+#     'price_dollar': ('price_dollar', 'float'),  # 所需美元
+#     'name': ('name', 'int'),  # 名字
+#     'icon': ('icon', 'str'),  # 图
+#     'charge_condition': ('charge_condition', 'int_list'),  #
+#     'gift': ('gift', 'int_list'),  #
+#     'buy_times': ('buy_times', 'int'),  # 购买限制，1:限购1次，每周刷新，2:限购1次，每月刷新，3:限购1次，永不刷新
+#     'is_show': ('is_show', 'int'),  #  是否显示
+#     'icon2': ('icon2', 'str'),  #  是否显示
 #     'price_CN': ('price_CN', 'float'),  # 所需金额
 #     'price_TW': ('price_TW', 'float'),  # 所需金额
 #     'price_TWD': ('price_TWD', 'float'),  # 所需金额
-#     'charge_condition': ('charge_condition', 'int_list'),  # 充值限制（写谁，该充值项不算谁1累充，2.首充）
 # }
 
-charge = {
-    'uk': ('buy_id', 'int'),  # id
-    'sort': ('sort', 'int'),  # 购买类型
-    'diamond': ('diamond', 'int'),  # 给予钻石数量
-    'gift_diamond': ('gift_diamond', 'int'),  # 赠送钻石数
-    'is_double': ('is_double', 'int'),  # 是否首次双倍
-    'vip_exp': ('vip_exp', 'int'),  # 所需RMB
-    'price_rmb': ('price_rmb', 'int'),  # 所需RMB
-    'price_dollar': ('price_dollar', 'float'),  # 所需美元
-    'name': ('name', 'int'),  # 名字
-    'icon': ('icon', 'str'),  # 图
-    'charge_condition': ('charge_condition', 'str'),  # 图
-}
-
+# 月卡
 month_privilege = {
-    'uk': ('card_type', 'int'),  # id
-    'price': ('price', 'int'),  # 所需RMB
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
     'effective_days': ('effective_days', 'int'),  # 持续天数
     'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
-    'des': ('des', 'int'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
+}
+
+# 月卡
+bigmonth_privilege = {
+    'uk': ('active_version', 'int'),  # id
+    'start_time': ('start_time', 'str'),  # 开始时间
+    'end_time': ('end_time', 'str'),  # 结束时间
+    'card_type': ('card_type', 'int'),  # 类型
+    'price': ('price', 'int'),  # 价格（人民币）
+    'effective_days': ('effective_days', 'int'),  # 持续天数
+    'daily_rebate': ('daily_rebate', 'int_list'),  # 每日奖励
+    'only_frist_reward': ('only_frist_reward', 'int_list'),  # 首次购买月卡首次奖励
+    'frist_reward': ('frist_reward', 'int_list'),  # 首次奖励
+    'des': ('des', 'str'),  # 描述
+    'chargeid': ('chargeid', 'int'),  # 特供礼包的charge表id
 }
 
 charge_ios = {
@@ -314,12 +388,12 @@ test_config = {
 }
 
 # 版本强制更新表
-# version = {
-#     'uk': ('platform', 'str'),
-#     'version': ('version', 'str'),
-#     'url': ('url', 'str'),
-#     'msg': ('msg', 'unicode'),
-# }
+version = {
+    'uk': ('platform', 'str'),
+    'version': ('version', 'str'),
+    'url': ('url', 'str'),
+    'msg': ('msg', 'unicode'),
+}
 
 
 # 战队技能表
@@ -392,22 +466,42 @@ dirtyword_ch = ({
                     'uk': ('dirtyword', 'unicode'),
                 }, 'dirtyword')
 
+dirtyword_tw = ({
+                    'uk': ('dirtyword', 'unicode'),
+                }, 'dirtyword')
+
 # 主页按钮配置
+# homepage_button = {
+#     'uk': ('id', 'int'),  # 按钮id
+#     'build': ('build', 'int'),  # 建筑位置
+#     'sort': ('sort', 'int'),  # 按钮类型
+#     'name': ('name', 'unicode'),  # 名字
+#     'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
+#     'icon': ('icon', 'str'),  # icon
+#     'jump': ('jump', 'str'),  # 跳转
+#     'button': (('button1', 'button2', 'button3', 'button4', 'button5',
+#                 'button6', 'button7', 'button8', 'button9', 'button10',
+#                 'button11', 'button12', 'button13', 'button14', 'button15'), ('int', 'mult_list')),  # 按钮子按钮1-10
+#     'father': ('father', 'int'),  # 父按钮
+#     'msg': ('msg', 'unicode'),  # 功能描述
+#     'order': ('order', 'int'),  # 前端显示
+#     'reward_info': ('reward_info', 'unicode'),  # 奖励说明
+# }
+
 homepage_button = {
-    'uk': ('id', 'int'),  # 按钮id
-    'build': ('build', 'int'),  # 建筑位置
-    'sort': ('sort', 'int'),  # 按钮类型
-    'name': ('name', 'unicode'),  # 名字
-    'unlock_lvl': ('unlock_lvl', 'int'),  # 解锁等级
-    'icon': ('icon', 'str'),  # icon
-    'jump': ('jump', 'str'),  # 跳转
-    'button': (('button1', 'button2', 'button3', 'button4', 'button5',
-                'button6', 'button7', 'button8', 'button9', 'button10',
-                'button11', 'button12', 'button13', 'button14', 'button15'), ('int', 'mult_list')),  # 按钮子按钮1-10
-    'father': ('father', 'int'),  # 父按钮
-    'msg': ('msg', 'unicode'),  # 功能描述
-    'order': ('order', 'int'),  # 前端显示
-    'reward_info': ('reward_info', 'unicode'),  # 奖励说明
+    'uk': ('id', 'int'),
+    'order': ('order', 'int'),
+    'group': ('group', 'int'),
+    'sort': ('sort', 'int'),
+    'unlock_lvl': ('unlock_lvl', 'int'),
+    'unlock_guide_team': ('unlock_guide_team', 'int'),
+    'icon': ('icon', 'str'),
+    'jump': ('jump', 'int'),
+    'button': (('button1', 'button2', 'button3', 'button4', 'button5'), ('int', 'mult_list')),
+    'direction': ('direction', 'int'),
+    'name': ('name', 'int'),
+    'red_point': ('red_point', 'int'),
+    'quick_jump': ('quick_jump', 'int'),
 }
 
 # 跑马灯配置
@@ -458,12 +552,11 @@ level_mail = {
 
 # 等级限时礼包
 level_gift = {
-    'uk': ('level', 'int'),  # 等级
-    'reward': ('reward', 'list_3'),  # 奖励
-    'coin': ('coin', 'int'),  # 钻石购买
-    'buy': ('buy', 'int'),  # 充值id
-    'des': ('des', 'unicode'),  # 描述
-    'des2': ('des2', 'unicode'),  # 描述
+    'uk':       ('level', 'int'),       # 等级
+    'reward':   ('reward', 'list_3'),   # 奖励
+    'time':     ('time', 'int'),        # 时长
+    'charge_id':     ('charge_id', 'int'),        # 充值类型
+    'des':      ('des', 'str'),     # 描述
 }
 
 # 新服活动时间配置
@@ -471,13 +564,13 @@ server_inreview = {
     'uk': ('ID', 'int'),
     'banner': ('banner', 'str'),
     'is_open': ('is_open', 'int'),
-    'show_id': ('show_id', 'int'),
-    'mark': ('mark', 'int'),
+    # 'show_id': ('show_id', 'int'),
+    # 'mark': ('mark', 'int'),
     'name': ('name', 'str'),
-    'story': ('story', 'unicode'),
-    'default': ('default', 'unicode'),
+    # 'story': ('story', 'unicode'),
+    # 'default': ('default', 'unicode'),
     'show_lv': ('show_lv', 'int'),
-    'sort': ('sort', 'int'),
+    # 'sort': ('sort', 'int'),
 }
 
 # 称号
@@ -558,6 +651,9 @@ jump = {
     'des': ('des', 'unicode'),
     'target': ('target', 'int_list'),
     'unlock': ('unlock', 'int'),
+    'icon': ('icon', 'str'),
+    'button_id': ('button_id', 'int'),
+    'close_under': ('close_under', 'int'),
 }
 
 item_coin = {
@@ -582,4 +678,24 @@ login_reward_id = {
     'server': ('server', 'str_list'),
     'uid_list': ('uid_list', 'str_list'),
     'url': ('url', 'str'),
+}
+
+money_guide = {
+    'uk': ('id', 'int'),
+    'guide': ('guide', 'int_list'),
+    'des': ('des', 'unicode'),
+}
+
+server_type = {
+    'uk': ('server_id', 'int'),
+    'time': ('time', 'str'),
+    'type': ('type', 'int'),
+}
+
+assistant = {
+    'uk': ('id', 'int'),
+    'desc': ('desc', 'str'),
+    'chargeid1': ('chargeid1', 'int'),
+    'chargeid2': ('chargeid2', 'int'),
+    'gift': ('gift', 'int_list'),
 }

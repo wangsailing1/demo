@@ -34,6 +34,9 @@ cup_num = {
     'last_lines': ('last_lines', 'int'),
     'sort': ('sort', 'int'),
     'icon': ('icon', 'str'),
+    'des': ('des', 'str'),
+    'des1': ('des1', 'str'),
+    'des2': ('des2', 'str'),
 }
 
 # #颁奖设置
@@ -48,5 +51,5 @@ cup_num = {
 # 颁奖设置
 dan_grading_privilage = {
     'uk': ('id', 'int'),
-    'disc': ('disc', 'int'),
+    'disc': ('disc', 'str'),
 }

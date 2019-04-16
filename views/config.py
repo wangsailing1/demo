@@ -10,6 +10,7 @@ import datetime
 from gconfig import front_game_config
 from models.config import ResourceVersion
 from lib.utils.debug import print_log
+import json
 
 
 def resource_version(hm):
@@ -26,7 +27,7 @@ def resource_version(hm):
     if appid == '2':    # 和前端协定1:android,2:iOS
         version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource', 'ios')
     else:
-        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource')
+        version_dirs = os.path.join(settings.BASE_ROOT, 'logs', 'client_resource', 'android')
 
     current_version = res_version
 
@@ -97,6 +98,7 @@ def all_config(hm):
 
     result[config_name] = getattr(front_game_config, config_name, {})
     result['config_version'] = config_version
+    result['size'] = '%sK'%(round(len(json.dumps(result[config_name], separators=(',', ':')))/1024.0, 2))
 
     return 0, result
 
@@ -110,6 +112,7 @@ def config_version(hm):
     return 0, {
         'game_config_version': front_game_config.versions,
         'all_config_version': front_game_config.ver_md5,
+        'version_size': front_game_config.version_size
     }
 
 

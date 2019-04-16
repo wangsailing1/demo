@@ -14,6 +14,8 @@ from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils import salt_generator
 from logics.script import ScriptLogic
+from tools.gift import has_mult_goods
+from logics.block import Block
 
 
 def index(hm):
@@ -29,11 +31,24 @@ def pre_filming(hm):
     :return:
     """
     mm = hm.mm
-
+    cost = game_config.script_license['cost']
     sl = ScriptLogic(mm)
-    if mm.user.script_license <= 0:
+    if mm.user.script_license <= 0 and not has_mult_goods(mm, cost):
         return 1, {}
     rc, data = sl.pre_filming()
+    return rc, data
+
+
+def re_selection(hm):
+    """
+    剧本池刷新
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+
+    rc, data = sl.re_selection()
     return rc, data
 
 
@@ -46,10 +61,53 @@ def filming(hm):
     mm = hm.mm
     name = hm.get_argument('name')  # 名字
     script_id = hm.get_argument('script_id', is_int=True)  # 剧本id
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
     is_sequel = hm.get_argument('is_sequel', is_int=True)  # 是否续集 0 否 1 是
 
     sl = ScriptLogic(mm)
-    rc, data = sl.filming(script_id, name, is_sequel)
+    rc, data = sl.filming(script_id, name, directing_id, is_sequel)
+    return rc, data
+
+
+def set_directing_id(hm):
+    """
+    设置指导方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.set_directing_id(directing_id)
+    return rc, data
+
+
+def reset_directing_id(hm):
+    """
+    重拍方针
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+    sl = ScriptLogic(mm)
+
+    # directing_id = hm.get_argument('directing_id', is_int=True)  # 导演指导方针id, 可以为空
+    # rc, data = sl.set_directing_id(directing_id, re_directing=True)
+    rc, data = sl.reset_directing_id()
+    return rc, data
+
+
+def ignore_re_directing(hm):
+    """
+     跳过重置指导
+    :param hm:
+    :return:
+    """
+    mm = hm.mm
+
+    sl = ScriptLogic(mm)
+    rc, data = sl.ignore_re_directing()
     return rc, data
 
 
@@ -158,6 +216,26 @@ def finished_summary(hm):
     return rc, data
 
 
+def debug_finished_summary(hm):
+    """票房总结 开发测试用"""
+    mm = hm.mm
+    script = mm.script
+    script_oid = hm.get_argument('oid')
+
+    cur_script = script.continued_script.get(script_oid)
+    if not cur_script:
+        return 1, {}
+
+    sl = ScriptLogic(mm)
+    data = {}
+    key = 'finished_summary'
+    data[key] = cur_script[key]
+
+    data['cur_script'] = cur_script
+    data['step'] = sl.get_step()
+    return 0, data
+
+
 def finished_analyse(hm):
     """票房分析"""
     mm = hm.mm
@@ -206,3 +284,22 @@ def test_calc_attr(hm):
     sl = ScriptLogic(mm)
     d = sl.calc_script_attr()
     return 0, {'data': d}
+
+
+def recent_event(hm):
+    script = hm.mm.script
+    recent_event = script.recent_event()
+    return 0, {'event': recent_event}
+
+
+def get_rank_info(hm):
+    mm = hm.mm
+    block = Block(mm)
+    mm.script.cur_script
+    data = {}
+    rank_info = block.get_ranking_info()
+    own_info = mm.block.get_own_max_rank_by_tp()
+    data['rank_info'] = rank_info
+    data['own_info'] = own_info
+    data['film_times'] = len(mm.block.today_script)
+    return 0, data

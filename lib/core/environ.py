@@ -3,6 +3,7 @@
 __author__ = 'sm'
 
 
+import time
 import settings
 import weakref
 
@@ -35,6 +36,8 @@ class HandlerManager(object):
         if self.uid:
             self.mm = ModelManager(self.uid, async_save=True)
             self.mm.action = self.req.get_argument('method', '')
+            self.mm.lan = self.req.get_argument('lan', 1)
+            self.mm.action_ts = self.req.get_argument('__ts', int(time.time() * 1000))
             self.mm.args = self.params()
         else:
             self.mm = None
@@ -136,12 +139,21 @@ class ModelManager(object):
         self.server = self.uid[:-7]
         self.async_save = async_save
         self.action = ''
+        self.action_ts = ''
         self.args = {}
         self._model = {}
         self._model_tools = {}
         self._model_ids = {}
         self._mm = {}
         self._events = {}
+
+    def get_transaction_id(self):
+        """事件关联ID 给英雄互娱bdc 用的
+        当一次事件触发多个日志产生时，
+        需要由CP生成当前区服唯一ID用于关联用户的多个日志（同一行为触发的多个日志使用同一个关联ID），
+        IPO必须 ,关联事件（获取代币，消耗代币，获取物品，消耗物品，商城购买，抽奖）
+        """
+        return '%s-%s-%s' % (self.uid, self.action, self.action_ts)
 
     @classmethod
     def register_model(cls, model_name, model):

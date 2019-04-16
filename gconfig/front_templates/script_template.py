@@ -9,9 +9,11 @@ Created on 2018-08-31
 script = {
     'uk': ('id', 'int'),  # 剧本id
     'name': ('name', 'int'),  # 名字
-    'type': ('type', 'int'),  # 种类0=电影 1=电视 2=综艺
+    'first_script': ('first_script', 'int'),  # 是否首次剧本
+    'type': ('type', 'int'),  # 种类1=电影 2=电视 3=综艺
     'style': ('style', 'int'),  # 关卡的剧本类型
     'rate': ('rate', 'int'),  # 随机权重
+    'performance': ('performance', 'int'),  # 战斗表现
     'cost': ('cost', 'int'),  # 剧本消耗(美元)
     'paycheck_ratio': ('paycheck_ratio', 'int'),  # 片酬系数(百分之）
     'sequel_count': ('sequel_count', 'int'),  # 续作编号
@@ -24,7 +26,7 @@ script = {
     'story': ('story', 'int'),  # 说明
     'icon': ('icon', 'str'),  # 图标
     'background': ('background', 'str'),  # 拍摄场景
-    'music': ('music', 'int'),  # 拍摄音乐
+    'music': ('music', 'str'),  # 拍摄音乐
     'tag_script': ('tag_script', 'int_list'),  # 剧本标签
     'style_effect': ('style_effect', 'int_list'),  # 最佳类型
     # 市场需求1-男(百分之)  2：女 3：儿童
@@ -49,6 +51,7 @@ script = {
     'stage_score': ('stage_score', 'int_list'),       # 推图分数
 
     'role_id': ('role_id', 'int_list'),     # 角色id
+    'directing_policy': ('directing_policy', 'int_list'),     # 执导方针
 
 }
 
@@ -60,7 +63,7 @@ script_style_suit = {
     'desc1': ('desc1', 'int'),  # desc
     'desc2': ('desc2', 'int'),  # desc
     'icon': ('icon', 'str'),  # icon
-    'icon2': ('icon2', 'str'),  # icon
+    'icon2': ('icon2', 'str_list'),  # icon
 
 }
 
@@ -88,7 +91,7 @@ script_type_style = {
 script_role = {
     'uk': ('id', 'int'),  # 角色id
     'name': ('name', 'int'),  # name
-    'class': ('class', 'int'),  # 角色类型1=主角 2=配角 3=反派
+    'class': ('class', 'str'),  # 角色类型1=主角 2=配角 3=反派
     'story': ('story', 'int'),  # 角色描述
     'dialog': ('dialog', 'int'),  # 角色台词
     'tag_role': ('tag_role', 'int_list'),  # 角色标签
@@ -108,7 +111,9 @@ script_end_level = {
     'line': ('line', 'int'),  # 占结算线比重（万分之)
     'continued_level': ('continued_level', 'int'),  # 下映后关注度等级
     'if_next_script': ('if_next_script', 'int'),  # 是否激活续作
-    'icon': ('icon', 'str'),
+    'next_attention': ('next_attention', 'int'),
+    'level_sequel_count': ('level_sequel_count', 'int'),    # 可获取该档次的续作编号
+    'icon_background': ('icon_background', 'str'),    # 背景图
 
 }
 
@@ -141,6 +146,7 @@ script_curve = {
 script_license = ({
     'uk': ('num', 'int'),  # 今日恢复数量
     'cd': ('cd', 'int_list'),  # 冷却时间（分钟）
+    'cost': ('cost', 'int_list'),  # 许可证消耗
 }, 'script_licence_config')
 
 
@@ -186,6 +192,9 @@ attention_level = {
     'name': ('name', 'str'),  #
     'min_attention': ('min_attention', 'int'),  #
     'max_attention': ('max_attention', 'int'),  #
+    'name_trans': ('name_trans', 'str'),  #
+    'icon': ('icon', 'str'),  #
+    'color': ('color', 'int_list'),  #
 
 }
 
@@ -216,6 +225,7 @@ media_comment = {
     'pos_id': ('pos_id', 'int'),           # 出现位置
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
     'grade_wave_range': ('grade_wave_range', 'int_list'),       # 显示评分波动范围(已放大100倍）
+    'type': ('type', 'int'),
 }
 
 
@@ -225,6 +235,7 @@ audi_comment = {
     'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
     'grade_range': ('grade_range', 'int_list'),       # 对应评分区间(0~10)
+    'type': ('type', 'int'),
 }
 
 
@@ -233,6 +244,20 @@ barrage = {
     'uk': ('id', 'int'),
     'name': ('name', 'int'),   # 观众评论
     'star': ('star', 'int'),           # 评论星级
+    'type': ('type', 'int'),
 }
 
 
+# 市场随机事件
+random_event = {
+    'uk': ('id', 'int'),
+    'des': ('des', 'str'),  # 描述
+    'effect': ('effect', 'int_list'),  # 影响 [type, style, buff_percent]
+    'weight': ('weight', 'int'),  # 权重
+    'des1': ('des1', 'str'),  # 描述
+    'des2': ('des2', 'str'),  # 描述
+}
+
+
+# 全球市场事件
+global_market = random_event

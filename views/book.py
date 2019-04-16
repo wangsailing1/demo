@@ -16,7 +16,7 @@ def book_index(hm):
 
 def get_card_reward(hm):
     mm = hm.mm
-    group_id = int(hm.get_argument('group_id', 0))
+    group_id = hm.get_argument('group_id', is_int=True)
     if group_id not in mm.card_book.book:
         return 1, {}  # 组合未完成
     if mm.card_book.book[group_id]['flag'] == -1:
@@ -43,7 +43,7 @@ def get_card_reward(hm):
 
 def get_script_reward(hm):
     mm = hm.mm
-    group_id = int(hm.get_argument('group_id', 0))
+    group_id = hm.get_argument('group_id', is_int=True)
     if group_id not in mm.script_book.book:
         return 1, {}  # 组合未完成
     if mm.script_book.book[group_id]['flag'] == -1:
@@ -70,7 +70,7 @@ def get_script_reward(hm):
 
 def get_group_reward(hm):
     mm = hm.mm
-    group_id = int(hm.get_argument('group_id', 0))
+    group_id = hm.get_argument('group_id', is_int=True)
     if group_id not in mm.script_book.group:
         return 1, {}  # 组合未完成
     if mm.script_book.group[group_id]['flag'] == -1:

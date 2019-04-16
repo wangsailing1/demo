@@ -2,7 +2,6 @@
 
 __author__ = 'sm'
 
-
 import time
 import datetime
 import inspect
@@ -12,9 +11,8 @@ import itertools
 
 import settings
 from lib.db import ModelBase, ModelTools
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from lib.core.environ import ModelManager
-from tools.unlock_build import EXP_POT
 from lib.utils import get_it
 from lib.utils import weight_choice
 from lib.statistics.bdc_event_funcs import special_bdc_log
@@ -25,19 +23,29 @@ from lib.utils import sid_generate
 from lib.utils import get_last_refresh_time
 from tools.user import VipInfo
 from models import server as serverM
+from models import vip_company
 from lib.utils.time_tools import relative_activity_remain_time
-from tools.gift import add_mult_gift,calc_gift
+from tools.gift import add_mult_gift, calc_gift
 from lib.sdk_platform.sdk_uc import send_role_data_uc
-
+from lib.db import get_redis_client
+from lib.utils.crypto import md5
+# from models.mission import building
 
 BAN_INFO_MESSAGE = {
-    'expire'      : u'我们已对您的账号封停至 {} ！\n',
-    'forever'     : u'我们已对您的账号进行永久封停！\n',
-    'reason'      : u'由于您{}，',
-    'no_reason'   : u'由于您在游戏中进行了违规操作，',
-    'basic_start' : u'亲爱的玩家，您好：',
-    'basic_end'   : u'如有疑问，请联系官方客服Q群：{}，感谢您的支持！',
+    'expire': u'我们已对您的账号封停至 {} ！\n',
+    'forever': u'我们已对您的账号进行永久封停！\n',
+    'reason': u'由于您{}，',
+    'no_reason': u'由于您在游戏中进行了违规操作，',
+    'basic_start': u'亲爱的玩家，您好：',
+    'basic_end': u'如有疑问，请联系官方客服Q群：{}，感谢您的支持！',
 }
+
+# 建筑解锁条件（等级）
+def lvlup_condition_1(mm,num):
+    if mm.user.level < num:
+        return 101
+    return 0
+
 
 
 class User(ModelBase):
@@ -128,30 +136,37 @@ class User(ModelBase):
     :var vip_exclusive_notice,   # vip专属通知邮件是否发放
     :var login_reward_id: {},   # 玩家登陆奖励 奖励id和奖励次数
     """
-    FREE_CHAT_TIMES = 10        # 聊天每天最多10条免费
+    FREE_CHAT_TIMES = 10  # 聊天每天最多10条免费
     MAX_CHAT_BLACK_LIST = 100  # 最大聊天黑名单人数
-    QUIT_LIMIT = 24 * 60 * 60    # 公会申请时限
-    MAX_EXCHANGE_NUM = 10000    # 最大兑换上线
-    EXCHANGE_LEVEL = 40         # 兑换等级
-    EXCHANGE_PROPORTION = 100   # 1钻石兑换多少银币
-    MAX_ACTION_POINT = 120      # 最大体力上限
-    ADD_POINT_TIME = 60 * 6     # 6分钟恢复一点体力
-    PUR_BUY_POINT = 120         # 每次购买体力120点
-    MAX_GUILD_COIN_TIMES = 2    # 公会金币副本挑战次数累积上限
-    MAX_GUILD_EXP_TIMES = 2     # 公会经验副本挑战次数累积上限
-    MAX_HUNT_COIN = 24          # 末日狩猎挑战券每日最多24
+    QUIT_LIMIT = 24 * 60 * 60  # 公会申请时限
+    MAX_EXCHANGE_NUM = 10000  # 最大兑换上线
+    EXCHANGE_LEVEL = 40  # 兑换等级
+    EXCHANGE_PROPORTION = 100  # 1钻石兑换多少银币
+    MAX_ACTION_POINT = 120  # 最大体力上限
+    ADD_POINT_TIME = 60 * 6  # 6分钟恢复一点体力
+    PUR_BUY_POINT = 120  # 每次购买体力120点
+    MAX_GUILD_COIN_TIMES = 2  # 公会金币副本挑战次数累积上限
+    MAX_GUILD_EXP_TIMES = 2  # 公会经验副本挑战次数累积上限
+    MAX_HUNT_COIN = 24  # 末日狩猎挑战券每日最多24
     LEVEL_GIFT_EXPIRE = 3600 * 12  # 等级奖励有效期
-    MAX_GUILD_EXP = 600         # 每天给公会增加的经验最多600
+    MAX_GUILD_EXP = 600  # 每天给公会增加的经验最多600
     MAX_DONATE_COOLING_TIME = 3600 * 8  # 公会捐献最大冷却时间
-    SESSION_EXPIRED = 24 * 3600     # session过期时间
+    SESSION_EXPIRED = 24 * 3600  # session过期时间
     REFRESH_TIME1 = '05:00:00'  # 刷新时间
     SERVER_OPENING_AWARD_EXPIRE = 7  # 开服奖励有效期 天数
-    ONLINE_USERS_TIME_RANGE = 5 * 60    # 判断用户在线的时间参考
+    ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
+    INIT_VIP_BUILD_ID = 2201
+
+    # 和前端协定1:android,2:iOS
+    APPID_OS_MAPPING = {
+        '2': 'ios',
+        '1': 'android',
+    }
 
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
-            'tpid': 0,              # 英雄互娱给的 渠道id, 0为母包，母包不上线
+            'tpid': 0,  # 英雄互娱给的 渠道id, 0为母包，母包不上线
             'chat_times': {},
             'buy_silver_times': 0,
             'buy_silver_log': [],
@@ -162,9 +177,10 @@ class User(ModelBase):
             'package_appid': '',
             'register_ip': '',
             'active_ip': '',
+            'final_action': '',
             'uuid': '',
             'reg_name': False,
-            'change_name': 0,   # 改名次数
+            'change_name': 0,  # 改名次数
             'channel': '',
             'device': '',
             'status': 0,
@@ -177,27 +193,30 @@ class User(ModelBase):
             'update_exp_pot': 0,
             'privileges': {},
             'update_privilege': 0,
-            'got_icon':[],
+            'got_icon': [],
             # 'diamond': 0,
-            'consume_diamond': 0,   # 历史消费钻石
-            'consume_silver': 0,    # 历史消费钻石
+            'consume_diamond': 0,  # 历史消费钻石
+            'consume_silver': 0,  # 历史消费钻石
             'diamond_free': 0,
             'diamond_charge': 0,
             'coin': 0,
             'silver': 0,
-            'dollar': 0,            # 美元
-            'script_income': 0,            # 拍片总票房
-            'script_license': game_config.common[20],    # 拍片许可证
-            'license_update_time': int(time.time()),    # 拍片许可证恢复时间
-            'license_recover_times': 0,          # 许可证当日恢复次数
-            'used_license_times': 0,             # 许可证当日使用次数
+            'dollar': 0,  # 美元
+            'script_income': 0,  # 拍片总票房
+            'script_license': game_config.common[20],  # 拍片许可证
+            'license_update_time': int(time.time()),  # 拍片许可证恢复时间
+            'license_recover_times': 0,  # 许可证当日恢复次数
+            'used_license_times': 0,  # 许可证当日使用次数
 
             'attention': {},
             'total_silver': 0,
-            'like': 0,              # 点赞数
+            'like': 0,  # 点赞数
             'role': 0,
             'vip': 0,
             'vip_exp': 0,
+            'company_vip_exp': 0,
+            'company_vip': 1,
+            'company_vip_reward': [], # 已领取的vip礼包
             'active_time': 0,
             'online_time': 0,
             'login_days': [],
@@ -218,7 +237,7 @@ class User(ModelBase):
             'expired': '',
             'mk': 0,
             'unlock_build': [],
-            'action_point': self.MAX_ACTION_POINT,
+            'action_point': game_config.common[60],
             'action_point_updatetime': int(time.time()),
             'buy_point_times': 0,
             # 'buy_point_date': '',
@@ -240,27 +259,68 @@ class User(ModelBase):
             'vip_daily_reward': False,  # vip每日礼包是否发放
             'vip_exclusive_notice': False,  # vip专属通知邮件是否发放
             'login_reward_id': {},
-            'refresh_date1': 0,     # 5点刷新
-            'team_skill_exp': 0,    # 战队技能经验
-            'blacklist': [],    # 聊天屏蔽uid
-            'is_ban': 0,        # 封号，0表示不封，1表示封禁
+            'refresh_date1': 0,  # 5点刷新
+            'team_skill_exp': 0,  # 战队技能经验
+            'blacklist': [],  # 聊天屏蔽uid
+            'is_ban': 0,  # 封号，0表示不封，1表示封禁
             'ban_reason': u'',  # 封号理由
-            'ban_expire': 0,    # 过期时间，0表示永久封禁，正数表示过期时间
-            'ban_time': 0,      # 封停时间
+            'ban_expire': 0,  # 过期时间，0表示永久封禁，正数表示过期时间
+            'ban_time': 0,  # 封停时间
             'ban_person': u'',  # 操作员
-            'ban_chat': 0,          # 禁言，0表示不禁言，1表示禁言
-            'bchat_reason': u'',    # 禁言理由
-            'bchat_expire': 0,      # 过期时间，0表示永久禁言，正数表示过期时间
-            'bchat_time': 0,        # 禁言时间
+            'ban_chat': 0,  # 禁言，0表示不禁言，1表示禁言
+            'bchat_reason': u'',  # 禁言理由
+            'bchat_expire': 0,  # 过期时间，0表示永久禁言，正数表示过期时间
+            'bchat_time': 0,  # 禁言时间
             'donate_times': 0,  # 公会科技捐献次数
-            'tile_power': 0,    # 势力值
-            'last_add_gs_msg': 0,   # gs客服消息时间
-            'rebate_flag': False,   # 是否已返利
-            '_build':{},         #建筑信息
+            'tile_power': 0,  # 势力值
+            'last_add_gs_msg': 0,  # gs客服消息时间
+            'rebate_flag': False,  # 是否已返利
+            '_build': {},  # 建筑信息
+            'dialogue': [],  # 剧情信息
+            'skip_dialouge': 0,
+            'skip_battle': 0,
         }
         self._cache = {}
         self.DEFAULT_MAX_EXP_POT = game_config.get_value(11, 2000)  # 经验存储上限默认值
         super(User, self).__init__(self.uid)
+
+    @classmethod
+    def get_public_redis(cls):
+        return get_redis_client(settings.public)
+
+    @classmethod
+    def get_name_unique_key(cls, name, k=None):
+        if not k:
+            k = int(md5(name),16) % 20
+        return 'models.user||User||public||NameUnique||%s'%k
+
+
+    @classmethod
+    def set_name_unique(cls, name):
+        if cls.is_exists_name(name):
+            return 1  # 名字存在
+        redis = cls.get_public_redis()
+        key = cls.get_name_unique_key(name)
+        redis.hset(key, name, 1)
+        return 0
+
+    @classmethod
+    def is_exists_name(cls, name):
+        redis = cls.get_public_redis()
+        key = cls.get_name_unique_key(name)
+        return redis.hexists(key, name)
+
+    @classmethod
+    def del_name_unique(cls, name):
+        redis = cls.get_public_redis()
+        key = cls.get_name_unique_key(name)
+        redis.hdel(key, name)
+
+    @classmethod
+    def get_all_name_unique(cls, num):
+        redis = cls.get_public_redis()
+        key = cls.get_name_unique_key('', num)
+        return redis.hgetall(key)
 
     def set_tpid(self, tpid):
         self.tpid = tpid
@@ -357,12 +417,28 @@ class User(ModelBase):
         刷新
         :return:
         """
+        # todo 数据升级，上线前删除 2019.03.14
+        for lv, level_gift_dict in self.level_gift.items():
+            if not isinstance(level_gift_dict, dict):
+                self.level_gift.pop(lv)
+
         is_save = False
         now = int(time.time())
         today = time.strftime('%F')
         week = time.strftime('%W')
+        if not self.company_vip:
+            self.company_vip = 1
+            is_save= True
+        if not self.skip_dialouge:
+            if vip_company.if_skip_story(self):
+                self.skip_dialouge = vip_company.if_skip_story(self)
+                is_save = True
+        if not self.skip_battle:
+            if vip_company.if_skip_battle(self):
+                self.skip_battle = vip_company.if_skip_battle(self)
+                is_save = True
         # 刷新体力
-        div, mod = divmod(now - self.action_point_updatetime, self.ADD_POINT_TIME)
+        div, mod = divmod(now - self.action_point_updatetime, game_config.common[59])
         if not self.is_point_max() and div > 0:
             self.add_action_point(div)
             self.action_point_updatetime = now - mod
@@ -371,16 +447,19 @@ class User(ModelBase):
         # 刷新限时等级礼包
         for lv, level_gift_dict in self.level_gift.items():
             expire = level_gift_dict.get('expire', 0)
+            status = level_gift_dict.get('status', 0)
             if now <= expire:
                 continue
-            self.level_gift.pop(lv)
-            is_save = True
+            if status == 1:
+                continue
+            # self.level_gift.pop(lv)
+            # is_save = True
 
         # if self.refresh_week != week and self.uid not in game_config.vip_exclusive_notice:
         #     self.refresh_week = week
         #     self.vip_exclusive_notice = False
         #     is_save = True
-
+        data = int(time.mktime(time.strptime(time.strftime('%F') + ' ' + '00:00:00', '%Y-%m-%d %H:%M:%S')))
         if self.refresh_date != today:
             self.refresh_date = today
             self.add_guild_exp = 0
@@ -390,6 +469,12 @@ class User(ModelBase):
             self.chat_times = {}
             self.buy_silver_times = 0
             self.buy_silver_log = []
+            # 如果前一天有遗留未完成恢复, 直接完成, 今天的重新开始计算
+            if self.can_recover_license_times():
+                if not self.inited:
+                    self.script_license += 1
+            self.license_recover_times = 0
+            self.license_update_time = now
             is_save = True
 
         refresh_date1 = get_last_refresh_time(self.REFRESH_TIME1)
@@ -406,31 +491,22 @@ class User(ModelBase):
             is_save = True
 
         # 许可证恢复
-        data = int(time.mktime(time.strptime(time.strftime('%F') + ' ' + '00:00:00', '%Y-%m-%d %H:%M:%S')))
-        recover_need_time = self.license_recover_need_time()
-        if recover_need_time:
+        if self.can_recover_license_times():
+            recover_need_time = self.license_recover_need_time()
             div, mod = divmod(now - self.license_update_time, recover_need_time)
             while div and self.can_recover_license_times():
-                if self.script_license >= game_config.common[20]:
-                    self.license_update_time = int(time.time())
-                    break
+                is_save = True
                 self.script_license += 1
                 self.license_recover_times += 1
-                check_time = self.license_update_time
                 self.license_update_time += recover_need_time
-                if check_time < data <= self.license_update_time:
-                    self.license_recover_times = 0
 
                 recover_need_time = self.license_recover_need_time()
                 if not recover_need_time:
                     break
                 div, mod = divmod(now - self.license_update_time, recover_need_time)
 
-
-
-            if not self.can_recover_license_times() and data > self.license_update_time:
-                self.license_recover_times = 0
-                self.license_update_time = data
+        if not self.can_recover_license_times():
+            self.license_update_time = now
 
         if is_save:
             self.save()
@@ -444,15 +520,19 @@ class User(ModelBase):
             times = -1
         return cd[times] * 60
 
+    def max_license(self):
+        more_license = vip_company.more_license(self)
+        return game_config.common[20] + more_license
+
     def can_recover_license_times(self):
-        if self.script_license >= game_config.common[20]:
+        if self.script_license >= self.max_license():
             return False
         gacha_cd = game_config.script_license.get('cd', [])
         return self.license_recover_times < len(gacha_cd)
 
     def remain_recover_times(self):
         gacha_cd = game_config.script_license.get('cd', [])
-        return max(len(gacha_cd) - self.license_recover_times,0)
+        return max(len(gacha_cd) - self.license_recover_times, 0)
 
     def license_recover_expire(self):
         """恢复倒计时"""
@@ -469,6 +549,9 @@ class User(ModelBase):
 
         need_time = cd[times] * 60
         return need_time - (int(time.time()) - self.license_update_time)
+
+    def get_license_recover_red_dot(self):
+        return [self.script_license, self.license_recover_expire()]
 
     def add_buy_silver_times(self, num=1):
         """
@@ -516,7 +599,7 @@ class User(ModelBase):
         from tools.pay import get_chat_need_diamond
         cur_times = self.get_chat_times(tp)
         if cur_times >= self.FREE_CHAT_TIMES:
-            cost_diamond = get_chat_need_diamond(self.mm, cur_times-self.FREE_CHAT_TIMES)
+            cost_diamond = get_chat_need_diamond(self.mm, cur_times - self.FREE_CHAT_TIMES)
             if not self.is_diamond_enough(cost_diamond):
                 return False
             self.deduct_diamond(cost_diamond)
@@ -535,7 +618,7 @@ class User(ModelBase):
             # 2. 减钻石, 先消耗charge，再消耗free
             # 实现的效果：从diamond添加都加到free；消耗优先消耗charge，再消耗free；只能手动用diamond_charge添加付费金币
             diff_diamond = value - (self.diamond_free + self.diamond_charge)
-            if diff_diamond < 0:    # 减钻石
+            if diff_diamond < 0:  # 减钻石
                 remain_diamond = self.diamond_charge + diff_diamond
                 if remain_diamond < 0:
                     self.diamond_charge = 0
@@ -547,6 +630,7 @@ class User(ModelBase):
                 self.diamond_free += diff_diamond
 
         return locals()
+
     diamond = property(**diamond())
 
     def add_donate_cooling_time(self, add_time):
@@ -680,10 +764,15 @@ class User(ModelBase):
         if ts - self.active_time > self.ONLINE_USERS_TIME_RANGE:
             online_duration = self.active_time - self.online_time
             self.online_time = ts
-            _kwargs = {'ldt': time_tools.strftimestamp(self.active_time), 'duration': online_duration}
+            _kwargs = {
+                'ldt': time_tools.strftimestamp(self.active_time),
+                'duration': online_duration,
+                'final_action': self.final_action,
+            }
             special_bdc_log(self, sort='role_logout', **_kwargs)
 
         self.active_time = ts
+        self.final_action = self.mm.action
 
     def decr_guild_coin_times(self, coin_id, num=1, save=False):
         """
@@ -805,13 +894,22 @@ class User(ModelBase):
         """
         point = int(point)
         if not force:
-            if self.action_point < self.MAX_ACTION_POINT:
-                self.action_point = min(self.MAX_ACTION_POINT, self.action_point + point)
+            if self.action_point < game_config.common[60]:
+                self.action_point = min(game_config.common[60], self.action_point + point)
         else:
             self.action_point += point
 
         if save:
             self.save()
+
+    # 获取性别
+    def get_sex(self):
+        config = game_config.main_hero
+        if not self.role:
+            return 0
+        if not self.role not in config:
+            return 0
+        return config[self.role]['sex']
 
     def decr_action_point(self, point, save=False):
         """
@@ -824,7 +922,7 @@ class User(ModelBase):
             return False
 
         # 体力从满减少到不满时,更新更新时间
-        if self.action_point - point < self.MAX_ACTION_POINT <= self.action_point:
+        if self.action_point - point < game_config.common[60] <= self.action_point:
             self.action_point_updatetime = int(time.time())
 
         self.action_point -= point
@@ -867,7 +965,7 @@ class User(ModelBase):
             return 0
 
         now = int(time.time())
-        return max(0, self.ADD_POINT_TIME - (now - self.action_point_updatetime))
+        return max(0, game_config.common[59] - (now - self.action_point_updatetime))
 
     def max_point_time(self):
         """
@@ -877,14 +975,14 @@ class User(ModelBase):
         if self.is_point_max():
             return 0
 
-        return (self.MAX_ACTION_POINT - self.action_point - 1) * self.ADD_POINT_TIME + self.next_point_time()
+        return (game_config.common[60] - self.action_point - 1) * game_config.common[59] + self.next_point_time()
 
     def is_point_max(self):
         """
         体力是否已满
         :return:
         """
-        return self.action_point >= self.MAX_ACTION_POINT
+        return self.action_point >= game_config.common[60]
 
     def add_buy_point_times(self):
         """
@@ -957,8 +1055,8 @@ class User(ModelBase):
         作废
         :return:
         """
-        if not self.mm.user.check_build(EXP_POT):
-            return
+        # if not self.mm.user.check_build(EXP_POT):
+        #     return
 
         now = int(time.time())
         if not self.update_exp_pot:
@@ -1033,7 +1131,10 @@ class User(ModelBase):
             # 消费记录
             spend_event = self.mm.get_event('spend_event')
             spend_event.record(diamond)
-            #消耗钻石活动
+
+            #超级大玩家
+            self.mm.superplayer.add_day_spend(diamond)
+            # 消耗钻石活动
             # if self.mm.action not in settings.SPEND_IGNORE_METHOD:
             #     server_type = int(self.mm.user.config_type)
             #     if server_type == 1:
@@ -1184,8 +1285,8 @@ class User(ModelBase):
         """
         self.like += int(like)
 
-    def add_attention(self,type,attention):
-        self.attention[type] = self.attention.get(type,0) + int(attention)
+    def add_attention(self, type, attention):
+        self.attention[type] = self.attention.get(type, 0) + int(attention)
 
     def is_silver_enough(self, silver):
         """ 是否银币足够
@@ -1287,7 +1388,7 @@ class User(ModelBase):
         expired = ts + self.SESSION_EXPIRED
 
         # 2018.05.19 缩短session长度,做个兼容
-        long_value = len(session) == 42        # long value: md5 + int(time.time())
+        long_value = len(session) == 42  # long value: md5 + int(time.time())
         sid = sid_generate(self.account, str(ts), long_value)
         print session, sid, long_value
         # 检验是否过期及sid正确性
@@ -1320,6 +1421,7 @@ class User(ModelBase):
         is_uplevel = False
         if not add_exp:
             return False
+        cur_exp = self.vip_exp
         next_exp = self.vip_exp + add_exp
         cur_level = self.vip
         next_level = self.vip
@@ -1340,8 +1442,8 @@ class User(ModelBase):
 
         self.vip_exp = next_exp
         self.vip = next_level
-        if cur_level < 8 <= self.vip:
-            self.send_vip_exclusive_notice()
+        # if cur_level < 8 <= self.vip:
+        #     self.send_vip_exclusive_notice()
 
         if is_uplevel:
             vip_info = VipInfo('', self.father_server_name)
@@ -1349,6 +1451,56 @@ class User(ModelBase):
 
         if is_save:
             self.save()
+
+        kwargs = {
+            'old_exp': cur_exp,
+            'cur_exp': self.vip_exp,
+            'old_lv': cur_level,
+            'cur_lv': self.vip,
+            'change_type': 'VIP_EXP',  # 级别经验类型 玩家经验、等级
+        }
+        special_bdc_log(self, sort='exp_change', **kwargs)
+        special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='VIP'))
+
+    # 增加company_vip经验
+    def add_company_vip_exp(self,add_exp, is_save=False):
+        if not add_exp:
+            return False
+        next_exp = self.company_vip_exp + add_exp
+        # next_level = self.company_vip
+        config = game_config.vip_company
+        # while True:
+        #     if next_level + 1 not in config:
+        #         break
+        #     if next_exp >= config[next_level]['need_exp']:
+        #         next_level += 1
+        #         continue
+        #     break
+
+        self.company_vip_exp = next_exp
+        # self.company_vip = next_level
+        if is_save:
+            self.save()
+
+    # 公司凝聚力是否达到升级要求红点
+    def get_company_vip_red_dot(self):
+        config = game_config.vip_company
+        if 22 not in self.group_ids:
+            return True
+        next_lv = self.company_vip + 1
+        if next_lv not in config:
+            return False
+        need_company_vip = config[next_lv].get('exp', 100)
+        if self.company_vip_exp >= need_company_vip:
+            return True
+        return False
+
+    # 可以领取的company_vip礼包
+    @property
+    def can_get_company_vip_reward(self):
+        reward_list = range(1, self.company_vip + 1)
+        return list(set(reward_list) - set(self.company_vip_reward))
+
 
     def add_player_exp(self, add_exp):
         """ 增加战队经验
@@ -1400,19 +1552,20 @@ class User(ModelBase):
             level_rank = self.mm.get_obj_tools('level_rank')
             level_rank.add_rank(self.uid, self.level)
             # 激活限时等级礼包
+            level_gift_config = game_config.level_gift
             for _lv in xrange(cur_level + 1, self.level + 1):
                 # 升级送道具
                 hero_exp_config = game_config.player_level.get(_lv, {})
                 add_mult_gift(self.mm, hero_exp_config.get('gifts', []))
 
-                if _lv not in game_config.level_gift:
+                if _lv not in level_gift_config:
                     continue
                 self.level_gift[_lv] = {
-                    'expire': int(time.time()) + self.LEVEL_GIFT_EXPIRE,
+                    'expire': int(time.time()) + level_gift_config[_lv].get('time', 24) * 3600,
                     'status': 0,
                 }
-                if not game_config.level_gift[_lv]['buy']:
-                    self.level_gift[_lv]['status'] = 1
+                # if not game_config.level_gift[_lv]['buy']:
+                #     self.level_gift[_lv]['status'] = 1
 
             # 新手引导处理
             if cur_level < 10 <= self.level:
@@ -1420,21 +1573,22 @@ class User(ModelBase):
                     guide_ids = game_config.get_guide_mapping(gid)
                     if guide_ids and gid not in self.guide:
                         self.guide[gid] = guide_ids[-1]
-            if self.guide:
-                cur_guide_sort = max(self.guide)
-                while True:
-                    guide_team_config = game_config.guide_team.get(cur_guide_sort)
-                    if not guide_team_config:
-                        break
-                    if guide_team_config['type'] != 1:    #如果是弱引导，直接给玩家完成
-                        open_level = guide_team_config['open_level']
-                        if self.level > open_level + 1:
-                            guide_ids = game_config.get_guide_mapping(cur_guide_sort)
-                            if guide_ids:
-                                self.guide[cur_guide_sort] = guide_ids[-1]
-                            else:
-                                self.guide[cur_guide_sort] = 0
-                    cur_guide_sort += 1
+
+            # if self.guide:
+            #     cur_guide_sort = max(self.guide)
+            #     while True:
+            #         guide_team_config = game_config.guide_team.get(cur_guide_sort)
+            #         if not guide_team_config:
+            #             break
+            #         if guide_team_config['type'] != 1:    #如果是弱引导，直接给玩家完成
+            #             open_level = guide_team_config['open_level']
+            #             if self.level > open_level + 1:
+            #                 guide_ids = game_config.get_guide_mapping(cur_guide_sort)
+            #                 if guide_ids:
+            #                     self.guide[cur_guide_sort] = guide_ids[-1]
+            #                 else:
+            #                     self.guide[cur_guide_sort] = 0
+            #         cur_guide_sort += 1
             # 增加科技点重置点
             # self.mm.tech_tree.incr_all_point(level)
             # 上传uc玩家数据
@@ -1445,16 +1599,35 @@ class User(ModelBase):
             'cur_exp': self.exp,
             'old_lv': cur_level,
             'cur_lv': self.level,
-            'change_type': 'user',      # 级别经验类型 玩家经验、等级
+            'change_type': 'EXP',  # 级别经验类型 玩家经验、等级
         }
         gift = []
-        for i in xrange(cur_level,self.level + 1):
-            level_gift = game_config.player_level.get(cur_level, {}).get('award')
+        for i in xrange(cur_level +1 , self.level + 1):
+            level_gift = game_config.player_level.get(i, {}).get('award')
             gift.extend(level_gift)
-        add_mult_gift(self.mm,gift)
+        add_mult_gift(self.mm, gift)
         special_bdc_log(self, sort='exp_change', **kwargs)
-        special_bdc_log(self, sort='level_change', **kwargs)
+        special_bdc_log(self, sort='level_change', **dict(kwargs, change_type='PLE'))
         return True
+
+    def can_buy_level_gift(self, level_id):
+        if level_id not in self.level_gift:
+            return 0   # 可充值
+        if self.level_gift[level_id]['status'] != 0:
+            return 11   # 已充值
+        now = int(time.time())
+        if now > self.level_gift[level_id]['expire'] :
+            return 12   # 已过期
+        return 0
+
+    def level_gift_red_dot(self):
+        now = int(time.time())
+        for lv, level_gift_dict in self.level_gift.items():
+            expire = level_gift_dict.get('expire', 0)
+            status = level_gift_dict.get('status', 0)
+            if now <= expire or status == 1:
+                return True
+        return False
 
     def add_player_exp_for_config(self, action_id, times=1):
         """
@@ -1514,8 +1687,8 @@ class User(ModelBase):
             level_mail_config = game_config.level_mail.get(level_mail_id)
             if not level_mail_config:
                 continue
-            content = level_mail_config['des']
-            title = level_mail_config['name']
+            content = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[level_mail_config['name']]
             gift = level_mail_config['reward']
             mail_dict = self.mm.mail.generate_mail(content, title=title, gift=gift)
             self.mm.mail.add_mail(mail_dict, save=True)
@@ -1642,7 +1815,6 @@ class User(ModelBase):
         else:
             return False
 
-
     def is_ban_chat(self):
         """
         是否禁言
@@ -1672,9 +1844,10 @@ class User(ModelBase):
         获取体力最大购买次数
         :return:
         """
-        privilege_obj = self.mm.get_event('privilege')
-        max_point_buy_times = privilege_obj.max_point_buy_times()
-        return max_point_buy_times
+        # privilege_obj = self.mm.get_event('privilege')
+        # max_point_buy_times = privilege_obj.max_point_buy_times()
+        # return max_point_buy_times
+        return vip_company.buy_point(self)
 
     def finish_guide(self):
         """
@@ -1696,6 +1869,14 @@ class User(ModelBase):
             return False
 
         return True
+
+    def check_guide_done(self,guide_id):
+        guide_step = self.guide.get(guide_id, 0)
+        config = game_config.guide.get(guide_step, {})
+        if not config:
+            return 0
+        return config['aim']
+
 
     def send_vip_daily_reward(self):
         """
@@ -1778,8 +1959,9 @@ class User(ModelBase):
                     continue
             else:
                 continue
-
-            message = self.mm.mail.generate_mail(v['des'], v['title'], v['reward'], url=v['url'])
+            des = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['des']]
+            title = game_config.get_language_config(MUITL_LAN[self.language_sort])[v['title']]
+            message = self.mm.mail.generate_mail(des, title, v['reward'], url=v['url'])
             self.mm.mail.add_mail(message, save=False)
             self.login_reward_id[k] = self.login_reward_id.get(k, 0) + 1
             notify_save = True
@@ -1805,14 +1987,14 @@ class User(ModelBase):
         server_opening_award_expire = self.SERVER_OPENING_AWARD_EXPIRE
         server_open_time = serverM.get_server_config(self._server_name)['open_time']
         open_time = datetime.datetime.fromtimestamp(server_open_time)
-        close_time = open_time + datetime.timedelta(days=server_opening_award_expire-1)
+        close_time = open_time + datetime.timedelta(days=server_opening_award_expire - 1)
 
         open_times_str = open_time.strftime('%F')
         close_time_str = close_time.strftime('%F')
-        return {'open_time': open_times_str,                                                    # 开服时间
-                'close_time': close_time_str,                                                   # 开服奖励结束时间
-                'open_days': (today.date() - open_time.date()).days + 1,                        # 此服已开天数
-                'opening_award_expired': not open_times_str <= today_str <= close_time_str,     # 开服奖励是否过期
+        return {'open_time': open_times_str,  # 开服时间
+                'close_time': close_time_str,  # 开服奖励结束时间
+                'open_days': (today.date() - open_time.date()).days + 1,  # 此服已开天数
+                'opening_award_expired': not open_times_str <= today_str <= close_time_str,  # 开服奖励是否过期
                 }
 
     def has_vip_gift(self):
@@ -1858,56 +2040,61 @@ class User(ModelBase):
         self.save()
 
     def init_build(self):
+        save = False
         if not self._build:
-            for build_id,value in game_config.building.iteritems():
+            for build_id, value in game_config.building.iteritems():
                 if value['default']:
-                    self.add_build(build_id,0)
+                    self.add_build(build_id, value['field_id'], save=False)
+                    save = True
+        if save:
             self.save()
 
-    def add_build(self, build_id, pos):
+    # @building
+    def add_build(self, build_id, field_id, save=True):
         if build_id in self._build:
             return
-        self._build[build_id] = {'pos': pos,
+        self._build[build_id] = {'field_id': field_id,
                                  'build_time': int(time.time())}
-        self.save()
+        if save:
+            self.save()
 
     @property
     def group_ids(self):
         _group_ids = {}
         config = game_config.building
-        for build_id,value in self._build.iteritems():
+        for build_id, value in self._build.iteritems():
             group = config[build_id]['group']
-            _group_ids[group] = {'build_id':build_id,
-                                      'pos':value['pos'],
-                                      'lock_status':self.mm.user.level < config[build_id]['unlock_lv'],
-                                      'unlock_lv':config[build_id]['unlock_lv']
-                                      }
+            _group_ids[group] = {'build_id': build_id,
+                                 'field_id': value['field_id'],
+                                 'lock_status': self.mm.user.level < config[build_id]['unlock_lv'],
+                                 'build_status': self.get_build_status(build_id)
+                                 }
         return _group_ids
 
     @property
     def get_pos_info(self):
         pos_info = {}
-        for build_id,value in self._build.iteritems():
-            pos_info[value['pos']] = build_id
+        for build_id, value in self._build.iteritems():
+            pos_info[value['field_id']] = build_id
         return pos_info
 
-    #检查城建建筑
-    def check_build_id(self,build_id):
+    # 检查城建建筑
+    def check_build_id(self, build_id):
         config = game_config.building
         if build_id not in config:
-            return 1  #配置错误
+            return 1  # 配置错误
         group = config[build_id]['group']
         if group not in self.group_ids:
-            return 2  #还未拥有建筑
+            return 2  # 还未拥有建筑
         if build_id in self._build:
-            return 3  #已拥有建筑
+            return 3  # 已拥有建筑
         return 0
 
-    def up_build(self,build_id,is_save=False):
+    def up_build(self, build_id, is_save=False):
         config = game_config.building
         group_id = config[build_id]['group']
         if group_id not in self.group_ids:
-            return 1  #请先建造建筑
+            return 1  # 请先建造建筑
         old_build_id = self.group_ids[group_id]['build_id']
         self._build[build_id] = self._build[old_build_id]
         self._build[build_id]['build_time'] = int(time.time())
@@ -1915,19 +2102,104 @@ class User(ModelBase):
         if is_save:
             self.save()
 
+    def build_get_fans_activity(self, build_id):
+        for key, value in game_config.fans_activity.iteritems():
+            if value['build_id'] == build_id:
+                return key
+        return 0
+
+    def get_build_status(self, build_id):
+        fans_activity_id = self.build_get_fans_activity(build_id)
+        if not fans_activity_id:
+            return -1
+        return self.mm.fans_activity.activety_status(fans_activity_id)
+
+    def can_unlock(self, build_id):
+        if build_id in game_config.get_functional_building_mapping():
+            config = game_config.get_functional_building_mapping()[build_id]
+            lvlup_condition = config['lvlup_condition']
+            for tp, num in lvlup_condition:
+                func = globals()['lvlup_condition_%s' % tp]
+                stats = func(self.mm, num)
+                if stats:
+                    return stats
+        elif build_id in game_config.building:
+            config = game_config.building[build_id]
+            func = globals()['lvlup_condition_%s' % 1]  # 1 为等级限制
+            stats = func(self.mm, config['unlock_lv'])
+            if stats:
+                return stats
+        else:
+            return 201 # 没有配置
+        return 0
+
+    @property
+    def build_effect(self):
+        """
+        1:战斗属性加成（[type,rate],属性，加成百分比）
+        2:公司事务恢复速度（秒）
+        3:外出拍摄金币收益（万分比）
+        4:全服金榜额外金币（group_rank，绝对值）
+        5:世界循环赛额外收益 （block_rank, 万分比）
+        6:抽取剧本cd减少（秒）
+        7:储藏室食品栏数量
+        8:持续收益增加比例（万分比）
+        9:艺人会所艺人数量上限
+        :return: 
+        """
+        effect = {}
+        config = game_config.get_functional_building_mapping()
+        # 艺人会所艺人上限与食品栏上限初始值
+        effect[7] = game_config.common[76]
+        effect[9] = game_config.common[75]
+        for build_id in self._build:
+            if build_id not in config:
+                continue
+            build_effect = config[build_id]['build_effect'] if config[build_id]['build_effect'] else 0
+            b_effect_type = config[build_id]['effect_type']
+            if b_effect_type == 1:
+                if b_effect_type not in effect:
+                    effect[b_effect_type] = {}
+                for effect_type, effect_num in build_effect:
+                    effect[b_effect_type][effect_type] = effect.get(b_effect_type, {}).get(effect_type, 0) + effect_num
+            elif b_effect_type in [7, 9]:
+                effect[b_effect_type] = build_effect
+            elif b_effect_type in [10, 11, 12, 13, 14]:
+                effect[b_effect_type] = build_effect
+            else:
+                effect[b_effect_type] = effect.get(b_effect_type, 0) + build_effect
+        return effect
+
 
 class OnlineUsers(ModelTools):
     """
     活跃玩家
     """
     ONLINE_USERS_PREFIX = 'online_users'
-    ONLINE_USERS_TIME_RANGE = 5 * 60        # 判断用户在线的时间参考
+    DELETED_USER_PREFIX = 'deleted_users'    # redis 中 存放已经删除的用户的key
+
+    ONLINE_USERS_TIME_RANGE = 5 * 60  # 判断用户在线的时间参考
     FORMAT = '%Y%m%d'
 
     def __init__(self, uid='', server='', *args, **kwargs):
         super(OnlineUsers, self).__init__()
         self._key = self.make_key(self.ONLINE_USERS_PREFIX, server_name=server)
         self.redis = self.get_redis_client(server)
+        self.server_name = server
+
+    def deleted_user_key(self):
+        return '%s_%s' % (self.DELETED_USER_PREFIX, self.server_name)
+
+    def get_deleted_uids(self):
+        return self.redis.zrange(self.deleted_user_key(), 0, -1, withscores=False)
+
+    def update_deleted_status(self, uid, ts=None):
+        """
+        存储已经删除的用户的记录
+        :param ts:
+        :return:
+        """
+        self.redis.zadd(self.deleted_user_key(), **{uid: ts or int(time.time())})
 
     def get_online_key(self):
         """
@@ -2237,19 +2509,19 @@ class GSMessage(object):
         ask_time = time_tools.strftimestamp(time.time())
         platform = user.account.split('_')[0] if user.account.split('_')[0] else ''
         data = {
-            'user_id': "'"+user.uid+"'",
+            'user_id': "'" + user.uid + "'",
             'vip_level': user.vip,
-            'msg': "'"+msg+"'",
+            'msg': "'" + msg + "'",
             'msg_type': msg_type,
-            'ask_time': "'"+ask_time+"'",
-            'platform': "'"+platform+"'",
+            'ask_time': "'" + ask_time + "'",
+            'platform': "'" + platform + "'",
         }
         sql = "insert into %s_%s set %s" % (
-              self.host_config['table_prefix'],
-              "0",
-              ",".join(["%s=%s" % (k, v) for k, v in data.iteritems()]),
-              )
-        print 'x'*20, sql
+            self.host_config['table_prefix'],
+            "0",
+            ",".join(["%s=%s" % (k, v) for k, v in data.iteritems()]),
+        )
+        print 'x' * 20, sql
         conn = self.get_conn()
 
         conn.cursor().execute(sql)
@@ -2281,20 +2553,20 @@ class GSMessage(object):
         end = (page + 1) * self.PAGE_NUM
         if query_dict:
             sql = "select * from %s_%s where %s order by ID  %s limit %d, %d " % (
-                  self.host_config['table_prefix'],
-                  "0",
-                  " and ".join(["%s=%s" % (k, v) for k, v in query_dict.iteritems()]),
-                  order,
-                  start,
-                  end,
+                self.host_config['table_prefix'],
+                "0",
+                " and ".join(["%s=%s" % (k, v) for k, v in query_dict.iteritems()]),
+                order,
+                start,
+                end,
             )
         else:
             sql = "select * from %s_%s order by ID  %s limit %d, %d " % (
-                  self.host_config['table_prefix'],
-                  "0",
-                  order,
-                  start,
-                  end,
+                self.host_config['table_prefix'],
+                "0",
+                order,
+                start,
+                end,
             )
         # print_log('----11111--', sql)
         conn = self.get_conn()
@@ -2313,9 +2585,9 @@ class GSMessage(object):
         if not ques_id:
             return []
         sql = "select * from %s_%s where ID=%s " % (
-              self.host_config['table_prefix'],
-              "0",
-              ques_id,
+            self.host_config['table_prefix'],
+            "0",
+            ques_id,
         )
 
         conn = self.get_conn()
@@ -2336,16 +2608,16 @@ class GSMessage(object):
         if not ques_id:
             return []
 
-        data['reply_time'] = "'"+time_tools.strftimestamp(time.time())+"'"
+        data['reply_time'] = "'" + time_tools.strftimestamp(time.time()) + "'"
         data['status'] = 1
         if data['solve_status']:
-            data['solve_time'] = "'"+time_tools.strftimestamp(time.time())+"'"
+            data['solve_time'] = "'" + time_tools.strftimestamp(time.time()) + "'"
 
         sql = "update %s_%s set %s where ID=%s " % (
-              self.host_config['table_prefix'],
-              "0",
-              ",".join(["%s=%s" % (k, v) for k, v in data.iteritems()]),
-              ques_id,
+            self.host_config['table_prefix'],
+            "0",
+            ",".join(["%s=%s" % (k, v) for k, v in data.iteritems()]),
+            ques_id,
         )
         # print_log('----33333----', sql)
         conn = self.get_conn()
@@ -2359,9 +2631,9 @@ class GSMessage(object):
         """ 关闭问题
         """
         sql = "update %s_%s set status=1 where ID=%d" % (
-              self.host_config['table_prefix'],
-              "0",
-              int(qid),
+            self.host_config['table_prefix'],
+            "0",
+            int(qid),
         )
 
         conn = self.get_conn()
@@ -2376,9 +2648,9 @@ class GSMessage(object):
         delete from MyClass where id=1;
         """
         sql = "delete from %s_%s where ID=%d" % (
-              self.host_config['table_prefix'],
-              "0",
-              int(qid),
+            self.host_config['table_prefix'],
+            "0",
+            int(qid),
         )
 
         conn = self.get_conn()

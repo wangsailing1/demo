@@ -5,7 +5,6 @@ __author__ = 'kaiqigu'
 from logics.user import UserLogic
 from logics.friend import FriendLogic
 # from logics.manufacture import ManufactureLogic
-from tools.unlock_build import FRIEND_SORT
 from lib.utils.sensitive import is_sensitive
 from gconfig import game_config
 from tools.gift import del_mult_goods
@@ -77,6 +76,8 @@ def sent_gift_all(hm):
     mm = hm.mm
 
     fl = FriendLogic(mm)
+    if not mm.assistant.assistant:
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.sent_gift_all()
     if rc != 0:
         return rc, {}
@@ -116,6 +117,8 @@ def receive_gift_all(hm):
     mm = hm.mm
 
     fl = FriendLogic(mm)
+    if not mm.assistant.assistant:
+        return 'error_assistant', {}  # 请先聘请终身助理
     rc, data = fl.receive_gift_all()
     if rc != 0:
         return rc, {}
@@ -544,8 +547,8 @@ def rapport(hm):
         return 6, {}  # 约会场景不合适
     fl = FriendLogic(mm)
     if not choice_id:
-        data = {{'reward': {},
-                   'add_value': {}}}
+        data = {'reward': {},
+                'add_value': {}}
         rc = mm.friend.add_rapport_first(group_id, now_stage, chapter_id)
         if rc < 0:
             return rc, {}
@@ -598,7 +601,7 @@ def rename(hm):
     name = hm.get_argument('name', '')
     if not uid:
         return 1, {}  # 未指定好友
-    if is_sensitive(name):
+    if is_sensitive(name, mm.lan):
         return 2, {}  # 名字不合法
     # 好友为艺人
     if uid.isdigit():

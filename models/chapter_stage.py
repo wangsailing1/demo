@@ -41,13 +41,27 @@ class Chapter_stage(ModelBase):
             self.save()
 
     def get_now_stage(self):
-        chapter = max(self.next_chapter)
+        chapter = max([i for i in self.next_chapter if not game_config.chapter[i]['hard_type']])
         stage = self.chapter.get(chapter, {}).get(0, {}).keys()
         if not stage:
             stage = 1
         else:
             stage = max(stage)
         return '%s-%s' % (chapter, stage)
+
+    def get_chapter_red_dot(self):
+        dialogue_list = []
+        config = game_config.get_chapter_mapping()
+        for chapter, value in self.chapter.iteritems():
+            for type_hard, info in value.iteritems():
+                stage_id = max(info.keys() if info.keys else [0])
+                stage_config = config[chapter][type_hard]
+                stage_list = [i for i in stage_config['stage_id'] if i != -1]
+                if stage_id < len(stage_list) and stage_config['dialogue_id'][stage_id]:
+                    dialogue_list.append(stage_config['dialogue_id'][stage_id])
+        return dialogue_list
+
+
 
 
 ModelManager.register_model('chapter_stage', Chapter_stage)

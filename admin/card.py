@@ -49,24 +49,31 @@ def card_update(req, **kwargs):
     if mm.card.has_card(card_oid):
         if modify:
             lv = int(req.get_argument('lv'))
-            star = int(req.get_argument('star'))
-            evo = int(req.get_argument('evo'))
+            # star = int(req.get_argument('star'))
+            # evo = int(req.get_argument('evo'))
             card_dict = mm.card.cards.get(card_oid)
             if not card_dict:
                 msg = 'fail'
             else:
-                max_level = game_config.card_lvl_limit.get(mm.user.level, {}).get('card_lvl', 0)
-                card_config = game_config.card_basis[card_dict['id']]
-                star_limit = max(game_config.card_star or [1])
-                max_evo = len(game_config.grade_lvlup_badge.get(card_config['job'], {}).get(card_config['quality'], {}))
+                max_level = max(game_config.card_level.keys())
+                oid = card_dict['id']
+                card_config = game_config.card_basis
+                group_id = card_config[oid]['group']
+                lv = min(lv, max_level)
 
-                card_dict['lv'] = min(lv, max_level)
-                card_dict['star'] = min(star, star_limit)
-                card_dict['evo'] = min(evo, max_evo)
-                mm.card.unlock_skill(card_oid, card_dict=card_dict)
-                mm.card.update_base_attr(card_oid, card_dict=card_dict, card_config=card_config)
+                for k, v in card_config.iteritems():
+                    if v['group'] == group_id and v['last_lv'] <= lv:
+                        oid = k
+                # star_limit = max(game_config.card_star or [1])
+                # max_evo = len(game_config.grade_lvlup_badge.get(card_config['job'], {}).get(card_config['quality'], {}))
+
+                card_dict['lv'] = lv
+                card_dict['id'] = oid
+                # card_dict['star'] = min(star, star_limit)
+                # card_dict['evo'] = min(evo, max_evo)
+                # mm.card.unlock_skill(card_oid, card_dict=card_dict)
+                # mm.card.update_base_attr(card_oid, card_dict=card_dict, card_config=card_config[oid])
                 # mm.card.calc_avg_max_evo()
-
                 mm.card.save()
                 msg = 'success'
         elif delete:
@@ -148,8 +155,8 @@ def add_card(req, **kwargs):
 
             if mm.card.has_card_with_group_id(card_id):
                 continue
-
-            mm.card.add_card(card_id)
+            lv = max(game_config.card_basis[card_id].get('last_lv'), 1)
+            mm.card.add_card(card_id, lv=lv)
         mm.card.save()
         result['msg'] = 'success'
 

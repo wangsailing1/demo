@@ -16,8 +16,6 @@ class FansActivity(object):
             return 12, {}  # 没有艺人参加
         config = game_config.fans_activity.get(activity_id, {})
         cost = config['cost']
-        if self.mm.user.dollar < cost:
-            return 17, {}  # 美元不足
         card_config = game_config.card_basis
         value = self.mm.fans_activity.activity_log.get(activity_id, {})
         all_time = config['time'] * 60
@@ -28,12 +26,14 @@ class FansActivity(object):
             return 18, {}  # 活动已结束，请先领取奖励
 
         if remian_time > 0:  # 替换人物
-            gift = self.mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id, is_save=False)
+            gift, _ = self.mm.fans_activity.count_produce(get_reward=True, activity_id=activity_id, is_save=False)
             for k, card_id in enumerate(cards):
                 if card_id in ['0']:
                     continue
                 if card_id not in self.mm.card.cards:
                     return 11, {}  # 卡牌错误
+                if card_id in self.mm.card.get_all_rest_card():
+                    return 19, {}  # 有卡牌休息中
                 card_info = self.mm.card.get_card(card_id)
                 need = config['card_need']
                 for tp, need_num in need[k]:
@@ -63,6 +63,9 @@ class FansActivity(object):
             _, data = self.fans_index()
             data['reward'] = reward
             return 0, data
+
+        if self.mm.user.dollar < cost:
+            return 17, {}  # 美元不足
 
         gift = []
         for k, card_id in enumerate(cards):
@@ -110,14 +113,16 @@ class FansActivity(object):
     def check_and_remove_cards(self, card_id, activity_id):
         effect_activity = []
         effect_activity_id = self.mm.fans_activity.card_mapping.get(card_id, [0])[0]
-        gift = self.mm.fans_activity.count_produce(get_reward=True, activity_id=effect_activity_id, is_save=False)
+        gift, _ = self.mm.fans_activity.count_produce(get_reward=True, activity_id=effect_activity_id, is_save=False)
         if effect_activity_id not in effect_activity:
             effect_activity.append(effect_activity_id)
-            effect_activity_gift = self.mm.fans_activity.count_produce(get_reward=True,
-                                                                       activity_id=effect_activity_id,
-                                                                       is_save=False)
+            effect_activity_gift, _ = self.mm.fans_activity.count_produce(get_reward=True,
+                                                                          activity_id=effect_activity_id,
+                                                                          is_save=False)
             gift.extend(effect_activity_gift)
-        if effect_activity_id != activity_id and effect_activity_id:
+        if effect_activity_id != activity_id and effect_activity_id and \
+                self.mm.fans_activity.activity_log[effect_activity_id].get('cards') and \
+                        card_id in self.mm.fans_activity.activity_log[effect_activity_id].get('cards'):
             self.mm.fans_activity.activity_log[effect_activity_id]['cards'][
                 self.mm.fans_activity.activity_log[effect_activity_id]['cards'].index(card_id)] = '0'
         return gift
@@ -129,16 +134,16 @@ class FansActivity(object):
             if activity_id not in self.mm.fans_activity.activity_log:
                 return 11, {}  # 未举办该活动
             value = self.mm.fans_activity.activity_log[activity_id]
-            items = self.mm.fans_activity.count_produce(activity_id=activity_id)
+            items, card_effect = self.mm.fans_activity.count_produce(activity_id=activity_id)
             config_id = config[activity_id]
             all_time = config_id['time'] * 60
-            print all_time, value['start_time'], int(time.time())
             remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
             data['activity_log'][activity_id] = {
                 'items': items,
                 'remian_time': remian_time,
                 'cards': value['cards'],
                 'effect_id': value.get('effect_id', 0),
+                'card_effect': card_effect
             }
             data['activity'] = self.mm.fans_activity.activity
             data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
@@ -149,7 +154,7 @@ class FansActivity(object):
         for id, value in self.mm.fans_activity.activity_log.iteritems():
             if not value:
                 continue
-            items = self.mm.fans_activity.count_produce(activity_id=id)
+            items, card_effect = self.mm.fans_activity.count_produce(activity_id=id)
             config_id = config[id]
             all_time = config_id['time'] * 60
             remian_time = max(all_time + value['start_time'] - int(time.time()), 0)
@@ -158,6 +163,7 @@ class FansActivity(object):
                 'remian_time': remian_time,
                 'cards': value['cards'],
                 'effect_id': value.get('effect_id', 0),
+                'card_effect': card_effect
             }
         data['unlocked_activity'] = self.mm.fans_activity.unlocked_activity
         data['can_unlock_activity'] = self.mm.fans_activity.can_unlock_activity

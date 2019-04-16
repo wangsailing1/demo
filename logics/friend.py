@@ -886,6 +886,9 @@ class FriendLogic(object):
     def actor_chat(self, group_id, chapter_id, choice_id, now_stage):
         config = game_config.phone_dialogue
         if not chapter_id:  # 日常对话
+            open_stage = game_config.common.get(78, [1,1])
+            if open_stage[1] not in self.mm.chapter_stage.chapter.get(open_stage[0],{}).get(0, {}):
+                return 21, {} # 过普通十关后才能闲聊
             if now_stage not in config:
                 return 11, {}  # 当前对话id错误
             if now_stage and not choice_id:
@@ -900,19 +903,28 @@ class FriendLogic(object):
             if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                     chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
                 return 17, {}  # 已选择过对话
-            if self.friend.phone_daily_times >= game_config.common[24] and config[now_stage]['is_end']:
+            if self.friend.phone_daily_times >= self.friend.get_max_phone_times() and config[now_stage]['is_end']:
                 return 13, {}  # 次数超出
+            old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+            old_value.setdefault('like', 0)
             self.friend.phone_daily_log[times]['log'].append(choice_id)
             reward_config = config[choice_id]['reward']
             add_value_config = config[choice_id]['add_value']
-            add_value = self.mm.card.add_value(group_id, add_value_config)
+            add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
             reward = add_mult_gift(self.mm, reward_config)
             # if config[choice_id]['is_end']:
             #     self.friend.phone_daily_times += 1
             self.friend.add_newest_uid(group_id)
             self.friend.save()
+            if group_id not in self.mm.card.group_ids:
+                love_lv = 0
+            else:
+                love_lv = self.mm.card.get_card(self.mm.card.group_ids[group_id])['love_lv']
             return 0, {'reward': reward,
-                       'add_value': add_value}
+                       'add_value': add_value,
+                       'love_lv': love_lv,
+                       'old_value': old_value
+                       }
         if now_stage not in config:
             return 15, {}  # 对话配置错误
         if config[now_stage]['is_end']:
@@ -926,11 +938,13 @@ class FriendLogic(object):
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
             return 17, {}  # 已选择过对话
+        old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+        old_value.setdefault('like', 0)
         num = max(config[choice_id].get('reward', 1), 1)
         reward_config = config[choice_id]['reward']
         gift = self.choice_reward(reward_config, num)
         add_value_config = config[choice_id]['add_value']
-        add_value = self.mm.card.add_value(group_id, add_value_config)
+        add_value = self.mm.card.add_value(group_id, add_value_config, is_save=True)
         reward = add_mult_gift(self.mm, gift)
         self.friend.actors.setdefault(group_id, {}).setdefault('chat_log', {}).setdefault(chapter_id, []).append(
             choice_id)
@@ -941,8 +955,15 @@ class FriendLogic(object):
                 self.friend.chat_over[group_id].append(chapter_id)
         self.friend.add_newest_uid(group_id)
         self.friend.save()
+        if group_id not in self.mm.card.group_ids:
+            love_lv = 0
+        else:
+            love_lv = self.mm.card.get_card(self.mm.card.group_ids[group_id])['love_lv']
         return 0, {'reward': reward,
-                   'add_value': add_value}
+                   'add_value': add_value,
+                   'love_lv': love_lv,
+                   'old_value': old_value
+                   }
 
     def rapport(self, group_id, choice_id, now_stage, type=2):
         tp = self.friend.TYPEMAPPING[type]
@@ -960,7 +981,7 @@ class FriendLogic(object):
         if type == 2:
             chat_log = self.friend.appointment_log.get(times_, {}).get('log', {})
             times = self.friend.appointment_times
-            max_times = game_config.common[44]
+            max_times = self.friend.get_max_avgdate_times()
         # elif type == 3:
         #     chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})
         #     times = self.friend.tourism_times
@@ -969,8 +990,10 @@ class FriendLogic(object):
         if (choice_id in config[now_stage]['option_team'] and set(config[now_stage]['option_team']) - set(
                 chat_log) != set(config[now_stage]['option_team'])) or choice_id in chat_log:
             return 17, {}  # 已选择过对话
-        if times >= max_times:
-            return 13, {}  # 次数超出
+
+        # todo 上限暂时屏蔽
+        # if times >= max_times:
+        #     return 13, {}  # 次数超出
         cost = config[choice_id]['cost']
         rc, _ = del_mult_goods(self.mm, cost)
         if rc != 0:
@@ -989,6 +1012,7 @@ class FriendLogic(object):
         # if config[choice_id]['is_end']:
         #     self.friend.phone_daily_times += 1
         self.friend.save()
+        self.mm.card.save()
         if group_id not in self.mm.card.group_ids:
             love_lv = 0
         else:

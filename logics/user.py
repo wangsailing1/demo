@@ -20,6 +20,8 @@ from tools.hero import format_hero_info
 from lib.core.environ import ModelManager
 from lib.utils import fake_deepcopy
 from models.ranking_list import BlockRank
+from logics.mission import Mission
+from return_msg_config import i18n_msg
 
 
 def refresh_roulette_ranktime():
@@ -64,8 +66,13 @@ class UserLogic(object):
 
         # 活动开关
         server_num = settings.get_server_num(self.user._server_name)
-        # result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
-
+        result['active_switch'], result['active_remain_time'] = active_inreview_open_and_close(server_num=server_num)
+        has_reward = self.mm.foundation.has_reward()
+        if not has_reward and not self.mm.foundation.is_open():
+            if 2009 in result['active_switch']:
+                result['active_switch'].pop(2009)
+            if 2009 in result['active_remain_time']:
+                result['active_remain_time'].pop(2009)
         # 处理过的新服活动表
         result['server_inreview'], result['server_active_remain_time'] = server_active_inreview_open_and_close(self.mm)
 
@@ -102,8 +109,9 @@ class UserLogic(object):
         activity_status = {
             'first_charge_open': self.mm.user_payment.get_first_charge(),  # 首充活动标志
             'first_charge_pop': self.mm.user_payment.get_first_charge_pop(),  # 首充弹板
-            'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
+            # 'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
             'level_limit_gift': self.mm.user.level_gift,  # 限时等级礼包
+            'level_gift_open':self.mm.user.level_gift_red_dot()
         }
         result['activity_status'] = activity_status
 
@@ -182,29 +190,29 @@ class UserLogic(object):
         """
         red_dot_func = {
             # 红点名: (model模块名, 方法名[可选，默认get_red_dot], 参数[可选])
-            'task_main': ('task', 'get_task_main_red_dot'),
-            'task_daily': ('daily_task', 'get_daily_task_red_dot'),
-            'task_achievement': ('task', 'get_get_achievement_red_dot'),
-            'gacha': ('gacha', 'get_gacha_red_dot', ),
-            'hero_summon': ('hero', 'get_hero_summon_red_dot'),
-            'adventure': ('private_city', 'get_chapter_red_dot'),
-            'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
-            'explore': ('private_city', 'get_exploaration_red_dot'),
-            'welfare': ('gift_center', 'get_gift_center_red_dot'),
-            'sevenday': ('seven_scripture', 'get_sevenday_red_dot'),
-            'stage_task': ('stage_task', 'get_red_dot'),
+            # 'task_main': ('task', 'get_task_main_red_dot'),
+            # 'task_daily': ('daily_task', 'get_daily_task_red_dot'),
+            # 'task_achievement': ('task', 'get_get_achievement_red_dot'),
+            'gacha': ('gacha', 'get_gacha_red_dot', ),      #可抽艺人
+            # 'hero_summon': ('hero', 'get_hero_summon_red_dot'),
+            # 'adventure': ('private_city', 'get_chapter_red_dot'),
+            # 'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
+            # 'explore': ('private_city', 'get_exploaration_red_dot'),
+            # 'welfare': ('gift_center', 'get_gift_center_red_dot'),
+            # 'sevenday': ('seven_scripture', 'get_sevenday_red_dot'),
+            # 'stage_task': ('stage_task', 'get_red_dot'),
             'mail': ('mail', 'get_mail_red_dot'),
             'friend': ('friend', 'get_friend_red_dot'),
-            'mercenary': ('mercenary', 'get_mercenary_red_dot'),
-            'active_center': ('active_hot_dot', 'hot_dot'),
-            'star_reward': ('star_reward', 'alert'),
-            'server_star_reward': ('server_star_reward', 'alert'),
+            # 'mercenary': ('mercenary', 'get_mercenary_red_dot'),
+            # 'active_center': ('active_hot_dot', 'hot_dot'),
+            # 'star_reward': ('star_reward', 'alert'),
+            # 'server_star_reward': ('server_star_reward', 'alert'),
             # 'prison': ('prison', 'get_red_dot'),
-            'box_gacha': ('gacha', 'box_gacha_red_dot'),
-            'daily_advance': ('daily_advance', 'is_alert'),
-            'biography': ('biography', 'alert'),
-            'guild': ('guild_hot_dot', 'is_alert_main'),
-            'home': ('home', 'home_dot'),
+            # 'box_gacha': ('gacha', 'box_gacha_red_dot'),
+            # 'daily_advance': ('daily_advance', 'is_alert'),
+            # 'biography': ('biography', 'alert'),
+            # 'guild': ('guild_hot_dot', 'is_alert_main'),
+            # 'home': ('home', 'home_dot'),
 
             # 'arena': {
             #     'high_ladder': ('high_ladder', ),
@@ -217,45 +225,59 @@ class UserLogic(object):
             #     'clone': ('clone',),
             # },
 
-            'high_ladder': ('high_ladder', ),
-            'dark_street': ('dark_street', 'is_alert'),
-            'rally': ('rally', ),
-            'decisive_battle': ('decisive_battle', 'is_alert'),
-
-            'doomsday_hunt': ('doomsday_hunt', ),
-            'clone': ('clone', ),
+            # 'high_ladder': ('high_ladder', ),
+            # 'dark_street': ('dark_street', 'is_alert'),
+            # 'rally': ('rally', ),
+            # 'decisive_battle': ('decisive_battle', 'is_alert'),
+            #
+            # 'doomsday_hunt': ('doomsday_hunt', ),
+            # 'clone': ('clone', ),
 
             'first_charge': ('user_payment', 'first_charge_alert'),
-            'limit_hero': ('limit_hero', 'is_alert'),
-            'server_limit_hero': ('server_limit_hero', 'is_alert'),
-            'team_skill': ('team_skill', 'get_red_dot'),
-            'welfare_level': ('gift_center', 'get_level_gift_dot'),
+            # 'limit_hero': ('limit_hero', 'is_alert'),
+            # 'server_limit_hero': ('server_limit_hero', 'is_alert'),
+            # 'team_skill': ('team_skill', 'get_red_dot'),
+            # 'welfare_level': ('gift_center', 'get_level_gift_dot'),
             # 'daily_active': ('daily_active', 'alert'),
             'seven_login': ('seven_login', 'get_red_dot'),
             # 'server_celebrate': ('rank_reward_show', 'alert'),  # 开服狂欢小红点
-            'star_array': ('star_array', 'main_page_dot'),      # 星图小红点
-            'leading_role': ('role_info', ),                 # 队长红点
-            'tech_tree': ('tech_tree',),                        # 科技树红点
+            # 'star_array': ('star_array', 'main_page_dot'),      # 星图小红点
+            # 'leading_role': ('role_info', ),                 # 队长红点
+            # 'tech_tree': ('tech_tree',),                        # 科技树红点
             # 'growth_fund': ('growth_fund', 'is_alert'),     # 福利基金
-            'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
+            # 'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
-            'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
+            # 'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
-            'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 旅游聊天约会
+            'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 签到
+            'has_ceremony': ('block', 'ceremony_red_dot'),  # 颁奖典礼
+            'script_gacha': ('script_gacha', 'gacha_times_enough'),  # 可抽剧本
+            'up_gacha': ('gacha', 'get_can_up_red_hot'),  # 星探升级
+            'block_reward': ('block', 'block_reward_red_hot'),  # 世界循环赛奖励
+            'book_card': ('card_book', 'get_book_card_red_dot'),  # 艺人组合
+            'book_script': ('script_book', 'get_book_script_red_dot'),  # 单个剧本
+            'script_group': ('script_book', 'get_script_group_red_dot'),  # 剧本组合
+            'continued_script': ('script', 'get_continued_script'),  # 持续收益
+            'liveness': ('mission', 'get_liveness_red_dot'),  # 活跃度
+            'license_recover_expire': ('user', 'get_license_recover_red_dot'),  # 拍摄许可证倒计时
+            'has_new_dialogue': ('chapter_stage', 'get_chapter_red_dot'),  # 新剧情聊天
             'has_actor_dialogue': ('friend', 'get_actor_chat'),  # 有艺人聊天
+            'business': ('business', 'get_red_dot'),  # 公司事务
+            'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
+            'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
         }
 
         # 特殊的几个红点,todo
         # 区分新老服
-        if self.mm.user.config_type == 1:
-            red_dot_func['soul_box'] = ('server_soul_box', 'get_remain_time')
-            red_dot_func['roulette'] = ('server_roulette', 'get_red_dot')
-            red_dot_func['charge_roulette'] = ('server_charge_roulette', 'get_red_dot')
-            red_dot_func['limit_discount'] = ('server_limit_discount', 'get_red_dot')
-        else:
-            red_dot_func['soul_box'] = ('soul_box', 'get_remain_time')
-            red_dot_func['roulette'] = ('roulette', 'get_red_dot')
-            red_dot_func['limit_discount'] = ('limit_discount', 'get_red_dot')
+        # if self.mm.user.config_type == 1:
+        #     red_dot_func['soul_box'] = ('server_soul_box', 'get_remain_time')
+        #     red_dot_func['roulette'] = ('server_roulette', 'get_red_dot')
+        #     red_dot_func['charge_roulette'] = ('server_charge_roulette', 'get_red_dot')
+        #     red_dot_func['limit_discount'] = ('server_limit_discount', 'get_red_dot')
+        # else:
+        #     red_dot_func['soul_box'] = ('soul_box', 'get_remain_time')
+        #     red_dot_func['roulette'] = ('roulette', 'get_red_dot')
+        #     red_dot_func['limit_discount'] = ('limit_discount', 'get_red_dot')
 
         if module_name:
             module_list = [module_name]
@@ -265,7 +287,6 @@ class UserLogic(object):
         data = {}
         mm = self.mm
         for m in module_list:
-            print m
             args = red_dot_func.get(m, ())
             module = getattr(mm, args[0], None) if args else None
             func_name = args[1] if len(args) > 1 and args[1] else 'get_red_dot'
@@ -280,10 +301,21 @@ class UserLogic(object):
                 #     red_dot = func()
             else:
                 red_dot = False
-            if red_dot is not False:
-                data[m] = red_dot
+            # if red_dot is not False:
+            data[m] = red_dot
 
         # 特殊的几个红点,todo
+        mission = Mission(mm)
+        data['dailymission'] = mission.mission_red_dot()   #每日任务红点
+        if mission.mission_red_dot(type = 'guide') or mission.mission_red_dot(type = 'randmission'):
+            data['randomemission'] = True  # 随机任务红点
+        else:
+            data['randomemission'] = False
+        if mission.mission_red_dot(type = 'achieve_mission'):
+            data['achieve_mission'] = True  # 业绩目标红点
+        else:
+            data['achieve_mission'] = False
+
         # 英雄和装备的红点
         if not module_name or module_name in ['hero', 'gene']:
             pass
@@ -399,7 +431,7 @@ class UserLogic(object):
         print sort, guide_id, skip
         flag = self.do_guide(sort, guide_id, skip, save=False)
 
-        data = {}
+        data = {'sort': sort, 'guide_id': guide_id}
         # if flag:
         #     guide_config = game_config.guide.get(guide_id)
         #     gift = guide_config.get('mission_reward', [])
@@ -425,17 +457,21 @@ class UserLogic(object):
             if not self.user.finish_guide():
                 return False
         else:
-            guide_config = game_config.guide.get(guide_id)
-            if guide_config is None:
-                return False
+            if guide_id > self.user.guide.get(sort, 0):
+                guide_config = game_config.guide.get(guide_id)
+                if guide_config is None:
+                    return False
 
-            if sort != guide_config['sort']:
-                return False
+                if sort != guide_config['sort']:
+                    return False
 
-            self.user.guide[sort] = guide_id
+                self.user.guide[sort] = guide_id
 
         if save:
             self.user.save()
+        #新手引导解锁建筑
+        task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        task_event_dispatch.call_method('level_upgrade', self.user.level)
 
         return True
 
@@ -626,8 +662,10 @@ class UserLogic(object):
         :param name:
         :return:
         """
-        if is_sensitive(name):
+        if is_sensitive(name, self.mm.lan):
             return 1, {}
+        if name == self.user.name:
+            return 2, {}  #名字已使用
 
         # cost_list = game_config.get_value(15, [200])
         # if self.user.change_name < len(cost_list):
@@ -637,6 +675,9 @@ class UserLogic(object):
         cost = game_config.common.get(29, 500)
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
+        if self.user.set_name_unique(name):
+            return 5, {}   # 名字存在
+        self.user.del_name_unique(self.user.name)
 
         self.user.name = name
         self.user.change_name += 1
@@ -654,14 +695,15 @@ class UserLogic(object):
         """
         if not name:
             return 3, {}    # 名字不能为空
-        if is_sensitive(name):
+        if is_sensitive(name, self.mm.lan):
             return 1, {}    # 名字不合法
 
         if self.user.reg_name:
-            return 2, {}    # 已经有名字了
+            return 'error_21', {'custom_msg': i18n_msg.get(1209, self.mm.lan)}    # 已经有名字了
         if not role:
             return 4, {}    # 请选择一个角色
-
+        if self.user.set_name_unique(name):
+            return 5, {}   # 名字存在
         self.user.name = name
         self.user.role = role
         self.user.got_icon.append(role)
@@ -680,7 +722,7 @@ class UserLogic(object):
         role = self.mm.user.role
         sex = game_config.main_hero[role]['sex']
         cid = mp[sex]
-        self.mm.user.dollar = 50000
+        self.mm.user.add_dollar(50000)
         self.mm.card.add_card(cid)
         self.mm.card.save()
 
@@ -699,17 +741,17 @@ class UserLogic(object):
             return 'error_diamond', {}    # 钻石不足
 
         self.user.deduct_diamond(diamond)
-        self.user.add_action_point(self.user.PUR_BUY_POINT, force=True)
+        reward = add_mult_gift(self.mm, [[3, 0, self.user.PUR_BUY_POINT]])
         self.user.add_buy_point_times()
 
-        self.mm.task_data.add_task_data('other_chapter', 108)
+        # self.mm.task_data.add_task_data('other_chapter', 108)
         # 触发购买体力任务
-        task_event_dispatch = self.mm.get_event('task_event_dispatch')
-        task_event_dispatch.call_method('buy_action_point')
+        # task_event_dispatch = self.mm.get_event('task_event_dispatch')
+        # task_event_dispatch.call_method('buy_action_point')
 
         self.user.save()
 
-        return 0, {}
+        return 0, {'reward':reward}
 
     def opera_awards_index(self):
         """
@@ -904,11 +946,11 @@ class UserLogic(object):
         if level_gift_dict['status'] == 0:
             return 2, {}    # 充值才能获得
 
-        if not self.user.is_diamond_enough(config['coin']):
-            return 'error_diamond', {}
+        # if not self.user.is_diamond_enough(config['coin']):
+        #     return 'error_diamond', {}
 
-        self.user.level_gift.pop(lv)
-        self.user.deduct_diamond(config['coin'])
+        self.user.level_gift[lv]['status'] = 2
+        # self.user.deduct_diamond(config['coin'])
 
         reward = add_mult_gift(self.mm, config['reward'])
 
@@ -977,6 +1019,7 @@ class UserLogic(object):
         self.user.got_icon.append(icon)
         self.user.save()
         return 0, {'got_icon':self.user.got_icon}
+
 
     def change_icon(self, icon):
         """

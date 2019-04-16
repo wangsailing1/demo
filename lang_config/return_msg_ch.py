@@ -31,6 +31,7 @@ return_msg_config = {
     'error_0': u"vip级别不够，无法完成此操作",
     'error_1': u"战斗数据错误",
     'error_2': u"数据错误",
+    'error_21': u"重新登入",
     'error_100': u"参数出错",
     'error_9527': u'连接异常，请重新登录(9527)',
     'error_close_shop': u'商店已关闭',
@@ -44,10 +45,11 @@ return_msg_config = {
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
     'error_dollar': u"美元不足",
+    'error_no_ceremony': u'敬请期待明天晚上九点的颁奖典礼',
 
     'error_card_cold': u'艺人被雪藏中',
     'error_card_piece': u'艺人碎片不足',
-
+    'error_equip_piece': u'装备碎片不足',
     'error_stone': u"灵魂石不足",
     'error_item': u'道具不足',
     'error_citem': u'采集物不足',
@@ -88,6 +90,10 @@ return_msg_config = {
     'error_equip_coin': u'装备币不足',
     'error_honor_coin': u'荣誉币不足',
     'error_guild_add_max': u'今日添加成员已达上限，无法添加成员',
+    'error_popularity': u'人气不足',
+    'error_food_enough': u'食品仓库已满',
+    'error_assistant': u'请先聘请终身助理',
+    'error_superplayer': u'活动未开启',
 }
 
 account_msg = {
@@ -150,11 +156,14 @@ user_msg = {
     },
     'user.charge_name': {
         1: u'名字不合法',
+        2: u'名字已使用',
+        5: u'名字已经存在',
     },
     'user.register_name': {
         1: u'名字不合法',
         2: u'已经有名字了',
         3: u'名字不能为空',
+        5: u'名字已经存在',
     },
     'user.show_hero_detail': {
         1: u'没有该英雄',
@@ -174,8 +183,31 @@ user_msg = {
         2: u'头像已解锁',
         3: u'性别不符',
     },
-'user.blacklist_add': {
+    'user.blacklist_add': {
         1: u'已经在屏蔽名单中',
+    },
+    'user.build': {
+        1: u'配置错误',
+        3: u'已拥有建筑',
+        4: u'参数错误',
+        5: u'地块错误',
+        6: u'未达到解锁等级',
+        101: u'未达到解锁等级',
+        201: u'没有配置',
+    },
+    'user.up_build': {
+        1: u'配置错误',
+        2: u'还未拥有建筑',
+        4: u'参数错误',
+        5: u'已到达最大等级',
+        6: u'经验值不足',
+        101: u'未达到解锁等级',
+        201: u'没有配置',
+    },
+    'user.get_company_vip_reward': {
+        1: u'vip等级未达到',
+        2: u'礼包已领取',
+        4: u'vip等级错误',
     },
 }
 
@@ -192,6 +224,11 @@ card_msg = {
         3: u'超出送礼上限',
         4: u'赠送礼物已达上限，属性不再提升，请升级羁绊后再来',
     },
+    'card.card_love_lvup': {
+        1: u'尚未拥有此艺人',
+        2: u'经验不足，无法升级',
+        3: u'已到最大等级',
+    },
     'card.card_love_level_up': {
         2: u'经验不足，无法升级',
         3: u'已到最大等级',
@@ -205,35 +242,133 @@ card_msg = {
         3: u'装备超出所需上限',
         4: u'装备与卡牌不匹配',
     },
+    'card.equip_piece_auto_exchange': {
+        1: u'碎片数量不足',
+    },
+    'card.card_piece_exchange': {
+        1: u'已有此类艺人',
+        2: u'活跃卡牌已达上限，请先雪藏艺人',
+    },
+    'card.up_card_building': {
+        1: u'等级最大',
+        2: u'等级未达到要求',
+    },
+    'card.add_card_box': {
+        1: u'钻石不足',
+    },
+    'card.thaw': {
+        1: u'尚未拥有该艺人',
+        2: u'活跃卡牌已达上限',
+    },
+    'card.add_card_popularity': {
+        1: u'数量不足',
+        2: u'未拥有此卡牌',
+    },
+    'card.skill_level_up': {
+        1: u'未拥有该卡牌',
+        2: u'该角色没有该技能',
+        3: u'技能未解锁',
+        4: u'已达到最高等级',
+        5: u'技能经验不足，请安排训练或使用药品补充',
+    },
+    'card.train_card': {
+        1: u'未拥有该卡牌',
+        2: u'已经在训练中',
+        3: u'没有训练空位',
+        4: u'技能已满',
+        5: u'艺人经验已足够，可升到满级'
+    },
+    'card.use_exp_item': {
+        1: u'未拥有该卡牌',
+        2: u'item_id未传值',
+        3: u'艺人经验已足够，可升到满级',
+    },
+    'card.finish_train': {
+        1: u'未传递参数tr_id',
+        2: u'训练位未开启',
+        3: u'训练中',
+    },
+    'card.train_speed_up': {
+        1: u'未传递参数tr_id',
+        2: u'训练位未开启',
+        3: u'该训练位不在训练中',
+        4: u'钻石不足',
+    },
+    'card.add_train_place': {
+        1: u'钻石不足',
+        2: u'已达到最大训练位',
+    },
+    'card.train': {
+        1: u'未拥有该卡牌',
+        2: u'未传递参数tr_id',
+        3: u'训练位未开启',
+        4: u'该训练位正在被使用',
+        5: u'此艺人技能已全满级，不用再次训练！',
+        6: u'艺人经验已足够，可升到满级',
+        7: u'艺人正在训练中',
+    },
 }
-
 
 gacha_msg = {
     'gacha.get_gacha': {
-        2: u'cd中'
-    }
-}
+        2: u'cd中',
+        3: u'可抽卡次数不足'
+    },
+    'gacha.receive': {
+        1: u"没有此艺人",
+        2: u'已签约过',
+        3: u'活跃卡牌已达上限，请先雪藏艺人',
+    },
 
+    'gacha.up_gacha': {
+        1: u"已到最大等级",
+        2: u"招募次数不够",
+    },
+}
 
 script_msg = {
     'script.pre_filming': {
         1: u'许可证不足',
     },
+    'script.re_selection': {
+        1: u'重新选择剧本次数已用完',
+    },
     'script.set_card': {
         2: u'已选完角色',
         3: u'演员与角色设置不可重复',
         4: u'请选角色',
+        5: u'有卡牌休息中',
+        6: u'艺人体力不足，请先休息',
+        7: u'艺人心情糟糕，请先休息',
+        'error_profession_class': u'艺人实力不符',
+        'error_sex_type': u'艺人性别不符',
+        'error_profession_type': u'艺人青春成熟度不符',
+    },
+    'script.set_directing_id': {
+        2: u'本片无此指导方针',
+        3: u'请上阵导演',
     },
     'script.upgrade_continued_level': {
         1: u'没有该剧本',
         2: u'已是最大等级',
         3: u'推广时间已过',
     },
-    'script_gacha.get_gacha': {
-        1: u'可抽取次数不足'
-    }
+    'script.finished_summary': {
+        1: u'拍片已经结束'
+    },
+    'script.finished_analyse': {
+        1: u'拍片已经结束'
+    },
+    'script.get_continued_reward': {
+        1: u'拍片已经结束'
+    },
 }
 
+script_gacha_msg = {
+    'script_gacha.get_gacha': {
+        1: u'可抽取次数不足'
+    },
+}
 
 chapter_stage_msg = {
     'chapter_stage.chapter_stage_fight': {
@@ -250,8 +385,17 @@ chapter_stage_msg = {
         20: u'参数错误',
         23: u'有未拥有的艺人',
         24: u'等级不够',
+        25: u'关卡错误',
+        31: u'影片最大票房未达到要求',
+        32: u'公司等级未达到要求',
+        37: u'卡牌错误',
+        33: u'有卡牌属性值不够',
+        34: u'有卡牌性别不符',
+        35: u'有卡牌类型不符',
+        36: u'有卡牌人气不足',
     },
     'chapter_stage.auto_sweep': {
+        1: u'請先聘請終身助理',
         11: u'章节错误',
         12: u'难度错误',
         13: u'关卡错误',
@@ -261,11 +405,19 @@ chapter_stage_msg = {
         17: u'体力不足',
         18: u'助战演员错误',
         19: u'角色错误',
-        20: u'参数错误',
+        20: u'艺人数错误',
         21: u'尚未通关',
         22: u'未达到扫荡星级',
         23: u'有未拥有的艺人',
         24: u'等级不够',
+        25: u'关卡错误',
+        31: u'影片最大票房未达到要求',
+        32: u'公司等级未达到要求',
+        37: u'卡牌错误',
+        33: u'有卡牌属性值不够',
+        34: u'有卡牌性别不符',
+        35: u'有卡牌类型不符',
+        36: u'有卡牌人气不足',
     },
     'chapter_stage.get_dialogue_reward': {
         11: u'剧情关配置错误',
@@ -384,11 +536,15 @@ friend_msg = {
         17: u'已选择过对话',
         18: u'对话已结束',
         19: u'未选择对话',
-
+        21: u'过普通十关后才能闲聊',
+        -1: u'体力不足',
+        -2: u'好感度不足',
+        -3: u'次数不足',
     },
     'friend.rename': {
-        1: u'已领奖',
-        2: u'配置错误'
+        1: u'未指定好友',
+        2: u'名字不合法',
+        3: u'不是好友',
     },
     'friend.rapport': {
         1: u'未选择艺人',
@@ -410,7 +566,7 @@ friend_msg = {
     'friend.apply_friend': {
         1: u'不能添加自己',
         2: u'对方已是自己好友',
-        3: u'自己的好友列表是否已达到上限',
+        3: u'自己的好友列表已达到上限',
         4: u'用户不存在',
         5: u'好友的列表已经达到上限',
         6: u'已申请过',
@@ -426,16 +582,16 @@ friend_msg = {
     },
     'friend.receive_gift': {
         1: u'没有该好友',
-        2: u'没有该好友赠送的胶囊',
+        2: u'没有该好友赠送的体力',
         3: u'体力领取已达上限',
     },
     'friend.agree_friend': {
         1: u'不能添加自己',
         2: u'对方已是自己好友',
-        3: u'自己的好友列表是否已达到上限',
+        3: u'自己的好友列表已达到上限',
         4: u'对方好友已达到上限',
     },
-'friend.remove_friend': {
+    'friend.remove_friend': {
         1: u'不能删除自己',
         2: u'对方不是自己好友',
     },
@@ -458,6 +614,7 @@ fans_activity_msg = {
         16: u'有卡牌人气不足',
         17: u'美元不足',
         18: u'活动已结束，请先领取奖励',
+        19: u'有卡牌休息中',
     },
     'fans_activity.unlock_activity': {
         1: u'没有活动',
@@ -465,6 +622,7 @@ fans_activity_msg = {
         3: u'美元不足',
         4: u'已解锁',
         5: u'首次建筑的等级错误',
+        6: u'此地已有建筑',
     },
     'fans_activity.up_activity': {
         1: u'活动等级已经最大',
@@ -510,10 +668,320 @@ active_msg = {
         3: u'已领取',
         4: u'配置错误',
     },
+    'active.get_gift': {
+        1: u'充值尚未完成，请稍后重试',
+        2: u'已经领取过了',
+    },
+}
+
+code_msg = {
+    'code.use_code': {
+        1: u'激活码错误',
+        2: u'vip等级不足',
+        3: u'这个激活码已经被使用过了',
+        4: u'活动已过期',
+        6: u'不符合领取条件',
+        -1: u'您已经领过这个礼包了',
+    },
+}
+
+pvp_msg = {
+    'king_of_song.enemy_battle': {
+        -1: u'活动已结束',
+        1: u'对手已经拍完',
+        2: u'不是可选对手',
+    },
+    'king_of_song.battle': {
+        -1: u'活动已结束',
+        1: u'挑战次数不足',
+        2: u'所选剧本不存在',
+        3: u'对手还未拍片',
+    },
+    'king_of_song.get_rank_award': {
+        1: u'已领取过此奖励',
+        2: u'胜场次数不足',
+    },
+    'king_of_song.buy_battle_times': {
+        1: u'当日购买次数已到上限',
+    },
+
+}
+
+toy_msg = {
+    'toy.index': {
+        1: u'活动未开启',
+        11: u'vip等级不够',
+    },
+    'toy.get_toy': {
+        1: u'活动未开启',
+        2: u'娃娃已经被抓走了',
+        3: u'娃娃错误',
+        4: u'道具不足',
+        11: u'vip等级不够',
+    },
+    'toy.refresh': {
+        1: u'活动未开启',
+        2: u'钻石不足',
+        11: u'vip等级不够',
+    },
+    'toy.get_rank_reward': {
+        1: u'活动未开启',
+        2: u'排行没有奖励',
+        3: u'奖励已领',
+        11: u'vip等级不够',
+    },
+}
+
+carnival_msg = {
+    'carnival.index': {
+        1: u'活动已结束',
+    },
+    'carnival.dice': {
+        1: u'活动已结束',
+        2: u'骰子不足',
+        11: u'格子已达最大',
+    },
+    'carnival.get_dice': {
+        1: u'活动已结束',
+        2: u'已领取',
+        3: u'未完成',
+        11: u'任务id错误',
+    },
+}
+
+ranking_list_msg = {
+    'ranking_list.get_script_info': {
+        1: u'请选择剧本',
+    },
+    'ranking_list.get_group_info': {
+        1: u'请选择剧本组',
+    },
+    'ranking_list.get_reward': {
+        1: u'本人没有排行',
+        2: u'已领奖励',
+    },
+}
+
+business_msg = {
+    'business.handling': {
+        1: u'尚不能自动处理',
+        2: u'请选择',
+        3: u'已处理完所有事务',
+        11: u'配置错误',
+        12: u'选项错误',
+    },
+}
+
+rest_msg = {
+    'rest.rest_index': {
+        1: u'参数错误',
+        17: u'尚未拥有建筑',
+    },
+    'rest.card_rest': {
+        1: u'参数错误',
+        2: u'请选择位置',
+        3: u'请选择卡牌',
+        11: u'位置尚未开启',
+        12: u'位置有艺人休息中',
+        13: u'未拥有此卡牌',
+        14: u'卡牌已在餐厅中',
+        15: u'卡牌已在酒吧中',
+        16: u'卡牌已在医院中',
+        17: u'尚未拥有建筑',
+        18: u'美元不足',
+        19: u'艺人状态良好，不需休息',
+        20: u'卡牌正在进行粉丝活动',
+        21: u'卡牌正在拍摄中',
+        22: u'艺人健康值不足',
+
+    },
+    'rest.get_rest_card': {
+        1: u'参数错误',
+        2: u'请选择位置',
+        11: u'位置尚未开启',
+        12: u'位置没有艺人休息',
+        13: u'艺人尚在休息中',
+        17: u'尚未拥有建筑',
+    },
+    'rest.done_now': {
+        1: u'参数错误',
+        2: u'请选择位置',
+        11: u'位置尚未开启',
+        12: u'位置没有艺人休息',
+        13: u'艺人已经休息好了',
+        17: u'尚未拥有建筑',
+        18: u'钻石不足',
+    },
+    'rest.buy_extra_pos': {
+        1: u'参数错误',
+        11: u'已购买到最大',
+        18: u'钻石不足',
+    },
+}
+
+director_msg = {
+    'director.get_gacha': {
+        2: u'道具不足',
+        13: u'已达最大次数',
+        11: u'cd恢复中',
+        12: u'该组导演你已全部招至麾下',
+    },
+    'director.get_gacha_id': {
+        1: u'id错误',
+        13: u'道具不足',
+        11: u'选择导演未在列表',
+        12: u'配置错误',
+        14: u'已经拥有这个导演',
+    },
+    'director.up_level': {
+        1: u'导演id错误',
+        11: u'未拥有这个导演',
+        12: u'等级已达最大值',
+        13: u'道具不足',
+    },
+    'director.work': {
+        1: u'导演id错误',
+        2: u'位置错误',
+        11: u'未拥有这个导演',
+        12: u'位置尚未开启',
+        13: u'已经有导演坐镇',
+        14: u'已经有导演坐镇',
+    },
+    'director.rest': {
+        1: u'导演id错误',
+        11: u'未拥有这个导演',
+        12: u'该导演已经在休息了',
+    },
+    'director.unlock_pos': {
+        1: u'位置错误',
+        13: u'钻石不足',
+        11: u'位置已经开启',
+        12: u'请顺序开启',
+    },
+    'director.buy_more_gacha_times': {
+        13: u'钻石不足',
+    },
+}
+
+egg_msg = {
+    'egg.egg_index': {
+        1: u'活动未开启',
+        2: u'奖品配置错误',
+    },
+    'egg.open_egg': {
+        1: u'参数错误',
+        2: u'奖品配置错误',
+        3: u'钻石不足',
+        4: u'活动未开启',
+        5: u'彩锤不足',
+        6: u'高级金锤数量不足',
+        7: u'高级彩锤数量不足',
+    },
+    'egg.refresh_egg': {
+        1: u'活动未开启',
+        2: u'奖品配置错误',
+        3: u'钻石不足',
+        4: u'参数错误',
+    }
+}
+
+super_player_msg = {
+    'super_player.buy_goods': {
+        -1: u'参数错误',
+        1: u'该商品已售完',
+        2: u'全服可购买次数不足',
+        3: u'个人购买次数达到上限',
+    },
+    'super_player.index': {
+        1: u'没有配置, 活动未开启',
+    },
+    'super_player.get_reward': {
+        -1: u'没有要领取的成就id',
+        -2: u'该奖励已领取',
+    },
+    'super_player.grab_bag': {
+        -1: u'没有要领取的红包code',
+        1: u'领取时间已过',
+        2: u'未到领取时间',
+        3: u'已全部领取完毕',
+    }
+}
+
+assistant_msg = {
+    'assistant.get_daily_reward': {
+        1: u'请先聘请终身助理',
+        2: u'已经领取',
+    },
+    'assistant.license_apply': {
+        1: u'请先聘请终身助理',
+        2: u'申请次数达到上限',
+        3: u'申请中',
+        4: u'请先领取',
+    },
+    'assistant.get_license': {
+        1: u'请先聘请终身助理',
+        2: u'请先申请',
+        3: u'申请中',
+        4: u'已经领取过了',
+        5: u'许可证已达上限',
+    }
+}
+
+rmb_foundation_msg = {
+    'rmb_foundation.rmbfoundation_index': {
+        1: u'活动未开启',
+    },
+    'rmb_foundation.withdraw': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该基金未激活',
+        4: u'无奖励可领取',
+        5: u'基金活动配置错误',
+    },
+}
+
+foundation_msg = {
+    'foundation.foundation_index': {
+        1: u'活动未开启',
+    },
+    'foundation.withdraw': {
+        1: u'活动未开启',
+        2: u'参数错误',
+        3: u'该基金未激活',
+        4: u'无奖励可领取',
+        5: u'基金活动配置错误',
+    },
+}
+
+payment_msg = {
+    'payment.get_first_charge': {
+        1: u'奖励已领取',
+        3: u'未达到条件',
+    },
+    'payment.add_recharge_index': {
+        1: u'活动未开启',
+    },
+    'payment.get_add_recharge': {
+        1: u'活动未开启',
+        2: u'奖励已领取',
+        3: u'未达到条件',
+    },
+}
+
+mail_msg = {
+    'mail.delete_all': {
+        1: u'邮箱已空空如也',
+    },
+    'mail.get_reward': {
+        1: u'邮箱已空空如也',
+    },
+    'mail.receive_all': {
+        1: u'邮箱已空空如也',
+    },
 }
 
 i18n = {
-    'user_name': u'敢斗团',
+    'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
     'friend': u'好友%s',
     'rally': u'血尘拉力赛',
@@ -554,6 +1022,10 @@ i18n = {
     'hunt_box': u'您的宝箱奖励未领取，请查收',
     'limit_discount': u'限时特惠礼包',
     'challenge_rank': u'极限挑战排名奖',
+    'script_luck_buff': u'恭喜玩家 %s 最新影片《%s》把握住了市场脉搏，票房极大提升！',
+    'script_luck_debuff': u'由于当前市场同类型作品过多，您的影片《%s》未能达到预期票房。',
+    'add_recharge': u'累计充值礼包',
+
     1: u'%s (LV.%s) 将你加为好友',
     2: u'%s表示仰慕你很久了，申请添加你为好友，是否通过好友申请？',
     3: u'%s已通过了你的好友申请，你们现在已经是好友了，赶快私密他吧！',
@@ -600,6 +1072,34 @@ i18n = {
                                 机要秘书---琳''',
     41: u'恭喜获得极限挑战每日排名第%s名',
     42: u'恭喜获得极限挑战每期排名第%s名',
+    43: u'',
+    44: u'您未领取的累充奖励',
+    1001: u'金币',
+    1002: u'钻石',
+    1003: u'体力',
+    1004: u'美元',
+    1007: u'点赞数',
+    1011: u'玩家经验',
+    1012: u'工会资金',
+    1013: u'工会贡献',
+    1014: u'vip经验',
+    1015: u'可拍摄剧本',
+    1016: u'点赞',
+    1018: u'艺人名片',
+    1019: u'关注度',
+    1020: u'卡牌人气',
+    1102: u'成就点',
+    1101: u'目标点',
+    1208: u'%s的%s 分享了红包, 快去超级大玩家抢红包吧',
+    1209: u'已经起好名字了！请重新登入!',
+    1210: u'群星纪念塔楼建到%s层解锁',
+    1211: u'活动已经结束，开服第%s天',
+    1213: u'恭喜您在超级大玩家活动中发红包全服排名第%s名,获得奖励:',
+    1214: u'超级大玩家奖励',
+    1301: u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级金锤，获得<#f65891>%s',
+    1302: u'<#6cbaf4>%s<#ffffff>砸金蛋人品爆发，获得<#f65891>%s',
+    1303: u'<#6cbaf4>%s<#ffffff>在砸金蛋活动中，使用高级彩锤，获得<#f65891>%s',
+    1304: u'<#6cbaf4>%s<#ffffff>砸彩蛋人品爆发，获得<#f65891>%s',
 }
 
 # 注册需要写到最下面

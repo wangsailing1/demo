@@ -11,7 +11,7 @@ import hashlib
 
 import settings
 from lib.utils.debug import print_log_maker
-from lib.utils.debug import print_log
+from lib.utils.debug import print_log, get_stack_info
 import cPickle as pickle
 from lib.utils.zip_date import dencrypt_data, encrypt_data
 

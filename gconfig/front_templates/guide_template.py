@@ -12,8 +12,9 @@ guide = {
     'delay': ('delay', 'float'),  # 延迟
     'target': ('target', 'int_list'),  # 显示
     'next': ('next', 'int'),  # 下一步
-    'drama': ('drama', 'int'),  # 触发对话
+    'drama': ('drama', 'int_list'),  # 触发对话
     'des': ('des', 'unicode'),  # 说明文档
+    'jump': ('jump', 'int'),  # 跳转
 }
 
 guide_team = {

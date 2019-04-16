@@ -20,6 +20,8 @@ from lib.db import ModelBase
 from lib.utils import salt_generator
 from lib.utils import weight_choice
 
+from models import vip_company
+from models.script import Script
 from models.card import Card
 from models.ranking_list import BlockRank
 
@@ -29,6 +31,7 @@ class ScriptLogic(object):
         self.mm = mm
 
     def get_step(self):
+        """整个拍片流程的几个阶段，帮前端预处理下"""
         script = self.mm.script
         if not script.script_pool:
             step = 0
@@ -44,6 +47,27 @@ class ScriptLogic(object):
                 step += script.cur_script['finished_step']
         return step
 
+    def directing_step(self):
+        """重拍的几个阶段，帮前端预处理下
+        0:跳过这步 1:选指导方针 2.进入推翻重拍界面 3.确认完方针开始选人
+        """
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script.get('directing_ids') or script.directing_times >= script.max_directing_times():
+            step = 0
+        else:
+            # 直接跳过导演了
+            if cur_script['re_directing'] == -1:
+                step = 3
+            else:
+                step = 1
+                if cur_script['director_effect']:
+                    step += 1
+                    if cur_script['re_directing']:
+                        step += 1
+
+        return step
+
     def get_recommend_card(self, script_id):
         return self.mm.script.top_end_lv_card.get(script_id, {})
 
@@ -57,6 +81,7 @@ class ScriptLogic(object):
             # 'own_script': script.own_script,
             # 'sequel_script': script.group_sequel.values(),
             'step': self.get_step(),
+            'directing_step': self.directing_step(),
             'script_pool': script.script_pool,
             'sequel_script_pool': script.sequel_script_pool,
             'cur_script': script.cur_script,
@@ -66,7 +91,9 @@ class ScriptLogic(object):
             'cur_market_show': script.cur_market_show,
             'top_all': script.top_all,
             'attr_total': self.attr_total(),
-            'script_license': self.mm.user.script_license
+            'script_license': self.mm.user.script_license,
+            'remain_directing_times': script.max_directing_times() - script.directing_times,
+            'reselection_times': script.reselection_times,
         }
 
     # 统计总的effect
@@ -92,13 +119,27 @@ class ScriptLogic(object):
         script = self.mm.script
         if not self.mm.script.cur_market or self.mm.script.cur_market and not self.mm.script.script_pool:
             script.pre_filming()
-            self.mm.user.script_license -= 1
+            if self.mm.user.script_license > 0:
+                self.mm.user.script_license -= 1
+            else:
+                cost = game_config.script_license['cost']
+                del_mult_goods(self.mm, cost)
             script.save()
             self.mm.user.save()
         rc, data = self.index()
         return rc, data
 
-    def filming(self, script_id, name, is_sequel=False):
+    def re_selection(self):
+        script = self.mm.script
+        if script.reselection_times >= vip_company.script_reselectiontimes(self.mm.user):
+            return 1, {}
+
+        script.pre_filming(re_selection=True)
+        script.save()
+        rc, data = self.index()
+        return rc, data
+
+    def filming(self, script_id, name, directing_id=None, is_sequel=False):
         """拍片
 
         :param script_id:
@@ -128,18 +169,90 @@ class ScriptLogic(object):
         #     return 3, {}  # 已拍摄
 
         film = script.make_film(script_id, name)
+        # # 检查是否有导演模块，拆分到 set_directing_id 接口里做
+        # if not directing_id and self.mm.director.all_director_pos:
+        #     film['director_effect'] = self.mm.director.director_skill_effect(directing_id, script_id)
+
+        # 判断是否有导演次数
+        if script.directing_times < script.max_directing_times():
+            film['directing_ids'] = self.mm.director.get_directing_id(script_id)
+
         script.cur_script = film
         film['cost'] = cost
 
         pool[script_id] = 1
         self.mm.script_book.add_book(script_id)
         user.deduct_dollar(cost)
-        self.calc_attention_by_step(1)
+        info = self.calc_attention_by_step(1)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum([j for i, j in user.attention.iteritems() if i != 3])
+        att = info.get('attention', 0) - init_att if info.get('attention', 0) else 0
+        user.add_attention(3, att)
         script.save()
         user.save()
 
         rc, data = self.index()
         return rc, data
+
+    def set_directing_id(self, directing_id, re_directing=False):
+        """
+
+        :param directing_id:
+        :return:
+        """
+
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        directing_ids = cur_script['directing_ids']
+        if not directing_ids:
+            return self.index()
+
+        if directing_id not in directing_ids:
+            return 2, {}        # 本片无此指导方针
+
+        # 检查是否有导演模块
+        if not self.mm.director.all_director_pos:
+            return 3, {}        # 请上阵导演
+
+        if re_directing:
+            cur_script['re_directing'] = 1
+        cur_script['director_effect'] = self.mm.director.director_skill_effect(directing_id, cur_script['id'])
+        script.directing_times += 1
+        script.save()
+
+        rc, data = self.index()
+        return rc, data
+
+    def reset_directing_id(self):
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+
+        if not cur_script['director_effect']:
+            return 2, {}
+
+        # 判断是否有导演次数
+        if script.directing_times < script.max_directing_times():
+            cur_script['directing_ids'] = self.mm.director.get_directing_id(cur_script['id'])
+
+        cur_script['director_effect'].clear()
+        cur_script['re_directing'] = 1
+        script.save()
+        return self.index()
+
+    def ignore_re_directing(self):
+        """跳过重拍"""
+        script = self.mm.script
+        cur_script = script.cur_script
+        if not cur_script:
+            return 1, {}  # 没有拍摄中的剧本
+        cur_script['re_directing'] = -1
+        script.save()
+        return self.index()
 
     def set_card(self, role_card):
         """
@@ -159,24 +272,57 @@ class ScriptLogic(object):
             return 2, {}  # 已选完角色
 
         cost = 0
+        # 导演对角色的限制
+        director_skill_effect = cur_script['director_effect'].get('skill_12_effect', {})
+
+        # 卡牌技能效果
+        skill_effect = card.get_skill_effect({v: k for k, v in role_card}, 3, cur_script['id'])
+        cur_script['skill_effect'] = skill_effect
+
         script_config = game_config.script[cur_script['id']]
         role_ids = script_config['role_id']
         used_role, used_card = set(), set()
+        need_physical = game_config.common[81]
+        need_mood = game_config.common[82]
         for role, card_id in role_card:
             if role not in role_ids:
                 return 2, {}
             if card_id in used_card:
                 return 3, {}
+            if card_id in self.mm.card.get_all_rest_card():
+                return 5, {}  # 有卡牌休息中
             if role in used_role:
                 return 3, {}
 
             card_info = card.cards[card_id]
             card_config = game_config.card_basis[card_info['id']]
-            cost += card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
+
+            # if card_info['physical'] < need_physical:
+            #     return 6, {}  # 艺人体力不足，请先休息
+            # if card_info['mood'] < need_mood:
+            #     return 7, {}  # 艺人心情糟糕，请先休息
+
+            # 检查导演限制
+            if role in director_skill_effect:
+                for check_type, check_value in director_skill_effect[role].iteritems():
+                    if check_value and check_value != card_config[check_type]:
+                        # check_type: profession_class | sex_type | profession_type
+                        return 'error_%s' % check_type, {}
+
+            # 片酬
+            card_cost = card_config['paycheck_base'] * script_config['paycheck_ratio'] / 100
+            # 技能效果
+            skill_add_value = script.calc_skill_effect(9, card_cost)
+            card_cost = int(card_cost + skill_add_value)
+            cost += card_cost
 
             used_card.add(card_id)
             used_role.add(role)
             cur_script['card'][role] = card_id
+            need_physical = min(need_physical, card_info['physical'])
+            need_mood = min(need_mood, card_info['mood'])
+            card_info['physical'] -= need_physical
+            card_info['mood'] -= need_mood
 
         if not used_role:
             return 4, {}
@@ -186,12 +332,14 @@ class ScriptLogic(object):
         user.deduct_dollar(cost)
         cur_script['step'] = 2
         cur_script['cost'] += cost
+
         effect = self.calc_film_card_effect()
         cur_script['card_effect'] = effect
-        self.calc_attention_by_step(2)
+        info = self.calc_attention_by_step(2)
 
         script.save()
         user.save()
+        card.save()
         rc, data = self.index()
         data.update(effect)
         return rc, data
@@ -203,6 +351,7 @@ class ScriptLogic(object):
         :return:
         """
         script = self.mm.script
+        user = self.mm.user
 
         cur_script = script.cur_script
         if not cur_script:
@@ -229,13 +378,24 @@ class ScriptLogic(object):
         finished_reward = self.check_finished_reward()
 
         result = self.calc_attention_by_step(3)
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum(user.attention.values())
+
+        att = result.get('attention_initial', 0) - init_att if result.get('attention_initial', 0) else 0
+
+        # 添加选完剧本时的关注度
+        script.cur_script['attention_market'] = att
+        user.add_attention(3, att)
         rc, data = self.index()
+        # 中途记录 关注度 前端显示用
+        script.cur_script['final_attention'] =  result['attention_initial']
+
         data.update(effect)
-        data['cur_script']['attention'] = result['attention_initial']
         if finished_reward:
             data['finished_reward'] = finished_reward
 
         script.save()
+        user.save()
 
         return rc, data
 
@@ -264,6 +424,7 @@ class ScriptLogic(object):
     def calc_result(self, film_info=None):
         """拍摄结算"""
         result = {}
+        user = self.mm.user
         script = self.mm.script
         cur_script = film_info or script.cur_script
 
@@ -278,9 +439,20 @@ class ScriptLogic(object):
                     reward.append(d)
         result = self.calc_attention_by_step(1)
         attention = self.calc_attention()
+
+        # 玩家经验player_exp
+        self.mm.user.add_player_exp(script_config['player_exp'])
+
+        # 来自本部的关注度为 关注度 - 初始关注度
+        init_att = sum(user.attention.values())
+        att = attention.get('attention', 0) - init_att if attention.get('attention', 0) else 0
+        user.add_attention(3, att)
+        user.save()
         result['reward'] = reward
         result['attention_initial'] = attention['attention_initial']
         result['attention_end'] = attention['attention']
+        result['skill_add_attention'] = attention['skill_add_attention']
+        result['director_add_attention'] = attention['director_add_attention']
         return result
 
     # 7.剧本属性计算
@@ -324,14 +496,16 @@ class ScriptLogic(object):
         # {role_id: {attr: value}}
         card_effect = cur_script['card_effect']
         style_effect = cur_script['style_effect']
-
+        # 建筑额外加成
+        build_effect = self.mm.user.build_effect
+        effect_attr = build_effect.get(1, {})
         attrs = {}  # 拍摄结果
         for per_effect in [card_effect, style_effect]:
             for _, info in per_effect['effect'].iteritems():
                 for attr, value in info.iteritems():
                     if isinstance(value, list):
                         value = value[0]
-                    attrs[attr] = attrs.get(attr, 0) + value
+                    attrs[attr] = attrs.get(attr, 0) + int(value * (1 + effect_attr.get(attr, 0) / 100.0))
 
         script_config = game_config.script[cur_script['id']]
         add_attr = {}
@@ -365,6 +539,8 @@ class ScriptLogic(object):
         attr_rate = game_config.common[33] / 100.0
         # 属性作用上升率
         attr_up_rate = game_config.common[53] / 10000.0
+        # 属性作用上升系数
+        attr_up_factor = game_config.common[67] / 10000.0
         # 属性作用上升指数
         attr_up_index = game_config.common[54] / 10000.0
 
@@ -373,7 +549,14 @@ class ScriptLogic(object):
         # 【 当艺术 / 含艺术属性角色数量 < 艺术基准系数】
         #       part艺术 =（艺术 / 含艺术属性的角色数量 / 艺术基准系数） ^ 属性作用指数
         # else:
-        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+        #       处理后的属性作用上升率 = 属性作用上升系数/（演技基准系数^属性作用上升率）
+        #       part艺术 = （1 +（艺术 / 含艺术属性的角色数量 - 艺术基准系数）*处理后的属性作用上升率 /（1 + 处理后的属性作用上升率 *（艺术 / 含艺术属性的角色数量 - 艺术基准系数））） ^ 属性作用上升指数
+
+
+        # 增加事件和全球影响事件buff
+        # 属性 = 属性 * （1 + 影响比例）（最大5%）
+        event_effect = script.check_event_effect()
+        event_buff = min(sum(event_effect.values()), 5)
 
         base_a = 0
         pro_count = 0
@@ -391,9 +574,15 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
+                new_attr_up_rate = attr_up_factor / (attr_up_factor ** attr_up_rate)
                 attr_value = attrs.get(pro_id, 0)
-                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
+                     / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+            d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            director_add_value = script.calc_director_effect(pro_id, d)
+            skill_add_value = script.calc_skill_effect(pro_id, d)
+            d = d + director_add_value + skill_add_value
             base_a += d
 
         part_a = (base_a / pro_count) * (1 + skilled_lv_addition)
@@ -403,7 +592,8 @@ class ScriptLogic(object):
         # 【 当娱乐 / 含娱乐属性角色数量 < 娱乐基准系数】
         #       part娱乐 =（娱乐 / 含娱乐属性的角色数量 / 娱乐基准系数） ^ 属性作用指数
         # else:
-        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*属性作用上升率 /（1 + 属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
+        #       处理后的属性作用上升率 = 属性作用上升系数/（演技基准系数^属性作用上升率）
+        #       part娱乐 = （1 +（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数）*处理后的属性作用上升率 /（1 + 处理后的属性作用上升率 *（娱乐 / 含娱乐属性的角色数量 - 娱乐基准系数））） ^ 属性作用上升指数
 
         base_b = 0
         pro_count = 0
@@ -421,16 +611,29 @@ class ScriptLogic(object):
                 d = (1.0 * attrs.get(pro_id, 0) / role_count_by_attr[pro_id] / standard_attr[pro_id_mapping[pro_id]]) \
                     ** attr_rate
             else:
+                new_attr_up_rate = attr_up_factor / (attr_up_factor ** attr_up_rate)
                 attr_value = attrs.get(pro_id, 0)
-                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * attr_up_rate
-                     / (1 + attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+                d = (1 + (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate) * new_attr_up_rate
+                     / (1 + new_attr_up_rate * (1.0 * attr_value / role_count_by_attr[pro_id] - standard_pro_rate))) ** attr_up_index
+
+            d = d * (1 + event_buff / 100.0)
+            # 导演数值加成
+            director_add_value = script.calc_director_effect(pro_id, d)
+            skill_add_value = script.calc_skill_effect(pro_id, d)
+            d = d + director_add_value + skill_add_value
             base_b += d
 
         part_b = (base_b / pro_count) * (1 + skilled_lv_addition)
 
         min_part = game_config.common[37] / 10.0
         result = self.calc_attention_by_step(1)
+
+        # 新手引导剧本指定 part_a part_b
+        if script_config.get('first_script'):
+            part_a = game_config.common[70]
+            part_b = game_config.common[71]
         return {
+            'event_effect': event_effect,       # 全球事件效果
             'add_attr': add_attr,
             'part_a': max(min_part, part_a),
             'part_b': max(min_part, part_b),
@@ -438,7 +641,7 @@ class ScriptLogic(object):
             'card_effect': result.get('card_effect', 0)
         }
 
-    # 按step计算关注度
+    # 按step计算关注度 (主要是计算加成后的关注度)
     def calc_attention_by_step(self, step, film_info=None, is_save=False):
         if not self.mm.script.cur_script:
             return
@@ -446,7 +649,7 @@ class ScriptLogic(object):
             return
         if step == 3:
             resoult = self.calc_attention(film_info)
-            self.mm.script.cur_script['attention'] = resoult['attention']
+            self.mm.script.cur_script['final_attention'] = resoult['attention']
             if is_save:
                 self.mm.script.save()
             return resoult
@@ -457,7 +660,7 @@ class ScriptLogic(object):
         L = N = M = style_suit_effect = 0
         market_enough = True
         # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
         card_popularity = 0
         if film_info:
             script_id = film_info['id']
@@ -476,7 +679,7 @@ class ScriptLogic(object):
                 min_attection = game_config.common[40] / 10000.0
                 if attention < min_attection:
                     attention = min_attection
-                script.cur_script['attention'] = int(attention)
+                script.cur_script['final_attention'] = int(attention)
                 if is_save:
                     script.save()
                 return {'attention': int(attention)}
@@ -485,19 +688,21 @@ class ScriptLogic(object):
             for role_id, card_oid in film_info['card'].iteritems():
                 card_info = card.cards[card_oid]
                 card_popularity += card_info['popularity']
+
         all_popularity = 0
         for role_id, card_oid in script.cur_script['card'].iteritems():
             card_info = card.cards[card_oid]
             all_popularity += card_info['popularity']
-        all_popularity_rate = game_config.common[34] / 100.0
-        popularity_constant = game_config.common[35] / 100.0
-        popularity_rate = game_config.common[36] / 100.0
+        # all_popularity_rate = game_config.common[34] / 100.0
+        # popularity_constant = game_config.common[35] / 100.0
+        # popularity_rate = game_config.common[36] / 100.0
         population_rate = game_config.common[50]  # 人口关注度系数
 
         standard_popularity = script_config['standard_popularity']
-        attention_rate = 1 + (all_popularity ** all_popularity_rate /
-                              (
-                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
+        # attention_rate = 1
+        # if all_popularity ** all_popularity_rate != 0:
+        #     attention_rate = 1 + (all_popularity ** all_popularity_rate / (
+        #         all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
 
         attention = init_attention + (L + N) * population_rate + style_suit_effect - M
 
@@ -505,11 +710,16 @@ class ScriptLogic(object):
         min_attection = game_config.common[40] / 10000.0
         if attention < min_attection:
             attention = min_attection
-        script.cur_script['attention'] = int(attention)
+        script.cur_script['final_attention'] = int(attention)
         if is_save:
             script.save()
+            self.mm.user.save()
+        if not standard_popularity:
+            card_p = 0
+        else:
+            card_p = card_popularity / standard_popularity
         return {'attention': int(attention),
-                'card_effect': card_popularity / standard_popularity, }
+                'card_effect': card_p, }
 
     # 3.计算影片关注度
     def calc_attention(self, film_info=None):
@@ -520,8 +730,7 @@ class ScriptLogic(object):
         # 1.实际观众之和
         L = N = M = style_suit_effect = 0
         market_enough = True
-        # todo 当前初始关注度
-        init_attention = 0
+        init_attention = sum([j for i, j in self.mm.user.attention.iteritems() if i != 3])
 
         card_popularity = 0
         if film_info:
@@ -570,7 +779,7 @@ class ScriptLogic(object):
 
         # 总人气指数、人气计算常数、人气系数
         all_popularity_rate = game_config.common[34] / 100.0
-        popularity_constant = game_config.common[35] / 100.0
+        popularity_constant = game_config.common[35] or 0 / 100.0
         popularity_rate = game_config.common[36] / 100.0
         population_rate = game_config.common[50]  # 人口关注度系数
 
@@ -579,11 +788,11 @@ class ScriptLogic(object):
         # 读取剧本的人气要求属性，(1+(艺人总人气^总人气指数/(艺人总人气^总人气指数+剧本人气要求)- 人气计算常数)* 人气系数)
         # 所得到的值就是关注度加成系数。
         # 总人气指数，人气计算常数，人气系数读取common表/100，（common表34,35,36行，计算后结果值为1.5,0.49，0.2）
-
-        attention_rate = 1 + (all_popularity ** all_popularity_rate /
-                              (
-                                  all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
-
+        all_popularity = all_popularity if all_popularity > 0 else 0
+        attention_rate = 1
+        if all_popularity ** all_popularity_rate != 0:
+            attention_rate = 1 + (all_popularity ** all_popularity_rate / (
+                all_popularity ** all_popularity_rate + standard_popularity) - popularity_constant) * popularity_rate
         attention_initial = init_attention + (L + N) * population_rate + style_suit_effect - M
         attention = attention_initial * attention_rate
 
@@ -591,10 +800,24 @@ class ScriptLogic(object):
         min_attection = game_config.common[40] / 10000.0
         if attention < min_attection:
             attention = min_attection
+        if not standard_popularity:
+            card_p = 0
+        else:
+            card_p = card_popularity / standard_popularity
+
+        #  添加导演效果
+        director_add_attention = script.calc_director_effect(11, attention)
+        # 技能效果
+        skill_add_attention = script.calc_skill_effect(10, attention)
+        attention += skill_add_attention + director_add_attention
+
         return {
             'attention': int(attention),  # 关注度
-            'card_effect': card_popularity / standard_popularity,  # 艺人人气对关注度影响
-            'attention_initial': int(attention_initial)
+            'card_effect': card_p,  # 艺人人气对关注度影响
+            'attention_initial': int(attention_initial),
+
+            'skill_add_attention': skill_add_attention,
+            'director_add_attention': director_add_attention,
         }
 
     # 8.首映票房、收视计算
@@ -615,6 +838,12 @@ class ScriptLogic(object):
         script_config = game_config.script[cur_script['id']]
 
         attention = cur_script['finished_attention'].get('attention', 0)
+        #  添加导演效果
+        director_add_value = script.calc_director_effect(11, attention)
+        # 技能效果
+        skill_add_value = script.calc_skill_effect(10, attention)
+        attention = attention + director_add_value + skill_add_value
+
         finished_attr = cur_script['finished_attr']
         part_a = finished_attr.get('part_a', 0)
         part_b = finished_attr.get('part_b', 0)
@@ -629,12 +858,25 @@ class ScriptLogic(object):
 
         z = game_config.common[9]
         first_income = script_config['output'] * (1 + attention_lv / 10.0) * (part_a + part_b) / 2 / z
-        first_income = int(first_income)
+        # 计算导演加成
+        director_add_value = script.calc_director_effect(7, first_income)
+        # 技能效果
+        skill_add_value = script.calc_skill_effect(11, first_income)
+
+        first_income = int(first_income + director_add_value + skill_add_value)
         # 如果作品类型是电视剧、综艺节目, 让前端算 区分展示单位
         # if script_config['type'] != 1:
         #     first_income = 1.0 * first_income / game_config.common[11]
         #     first_income = round(first_income, 4)
-        return {'first_income': first_income}
+
+        # 检查全服总票房
+        luck_info = script.check_luck_income(script_config['type'], first_income)
+        # buff广播
+        if luck_info['first_luck'] or luck_info['step_luck']:
+            self.mm.scroll_bar.script_luck_buff(self.mm, cur_script['id'], script_config)
+        elif luck_info['debuff']:
+            luck_info['debuff_msg'] = self.mm.scroll_bar.script_luck_debuff(self.mm, cur_script['id'], script_config)
+        return luck_info
 
     def calc_medium_judge(self):
         """
@@ -664,9 +906,21 @@ class ScriptLogic(object):
         if score < min_score:
             score = min_score
         score = min(round(score, 2), game_config.common[43])
+
         # 点赞数 = 专业评分×点赞数系数k【这里的专业评分保留小数点后2位】
         like_rate = game_config.common[14]
-        return {'score': score, 'like': int(score * like_rate)}
+        like = int(score * like_rate)
+        # 技能效果
+        skill_add_like = script.calc_skill_effect(15, score)
+        # 导演效果
+        director_add_like = script.calc_director_effect(10, like)
+        like += skill_add_like + director_add_like
+        return {
+            'score': score,
+            'like': like,
+            'skill_add_like': skill_add_like,
+            'director_add_like': director_add_like,
+        }
 
     def calc_audience_judge(self):
         """观众评分 = PartB/剧本难度系数*观众评分系数B + 题材类型匹配度加成/10，（如果PartB<1,则难度系数为1）
@@ -736,6 +990,9 @@ class ScriptLogic(object):
 
         rate = game_config.common[18]
         curve = [first_income * i / rate for i in curve_config['curve_rate']]
+        # 计算导演加成
+        curve = [i + self.mm.script.calc_director_effect(8, i) for i in curve]
+
         curve = [int(i) for i in curve]
         return {
             'curve_id': curve_id,
@@ -773,10 +1030,14 @@ class ScriptLogic(object):
         # 卡牌类型经验fight_exp
         for role_id, card_oid in cur_script['card'].iteritems():
             if card_oid in card.cards:
-                card.add_style_exp(card_oid, style, script_config['fight_exp'])
-
-        # 玩家经验player_exp
-        self.mm.user.add_player_exp(script_config['player_exp'])
+                fight_exp = script_config['fight_exp']
+                # 技能效果
+                skill_add_value = script.calc_skill_effect(14, fight_exp)
+                fight_exp += skill_add_value
+                card.add_style_exp(card_oid, style, fight_exp)
+        #
+        # # 玩家经验player_exp
+        # self.mm.user.add_player_exp(script_config['player_exp'])
 
         # 专业评级点赞数
         self.mm.user.add_like(finished_medium_judge['like'])
@@ -785,13 +1046,19 @@ class ScriptLogic(object):
         finished_first_income = cur_script['finished_first_income']
         finished_curve = cur_script['finished_curve']
         all_income = int(finished_first_income['first_income'] + sum(finished_curve['curve']))
+
+        # 技能效果
+        skill_add_value = script.calc_skill_effect(12, all_income)
+        all_income += skill_add_value
         self.mm.user.add_dollar(all_income)
 
         ticket_line = script_config['ticket_line']
         ticket_rate = 10000.0 * all_income / ticket_line
 
         # 票房评级
-        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()]
+        sequel_count = script_config['sequel_count']
+        end_lv_rate = [(k, v['line']) for k, v in game_config.script_end_level.iteritems()
+                       if sequel_count >= v['level_sequel_count']]
         end_lv_rate.sort(key=lambda x: x[0])
         idx = bisect.bisect_left([i[1] for i in end_lv_rate], ticket_rate)
         if idx >= len(end_lv_rate):
@@ -799,6 +1066,9 @@ class ScriptLogic(object):
         end_lv = end_lv_rate[idx][0]
 
         cur_script['end_lv'] = end_lv
+        next_attention = game_config.script_end_level[end_lv]['next_attention']
+        self.mm.user.attention = {}
+        self.mm.user.add_attention(2, next_attention)
 
         # 记录街区总排行（显示用,按票房）
         block_income_rank_uid = self.mm.block.get_key_profix(self.mm.block.block_num, self.mm.block.block_group,
@@ -813,18 +1083,18 @@ class ScriptLogic(object):
             near_rank = new_rank - 1
         if new_rank == 1:
             near_rank = 2
-        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1,withscores=True)
+        rank_list = bir.get_all_user(start=near_rank - 1, end=near_rank - 1, withscores=True)
         near_score = rank_list[0][1] if rank_list else 0
 
         cur_script['old_rank'] = [old_rank, old_score]
         cur_script['new_rank'] = [new_rank, new_score]
         cur_script['near_rank'] = [near_rank, near_score]
+        next_id = script.check_next_sequel(cur_script, all_income)
 
         card.save()
         script.save()
         self.mm.user.save()
-
-        return {
+        data = {
             'user_rank_up': 3,  # 用户排名上升
 
 
@@ -833,6 +1103,11 @@ class ScriptLogic(object):
             'income': all_income,  # 总票房
             'end_lv': end_lv,  # 票房评级
         }
+        # 当前可用续集
+        group_id = script_config['group']
+        if group_id in script.group_sequel:
+            data['next_id'] = script.group_sequel[group_id]
+        return data
 
     def finished_analyse(self):
         """票房分析"""
@@ -946,7 +1221,7 @@ class ScriptLogic(object):
                     script_score += game_config.tag_score[tag_quality]['score']
             match_script[card_oid] = script_score
 
-            card_info = card.get_card(card_oid)
+            card_info = card.get_card(card_oid,is_battle=True)
             love_lv = card_info['love_lv']
             love_config = game_config.card_love_level[love_lv]
             card_config = game_config.card_basis[card_info['id']]
@@ -957,7 +1232,11 @@ class ScriptLogic(object):
             role_attr = list(role_config['role_attr'])
             # 随机属性
             more_attr = []
-            if random.randint(0, 10000) <= card_config['ex_special_rate']:
+            ex_special_rate = card_config['ex_special_rate']
+            # 技能效果
+            skill_add_value = script.calc_skill_effect(8, ex_special_rate)
+            ex_special_rate += skill_add_value
+            if random.randint(0, 10000) <= ex_special_rate:
                 special_attr = weight_choice(card_config['special_quality'])[0]
                 more_attr.append(special_attr)
 
@@ -968,6 +1247,8 @@ class ScriptLogic(object):
                 if base_value < 0:
                     continue
                 value = math.ceil(base_value * dps_rate / 10000.0)
+                # todo 建筑影响属性
+                # value = math.ceil(value * (self.mm.user.build_effect.get(attr, 0) + 10000) / 10000.0)
                 if attr in role_effect:
                     role_effect[attr][0] += value
                 else:
@@ -977,6 +1258,10 @@ class ScriptLogic(object):
             c1 = card_config['crit_rate_base'] / 10000.0
             c2 = (role_score + script_score) / 100.0
             crit_rate = c1 + c2
+            # 技能效果
+            skill_add_value = script.calc_skill_effect(7, crit_rate)
+            crit_rate += skill_add_value
+
             if random.random() < crit_rate:
                 # 暴击效果
                 d = (role_score + script_score) / 100.0
@@ -1009,7 +1294,7 @@ class ScriptLogic(object):
         script_info = script.continued_script[script_id]
         now = int(time.time())
         if script_info['continued_expire'] - now <= 60:
-            return 3, {}  #推广时间已过
+            return 3, {}  # 推广时间已过
         continued_lv = script_info['continued_lv']
         if continued_lv + 1 not in game_config.script_continued_level:
             return 2, {}  # 已是最大等级
@@ -1020,13 +1305,13 @@ class ScriptLogic(object):
         if rc:
             return rc, {}
 
-
         continued_start = script_info['continued_start']
-        div, mod = divmod(now - continued_start, 60)
         last_dollar = 0
-        if div:
-            last_dollar = div * script_info['continued_income_unit']
-            continued_start = now - mod
+        # 升级不结算之前的产出 2019.03.15
+        # div, mod = divmod(now - continued_start, 60)
+        # if div:
+        #     last_dollar = div * script_info['continued_income_unit']
+        #     continued_start = now - mod
 
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
@@ -1035,6 +1320,12 @@ class ScriptLogic(object):
         all_income = finished_summary['income']
 
         continued_income = continued_lv_config['parm'] * all_income / 100
+        # 计算导演加成
+        director_add_value = script.calc_director_effect(9, continued_income)
+        # 技能效果
+        skill_add_value = script.calc_skill_effect(13, continued_income)
+        continued_income = continued_income + director_add_value + skill_add_value
+
         continued_time = game_config.common[19]
         continued_income_unit = continued_income / continued_time
 
@@ -1047,7 +1338,8 @@ class ScriptLogic(object):
         self.mm.user.save()
         script.save()
         return 0, {
-            'reward': {'dollar': last_dollar},
+            # 'reward': {'dollar': last_dollar},
+            'reward': {},
             'continued_script': script.continued_script
         }
 
@@ -1067,12 +1359,15 @@ class ScriptLogic(object):
         if div:
             last_dollar = div * script_info['continued_income_unit']
             continued_start = now - mod
-
+        # 建筑影响
+        build_effect = self.mm.user.build_effect
+        effect_income = build_effect.get(8, 0)
         # 开发环境改时间可能会出负数，处理下
         last_dollar = max(last_dollar, 0)
+        last_dollar += int(last_dollar * effect_income / 10000.0)
         script_info['continued_start'] = continued_start
         script_info['continued_income'] += last_dollar
-        if now <= continued_start:
+        if now <= continued_start or script_info['continued_expire'] - continued_start < 60:
             script.continued_script.pop(script_id)
             script.save()
 
@@ -1084,3 +1379,13 @@ class ScriptLogic(object):
             'reward': {'dollar': last_dollar},
             'continued_script': script.continued_script
         }
+
+
+def genearte_random_event():
+    """随机事件"""
+    Script.set_random_event()
+
+
+def genearte_global_event():
+    """全服事件"""
+    Script.set_global_event()

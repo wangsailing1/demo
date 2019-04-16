@@ -27,6 +27,16 @@ avg_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'entry_mode': ('entry_mode', 'int_list'),
+    'top_picture': ('top_picture', 'str'),
+    'time_frame': ('time_frame', 'int_or_float_list'),
+    'avg_bgm': ('avg_bgm', 'str'),
+    'hero_zoom': ('hero_zoom', 'int_or_float_list'),
+    'hero_name': ('hero_name', 'str'),
+    'main_expression': ('main_expression', 'str'),
+    'box_center': ('box_center', 'int_list'),
+    'cg_picture': ('cg_picture', 'str'),
+    'Recall_effects': ('Recall_effects', 'int'),
 }
 
 # 战斗内广告栏
@@ -254,6 +264,17 @@ tour_dialogue = {
     'add_value': ('add_value', 'int_list'),
     'voice': ('voice', 'str'),
     'special_effects': ('special_effects', 'int'),
+    'entry_mode': ('entry_mode', 'int_list'),
+    'top_picture': ('top_picture', 'str'),
+    'time_frame': ('time_frame', 'int_or_float_list'),
+    'avg_bgm': ('avg_bgm', 'str'),
+    # 'name': ('name', 'unicode'),
+    'hero_zoom': ('hero_zoom', 'int_or_float_list'),
+    'hero_name': ('hero_name', 'str'),
+    'main_expression': ('main_expression', 'str'),
+    'box_center': ('box_center', 'int_list'),
+    'cg_picture': ('cg_picture', 'str'),
+    'Recall_effects': ('Recall_effects', 'int'),
 }
 
 explain = {
@@ -276,7 +297,7 @@ dinner_in = {
 date_chapter = {
     'uk': ('id', 'int'),
     'name': ('name', 'unicode'),
-    'avg': ('avg', 'str'),
+    'avg': ('avg', 'int'),
     'like': ('like', 'int'),
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),

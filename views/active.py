@@ -32,6 +32,17 @@ def active_card_award(hm):
 
     return 0, data
 
+def get_gift(hm):
+    mm = hm.mm
+    active_id = hm.get_argument('active_id', 0, is_int=True)
+    acl = ActiveCard(mm)
+    rc, data = acl.get_gift(active_id)
+    if rc != 0:
+        return rc, data
+    data['show'] = acl.show()
+
+    return 0, data
+
 
 def seven_login(hm):
     """
@@ -40,6 +51,8 @@ def seven_login(hm):
     :return:
     """
     mm = hm.mm
+    if not mm.seven_login.is_open():
+        return 1, {}  # 活动已结束
 
     sll = SevenLoginLogic(mm)
     rc, data = sll.seven_login_index()
@@ -94,3 +107,17 @@ def monthly_sign(hm):
         return rc, {}
 
     return 0, data
+
+def box_get(hm):
+    """
+    宝箱领取
+    :param hm: 
+    :return: 
+    """
+    mm = hm.mm
+    days = hm.get_argument('days', 0, is_int=True)
+    msl = MonthlySignLogic(mm)
+    rc, data = msl.box_get(days)
+    return rc, data
+
+

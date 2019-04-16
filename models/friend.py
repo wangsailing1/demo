@@ -10,6 +10,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
+from models import vip_company
 
 
 class Friend(ModelBase):
@@ -98,11 +99,14 @@ class Friend(ModelBase):
         now = datetime.datetime.now().strftime('%Y-%m-%d')
         week = datetime.datetime.now().strftime('%Y-%W')
         is_save = False
-        # if week != self.last_week:
-        #     self.last_week = week
-        #     self.tourism_times = 0
-        #     self.tourism_log = {}
-        #     is_save = True
+
+        if week != self.last_week:
+            self.last_week = week
+            # self.tourism_times = 0
+            # self.tourism_log = {}
+            self.appointment_times = 0
+            self.appointment_log = {}
+            is_save = True
         if now != self.last_refresh_date:
             self.battle_friend = []
             self.parised_friend = []
@@ -113,17 +117,16 @@ class Friend(ModelBase):
             self.phone_daily_times = 0
             self.got_point_daily = 0
             self.phone_daily_log = {}
-            self.appointment_times = 0
-            self.appointment_log = {}
+
             is_save = True
         if not hasattr(self, 'friends_info'):
             self.friends_info = {}
             is_save = True
-        if not self.unlocked_appointment:
-            for k, v in game_config.date_chapter.iteritems():
-                if v['preid'] == -1:
-                    self.unlocked_appointment.append(k)
-            is_save = True
+        # if not self.unlocked_appointment:
+        for k, v in game_config.date_chapter.iteritems():
+            if v['preid'] == -1 and k not in self.unlocked_appointment:
+                self.unlocked_appointment.append(k)
+                is_save = True
         if is_save:
             self.save()
 
@@ -482,9 +485,13 @@ class Friend(ModelBase):
         group_id = game_config.card_basis[config['hero_id']]['group']
         if group_id not in self.actors:
             self.actors[group_id] = {'show': 1, 'chat_log': {}, 'nickname': ''}
+        if config['chapter_id'] in self.actors[group_id]['chat_log']:
+            return {}
         self.actors[group_id]['chat_log'][config['chapter_id']] = [config['dialogue_id']]
+        self.add_newest_uid(group_id)
         if is_save:
             self.save()
+        return {group_id:config['dialogue_id']}
 
     def new_actor(self, group_id, is_save=False):
         if group_id not in self.actors:
@@ -492,11 +499,21 @@ class Friend(ModelBase):
             if is_save:
                 self.save()
 
+    # 获取手机聊天上限次数
+    def get_max_phone_times(self):
+        common_config = game_config.common
+        return common_config[24] + vip_company.phonecalltimes(self.mm.user)
+
+    # 获取约会上限次数
+    def get_max_avgdate_times(self):
+        common_config = game_config.common
+        return common_config[44] + vip_company.avgdatetimes(self.mm.user)
+
     def get_chat_choice(self, group_id, type=1):
         chat_config = game_config.phone_daily_dialogue
         times = self.phone_daily_times
-        common_config = game_config.common
-        max_times = common_config[24]
+
+        max_times = self.get_max_phone_times()
         like_need = 0
         point_need = 0
         pre_str = 'daily_dialogue'
@@ -524,7 +541,12 @@ class Friend(ModelBase):
         chat_list = chat_config.get(group_id, {}).get(key_word, [])
         chat_choice = []
         for chat in chat_list:
-            if chat[2] <= like < chat[3]:
+            if len(chat) > 4 and chat[4]:
+                if chat[5] not in self.mm.chapter_stage.chapter.get(chat[4], {}).get(0, {}):
+                    continue
+            if chat[3] == -1:
+                chat_choice.append([chat[0], chat[1]])
+            elif chat[2] <= like < chat[3]:
                 chat_choice.append([chat[0], chat[1]])
         if not chat_choice:
             return 0
@@ -555,8 +577,9 @@ class Friend(ModelBase):
         #     info = self.tourism_log
         times = 0
         has_chat = []
+        maxtime = max(info.keys()) if info else 0
         for key, value in info.iteritems():
-            if not group_id:
+            if not group_id and key == maxtime:
                 e_id = value['log'][-1] if len(value['log']) > 0 else 0
                 if not config.get(e_id, {}).get('is_end', 1):
                     has_chat.append(value['group_id'])
@@ -577,10 +600,21 @@ class Friend(ModelBase):
 
     def get_times(self):
         data = {}
-        data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
+        open_stage = game_config.common.get(78, [1, 1])
+        if open_stage[1] not in self.mm.chapter_stage.chapter.get(open_stage[0], {}).get(0, {}):
+            data['lock'] = True
+            data['phone_daily_remain_times'] = 0
+            data['appointment_remain_times'] = 0
+            data['phone_daily_remain'] = ()
+            data['appointment_remain'] = ()
+            return data
+        data['lock'] = False
+        # data['phone_daily_remain_times'] = game_config.common[24] - self.phone_daily_times
+        data['phone_daily_remain_times'] = 0
         data['appointment_remain_times'] = game_config.common[44] - self.appointment_times
         # data['tourism_remain_times'] = game_config.common[46] - self.tourism_times
-        data['phone_daily_remain'] = self.check_chat_end()[-1]
+        # data['phone_daily_remain'] = self.check_chat_end()[-1]
+        data['phone_daily_remain'] = []
         data['appointment_remain'] = self.check_chat_end(type=2)[-1]
         # data['tourism_remain'] = self.check_chat_end(type=3)[-1]
         return data

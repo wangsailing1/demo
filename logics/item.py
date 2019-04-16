@@ -28,7 +28,7 @@ class ItemLogic(object):
             return 1, {'update_item': {'item': self.item.items}}
 
         if cur_item_num < item_num:
-            return 2, {'update_item': {'item': self.item.items}}
+            return 'error_item', {'update_item': {'item': self.item.items}}
 
         is_use = item_config['is_use']
         if is_use == 0:
@@ -45,13 +45,19 @@ class ItemLogic(object):
         elif is_use == 2:  # 金币
             reward = add_gift(self.mm, 1, [[0, use_effect]] * item_num, cur_data=reward)
         elif is_use == 3:  # 道具
-            reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
+            reward = add_mult_gift(self.mm, use_effect * item_num, cur_data=reward)
         # elif is_use == 4:  # 进阶材料
         #     reward = add_gift(self.mm, 7, use_effect * item_num, cur_data=reward)
         # elif is_use == 5:  # 采集物
         #     reward = add_gift(self.mm, 5, use_effect * item_num, cur_data=reward)
         elif is_use == 6:  # 装备
             reward = add_gift(self.mm, 6, use_effect * item_num, cur_data=reward)
+        elif is_use == 11: #碎片合成艺人
+            got_num = item_num / item_config['use_num']
+            if not got_num:
+                return 111, {}  #碎片不足
+            item_num = got_num * item_config['use_num']
+            reward = add_gift(self.mm, 5, use_effect * got_num, cur_data=reward)
         elif is_use == 15:  # 增加艺人
             reward = add_gift(self.mm, 8, use_effect * item_num, cur_data=reward)
         elif is_use == 16:  # 点赞

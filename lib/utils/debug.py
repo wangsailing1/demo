@@ -10,6 +10,8 @@ import time
 import datetime
 import hashlib
 from collections import defaultdict
+from mail import send_sys_mail, send_dingtalk
+
 
 from mail import send_sys_mail
 
@@ -35,7 +37,7 @@ print_log = print_log_maker(1)
 
 
 def get_stack_info(level=5):
-    data = []
+    data = ['\n']
     for i in xrange(1, level):
         f = sys._getframe(i)
         rv = (os.path.normcase(f.f_code.co_filename), f.f_code.co_name, str(f.f_lineno))
@@ -111,6 +113,15 @@ def error_mail(debug, addr_list):
                     l.append('%s: "%s"' % (k, v))
                 s = '\n'.join(l)
                 import settings
+                # 开发环境error先发出来方便查错
+                if settings.IMMEDIATE_DINGTALK_ERROR_MAIL:
+                    subject = '[%s ERROR MAIL] - %s' % (
+                    settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
+                    try:
+                        send_dingtalk(settings.DINGTALK_URL, subject, s)
+                    except:
+                        pass
+
                 if debug:
                     subject = '[%s ERROR MAIL] - %s' % (settings.ENV_NAME, self.request.arguments.get('method', '[other method]'))
                     # subject = '[ERROR MAIL] '+settings.ENV_NAME+': '+socket.gethostname()+': '+tb.splitlines()[-1]
@@ -121,6 +132,10 @@ def error_mail(debug, addr_list):
                         rc = send_sys_mail(addr_list, subject, s)
                         CLIENT_EXCEPTION_CACHES[content_md5] += 1
                         print_log('error_mail %s rc: %s' % (s, str(rc)))
+                        try:
+                            send_dingtalk(settings.DINGTALK_URL, subject, s)
+                        except:
+                            pass
                 else:
                     rc = 0
                     print_log('error_mail %s rc: %s' % (s, str(rc)))

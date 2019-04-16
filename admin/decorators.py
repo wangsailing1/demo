@@ -14,6 +14,7 @@ def require_permission(view_func):
     """
     装饰器，用于判断管理后台的帐号是否有权限访问
     """
+
     def wrapped_view_func(request, *args, **kwargs):
 
         path = request.request.path
@@ -39,7 +40,6 @@ def require_permission(view_func):
 
 
 class Logging(ModelTools):
-
     SERVER_NAME = 'master'
 
     EXPIRE_DAY = 30
@@ -93,12 +93,12 @@ class Logging(ModelTools):
             elif '/admin/give_god_stone_commit/' in path:
                 arguments = request.request.arguments
                 god_stones = [(k, int(arguments.get('god_stone_num_%s' % k, ['0'])[0]))
-                        for k in game_config.god_stone if int(arguments.get('god_stone_num_%s' % k, ['0'])[0])]
+                              for k in game_config.god_stone if int(arguments.get('god_stone_num_%s' % k, ['0'])[0])]
                 return u'赠送圣石', god_stones
             elif '/admin/give_seed_commit/' in path:
                 arguments = request.request.arguments
                 seeds = [(k, int(arguments.get('seed_num_%s' % k, ['0'])[0]))
-                        for k in game_config.seed if int(arguments.get('seed_num_%s' % k, ['0'])[0])]
+                         for k in game_config.seed if int(arguments.get('seed_num_%s' % k, ['0'])[0])]
                 return u'赠送种子', seeds
             else:
                 params = dict(request.request.arguments.iteritems())
@@ -128,6 +128,7 @@ class Logging(ModelTools):
             'ip': request.request.headers.get('X-Real-Ip', ''),
         }
         self.redis.lpush(self._key, pickle.dumps(result, pickle.HIGHEST_PROTOCOL))
+        self.redis.expire(self._key, self.EXPIRE_DAY * 3)
 
     def get_all_logging(self, day=EXPIRE_DAY):
         data = []
@@ -147,6 +148,7 @@ class Logging(ModelTools):
         for k in self.redis.lrange(key, 0, -1):
             data.append(pickle.loads(k))
         return data
+
 
 class ApprovalPayment(ModelTools):
     """ 审批支付
@@ -183,7 +185,7 @@ class ApprovalPayment(ModelTools):
         data = self.redis.hget(self._key, key)
         return pickle.loads(data) if data else {}
 
-    def add_payment(self, admin, uid, goods_id, reason, times, tp):
+    def add_payment(self, admin, uid, goods_id, reason, times, tp, act_id, act_item_id):
         """ 增加审批支付
 
         :param admin: admin账号
@@ -204,6 +206,8 @@ class ApprovalPayment(ModelTools):
             'approval': '',  # 审批者
             'status': 0,  # 状态0,为审批时, 1为同意, 2为拒绝
             'tp': tp,
+            'act_id': act_id,
+            'act_item_id': act_item_id,
         }
         key = '%s_%s' % (admin, now)
         self.redis.hset(self._key, key, pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
@@ -245,7 +249,8 @@ class ApprovalPayment(ModelTools):
                 # u = mm.get(pay['uid'])
                 mm = ModelManager(pay['uid'])
                 for i in xrange(int(pay['times'])):
-                    flag = virtual_pay_by_admin(mm, pay['goods_id'], pay['admin'], pay['reason'], pay['tp'])
+                    flag = virtual_pay_by_admin(mm, pay['goods_id'], pay['admin'], pay['reason'], pay['tp'],
+                                                act_id=pay['act_id'], act_item_id=pay['act_item_id'])
             else:
                 # 拒绝
                 pay['status'] = 2
@@ -274,5 +279,6 @@ class ApprovalPayment(ModelTools):
         for k in self.redis.lrange(key, 0, -1):
             data.append(pickle.loads(k))
         return data
+
 
 Logging('yunfei.yan')

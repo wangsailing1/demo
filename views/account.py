@@ -10,18 +10,22 @@ from lib.utils.string_operation import is_account
 from lib.core.environ import ModelManager
 from lib.statistics.bdc_event_funcs import special_bdc_log
 from models.account import Account
-from models.server import ServerUidList
+from models.user import User
+from models.server import ServerUidList, ServerUid
 from models.server import ServerConfig
 from models.bloom_filter import BloomFilter
 from logics.account import login_verify
 from lib.utils import sid_generate
 from lib.utils.sensitive import is_sensitive
 from tools.gift import add_mult_gift
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from return_msg_config import i18n_msg
 from gconfig import get_str_words
 import hashlib
 from lib.sdk_platform.sdk_uc import send_role_data_uc
+from lib.utils.time_tools import str2timestamp
+import copy
+from lib.utils import weight_choice
 
 
 def generate_mk(account):
@@ -76,17 +80,17 @@ def login(hm):
     :param hm:
     :return:
     """
-    account_name = hm.get_argument('account')
-    password = hm.get_argument('passwd', '')
-
-    acc = Account.get(account_name)
-    if acc.inited:
-        return 1, {}
-
-    if not acc.check_passwd(password):
-        return 2, {}
-
-    sid, expired = acc.get_or_create_session_and_expired(force=True)
+    # account_name = hm.get_argument('account')
+    # password = hm.get_argument('passwd', '')
+    #
+    # acc = Account.get(account_name)
+    # if acc.inited:
+    #     return 1, {}
+    #
+    # if not acc.check_passwd(password):
+    #     return 2, {}
+    #
+    # sid, expired = acc.get_or_create_session_and_expired(force=True)
 
     rc, data = get_user_server_list(hm)
     if rc != 0:
@@ -111,7 +115,7 @@ def new_user(hm):
     :param hm:
     :return:
     """
-    name = hm.get_argument('name')
+    # name = hm.get_argument('name')
     tpid = hm.get_argument('tpid', 0, is_int=True)
     role = hm.get_argument('role', 1, is_int=True)
     server = hm.get_argument('server')
@@ -120,13 +124,14 @@ def new_user(hm):
     channel = hm.get_argument('pt')
     appid = hm.get_argument('appd', '')
     uuid = hm.get_argument('uuid', '')
+    lan = hm.get_argument('lan', 1)
     remote_ip = hm.req.request.headers.get('X-Real-Ip', '') or hm.req.request.remote_ip
 
     if not role or not server or not account:
         return 'error_100', {}
 
-    if is_sensitive(name):
-        return 2, {}  # 名字不合法
+    # if is_sensitive(name):
+    #     return 2, {}  # 名字不合法
 
     acc = Account.get(account)
     if server in acc.servers:
@@ -177,10 +182,10 @@ def new_user(hm):
     mm.user.name = i18n_msg.get('user_name', mm.user.language_sort) + game_config.get_last_random_name(
         mm.user.language_sort)
     mm.user.register_ip = remote_ip
-    if appid == '2':  # 和前端协定1:android,2:iOS
-        mm.user.appid = 'ios'
-    else:
-        mm.user.appid = 'android'
+    # 发送等级为1的邮件
+    mm.user.send_level_mail(0, 1)
+
+    mm.user.appid = mm.user.APPID_OS_MAPPING.get(appid, 'android')
 
     mm.user.package_appid = appid
     mm.user.uuid = uuid
@@ -203,9 +208,7 @@ def new_user(hm):
     #         pass
 
     # 测试服，创建指定账号
-    test_init(mm)
-
-
+    test_init(mm, lan)
 
     # 公测返利
     mm.user.rebate_recharge()
@@ -216,7 +219,7 @@ def new_user(hm):
 
     hm.mm = mm
     # bdc 日志
-    kwargs = {'hm': hm, 'ldt': time.strftime('%F %T')}
+    kwargs = {'hm': hm, 'ldt': time.strftime('%F %T'), 'ip': remote_ip}
     if new_account:
         special_bdc_log(mm.user, sort='new_account', **kwargs)
     if new_device:
@@ -271,12 +274,14 @@ def new_user(hm):
     # return 0, data
 
 
-def test_init(mm):
+def test_init(mm, lan):
     """
     测试服，创建指定账号
     :param mm:
     :return:
     """
+    # 是否直接跳过引导
+    # mm.user.finish_guide()
     if not settings.DEBUG or not mm.user.account.startswith('test'):
         return
 
@@ -306,9 +311,8 @@ def test_init(mm):
     if card_config:
         # id, 等级，好感，羁绊
         for cid, lv, love_exp, love_lv in card_config:
-            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp)
+            mm.card.add_card(cid, lv=lv, love_lv=love_lv, love_exp=love_exp, lan=lan)
         mm.card.save()
-
 
 
 def mark_user_login(hm):
@@ -336,6 +340,8 @@ def get_user_server_list(hm, account=None):
     """
     account = hm.get_argument('account', '') if not account else account
     remote_ip = hm.req.request.headers.get('X-Real-Ip', '') or hm.req.request.remote_ip
+    appid = hm.get_argument('appd', '')
+
     # 英雄互娱给的 渠道id, 0为母包，母包不上线
     tpid = hm.get_argument('tpid', 0, is_int=True)
 
@@ -382,26 +388,53 @@ def get_user_server_list(hm, account=None):
             'mk': '',
         }
 
+    serve_active_time.sort(key=lambda x: x[1])
+    current_server = serve_active_time[-1][0] if serve_active_time else ''
+    select_server = get_server_list(server_list, current_server)[0]['server']
+
     if not Account.check_exist(account):
         return 0, {  # 查无此人
             'server_list': server_list,
-            'current_server': '',
+            'current_server': select_server,
             'ks': sid,
             'mk': '',
         }
 
-    serve_active_time.sort(key=lambda x: x[1])
     if another_server_list:
         server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], -x['sort_id'], x['server']))
 
-    kwargs = {'ip': remote_ip, 'device': device_mark}
+    kwargs = {'ip': remote_ip, 'device': device_mark, 'client_os': User.APPID_OS_MAPPING.get(appid, 'android')}
     special_bdc_log(uu, sort='account_login', **kwargs)
     return 0, {
         'server_list': server_list,
-        'current_server': serve_active_time[-1][0] if serve_active_time else '',
+        'current_server': select_server,
         'ks': sid,
         'mk': mk,
     }
+
+
+def get_server_list(server_list, current_server):
+    if current_server:
+        return [server for server in server_list if server['server'] == current_server]
+    new_servers = []
+    not_enough_new_servers = []
+    for server_id in server_list:
+        if server_id['server'] in ['master', 'public']:
+            continue
+        if game_config.get_config_type(server_id['server']) == 1:
+            new_servers.append(server_id)
+            server_uid = ServerUid(server_id['server'])
+            if server_uid.owned_count() <= 2000:
+                not_enough_new_servers.append(server_id)
+    if not_enough_new_servers:
+        return [random.choice(not_enough_new_servers)]
+    if new_servers:
+        return [random.choice(new_servers)]
+    # all_list = server_list[-2:] if len(server_list) >= 2 else server_list
+    # return [random.choice(all_list)]
+    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['open_time']))
+    return [server_list[-1]]
+
 
 
 def get_another_list(hm, flag=None):
@@ -547,3 +580,23 @@ def check_session(hm):
         return 1, {}
 
     return 0, {}
+
+
+def notice(hm):
+    lan = hm.get_argument('lan', '1')
+    config = copy.deepcopy(game_config.welfare_notice)
+    info = {}
+    lan = MUITL_LAN[lan]
+    now = int(time.time())
+    for k, v in config.iteritems():
+        if not v['start_time'] or not v['end_time']:
+            continue
+        start_time = str2timestamp(v['start_time'])
+        end_time = str2timestamp(v['end_time'])
+        if start_time <= now <= end_time:
+            content = game_config.get_language_config(lan)[v['des']]
+            name = game_config.get_language_config(lan)[v['name']]
+            info[k] = v
+            info[k]['des'] = content
+            info[k]['name'] = name
+    return 0, info

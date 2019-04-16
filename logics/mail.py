@@ -43,7 +43,9 @@ class MailLogic(object):
 
         if self.mail.get_mail_status(mail_id) == 2:
             return 3, {}    # 邮件已领取
-
+        stats = self.mm.item.check_item_enough(gift)
+        if stats:
+            return stats, {}
         reward = add_mult_gift(self.mm, gift)
 
         self.mail.set_mail_status(mail_id, status=2)
@@ -87,10 +89,15 @@ class MailLogic(object):
         remove_mail_ids = []
 
         reward = {}
+        food_enough = 0
         for mail_id, mail_dict in self.mail.mail.iteritems():
             if self.mail.get_mail_status(mail_id) == 2:
                 continue  # 邮件已领取
             gift = mail_dict['gift']
+            check_enough = self.mm.item.check_item_enough(gift)
+            if check_enough:
+                food_enough = 1
+                continue
             if gift:
                 remove_mail_ids.append(mail_id)
                 add_mult_gift(self.mm, gift, cur_data=reward)
@@ -102,6 +109,8 @@ class MailLogic(object):
 
         result = {
             'reward': reward,
+            'food_enough': food_enough,
+            'mail': self.mail.mail,
         }
 
         return 0, result
@@ -114,7 +123,7 @@ class MailLogic(object):
         :param sort: 1: 好友邮件, 2: 公会邮件
         :return:
         """
-        if is_sensitive(content):
+        if is_sensitive(content, self.mm.lan):
             return 1, {}    # 内容不合法
 
         if sort == 1:
@@ -148,9 +157,14 @@ class MailLogic(object):
             return 1, {}        # 没有邮件
         mail_dict = copy.deepcopy(self.mail.mail)
         reward_config = []
+        food_enough = 0
         for k, v in mail_dict.iteritems():
             if self.mail.get_mail_status(k) == 2:
                 continue  # 邮件已领取
+            stats = self.mm.item.check_item_enough(v['gift'])
+            if stats:
+                food_enough = 1
+                continue
             reward_config += v['gift']
             self.mail.mail[k]['gift'] = []
             self.mail.set_mail_status(k, status=2)
@@ -160,6 +174,7 @@ class MailLogic(object):
         return 0, {
                 'mail': self.mail.mail,
                 'reward': reward,
+                'food_enough': food_enough,  # 仓库已满标记
             }
 
     def delete_all(self):
@@ -216,3 +231,20 @@ class MailLogic(object):
                 'mail': self.mail.mail,
                 'reward': reward,
             }
+
+    def delete_all_read_mail(self):
+        if not self.mail.mail:
+            return 1, {}        # 没有邮件
+        del_list = []
+        for k, v in self.mail.mail.iteritems():
+            if v['status'] == 2:
+                del_list.append(k)
+            if v['status'] == 1 and not v['gift']:
+                del_list.append(k)
+        for k in del_list:
+            if k in self.mail.mail:
+                self.mail.mail.pop(k)
+        self.mail.save()
+        return 0, {'mail': self.mail.mail}
+
+

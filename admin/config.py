@@ -67,6 +67,23 @@ config_types = {1: unicode('新服', 'utf-8'), 2: unicode('老服', 'utf-8'), 3:
 
 #     return flag, message
 
+
+def config_name_cmp(x, y):
+    """
+        # ('name': (None, True)),     # simple
+        # ('ban_ip', ('ban_ip', True)),
+    :param x:
+    :param y:
+    :return:
+    """
+    x_name = x[1][0] or x[0]
+    y_name = y[1][0] or y[0]
+    # 判断是否有配置
+    x_value = getattr(game_config, x_name, 0) and 1
+    y_value = getattr(game_config, y_name, 0) and 1
+    return cmp(x_value, y_value) or cmp(x_name, y_name)
+
+
 @require_permission
 def select(req, **kwargs):
     """
@@ -103,13 +120,15 @@ def select(req, **kwargs):
     check_limit_version, recent_version = check_version(version_dirs, limit_version)
     if check_limit_version != resource.limit_version and limit_version:
         resource.set_limit_version(check_limit_version, is_save=True)
-    if recent_version != resource.recent_version:
+    if recent_version and recent_version != resource.recent_version:
         resource.set_recent_version(recent_version, is_save=True)
 
     msg = kwargs.get('msg', '')
 
+    sorted_config_mapping = sorted(front_mapping_config.iteritems(), cmp=config_name_cmp)
     return render(req, 'admin/config/index.html', **{
         'mapping_config': front_mapping_config,
+        'sorted_config_mapping': sorted_config_mapping,
         'config_key': config_key,
         'config_data': config_data,
         'config_refresh_flag': refresh_flag,
@@ -141,9 +160,10 @@ def front_select(req, **kwargs):
         config_data = getattr(front_game_config, config_key)
 
     msg = kwargs.get('msg', '')
-
+    sorted_config_mapping = sorted(front_mapping_config.iteritems(), cmp=config_name_cmp)
     return render(req, 'admin/config/front_index.html', **{
         'mapping_config': front_mapping_config,
+        'sorted_config_mapping': sorted_config_mapping,
         'config_key': config_key,
         'config_data': config_data,
         'last_update_time': last_update_time,
@@ -169,8 +189,8 @@ def upload(req):
     if False and not settings.DEBUG and platform and platform not in file_name:
         return select(req, msg=u"检查配置文件是否为 %s 平台的" % platform)
 
-    # 获取当前时分秒
-    file_name_part = time.strftime('%Y-%m-%d-%H-%M-%S')
+    # 获取当前真实时分秒
+    file_name_part = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
 
     # 保存文件
     file_dir = os.path.join(settings.BASE_ROOT, 'upload_xls')
@@ -216,6 +236,8 @@ def upload(req):
     if back_warning_msg or front_warning_msg:
         return select(req,  **{'msg': 'warning: back(%s) front(%s) ,done: back(%s) front(%s)' % (','.join(back_warning_msg), ','.join(front_warning_msg), ','.join(back_save_list), ','.join(front_save_list))})
     ConfigRefresh.set_updated()
+    back_save_list.sort()
+    front_save_list.sort()
     return select(req, **{'msg': 'done: back(%s) front(%s)' % (','.join(back_save_list), ','.join(front_save_list))})
 
 
@@ -425,6 +447,7 @@ def upload_local_config(req):
     f.close()
 
     done_list = []
+    save_file_data = []
 
     if back_config:
         cv = ConfigVersion.get()
@@ -440,7 +463,24 @@ def upload_local_config(req):
         c.update_config(config, m, save=True)
         cv.update_version(config_name, m)
         done_list.append(config_name)
+        save_file_data.append((config_name, m, config))
+
+        handle_reslove_config = getattr(front_game_config, 'handle_reslove_config', None)
+        if callable(handle_reslove_config):
+            _save_list, _save_file_data = handle_reslove_config(c, cv)
+            done_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
+
+    # 配置cdn文件
+    if settings.CONFIG_RESOURCE_OPEN:
+        for config_name, m, config in save_file_data:
+            filename = '%s%s_%s.json' % (settings.CONFIG_RESOURCE_PATH, config_name, m)
+            with open(filename, 'wb+') as f:
+                r = json.dumps(config, ensure_ascii=False, separators=(',', ':'), encoding='utf-8', default=to_json)
+                f.write(r)
+
     cv.save()
+    done_list.sort()
 
     return select(req, **{'msg': 'num: %s, done: ' % len(done_list) + ', '.join(done_list)})
 
@@ -511,7 +551,6 @@ def get_deploy(req):
     # sys.path.insert(0, os.path.join(cur_dir, ".."))
     sys.path.append(os.path.join(cur_dir))
     file_address = cur_dir + 'upload_xls'
-    file_name = []
     file_dict = {}
     for dirpaths, dirnames, filenames in os.walk(file_address):
         for filename in filenames:
@@ -519,19 +558,20 @@ def get_deploy(req):
                 filename_list = filename.split("_")
                 filename_time = filename_list.pop()
                 filename_name = "_".join(filename_list)
-                if filename_name not in file_name:
-                    file_name.append(filename_name)
-                    file_dict[filename_name] = [filename_time]
+                if filename_name not in file_dict:
+                    file_dict[filename_name] = [filename]
                 else:
-                    file_dict[filename_name].append(filename_time)
+                    file_dict[filename_name].append(filename)
 
     file_name_sort = []
+    keep_num = 20
+    show_num = 3
     for k, v in file_dict.items():
         time_sort = sorted(v, reverse=True)
-        if len(v) > 3:
-            time_sort = time_sort[0:3]
-        for t in time_sort:
-            file_name_sort.append(k+'_'+t)
+        for i in time_sort[keep_num:]:
+            p = os.path.join(file_address, i)
+            os.remove(p)
+        file_name_sort.extend(v[:show_num])
 
     return render(req, 'admin/config/deploy_download.html', **{
         'file_name': file_name_sort,

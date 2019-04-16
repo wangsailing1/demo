@@ -21,8 +21,8 @@ from tools.pay import (
     get_honor_shop_refresh_need_coin,
 )
 from tools.gift import add_mult_gift, del_mult_goods, add_gift
-from tools.unlock_build import check_build, GUILD_SHOP_SORT, DARK_STREET, DAILY_RALLY, AREA_SORT, DONATE_SHOP, \
-    OUTLAND_PYRAMID, EQUIP_SHOP, HONOR_SHOP
+from tools.unlock_build import check_build
+from models.vip_company import shop_num
 
 
 class AllShopLogics(object):
@@ -41,13 +41,13 @@ class AllShopLogics(object):
         data = {
             # 'period_shop_open': True if self.period_shop.get_refresh_time() else False,     # 限时商店是否开启
             'guild_shop_open': True if self.mm.user.guild_id else False,  # 公会商店是否开启
-            'dark_shop_open': self.mm.user.check_build(DARK_STREET),  # 黑街商店是否开启
-            'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),  # 游骑兵黑市是否开启
-            'arena_shop_open': self.mm.user.check_build(AREA_SORT),  # 竞技场商店是否开启
-            'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),  # 荣耀商店是否开启
-            'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),  # 虫洞商店是否开启
-            'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),  # 装备商店是否开启
-            'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),  # 荣耀商店是否开启
+            # 'dark_shop_open': self.mm.user.check_build(DARK_STREET),  # 黑街商店是否开启
+            # 'rally_shop_open': self.mm.user.check_build(DAILY_RALLY),  # 游骑兵黑市是否开启
+            # 'arena_shop_open': self.mm.user.check_build(AREA_SORT),  # 竞技场商店是否开启
+            # 'donate_shop_open': self.mm.user.check_build(DONATE_SHOP),  # 荣耀商店是否开启
+            # 'wormhole_shop_open': False and self.mm.user.check_build(OUTLAND_PYRAMID),  # 虫洞商店是否开启
+            # 'equip_shop_open': self.mm.user.check_build(EQUIP_SHOP),  # 装备商店是否开启
+            # 'honor_shop_open': False and self.mm.user.check_build(HONOR_SHOP),  # 荣耀商店是否开启
         }
 
         return 0, data
@@ -55,7 +55,7 @@ class AllShopLogics(object):
 
 class ShopLogics(object):
 
-    FORMAT = '%Y/%m/%d %H:%M:%S'
+    FORMAT = '%Y-%m-%d %H:%M:%S'
     def __init__(self, mm):
         self.mm = mm
         self.shop = self.mm.shop
@@ -74,7 +74,7 @@ class ShopLogics(object):
             item = sell_config.get('item', [])
             v['item'] = item
             v['sell_sort'] = sell_config.get('sell_sort', 0)
-            v['max_buy_times'] = sell_config['sell_max']
+            v['max_buy_times'] = sell_config['sell_max'] + self.get_company_vip_num(v['shop_id'])
             v['tag_id'] = sell_config.get('tag_id', 0)
             v['exchange_lv'] = sell_config.get('exchange_lv', 0)
             v['register_time'] = sell_config.get('register_time', '')
@@ -191,7 +191,8 @@ class ShopLogics(object):
 
         if self.mm.user.level < shop_config.get('exchange_lv', 0):
             return 'error_shop_buy', {}
-        if goods['times'] + num > shop_config['sell_max'] and shop_config['sell_max'] != -1:
+        company_vip_num = self.get_company_vip_num(goods['shop_id'])
+        if goods['times'] + num > shop_config['sell_max'] + company_vip_num and shop_config['sell_max'] != -1:
             return 4, {}
 
         sell_sort = shop_config['sell_sort']
@@ -207,6 +208,7 @@ class ShopLogics(object):
         reward = add_mult_gift(self.mm, gift_config)
         rc, data = self.index()
         data['reward'] = reward
+        data['sort'] = sell_sort
 
         # 记录累积商城购买次数
         # self.mm.task_data.add_task_data('shop', self.sort)
@@ -219,7 +221,16 @@ class ShopLogics(object):
 
         # 给bdc eventinfo用
         data["_bdc_event_info"] = {'cost': cost, 'goods_id': good_id, 'num': 1}
+        data['goods_config_id'] = goods['shop_id']
         return rc, data
+
+    def get_company_vip_num(self, goods_id):
+        company_vip_goods = shop_num(self.mm.user)
+        for good_id,num in company_vip_goods:
+            if good_id == goods_id:
+                return num
+        return 0
+
 
     def sell(self, items):
         """
@@ -240,7 +251,7 @@ class ShopLogics(object):
 
         rc, silvers = del_mult_goods(self.mm, new_items)
         if rc != 0:
-            return rc, 0
+            return rc, {}
 
         reward = add_gift(self.mm, 1, [[0, silvers]])
 

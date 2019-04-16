@@ -6,9 +6,10 @@ import datetime as datetime_module
 from gconfig import game_config
 import settings
 from models import server as serverM
+from lib.utils import LRUCache
 
 
-timestamp_cache = {}
+timestamp_cache = LRUCache(500)
 
 
 def str2timestamp(time_str, fmt='%Y-%m-%d %H:%M:%S'):
@@ -16,10 +17,10 @@ def str2timestamp(time_str, fmt='%Y-%m-%d %H:%M:%S'):
     :param time_str:
     :param fmt:
     """
-    if time_str in timestamp_cache:
-        ts = timestamp_cache[time_str]
-    else:
-        ts = timestamp_cache[time_str] = time.mktime(time.strptime(time_str, fmt))
+    ts = timestamp_cache.get(time_str)
+    if ts is None:
+        ts = time.mktime(time.strptime(time_str, fmt))
+        timestamp_cache.set(time_str, ts)
     return ts
 
 
@@ -138,15 +139,19 @@ def datetime_now():
 SECONDS_ONE_DAY = 3600*24
 
 
-def timestamp_day():
+def timestamp_day(t=0):
     """# timestamp_today: 获得当天0点的时间戳
     args:
         :    ---    arg
     returns:
         0    ---    
     """
-    today = datetime_module.date.today()
-    time_0 = time.mktime(today.timetuple())
+    if not t:
+        today = datetime_module.date.today()
+        time_0 = time.mktime(today.timetuple())
+    else:
+        today = datetime_module.datetime.strptime(time.strftime('%F',time.localtime(t)), "%Y-%m-%d")
+        time_0 = time.mktime(today.timetuple())
     return time_0
 
 
@@ -397,3 +402,40 @@ def server_active_inreview_open_and_close(mm):
             server_inreview[k] = 1
             active_remain_time[k] = e_time
     return server_inreview, active_remain_time
+
+
+def get_server_days(server_id):
+    server_open_time = serverM.get_server_config(server_id).get('open_time')
+    now = int(time.time())
+    return timestamp_different_days(server_open_time, now) + 1
+
+
+
+# 获取日期
+def get_date_by_split_time(split_time='00:00:00'):
+    """
+    按指定时间作为日期的分割
+    时间大于等于split_time，日期取后一天
+    :param dt: 
+    :return: 2018-01-01
+    """
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time >= split_time:
+        now = time.strftime('%F', time.localtime(time.time() + 3600 * 24))
+    return now
+
+
+# 获取前一天日期
+def get_date_before_by_split_time(split_time='00:00:00'):
+    """
+    按指定时间作为日期的分割
+    时间小于split_time，日期取前一天
+    :param dt: 
+    :return: 2018-01-01
+    """
+    now = time.strftime('%F')
+    now_time = time.strftime('%T')
+    if now_time < split_time:
+        now = time.strftime('%F', time.localtime(time.time() - 3600 * 24))
+    return now

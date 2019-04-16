@@ -25,6 +25,8 @@ local_ip = get_host_ip() or '127.0.0.1'
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
+BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+
 PLATFORM = 'song'    # 平台标示
 URL_PARTITION = 'big_sale'
 # MASTER_HOST = '192.168.7.224:8888'
@@ -37,6 +39,8 @@ CURRENCY_TYPE = u'RMB'  # 货币类型
 
 RPC_SERVER_ADDR = ('localhost', 8000)
 
+resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=65b10b52e5038db8362f6d6334df207dccf95410a5e74c99e64ac5dc1152a761'
 
@@ -72,10 +76,6 @@ apps = [
     ('gtt4', 'net1', '127.0.0.1', 6301, 3),
     ('gtt5', 'net1', '127.0.0.1', 6301, 3),
 ]
-
-
-resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
     'host': '127.0.0.1',

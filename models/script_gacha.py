@@ -8,6 +8,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 import settings
+from models.vip_company import scriptgacha_maxnum
 
 
 class ScriptGacha(ModelBase):
@@ -22,7 +23,7 @@ class ScriptGacha(ModelBase):
         self._attrs = {
             'refresh_date': '',         # 登录日期
 
-            'coin_left_times': self.coin_gacha_times_limit(),         # 普通抽剩余次数
+            'coin_left_times': game_config.common[41],         # 普通抽剩余次数
             'coin_update_time': int(time.time()),           # 普通抽次数刷新时间
             'coin_recover_times': 0,                        # 当日恢复了几次
 
@@ -65,7 +66,7 @@ class ScriptGacha(ModelBase):
                 self.coin_update_time = now
 
     def coin_gacha_times_limit(self):
-        return game_config.common[41]
+        return game_config.common[41] + scriptgacha_maxnum(self.mm.user)
 
     def can_recover_coin_times(self):
         gacha_cd = game_config.script_gacha_cd.get('cd', [])
@@ -82,7 +83,9 @@ class ScriptGacha(ModelBase):
         times = self.coin_recover_times
         if times >= len(gacha_cd):
             times = -1
-        return gacha_cd[times] * 60
+        build_effect = self.mm.user.build_effect
+        effect_time = build_effect.get(6, 0)
+        return gacha_cd[times] * 60 - effect_time
 
     def recover_expire(self):
         """恢复倒计时"""
@@ -102,8 +105,8 @@ class ScriptGacha(ModelBase):
 
     def gacha_times_enough(self, gacha_type=1):
         if gacha_type == 1:
-            return self.coin_left_times > 0
-        return True
+            return [self.coin_left_times > 0, self.recover_expire()]
+        return [True, 0]
 
 
 ModelManager.register_model('script_gacha', ScriptGacha)

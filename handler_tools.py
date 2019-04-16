@@ -54,6 +54,8 @@ def user_status(mm):
         'silver': user.silver,
         'vip': user.vip,
         'vip_exp': user.vip_exp,
+        'company_vip_exp': user.company_vip_exp,
+        'company_vip': user.company_vip,
         'guild_id': user.guild_id,
         'guild_name': guild_name,
         'unlock_build': user.unlock_build,
@@ -76,12 +78,17 @@ def user_status(mm):
         'guild_coin': mm.user.guild_coin,       # 公会币
         'config_type': mm.user.config_type,
         'chat_times': mm.user.chat_times,       # 聊天次数
-        'got_icon':mm.user.got_icon,
+        'got_icon': mm.user.got_icon,
         'attention': mm.user.attention,
         'script_license': mm.user.script_license,
         'license_recover_expire':mm.user.license_recover_expire(),
         'remain_recover_times': mm.user.remain_recover_times(),
-        'build_info':mm.user.group_ids,
+        'build_info': mm.user.group_ids,
+        'card_box': mm.card.card_box,
+        'timezone': time.timezone / -3600,
+        'build_effect': {i: j for i, j in mm.user.build_effect.iteritems() if i in [7, 9]},
+        'company_vip_reward': mm.user.company_vip_reward,   #  已领等级礼包
+        'assistant': mm.assistant.assistant,  # 终身助理
     }
     return data
 
@@ -95,10 +102,22 @@ def result_generator(rc, data, msg, mm):
     :param mm: ModelManager 对象管理类
     :return:
     """
+
+    # 与前端同步数据
+    data_sync = {}
+    if rc == 'error_item':
+        data_sync.update({'item': mm.item.items})
+    elif rc == 'error_equip':
+        data_sync.update({'equips': mm.equip.equips})
+    elif rc == 'error_piece':
+        data_sync.update({'pieces': mm.card.pieces})
+    elif rc == 'error_equip_piece':
+        data_sync.update({'equip_pieces': mm.equip.equip_pieces})
     r = {
         'data': data,
         'status': rc,
         'msg': msg,
+        'data_sync': data_sync,
         'server_time': int(time.time()),
         'user_status': user_status(mm),
     }

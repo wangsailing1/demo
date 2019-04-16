@@ -2,7 +2,7 @@
 <body>
     {% include virtual_index.html %}
     {% import datetime %}
-    {% from gconfig import front_game_config %}
+    {% from gconfig import game_config %}
     {% from gconfig import get_str_words %}
 {% if mm %}
     <table border="1" cellpadding="0" cellspacing="0">
@@ -31,7 +31,6 @@
     <table border="1" cellpadding="0" cellspacing="0">
       <tr>
         <th>配置id</th>
-        <th>cost</th>
         <th>名字</th>
         <th>price</th>
         <th>TW(美元)</th>
@@ -39,13 +38,12 @@
         <th>gift_diamond</th>
         <th>请输入原因再提交</th>
       </tr>
-    {% for goods_id, item in sorted(front_game_config.charge.iteritems(), key=lambda x: x[1]['price_CN']) %}
+    {% for goods_id, item in sorted(game_config.charge.iteritems(), key=lambda x: x[1]['price_rmb']) %}
       <tr>
         <td align="center" >{{goods_id}}</td>
-        <td align="center" >{{item['cost']}}</td>
         <td align="center" >{{get_str_words('1', item['name'])}}</td>
-        <td align="center" >{{item['price_CN']}}</td>
-        <td align="center" >{{item['price_TW']}}</td>
+        <td align="center" >{{item['price_rmb']}}</td>
+        <td align="center" >{{item['price_dollar']}}</td>
         <td align="center" >{{item['diamond']}}</td>
         <td align="center" >{{item['gift_diamond']}}</td>
         <td align="right" >
@@ -54,6 +52,8 @@
             <input type="hidden" name="goods_id" value="{{goods_id}}" />
             <input type="hidden" name="diamond" value="{{item['diamond']}}" />
             <b>次数:</b><input type="text" title='1-99之间的整数' name="times" value="1" size='2' maxlength='2'/>
+            <b>活动id(act_id):</b><input type="text" title='1-99之间的整数' name="act_id" value="0" size='4' maxlength='4'/>
+            <b>活动充值id(act_item_id):</b><input type="text" title='1-99之间的整数' name="act_item_id" value="0" size='4' maxlength='4'/>
             <b>原因:</b><input type="text" title='默认淘宝, 其它请自填' name="reason" value="代充"/>
             <input type="submit" title='请检查次数和原因' id='admin' name='admin' onclick="return confirm('确定要为该用户充值?   后台代充(算真实收入)')" value="后台代充(算真实收入)" />
             <input type="submit" title='请检查次数和原因' id='admin_test' name='admin_test' onclick="return confirm('确定要为该用户充值么?')" value="管理员测试专用"/>

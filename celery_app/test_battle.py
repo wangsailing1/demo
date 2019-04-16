@@ -1,7 +1,6 @@
 #! --*-- coding: utf-8 --*--
 __author__ = 'kaiqigu'
 
-
 from celery_app import app
 import os
 import sys

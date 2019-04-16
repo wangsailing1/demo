@@ -10,34 +10,39 @@ class ActiveCard(object):
     """ 月卡至尊卡逻辑
     """
     TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+    MAPPING = {1:'active_card', 2: 'big_month'}
+    CHARGE_MAPPING = {1:12, 2:13}
 
     def __init__(self, mm):
         self.mm = mm
         self.active_card = self.mm.active_card
+        self.big_month = self.mm.big_month
 
     def show(self):
-        month_card_config = game_config.month_privilege
-        if not month_card_config:
+        if not self.active_card.config and not self.big_month.config:
             return {}
-        show_data = {}
+        show_data = {'item': self.mm.item.items}
         show_data['double_pay_id'] = self.mm.user_payment.get_double_pay()
-        if not self.active_card.reward_info:
-            for k, v in month_card_config.iteritems():
-                show_data[k] = {'status': 0, 'remain_time': 0, 'had_receive': 0}
-            return show_data
-        else:
-            for k, v in month_card_config.iteritems():
-                status = self.active_card.reward_info.get(k, {}).get('status', 0)
-                remain_time = self.active_card.reward_info.get(k, {}).get('remain_time', 0)
-                had_receive = self.active_card.reward_info.get(k, {}).get('had_receive', 0)
-                show_data[k] = {'status': status, 'remain_time': remain_time, 'had_receive': had_receive}
-            return show_data
+        for k in [1, 2]:
+            obj = getattr(self.mm,self.MAPPING[k])
+            status = obj.reward_info.get('status', 0)
+            remain_time = obj.reward_info.get('remain_time', 0)
+            had_receive = obj.reward_info.get('had_receive', 0)
+            show_data[k] = {'status': status, 'remain_time': remain_time, 'had_receive': had_receive,
+                            'get_reward_times':obj.get_reward_times, 'version':obj.version,
+                            'buy_times':sum(obj.buy_times.values()),'buy_gift':obj.gift}
+        return show_data
 
     def receive(self, active_id):
-        month_card_config = game_config.month_privilege
+        if active_id == 1:
+            month_card_config = self.active_card.config
+        else:
+            month_card_config = self.big_month.config
+
         if not month_card_config:
             return 1, {}  # 无该配置
-        status = self.active_card.reward_info.get(active_id, {}).get('status', 0)
+        obj = getattr(self.mm, self.MAPPING[active_id])
+        status = obj.reward_info.get('status', 0)
         if status == 0:
             return 2, {}  # 尚未激活
         if status == 2:
@@ -45,17 +50,38 @@ class ActiveCard(object):
         if status == 1:
             # 兑换
             reward = {}
-            reward = add_mult_gift(self.mm, month_card_config[active_id]['daily_rebate'], reward)
+            gift = []
+            gift.extend(month_card_config[obj.version]['daily_rebate'])
+            if not obj.get_reward_times:
+                if sum(obj.buy_times.values()) == 1:
+                    gift.extend(month_card_config[obj.version]['only_frist_reward'])
+                else:
+                    gift.extend(month_card_config[obj.version]['frist_reward'])
+            reward = add_mult_gift(self.mm, gift, reward, source=1)
             if not reward:
                 return 4, {}  # 配置错误
             _format = "%Y-%m-%d"
             today_time = time.strftime(_format)
-            self.active_card.reward_info[active_id]['status'] = 2
-            self.active_card.reward_info[active_id]['last_receive'] = today_time
+            obj.reward_info['status'] = 2
+            obj.reward_info['last_receive'] = today_time
             diamond_num = reward.get('diamond', 0)
-            self.active_card.reward_info[active_id]['had_receive'] += diamond_num
-            self.active_card.save()
+            obj.reward_info['had_receive'] += diamond_num
+            obj.get_reward_times += 1
+            obj.save()
             return 0, {'reward': reward}
+
+    def get_gift(self,active_id):
+        obj = getattr(self.mm, self.MAPPING[active_id])
+        if not obj.gift:
+            return 1, {}  # 未充值
+        if obj.gift == 2:
+            return 2, {}  # 已经领取过了
+        gift = game_config.charge[self.CHARGE_MAPPING[active_id]]['gift']
+        reward = add_mult_gift(self.mm, gift)
+        obj.gift = 2
+        obj.save()
+        return 0, {'reward':reward}
+
 
 
 class SevenLoginLogic(object):
@@ -72,8 +98,6 @@ class SevenLoginLogic(object):
         七日登录index
         :return:
         """
-        if not self.seven_login.is_open():
-            return 1, {}    # 活动已结束
 
         data = {
             'days': self.seven_login.days,  # 登录天数
@@ -140,10 +164,11 @@ class MonthlySignLogic(object):
 
         monthly_sign = self.monthly_sign.monthly_sign
         result = {
-            'today_can_sign': self.monthly_sign.today_can_sign(),
+            'today_can_sign': self.monthly_sign.today_can_sign(red_dot=False),
             'days': monthly_sign['days'],
             # 'usable_days': monthly_sign['usable_days'],
             'config': monthly_sign['reward'],
+            'box_got': monthly_sign.get('box_got', {}),
         }
         return result
 
@@ -152,6 +177,7 @@ class MonthlySignLogic(object):
 
         :return:
         """
+        config = game_config.sign_daily_normal
         monthly_sign = self.monthly_sign.monthly_sign
         today = time.strftime('%F')
 
@@ -164,6 +190,9 @@ class MonthlySignLogic(object):
         monthly_sign['days'] += 1
         monthly_sign['usable_days'] -= 1
         monthly_sign['date'] = today
+        extra_reward = config[monthly_sign['days']]['extra_reward']
+        if extra_reward:
+            monthly_sign['box_got'][monthly_sign['days']] = 1
 
         self.monthly_sign.save()
 
@@ -172,5 +201,24 @@ class MonthlySignLogic(object):
         }
         result.update(self.index())
 
+        return 0, result
+
+    def box_get(self,days):
+        config = game_config.sign_daily_normal
+        monthly_sign = self.monthly_sign.monthly_sign
+        if 'box_got' not in monthly_sign:
+            monthly_sign['box_got'] = {}
+        if days not in monthly_sign['box_got']:
+            return 1, {}   # 条件未达到
+        if monthly_sign['box_got'][days] == 2:
+            return 2, {}   # 已领取
+        gift = config[days]['extra_reward']
+        reward = add_mult_gift(self.mm, gift)
+        monthly_sign['box_got'][days] = 2
+        self.monthly_sign.save()
+        result = {
+            'reward': reward,
+        }
+        result.update(self.index())
         return 0, result
 

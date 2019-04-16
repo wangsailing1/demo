@@ -25,11 +25,19 @@ class Chapter_stage(object):
             return 11, {}  # 章节错误
         if type_hard not in config[chapter]:
             return 12, {}  # 难度错误
-        if stage > len(config[chapter][type_hard]['stage_id']):
+        stage_list = [i for i in config[chapter][type_hard]['stage_id'] if i != -1]
+        if stage > len(stage_list):
             return 13, {}  # 关卡错误
         stage_id = config[chapter][type_hard]['stage_id'][stage - 1]
         if not config:
             return 14, {}  # 配置错误
+        preincome = config[chapter][type_hard].get('preincome', 0)
+        top_income = self.mm.script.top_all.get('finished_summary', {}).get('income', 0)
+        if preincome > top_income:
+            return 31, {}  # 影片最大票房未达到要求
+        prelv = config[chapter][type_hard].get('prelv', 0)
+        if prelv > self.mm.user.level:
+            return 32, {}  # 公司等级未达到要求
         if not stage_id:
             stage_id = config[chapter][type_hard]['dialogue_id'][stage - 1]
             config = game_config.avg_dialogue
@@ -92,7 +100,6 @@ class Chapter_stage(object):
                 add_player_exp = stage_config['player_exp'] * times
                 add_fight_exp = stage_config['fight_exp'] * times
                 script_type = game_config.script[script_id]['style']
-                card_config = game_config.card_basis
                 style_info = {}
                 if not auto:
                     for k, v in align.iteritems():
@@ -133,7 +140,7 @@ class Chapter_stage(object):
                     if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
                         self.chapter_stage.next_chapter.extend(next_chapter)
                 if is_first:
-                    self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+                    # self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
                     self.mm.chapter_stage.done_chapter_log.append(stage_id)
                 self.mm.user.save()
                 self.chapter_stage.save()
@@ -284,7 +291,7 @@ class Chapter_stage(object):
             # 暴击伤害
             hurt = self.crit_hurt(hurt, score)
             is_crit = True
-        return [hurt,is_crit]
+        return [hurt, is_crit]
 
     def crit_hurt(self, hurt, score):
         crit = 1.1 + score / 100.0
@@ -346,6 +353,13 @@ class Chapter_stage(object):
 
         if is_first:
             gift['first_reward'] = (stage_config['first_reward'])
+        # 建筑影响
+        build_effect = self.mm.user.build_effect
+        effect_income = build_effect.get(3, 0)
+        for _, info in gift.iteritems():
+            for _gift in info:
+                if _gift[0] in [1, 4]:
+                    _gift[2] += int(_gift[2] * effect_income / 10000.0)
 
         return gift
 
@@ -353,21 +367,30 @@ class Chapter_stage(object):
         config = game_config.avg_dialogue
         card_config = game_config.card_basis
         card_id = config[choice_stage]['hero_id']
-        if now_stage not in config:
+        if now_stage not in config or choice_stage not in config:
             return 11, {}  # 剧情关配置错误
-        if choice_stage not in config[now_stage]['option_team']:
+        if not config[choice_stage]['is_end'] and choice_stage not in config[now_stage]['option_team']:
             return 12, {}  # 剧情选择错误
         if not card_id:
+            gift = config[choice_stage]['reward']
+            reward = {}
+            if gift and now_stage not in self.chapter_stage.got_reward_dialogue:
+                self.chapter_stage.got_reward_dialogue.append(now_stage)
+                reward = add_mult_gift(self.mm, gift)
+                self.chapter_stage.save()
             return 0, {
                 'add_value': {},
-                'reward': {},
+                'reward': reward,
                 'love_lv': 0,
                 'old_value': {}
             }
 
-        if card_id not in card_config:
+        if card_id not in card_config and not config[choice_stage]['is_end']:
             return 13, {}  # 卡牌id错误
-        group_id = card_config[card_id]['group']
+        if card_id not in card_config and config[choice_stage]['is_end']:
+            group_id = 0
+        else:
+            group_id = card_config[card_id]['group']
         old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
         old_value.setdefault('like', 0)
         reward = {}
@@ -393,9 +416,10 @@ class Chapter_stage(object):
         }
 
     # 解锁章节
-    def unlock_chapter(self, chapter, type_hard, stage, save=False):
+    def unlock_chapter(self, chapter, type_hard, stage):
         config = game_config.get_chapter_mapping()
-        all_stage = len(config[chapter][type_hard]['stage_id'])
+        stage_list = [i for i in config[chapter][type_hard]['stage_id'] if i != -1]
+        all_stage = len(stage_list)
         if stage >= all_stage:
             return config[chapter][type_hard]['next_chapter']
         return []
@@ -403,11 +427,143 @@ class Chapter_stage(object):
     # 解锁艺人对话
     def open_actor_chat(self, now_stage):
         config = game_config.avg_dialogue[now_stage]
+        info = {}
         if config['is_end']:
             phone_unlock = config['phone_unlock']
             if not phone_unlock:
                 return 0, {}
-            self.mm.friend.trigger_new_chat(phone_unlock, is_save=True)
+            info = self.mm.friend.trigger_new_chat(phone_unlock, is_save=True)
         fl = FriendLogic(self.mm)
         rc, data = fl.actor_chat_index()
+        data['new_chat'] = info
         return rc, data
+
+    # 新战斗
+    def chapter_stage_fight_new(self, stage, type_hard, align='', auto=False, times=1):
+        config = game_config.get_chapter_mapping()
+        chapter, stage = [int(i) for i in stage.split('-')]
+        config_s = game_config.chapter_stage
+        if chapter not in config:
+            return 11, {}  # 章节错误
+        if type_hard not in config[chapter]:
+            return 12, {}  # 难度错误
+        if stage > len(config[chapter][type_hard]['stage_id']):
+            return 13, {}  # 关卡错误
+        stage_id = config[chapter][type_hard]['stage_id'][stage - 1]
+        if not config:
+            return 14, {}  # 配置错误
+        preincome = config[chapter][type_hard].get('preincome', 0)
+        top_income = self.mm.script.top_all.get('finished_summary', {}).get('income', 0)
+        if preincome > top_income:
+            return 31, {}  # 影片最大票房未达到要求
+        prelv = config[chapter][type_hard].get('prelv', 0)
+        if prelv > self.mm.user.level:
+            return 32, {}  # 公司等级未达到要求
+        if not stage_id:
+            stage_id = config[chapter][type_hard]['dialogue_id'][stage - 1]
+            config = game_config.avg_dialogue
+            if stage_id not in config:
+                return 25, {}
+            data = {}
+            if chapter not in self.chapter_stage.chapter:
+                self.chapter_stage.chapter[chapter] = {}
+            if type_hard not in self.chapter_stage.chapter[chapter]:
+                self.chapter_stage.chapter[chapter][type_hard] = {}
+            if stage in self.chapter_stage.chapter[chapter][type_hard]:
+                data['next_chapter'] = self.chapter_stage.next_chapter
+                data['chapter'] = self.chapter_stage.chapter
+                return 0, data
+            next_chapter = self.unlock_chapter(chapter, type_hard, stage)
+            if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
+                self.chapter_stage.next_chapter.extend(next_chapter)
+            self.chapter_stage.chapter[chapter][type_hard][stage] = {}
+            if not auto:
+                next_chapter = self.unlock_chapter(chapter, type_hard, stage)
+                if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
+                    self.chapter_stage.next_chapter.extend(next_chapter)
+            data['next_chapter'] = self.chapter_stage.next_chapter
+            data['chapter'] = self.chapter_stage.chapter
+            self.chapter_stage.save()
+            return 0, data
+        if stage_id not in config_s:
+            return 15, {}  # 关卡错误
+        if self.mm.user.level < config_s[stage_id]['lv_unlocked']:
+            return 24, {}  # 等级不够
+        stage_config = config_s[stage_id]
+        if stage_config['challenge_limit'] < self.chapter_stage.chapter.get(chapter, {}).get(type_hard,
+                                       {}).get(stage, {}).get('fight_times', 0) + times:
+            return 16, {}  # 剩余次数不足
+        need_point = stage_config['start_cost'] * times
+        if need_point > self.mm.user.action_point:
+            return 17, {}  # 体力不足
+        is_first = self.is_first(chapter, type_hard, stage)
+        align = align.split('_')
+        need = stage_config['card_need']
+        if len(align) != len(need):
+            return 20, {}  # 艺人数量错误
+        card_config = game_config.card_basis
+
+        for k, card_id in enumerate(align):
+            if card_id in ['0']:
+                continue
+            if card_id not in self.mm.card.cards:
+                return 37, {}  # 卡牌错误
+            card_info = self.mm.card.get_card(card_id)
+
+            for tp, need_num in need[k]:
+                if tp <= 6:
+                    if card_info['all_char_pro'][tp - 1] < need_num:
+                        return 33, {}  # 有卡牌属性值不够
+                elif tp == 7:
+                    if need_num != card_config[card_info['id']]['sex_type']:
+                        return 34, {}  # 有卡牌性别不符
+                elif tp in [8, 9]:
+                    tp_key = self.mm.fans_activity.NEED_MAPPING[tp - 1]
+                    if need_num != card_config[card_info['id']][tp_key]:
+                        return 35, {}  # 有卡牌类型不符
+                else:
+                    if self.mm.card.cards[card_id]['popularity'] < need_num:
+                        return 36, {}  # 有卡牌人气不足
+
+        data = {}
+        gift = self.get_reward(stage_id, times=times, is_first=is_first)
+        add_player_exp = stage_config['player_exp'] * times
+        self.mm.user.action_point -= need_point
+        if chapter not in self.chapter_stage.chapter:
+            self.chapter_stage.chapter[chapter] = {}
+        if type_hard not in self.chapter_stage.chapter[chapter]:
+            self.chapter_stage.chapter[chapter][type_hard] = {}
+        if stage not in self.chapter_stage.chapter[chapter][type_hard]:
+            self.chapter_stage.chapter[chapter][type_hard][stage] = {}
+        fight_time = self.chapter_stage.chapter[chapter][type_hard][stage].get('fight_times', 0)
+        self.chapter_stage.chapter[chapter][type_hard][stage]['fight_times'] = fight_time + times
+        old_level = copy.copy(self.mm.user.level)
+        old_exp = copy.copy(self.mm.user.exp)
+
+        self.mm.user.add_player_exp(add_player_exp)
+        rewards = {}
+        all_gift = []
+        for k, v in gift.iteritems():
+            all_gift.extend(v)
+            if auto:
+                rewards[k] = add_mult_gift(self.mm, v)
+        reward = {}
+        if not auto:
+            reward = add_mult_gift(self.mm, all_gift)
+            next_chapter = self.unlock_chapter(chapter, type_hard, stage)
+            if next_chapter and set(next_chapter) - set(self.chapter_stage.next_chapter):
+                self.chapter_stage.next_chapter.extend(next_chapter)
+        if is_first:
+            # self.mm.fans_activity.add_can_unlock_activity(stage_config['fans_activity'], is_save=True)
+            self.mm.chapter_stage.done_chapter_log.append(stage_id)
+        self.mm.user.save()
+        self.chapter_stage.save()
+        data['old_level'] = old_level
+        data['old_exp'] = old_exp
+        data['new_level'] = self.mm.user.level
+        data['new_exp'] = self.mm.user.exp
+        data['reward'] = reward
+        data['rewards'] = rewards
+        data['next_chapter'] = self.chapter_stage.next_chapter
+        data['stage_id'] = stage_id
+        return 0, data

@@ -7,13 +7,16 @@ import datetime
 
 from gconfig import game_config
 from logics.user import UserLogic
-from tools.unlock_build import refresh_unlock_build, SLG_BIG_WORLD
+from tools.unlock_build import refresh_unlock_build
 from lib.sdk_platform.sdk_uc import send_role_data_uc
 from models.user import GSMessage
 from models import server as serverM
 from models.config import ConfigRefresh
 from logics.block import Block
 from logics.mission import Mission
+from tools.gift import del_mult_goods, add_mult_gift
+from logics.fans_activity import FansActivity
+
 
 
 def main(hm):
@@ -43,6 +46,7 @@ def main(hm):
 
     # 刷新解锁建筑物
     refresh_unlock_build(mm)
+    mm.fans_activity.check_unlock_build()
 
     # 触发通关任务
     task_event_dispatch = mm.get_event('task_event_dispatch')
@@ -52,12 +56,16 @@ def main(hm):
     # mm.user.send_vip_daily_reward()
 
     # vip专属通知
-    mm.user.send_vip_exclusive_notice()
+    # mm.user.send_vip_exclusive_notice()
 
     # 全服邮件
     mm.user.send_system_mail()
 
+
     result = ul.main()
+
+    fa = FansActivity(mm)
+    _, fans_data = fa.fans_index()
 
     # 配置更新
     config_refresh, _, config_refresh_text = ConfigRefresh.check()
@@ -69,10 +77,15 @@ def main(hm):
     result['ceremony_remain_time'] = mm.block.get_remain_time()
     mission = Mission(mm)
     result['box_office'] = mission.mission_index(2)['box_office']
+    result['new_guide'] = mission.mission_index(7)['new_guide']
     result['phone_daily_times'] = mm.friend.phone_daily_times
     result['appointment_times'] = mm.friend.appointment_times
     # result['tourism_times'] = mm.friend.tourism_times
     result['seven_login'] = mm.seven_login.is_open()
+    mm.block.count_group()
+    result['fans_activity_info'] = mm.fans_activity.fans_activity_info()
+    result['fans_activity_data'] = {k: {'remian_time': v['remian_time'], 'items': [i for i in v['items'] if i[2] != 0]}
+                                    for k, v in fans_data['activity_log'].iteritems()}
 
     return 0, result
 
@@ -138,15 +151,22 @@ def game_info(hm):
     info.update(dict(cards=mm.card.cards, pieces=mm.card.pieces))
     info.update(dict(equips=mm.equip.equips, equip_pieces=mm.equip.equip_pieces))
     info.update(dict(own_script=mm.script.own_script))
+    info.update(dict(directors=mm.director.directors))
 
     # item_info = dict(item=mm.item.items, gitem=mm.grade_item.items,
     #                  citem=mm.coll_item.items, ggitem=mm.guild_gift_item.items,
     #                  aitem=mm.awaken_item.items, )
     item_info = dict(item=mm.item.items)
-    block = Block(mm)
-    block.check_has_ceremony()
+    # block = Block(mm)
+    # block.check_has_ceremony()
+    # block.count_cup(is_save=True)
     info.update(**item_info)
     info['card_attr'] = mm.card.attr
+    info['skip_dialouge'] = mm.user.skip_dialouge
+    info['chapter_stage'] = {'chapter': mm.chapter_stage.chapter,
+                             'next_chapter': mm.chapter_stage.next_chapter,
+                             'top_income': mm.script.top_all.get('finished_summary', {}).get('income', 0)}
+    info['training_room'] = mm.card.training_room
 
     return 0, info
 
@@ -174,14 +194,26 @@ def guide(hm):
     """
     mm = hm.mm
 
-    sort = hm.get_argument('sort', is_int=True)
+    guide_team = hm.get_argument('guide_team', is_int=True)
     guide_id = hm.get_argument('guide_id', is_int=True)
     skip = hm.get_argument('skip', is_int=True)
+    sort = hm.get_argument('sort', is_int=True)
+    # 前端容错
+    if not guide_team:
+        guide_team = sort
 
     ul = UserLogic(mm)
-    rc, data = ul.guide(sort, guide_id, skip)
+    rc, data = ul.guide(guide_team, guide_id, skip)
 
     return rc, data
+
+
+def dialogue(hm):
+    mm = hm.mm
+    dialogue_id = hm.get_argument('dialogue_id', is_int=True)
+    mm.user.dialogue.append(dialogue_id)
+    mm.user.save()
+    return 0, {}
 
 
 def blacklist(hm):
@@ -347,7 +379,6 @@ def register_name(hm):
     if rc != 0:
         return rc, {}
     return 0, data
-
 
 
 def charge_name(hm):
@@ -538,6 +569,7 @@ def get_player_icon(hm):
 
     return 0, data
 
+
 def unlock_icon(hm):
     mm = hm.mm
 
@@ -726,19 +758,109 @@ def slg_index(hm):
     }
     return 0, data
 
+
 def user_info(hm):
     mm = hm.mm
     all_info = mm.script.count_info()
     ar = mm.get_obj_tools('output_rank')
     data = {'group_info': mm.script.get_scrip_info_by_num(is_type=2),
             'script_info': mm.script.get_scrip_info_by_num(),
-            'end_level':all_info['end_level'],
+            'end_level': all_info['end_level'],
             'style_log': all_info['style_log'],
             'type_log': all_info['type_log'],
-            'cup':mm.block.cup_log,
-            'block_num':mm.block.block_num,
-            'rank':ar.get_rank(mm.uid),
-            'chapter':mm.chapter_stage.get_now_stage(),
-            'cup_log_card':mm.block.cup_log_card,
+            'cup': mm.block.cup_log,
+            'block_num': mm.block.block_num,
+            'rank': ar.get_rank(mm.uid),
+            'chapter': mm.chapter_stage.get_now_stage(),
+            'cup_log_card': mm.block.cup_log_card,
             'cup_log_script': mm.block.cup_log_script}
     return 0, data
+
+
+def build(hm):
+    mm = hm.mm
+    build_id = hm.get_argument('build_id', is_int=True)
+    field_id = hm.get_argument('field_id', is_int=True)
+    if not build_id or not field_id:
+        return 4, {}  # 参数错误
+    build_status = mm.user.check_build_id(build_id)
+    if build_status and build_status != 2:
+        return build_status, {}
+    config = game_config.building[build_id]
+    if field_id != config['field_id']:
+        return 5, {}  # 地块错误
+    group_id = config['group']
+    # unlock_config = game_config.homepage_button
+    # unlock_lv = 0
+    # for value in unlock_config.values():
+    #     if value['group'] == group_id:
+    #         unlock_lv = value['unlock_lvl']
+    #         break
+    stats = mm.user.can_unlock(build_id)
+    if stats:
+        return stats, {}  # 不能解锁
+    cost = config['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc:
+        return rc, {}
+    mm.user.add_build(build_id,field_id)
+    return 0, {'build_effect': mm.user.build_effect,
+               'group_id': group_id}
+
+def up_build(hm):
+    mm = hm.mm
+    build_id = hm.get_argument('build_id', is_int=True)
+    if not build_id:
+        return 4, {}  # 参数错误
+    build_status = mm.user.check_build_id(build_id)
+    if build_status and build_status != 3:
+        return build_status, {}
+    config = game_config.building[build_id]
+    next_id = config['next_id']
+    if not next_id:
+        return 5, {}  # 已到达最大等级
+    stats = mm.user.can_unlock(next_id)
+    if stats:
+        return stats, {}  # 不能解锁
+    next_config = game_config.building[next_id]
+    cost = next_config['cost']
+    rc, _ = del_mult_goods(mm, cost)
+    if rc:
+        return rc, {}
+    if config['group'] == 22:
+        if not mm.user.get_company_vip_red_dot():
+            return 6, {}  # 未达到升级条件
+        mm.user.company_vip += 1
+        mm.gift_shop.add_vip_goods()  # 刷新礼包商店vip商品
+        mm.resource_shop.add_vip_goods()  # 刷新资源商店vip商品
+    mm.user.up_build(next_id, is_save=True)
+    return 0, {'group_id': config['group'],
+               'build_effect': mm.user.build_effect}
+
+
+def get_company_vip_reward(hm):
+    mm = hm.mm
+    company_vip = hm.get_argument('company_vip', 1, is_int=True)
+    config = game_config.vip_company
+    if company_vip not in config:
+        return 3, {}  # vip等级错误
+    if company_vip > mm.user.company_vip:
+        return 1, {}  # vip等级未达到
+    if company_vip in mm.user.company_vip_reward:
+        return 2, {}  # 礼包已领取
+    reward = add_mult_gift(mm,config[company_vip]['reward'])
+    mm.user.company_vip_reward.append(company_vip)
+    mm.user.save()
+    return 0, {'reward': reward}
+
+
+def can_buy_level_gift(hm):
+    mm = hm.mm
+    level_id = hm.get_argument('lv', is_int=True)
+    if not level_id:
+        return 1 , {}  # 等级礼包id错误
+    rc =  mm.user.can_buy_level_gift(level_id)
+    level_gift_data = mm.user.level_gift
+    return 0, {'level_limit_gift':level_gift_data,
+               'level_flag': rc}
+

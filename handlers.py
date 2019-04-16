@@ -25,14 +25,16 @@ from return_msg_config import get_msg_str, i18n_msg
 from gconfig import game_config
 from models.logging import Logging
 from handler_tools import to_json
+from models.user import User
 
 
 def lock(func):
-
     ignore_api_module = []
-    ignore_api_method = ['user.guide', 'user.get_red_dot', 'star_reward.index', 'endless.index', 'big_world.login', 'big_world.battle_data']
+    ignore_api_method = ['user.get_red_dot', 'star_reward.index', 'endless.index', 'big_world.login',
+                         'big_world.battle_data']
     # 需要排队的接口
     retry_module = ['big_world']
+    retry_api_method = ['user.guide']
 
     def error(handler, msg=''):
         d = {
@@ -55,10 +57,13 @@ def lock(func):
         module_name, method_name = method_param.split('.')
 
         if not settings.DEBUG and handler.hm.mm and \
-                module_name not in ignore_api_module and method_param not in ignore_api_method:
-            user = handler.hm.mm.user
-            _client = user.redis
-            lock_key = user.make_key_cls('lock.%s' % user.uid, user._server_name)
+                        module_name not in ignore_api_module and method_param not in ignore_api_method:
+            # user = handler.hm.mm.user
+            # _client = user.redis
+            uid = handler.hm.mm.uid
+            server_name = User.get_server_name(uid)
+            _client = User.get_redis_client(server_name)
+            lock_key = User.make_key_cls('lock.%s' % uid, server_name)
             retry_times = 3
 
             while True:
@@ -72,7 +77,7 @@ def lock(func):
                     if flag or (now > float(_client.get(lock_key)) and now > float(_client.getset(lock_key, ts))):
                         break
                     else:
-                        if module_name in retry_module and retry_times > 0:
+                        if (module_name in retry_module or method_param in retry_api_method) and retry_times > 0:
                             time.sleep(0.05)
                         else:
                             error(handler, i18n_msg.get(19, handler.hm.req.get_argument('lan', '1')))
@@ -103,6 +108,7 @@ class LoginHandler(BaseRequestHandler):
     """ 登录处理
 
     """
+
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def initialize(self):
         """ 初始化操作
@@ -131,7 +137,8 @@ class LoginHandler(BaseRequestHandler):
                 msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = 'account.%s' % self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc,
+                                                                                           method_param + '_error_%s' % rc)
 
         return rc, data, msg, None
 
@@ -166,12 +173,39 @@ class LoginHandler(BaseRequestHandler):
             return self.result_info('error_method')
 
         if callable(method):
+            pre_status, pre_data = self.pre_handler()
+            if pre_status:
+                return self.result_info(pre_status, pre_data)
             rc, data = method(self.hm)
             if rc != 0:
                 return self.result_info(rc)
 
             return self.result_info(rc, data)
         return self.result_info('error_not_call_method')
+
+    def pre_handler(self):
+        """ 处理方法之前
+
+        :return:
+        """
+        # return 0, None
+
+        # 强制更新
+        version = self.hm.get_argument('version', '')
+        pt = self.hm.get_argument('pt', '')
+        tpid = self.hm.get_argument('tpid', '')
+        if not pt:
+            return 0, None
+        version_config = game_config.version.get(str(tpid), game_config.version.get(pt))
+        if version_config and version_config['version'] > version:
+            return 'error_9998', {
+                'custom_msg': version_config['msg'],
+                'client_upgrade': {
+                    'url': version_config['url'],
+                    'msg': version_config['msg'],
+                },
+            }
+        return 0, None
 
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self):
@@ -191,7 +225,7 @@ class LoginHandler(BaseRequestHandler):
 
 
 class AdminHandler(BaseRequestHandler):
-
+    @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self, module_name, func_name=None):
         """ get请求
 
@@ -211,6 +245,7 @@ class AdminHandler(BaseRequestHandler):
             self.method_name = module_name
         return method(self)
 
+    @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def post(self, module_name, func_name=None):
         """ post请求
 
@@ -235,7 +270,8 @@ class APIRequestHandler(BaseRequestHandler):
     AUTO_RECEIVE_MISSION_AWARD_FUNC = ['user.main', 'user.talk_npc']
     # 主线、支线任务
     MISSION_TASK_UPDATE_FUNC = ['user.buy_point', 'user.buy_silver', 'private_city.sweep', 'shop.buy', 'shop.dark_buy',
-                                'shop.guild_shop_buy', 'shop.high_ladder_buy', 'shop.donate_buy', 'shop.rally_buy', 'shop.box_shop_buy',
+                                'shop.guild_shop_buy', 'shop.high_ladder_buy', 'shop.donate_buy', 'shop.rally_buy',
+                                'shop.box_shop_buy',
                                 'shop.king_war_buy', 'star_array.add_point', 'team_skill.up_skill_mastery']
 
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
@@ -265,7 +301,8 @@ class APIRequestHandler(BaseRequestHandler):
                 msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc,
+                                                                                           method_param + '_error_%s' % rc)
 
         return rc, data, msg, self.hm.mm
 
@@ -407,7 +444,38 @@ class APIRequestHandler(BaseRequestHandler):
 
                 from models.mission import Mission
                 try:
-                    Mission.do_task_api( method_param, self.hm, rc, data)
+                    Mission.do_task_api(method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
+                from models.carnival import Carnival
+                try:
+                    Carnival.do_task_api(method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
+                # 判断颁奖是否开
+                from logics.block import Block
+                try:
+                    block = Block(self.hm.mm)
+                    block.check_has_ceremony()
+                    block.count_cup(is_save=True)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
+                # 检测新手引导关键步
+                try:
+                    guide_team = self.get_argument('guide_team', '')
+                    guide_id = self.get_argument('guide_id', '')
+                    if guide_team and guide_id:
+                        guide_team = int(guide_team)
+                        guide_id = int(guide_id)
+                        from logics.user import UserLogic
+                        ul = UserLogic(self.hm.mm)
+                        ul.guide(guide_team, guide_id, 0)
                 except:
                     import traceback
                     print_log(traceback.print_exc())
@@ -416,11 +484,27 @@ class APIRequestHandler(BaseRequestHandler):
                 self.hm.mm.do_save()
 
                 # 关于客户端数据缓存的更新
+
                 for k, obj in self.hm.mm._model.iteritems():
                     if obj and obj.uid == self.hm.uid and getattr(obj, '_diff', None):
                         client_cache_udpate[obj._model_name] = obj._client_cache_update()
                         old_data[k] = getattr(obj, '_old_data', {})
 
+                if client_cache_udpate.get('mission', {}):
+                    l = []
+                    from logics.mission import Mission as LMission
+                    mission = LMission(self.hm.mm)
+                    achieve_data = client_cache_udpate.get('mission', {}).get('achieve_data', {})
+                    for m_id, m_value in achieve_data.get('update', {}).iteritems():
+                        if not mission.mission_red_dot(type='achieve_mission', m_id=m_id):
+                            l.append(m_id)
+
+                    if l:
+                        for d_m_id in l:
+                            if d_m_id in achieve_data.get('update', {}):
+                                achieve_data['update'].pop(d_m_id)
+                        if not achieve_data.get('update', {}) and 'mission' in client_cache_udpate:
+                            client_cache_udpate.pop('mission')
 
             data['_client_cache_update'] = client_cache_udpate
             data['old_data'] = old_data
@@ -439,7 +523,7 @@ class APIRequestHandler(BaseRequestHandler):
 
         # 验证是否是浏览器
         user_agent = self.request.headers.get('User-Agent')
-        #if user_agent == 'libcurl':
+        # if user_agent == 'libcurl':
         user_agent = None
         browser = self.get_argument('browser', '') == settings.BROWSER
         if not browser and (user_agent is not None or not self.get_argument('method')):
@@ -447,8 +531,9 @@ class APIRequestHandler(BaseRequestHandler):
 
         # 强制更新
         version = self.hm.get_argument('version', '')
+        pt = self.hm.get_argument('pt', '')
         tpid = self.hm.mm.user.tpid
-        version_config = game_config.version.get(str(tpid), game_config.version.get('all'))
+        version_config = game_config.version.get(str(tpid), game_config.version.get(pt))
         if version_config and version_config['version'] > version:
             return 'error_9998', {
                 'custom_msg': version_config['msg'],
@@ -519,6 +604,7 @@ class ConfigHandler(BaseRequestHandler):
     """ 配置处理
 
     """
+
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def initialize(self):
         """ 初始化操作
@@ -544,7 +630,8 @@ class ConfigHandler(BaseRequestHandler):
                 msg = get_msg_str(self.get_argument('lan', '1')).get(rc)
             if not msg:
                 method_param = self.get_argument('method')
-                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc, method_param + '_error_%s' % rc)
+                msg = get_msg_str(self.get_argument('lan', '1')).get(method_param, {}).get(rc,
+                                                                                           method_param + '_error_%s' % rc)
 
         if data is None:
             data = {}
@@ -595,7 +682,6 @@ class ConfigHandler(BaseRequestHandler):
 
 
 class PayCallback(BaseRequestHandler):
-
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self, tp):
         from views import payment
@@ -609,7 +695,6 @@ class PayCallback(BaseRequestHandler):
 
 
 class PayOrder(BaseRequestHandler):
-
     @error_mail(not settings.DEBUG, settings.ADMIN_LIST)
     def get(self):
         from views import payment
@@ -704,5 +789,3 @@ class HeroIMHandler(BaseRequestHandler):
             0    ---
         """
         return self.get(tag_name)
-
-

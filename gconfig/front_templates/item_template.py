@@ -53,7 +53,7 @@ use_item = {
     'star': ('star', 'int'),   # 星级
     'is_use': ('is_use', 'int'),   # 使用类型
     'usable': ('usable', 'int'),   # 使用类型
-    'use_effect': ('use_effect', 'use_item'),   # 使用效果
+    'use_effect': ('use_effect', 'int_list_or_int'),   # 使用效果
     'guide': ('guide', 'int_list'),   # 掉落
     'is_piece': ('is_piece', 'int'),    # 是否为碎片
     'use_num': ('use_num', 'int'),      # 碎片合成需要的数量

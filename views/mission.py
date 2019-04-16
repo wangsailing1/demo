@@ -32,23 +32,52 @@ def get_reward(hm):
         data = mission.mission_index()
         data['reward'] = reward
         return 0, data
+
+    if tp_id == 8:  # 业绩目标
+        config = game_config.random_reward[mission_id]
+        if mission_id in mm.mission.performance_done:
+            return 3, {}  # 已领
+        if mission.get_status_performance()['performance'] < config['need_random']:
+            return 4, {}  # 未完成
+        gift = config['reward']
+        reward = add_mult_gift(mm, gift)
+        mm.mission.performance_done.append(mission_id)
+        mm.mission.refresh_performance(mission_id)
+        mm.mission.save()
+        data = mission.mission_index()
+        data['reward'] = reward
+        return 0, data
+
     m_type = mm.mission.MISSIONMAPPING[tp_id]
     if not tp_id or not mission_id:
         return 1, {}  # 参数错误
     if not mission.has_reward_by_type(m_type, mission_id):
         return 2, {}  # 未完成
-    if mission.get_done_mission(m_type, mission_id):
+    if tp_id != 4 and mission.get_done_mission(m_type, mission_id):
         return 3, {}  # 已领
     mm_obj = getattr(mm.mission, m_type)
     mm_obj.done_task(mission_id)
-    gift = mm_obj.config[mission_id]['reward']
+    gift = []
+    gift.extend(mm_obj.config[mission_id]['reward'])
     if tp_id == 1:
-        mm.mission.liveness += mm_obj.config[mission_id]['liveness']
-    if tp_id == 3:
-        if mm.mission.check_guide_over():
-            mm.mission.get_all_random_mission()
-        else:
-            mm.mission.get_guide_mission()
+        # mm.mission.liveness = mm_obj.config[mission_id]['liveness']
+        liveness = mm_obj.config[mission_id]['liveness']
+        gift.append([101, 0, liveness])
+    # if tp_id == 3:
+    #     if mm.mission.check_guide_over():
+    #         mm.mission.get_all_random_mission()
+    #     else:
+    #         mm.mission.get_guide_mission()
+    if tp_id == 6:
+        achieve_point = mm_obj.config[mission_id]['achieve_point']
+        gift.append([102, 0, achieve_point])
+        # mm.mission.achieve += achieve_point
+        # a_id = mm.mission.get_achieve_id()
+        # mm_obj.data[a_id] = mm.mission.achieve
+
+    if tp_id == 4:
+        achieve_point = mm_obj.config[mission_id].get('random_liveness', 0)
+        gift.append([103, 0, achieve_point])
     reward = add_mult_gift(mm, gift)
     mm.mission.save()
     if tp_id == 2:

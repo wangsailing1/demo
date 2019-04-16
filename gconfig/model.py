@@ -9,6 +9,7 @@ import random
 import time
 import hashlib
 import json
+import zlib
 
 from models.config import Config, ConfigVersion, ConfigMd5
 from models.config import FrontConfig, FrontConfigVersion, FrontConfigMd5
@@ -322,6 +323,18 @@ class GameConfigMixIn(object):
         self.shop_goods_mapping = {}
         self.book_mapping = {}
         self.phone_chapter_dialogue_mapping = {}
+        self.achieve_mission_mapping = {}
+        self.free_reward_weight_mapping = {}
+        self.rmb_reward_weight_mapping = {}
+        self.functional_building_mapping = {}
+        self.director_gacha_mapping = {}
+        self.add_recharge_mapping = {}
+        self.play_shop_mapping = {}
+        self.play_redbag_mapping = {}
+        self.play_rankreward_mapping = {}
+        self.play_points_mapping = {}
+        self.rmb_foundation_mapping = {}
+        self.foundation_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -411,6 +424,18 @@ class GameConfigMixIn(object):
         self.chapter_mapping.clear()
         self.book_mapping.clear()
         self.phone_chapter_dialogue_mapping.clear()
+        self.achieve_mission_mapping.clear()
+        self.free_reward_weight_mapping.clear()
+        self.rmb_reward_weight_mapping.clear()
+        self.functional_building_mapping.clear()
+        self.director_gacha_mapping.clear()
+        self.add_recharge_mapping.clear()
+        self.play_shop_mapping.clear()
+        self.play_redbag_mapping.clear()
+        self.play_rankreward_mapping.clear()
+        self.play_points_mapping.clear()
+        self.rmb_foundation_mapping.clear()
+        self.foundation_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -1523,19 +1548,19 @@ class GameConfigMixIn(object):
         """
         if not self.building_unlock_mapping:
             result = {}
-            for unlock_id, unlock_config in self.building_unlock.iteritems():
-                unlock_type_config = unlock_config['unlock_type']
+            for unlock_id, unlock_config in self.homepage_button.iteritems():
+                unlock_type_config = unlock_config['sort']
                 if unlock_type_config not in result:
                     result[unlock_type_config] = {
                         unlock_id: {
-                            'unlock_limit': unlock_config['unlock_limit'],
-                            'unlock_look': unlock_config['unlock_look'],
+                            'unlock_lvl': unlock_config['unlock_lvl'],
+                            'unlock_guide_team': unlock_config['unlock_guide_team'],
                         },
                     }
                 else:
                     result[unlock_type_config][unlock_id] = {
-                        'unlock_limit': unlock_config['unlock_limit'],
-                        'unlock_look': unlock_config['unlock_look'],
+                        'unlock_lvl': unlock_config['unlock_lvl'],
+                        'unlock_guide_team': unlock_config['unlock_guide_team'],
                     }
             self.building_unlock_mapping = result
 
@@ -2451,6 +2476,130 @@ class GameConfigMixIn(object):
                 self.phone_chapter_dialogue_mapping[j['hero_id']][j['chapter_id']]['id'] = i
         return self.phone_chapter_dialogue_mapping
 
+    def get_achieve_mission_mapping(self):
+        if not self.achieve_mission_mapping:
+            for k, v in self.achieve_mission.iteritems():
+                if v['group'] not in self.achieve_mission_mapping:
+                    self.achieve_mission_mapping[v['group']] = {'unlock_lvl': v['unlock_lvl'],
+                                                                'sort': v['sort']}
+                self.achieve_mission_mapping[v['group']][k] = v
+        return self.achieve_mission_mapping
+
+
+    def toy_free_reward_weight_mapping(self):
+        if not self.free_reward_weight_mapping:
+            for k, v in self.free_gacha.iteritems():
+                if v['library_id'] not in self.free_reward_weight_mapping:
+                    self.free_reward_weight_mapping[v['library_id']] = {}
+                if v['group'] not in self.free_reward_weight_mapping[v['library_id']]:
+                    self.free_reward_weight_mapping[v['library_id']][v['group']] = []
+                self.free_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
+        return self.free_reward_weight_mapping
+
+    def toy_rmb_reward_weight_mapping(self):
+        if not self.rmb_reward_weight_mapping:
+            for k, v in self.rmb_gacha.iteritems():
+                if v['library_id'] not in self.rmb_reward_weight_mapping:
+                    self.rmb_reward_weight_mapping[v['library_id']] = {}
+                if v['group'] not in self.rmb_reward_weight_mapping[v['library_id']]:
+                    self.rmb_reward_weight_mapping[v['library_id']][v['group']] = []
+                self.rmb_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
+        return self.rmb_reward_weight_mapping
+
+    def get_functional_building_mapping(self):
+        if not self.functional_building_mapping:
+            for i, j in self.functional_building.iteritems():
+                self.functional_building_mapping[j['build_id']] = j
+                self.functional_building_mapping[j['build_id']]['id'] = i
+        return self.functional_building_mapping
+
+    def get_director_gacha_mapping(self):
+        if not self.director_gacha_mapping:
+            for i, j in self.director_gacha.iteritems():
+                if j['gacha_id'] not in self.director_gacha_mapping:
+                    self.director_gacha_mapping[j['gacha_id']] = []
+                if not j['weight']:
+                    continue
+                self.director_gacha_mapping[j['gacha_id']].append([i, j['weight']])
+        return self.director_gacha_mapping
+
+    # 累充mapping
+    def get_add_recharge_mapping(self):
+        if not self.add_recharge_mapping:
+            for i, j in self.add_recharge.iteritems():
+                if j['version'] not in self.add_recharge_mapping:
+                    self.add_recharge_mapping[j['version']] = {}
+                self.add_recharge_mapping[j['version']][i] = j
+        return self.add_recharge_mapping
+
+    # 超级大玩家mapping
+    def get_play_shop_mapping(self):
+        if not self.play_shop_mapping:
+            for i, j in self.play_shop.iteritems():
+                version = j['version']
+                sort = j['sort']
+                j['id'] = i
+                if version not in self.play_shop_mapping:
+                    self.play_shop_mapping[version] = {}
+                if sort not in self.play_shop_mapping[version]:
+                    self.play_shop_mapping[version][sort] = {}
+                self.play_shop_mapping[version][sort][i] = j
+        return self.play_shop_mapping
+
+    def get_play_redbag_mapping(self):
+        if not self.play_redbag_mapping:
+            for i, j in self.play_redbag.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_redbag_mapping:
+                    self.play_redbag_mapping[version] = {}
+                self.play_redbag_mapping[version][i] = j
+        return self.play_redbag_mapping
+
+
+    def get_play_rankreward_mapping(self):
+        if not self.play_rankreward_mapping:
+            for i, j in self.play_rankreward.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_rankreward_mapping:
+                    self.play_rankreward_mapping[version] = {}
+                self.play_rankreward_mapping[version][i] = j
+        return self.play_rankreward_mapping
+
+
+    def get_play_points_mapping(self):
+        if not self.play_points_mapping:
+            for i, j in self.play_points.iteritems():
+                version = j['version']
+                j['id'] = i
+                if version not in self.play_points_mapping:
+                    self.play_points_mapping[version] = {}
+                self.play_points_mapping[version][i] = j
+        return self.play_points_mapping
+
+
+    def get_rmbfoundation_mapping(self):
+        if not self.rmb_foundation_mapping:
+            for i, j in self.rmb_foundation.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.rmb_foundation_mapping:
+                    self.rmb_foundation_mapping[version] = {}
+                self.rmb_foundation_mapping[version][j['id']] = j
+        return self.rmb_foundation_mapping
+
+    def get_foundation_mapping(self):
+        if not self.foundation_mapping:
+            for i, j in self.foundation.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.foundation_mapping:
+                    self.foundation_mapping[version] = {}
+                self.foundation_mapping[version][j['id']] = j
+        return self.foundation_mapping
+
+
 
 
 class GameConfig(GameConfigMixIn):
@@ -2622,6 +2771,7 @@ class FrontGameConfig(GameConfigMixIn):
         self.keys = []
         self.ver_md5 = ''
         self.versions = {}
+        self.version_size = {}
         self.reload()
         self.locked = False
 
@@ -2652,6 +2802,10 @@ class FrontGameConfig(GameConfigMixIn):
                         # print 'reload: %s' % name
                         setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
+                        config = getattr(self, r_name, '')
+                        s = self.get_version_size(config)
+                        if config and s != 0:
+                            self.version_size[r_name] = s
             if name in FAKE_CONFIG:
                 for i in FAKE_CONFIG[name][1]:
                     r_name = i
@@ -2661,6 +2815,10 @@ class FrontGameConfig(GameConfigMixIn):
                         # print 'reload: %s' % name
                         setattr(self, r_name, make_readonly(c.value))
                         self.versions[r_name] = r_version if r_version else ''
+                        config = getattr(self, r_name, '')
+                        s = self.get_version_size(config)
+                        if config and s != 0:
+                            self.version_size[r_name] = s
 
             cv_version = cv.versions.get(name)
             if cv_version and self.versions.get(name) == cv_version:
@@ -2679,6 +2837,10 @@ class FrontGameConfig(GameConfigMixIn):
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
+                    config = getattr(self, name, '')
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
             elif cv_version:  # 不是策划配置的xlsx, 服务器自己使用的配置存储在Config中
                 # print 'reload: %s' % name
@@ -2686,12 +2848,19 @@ class FrontGameConfig(GameConfigMixIn):
 
                 if v[1]:  # 前端可见配置
                     self.versions[name] = cv_version if cv_version else ''
+                    config = getattr(self, name, '')
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
             else:  # 不是策划配置的xlsx, 服务器自己使用的配置, 在gconfig.model属性中, 每次更改需要重启服务器
                 if v[1]:  # 前端可见配置
                     config = getattr(self, name, '')
                     cv_version = cm.generate_custom_md5(config)
                     self.versions[name] = cv_version if cv_version else ''
+                    s = self.get_version_size(config)
+                    if config and s != 0:
+                        self.version_size[name] = s
 
         if cv_save:
             cv.save()
@@ -2699,6 +2868,16 @@ class FrontGameConfig(GameConfigMixIn):
         self.reset()
         self.locked = False
         return True
+
+
+    def get_version_size(self, data):
+        """
+        计算配置大小
+        :param data: 
+        :return: 
+        """
+        return len(zlib.compress(json.dumps(data, separators=(',', ':'))))
+
 
     def upload(self, file_name, xl=None):
         """ 上传一个文件
@@ -2738,30 +2917,17 @@ class FrontGameConfig(GameConfigMixIn):
                         save_list.append(one_fake_list[0])
                         save_file_data.append((one_fake_list[0], md5_value, one_fake_list[1]))
 
-            # 拆分表
-            if config_name in RESOLVE_LIST:
-                r = {}
-                for k, v in config.iteritems():
-                    key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
-                    if key not in r:
-                        r[key] = {k: v}
-                    else:
-                        r[key][k] = v
-                for k, v in r.iteritems():
-                    md5_value = hashlib.md5(repr(v)).hexdigest()
-                    if cv.versions.get(k) == md5_value:
-                        continue
-                    c = FrontConfig.get(k)
-                    c.update_config(v, md5_value, save=True)
-                    cv.update_version(k, md5_value)
-                    save_list.append(k)
-                    save_file_data.append((k, md5_value, v))
-
             if cv.versions.get(config_name) == m:
                 continue
             c = FrontConfig.get(config_name)
             c.update_config(config, m, save=True)
             cv.update_version(config_name, m)
+
+            # 处理拆分表
+            _save_list, _save_file_data = self.handle_reslove_config(c, cv)
+            save_list.extend(_save_list)
+            save_file_data.extend(_save_file_data)
+
             save_list.append(config_name)
             save_file_data.append((config_name, m, config))
 
@@ -2778,6 +2944,38 @@ class FrontGameConfig(GameConfigMixIn):
                     f.write(r)
 
         return save_list, save_file_data, check_warning
+
+    def handle_reslove_config(self, config_instance, cv):
+        """
+        :param config:  instance of Config|FrontConfig
+        :param cv:  instance of ConfigVersion|FrontConfigVersion
+        :return:
+        """
+        # 拆分表
+        save_list = []
+        save_file_data = []
+        config_name = config_instance.uid
+        config = config_instance.value
+
+        if config_name in RESOLVE_LIST:
+            r = {}
+            for k, v in config.iteritems():
+                # key = '%s_%d' % (config_name, (int(k) / 10000) % RESOLVE_LIST[config_name])
+                key = '%s_%d' % (config_name, int(k) % RESOLVE_LIST[config_name])
+                if key not in r:
+                    r[key] = {k: v}
+                else:
+                    r[key][k] = v
+            for k, v in r.iteritems():
+                md5_value = hashlib.md5(repr(v)).hexdigest()
+                if cv.versions.get(k) == md5_value:
+                    continue
+                c = config_instance.get(k)
+                c.update_config(v, md5_value, save=True)
+                cv.update_version(k, md5_value)
+                save_list.append(k)
+                save_file_data.append((k, md5_value, v))
+        return save_list, save_file_data
 
     def refresh(self):
         """ 刷新配置，用于进程加载配置

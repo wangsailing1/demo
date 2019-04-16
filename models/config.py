@@ -2,6 +2,7 @@
 
 __author__ = 'sm'
 
+import re
 import time
 
 import settings
@@ -239,7 +240,8 @@ class ResourceVersion(ModelBase):
         :return:
         """
         if self.can_hot_update_ip:
-            return self.can_hot_update_ip.split(',')
+            # return [i.strip() for i in self.can_hot_update_ip.split(',')]
+            return re.findall('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', self.can_hot_update_ip)
         else:
             return []
 

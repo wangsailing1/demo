@@ -45,6 +45,10 @@ class GachaLogics(object):
             'coin_pool': self.gacha.coin_pool,  # 探寻到的3个gacha_id
             'coin_time': self.gacha.coin_time,  # 探寻时间
             'coin_times': self.gacha.coin_times,           # 探寻次数
+            'coin_update_time': self.gacha.coin_update_time,        # gacha恢复时间
+            'coin_recover_times': self.gacha.coin_recover_times,    # gacha当日恢复次数
+            'coin_left_times': self.gacha.coin_left_times,    # gacha剩余次数
+
             'coin_lv': self.gacha.coin_lv,           # 探寻等级
             'coin_receive': self.gacha.coin_receive,  # 接受的gacha id
             'coin_pool_expire': self.gacha.coin_pool_expire(),
@@ -66,8 +70,14 @@ class GachaLogics(object):
         sort = 0
 
         if sort == 0:
-            if self.gacha.coin_pool_expire():
-                return 2, {}
+            if self.gacha.coin_left_times <= 0:
+                # 次数不足再判断下是否有星探卡
+                cost = game_config.coin_gacha_cd['cost']
+                rc, _ = del_mult_goods(self.mm, cost)
+                if rc:
+                    return 3, {}
+            # if self.gacha.coin_pool_expire():
+            #     return 2, {}
             cost_type = 'coin'
             gacha_pool, _ = self.get_coin_gacha()
             if not gacha_pool:
@@ -98,7 +108,12 @@ class GachaLogics(object):
                 can_use_ids.extend(id_weights)
 
         pool = []
-        for i in xrange(self.gacha.MAX_POOL_NUM):
+        gacha_config = game_config.coin_gacha
+        special_mapping = {v['weight_special']: k for k, v in gacha_config.iteritems() if v['weight_special']}
+        times = self.gacha.coin_times + 1
+        if times in special_mapping:
+            pool.append(special_mapping[times])
+        for i in xrange(self.gacha.MAX_POOL_NUM - len(pool)):
             id_weight = weight_choice(can_use_ids)
             can_use_ids.remove(id_weight)
             pool.append(id_weight[0])
@@ -116,14 +131,19 @@ class GachaLogics(object):
             return 1, {}
         if gacha_id in self.gacha.coin_receive:
             return 2, {}
-        if not self.mm.card.can_add_new_card():
-            return 3, {}   #活跃卡牌已达上限，请先雪藏艺人
+
 
         user = self.mm.user
         gacha_config = game_config.coin_gacha[gacha_id]
         cost = gacha_config['cost']
         if not user.is_like_enough(cost):
             return 'error_like', {}
+        card_id = 0
+        for gift in gacha_config['reward']:
+            if gift[0] == 8:
+                card_id = gift[1]
+        if card_id and not self.mm.card.can_add_new_card() and not self.mm.card.has_card_with_group_id(card_id):
+            return 3, {}   # 活跃卡牌已达上限，请先雪藏艺人
 
         reward = add_mult_gift(self.mm, gacha_config['reward'])
         self.gacha.coin_receive.append(gacha_id)
@@ -153,15 +173,17 @@ class GachaLogics(object):
         next_lv = lv + 1
         if next_lv not in config:
             return 1, {}  # 已到最大等级
-        need_count = config[next_lv]
+        need_count = config[next_lv]['count']
         if self.gacha.coin_times < need_count:
             return 2, {}  # 招募次数不够
-        cost = config[next_lv]['cost']
+        build_id = config[next_lv]['build_id']
+        build_config = game_config.building
+        cost = build_config[build_id]['cost']
         rc, data = del_mult_goods(self.mm, cost)
         if rc:
-            return rc, data
+            return rc, {}
         self.gacha.coin_lv = next_lv
-        build_id = config[next_lv]['build_id']
+
         self.mm.user.up_build(build_id)
         self.gacha.save()
         self.mm.user.save()

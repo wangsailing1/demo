@@ -2,10 +2,12 @@
 __author__ = 'kaiqigu'
 
 from gevent import monkey
+
 monkey.patch_all()
 
 import os
 import sys
+import traceback
 import signal
 import psutil
 import socket
@@ -16,6 +18,7 @@ import json
 import re
 
 import settings
+
 env = sys.argv[1]
 server_name = sys.argv[2]
 settings.set_env(env, server_name)
@@ -26,7 +29,9 @@ from chat.client import Client, ClientManager
 from chat.content import ContentFactory
 from lib.utils.encoding import force_str
 from lib.utils import sid_generate, get_timestamp_from_sid
+from lib.utils.zip_date import dencrypt_data, encrypt_data
 from lib.core.environ import ModelManager
+from lib.db import get_redis_client
 from models.user import User as UserM
 
 # HOST = settings.SERVERS[settings.SERVICE_NAME]['chat_ip']
@@ -52,7 +57,6 @@ MESSAGE_CACHE_SIZE = 50  # 缓存对话 数量
 
 GAG_UIDS = []  # 禁言的uid
 
-
 GAG_MSG_SWICTH = False
 
 
@@ -72,12 +76,56 @@ def get_datetime_str():
     return time.strftime('%F %T')
 
 
+def get_channel_redis():
+    r = get_redis_client(settings.chat_config)
+    return r
+
+
+def get_pub_sub():
+    r = get_channel_redis()
+    return r.pubsub()
+
+
+def handle_channel_message(message):
+    pid = os.getpid()
+    data = dencrypt_data(message['data'])
+    print pid, message, data
+    if message['type'] == 'message':
+        try:
+            chat_info = data['chat_info']
+            if pid == data['pid']:
+                print 'owner message, chat_info: ', chat_info
+                return
+        except Exception, e:
+            tb = traceback.format_exc()
+            print e.message, tb
+            return
+
+            # todo 发送给client
+
+
+channel_name = 'chat_message'
+
+
+def send_to_other_server(chat_info):
+    data = {
+        'chat_info': chat_info,
+        'pid': os.getpid()
+    }
+    r = get_channel_redis()
+    r.publish(channel_name, encrypt_data(data))
+
+
+# 通过redis pubsub 与其它chat server通信
+ps = get_pub_sub()
+ps.subscribe(channel_name, **{channel_name: handle_channel_message})
+ps.run_in_thread()
+
 client_manager = ClientManager()
 content_factory = ContentFactory(settings.SERVERS['master']['redis'])
 
 
 def request_handler(client_socket, addr):
-
     global messages_cache
 
     now = int(time.time())
@@ -104,7 +152,8 @@ def request_handler(client_socket, addr):
             break
 
         if not data:
-            print_log('[%s]' % get_datetime_str(), 'client %s:%s disconnected' % addr, 'flag: %s, %s' % (data, type(data)), client.ip)
+            print_log('[%s]' % get_datetime_str(), 'client %s:%s disconnected' % addr,
+                      'flag: %s, %s' % (data, type(data)), client.ip)
             client_manager.lose_client(client)
             print_log('clients_num :', client_manager.get_client_count())
             break
@@ -147,7 +196,7 @@ def request_handler(client_socket, addr):
                                   str(sorted([(x, y.uid, y.game_id, y.guild_id, y.server_name,
                                                y.vip, y.domain, y.team_id, now - y.ttl, y.ip)
                                               for x, y in client_manager._clients.iteritems()],
-                                             key=lambda x:x[1], reverse=True)))
+                                             key=lambda x: x[1], reverse=True)))
             client_socket.sendall('\n')
             continue
 
@@ -212,7 +261,8 @@ def request_handler(client_socket, addr):
             client.init_info(info.get('uid'), info.get('guild_id', ''),
                              info.get('game_id', ''), info.get('vip', 0),
                              info.get('domain', ''), info.get('team_id', ''),
-                             addr[0], info.get('device_mark'), info.get('device_mem'))
+                             addr[0], info.get('device_mark'), info.get('device_mem'),
+                             info.get('lan', 1))
             client_manager.add_server_client(client)
             if GAG_MSG_SWICTH:
                 client.socket.sendall(force_str(get_default_msg()))
@@ -243,7 +293,8 @@ def request_handler(client_socket, addr):
                         uid_key = '%s_%s' % (client.uid, friend_uid)
                     else:
                         uid_key = '%s_%s' % (friend_uid, client.uid)
-                    content_friend = content_factory.get(content_factory.MAPPINGS['friend'], client.server_name, uid_key)
+                    content_friend = content_factory.get(content_factory.MAPPINGS['friend'], client.server_name,
+                                                         uid_key)
                     m = content_friend.show()
                     msgs += m
                 # content_factory.delete(content_factory.MAPPINGS['friend'], client.server_name, client.uid)
@@ -252,7 +303,8 @@ def request_handler(client_socket, addr):
 
                 # 公会
                 if client.guild_id:
-                    content_guild = content_factory.get(content_factory.MAPPINGS['guild'], client.server_name, client.guild_id)
+                    content_guild = content_factory.get(content_factory.MAPPINGS['guild'], client.server_name,
+                                                        client.guild_id)
                     msgs = content_guild.show(uid=client.uid)
                     if msgs:
                         client.socket.sendall(''.join(msgs))
@@ -349,7 +401,7 @@ def request_handler(client_socket, addr):
             _client = client_manager.get_client_by_server_name(client.server_name).get(_fd)
             if not _client:
                 continue
-        # for _fd, _client in client_manager.get_client_by_server_name(client.server_name).iteritems():
+                # for _fd, _client in client_manager.get_client_by_server_name(client.server_name).iteritems():
             # if _fd == client.fileno:
             #     continue
             # 判断消息是否需要发送  用gevent.spawn 处理
@@ -360,17 +412,17 @@ def request_handler(client_socket, addr):
                 receivers.append(gevent.spawn(client.socket.sendall, client.msg))
                 continue
 
-            if tp in ['all_world', 'world', 'system']:       # 世界, 本服, 系统
+            if tp in ['all_world', 'world', 'system']:  # 世界, 本服, 系统
                 receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
-            elif tp == 'guild':     # 公会
+            elif tp == 'guild':  # 公会
                 if _client.guild_id and _client.guild_id == client.guild_id:
                     # print_log(333333333333333)
                     receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
-            elif tp == 'friend' and _client.uid == sendToUid:     # 好友
+            elif tp == 'friend' and _client.uid == sendToUid:  # 好友
                 receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
                 receivers.append(gevent.spawn(client.socket.sendall, client.msg))
                 break
-            elif tp == 'guild_war':     # 工会战
+            elif tp == 'guild_war':  # 工会战
                 if _client.guild_id and client.guild_id:
                     receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
             elif tp in ['rob', 'escort']:  # 运镖, 打劫
@@ -381,10 +433,10 @@ def request_handler(client_socket, addr):
                     receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
 
         # 私聊缓存
-        if tp == 'friend' and sendToUid:    # and not receivers:
+        if tp == 'friend' and sendToUid:  # and not receivers:
             to_user = UserM.get(sendToUid, from_req=False)
             mm = ModelManager(client.uid)
-            mm.friend.add_newest_uid(sendToUid,is_save=True)
+            mm.friend.add_newest_uid(sendToUid, is_save=True)
             if client.uid not in to_user.blacklist:
                 if not receivers:
                     receivers.append(gevent.spawn(client.socket.sendall, client.msg))
@@ -417,6 +469,7 @@ def socket_server(host, port):
     gevent.signal(signal.SIGTERM, close)
     gevent.signal(signal.SIGINT, close)
     server.serve_forever()
+
 
 if __name__ == '__main__':
     socket_server(HOST, PORT)

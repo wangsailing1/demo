@@ -384,81 +384,42 @@ def bdc_charge_info(today=None):
 
 
 def bdc_user_info(mm, **kwargs):
-    from lib.utils import timelib
-    from lib.utils.encoding import force_unicode
-    from lib.statistics.bdc_event_funcs import get_anm
+    from lib.statistics.bdc_event_funcs import get_game_base_info, BDC_EVENT_MAPPING
 
     user = mm.user
-    bdc_game_id = settings.BDC_GAME_ID
-    bdc_channel_id = settings.get_bdc_channel_id(user.tpid)
-    bdc_version_id = settings.BDC_VERSION_ID
+    base_info = get_game_base_info(user)
+
+    context = {
+        'event_id': BDC_EVENT_MAPPING['user_info'],
+        'role_name': user.name,
+        'role_level': user.level,
+        'vip_level': user.vip,
+        'sex': user.role,
+        'free_diamond_balance': user.diamond_free,
+        'donate_diamond_balance': 0,
+        'charge_diamond_balance': user.diamond_charge,
+
+        'phy_balance': user.action_point,
+        'month_card_balance': 0,            # 月卡剩余领取次数
+        'register_ip': user.register_ip,
+        'accountregister_time': user.account_reg,
+        'userregister_time': user.reg_time,
+
+        'userlast_active_time': user.active_time,
+        'bag_info': {},             # todo 玩家物品json格式、如果为空 填{}
+        'total_charge': mm.user_payment.charge_price,        # 累计充值金额
+        'union_id': user.guild_id or 0,                      # 公会id
+        'currency_info': {},                                 # 角色截止当前各类代币持有数量 json，如果为空，请填{}
+    }
+
+    context.update(base_info)
 
     server_name = user._server_name
     bdc_server_id = settings.get_bdc_server_id(server_name)
     bdc_info_log = get_bdc_logger('userinfo', server_name, bdc_server_id)
 
-    # 英雄bdc 数据接入
-    data = {
-        'ldt': create_date_str,
-        'gid': bdc_game_id,
-        'cid': bdc_channel_id,
-        'cpd': -1,
-        'pid': bdc_version_id,
-        'mac': user.device,
-        'aid': user.account,
-        'anm': get_anm(user.account, user.tpid, bdc_channel_id),
-        'sid': bdc_server_id,
-        'rid': user.uid,
-        'rky': user.uid,
-        'rnm': user.name,
-        'rlv': user.level,
-        'vip': user.vip,
-        'slv': -1,
-        'sex': -1,
-        'uid': user.guild_id or '-1',
-        'rip': user.register_ip,
-        'diad': user.diamond_charge,
-        'gld1': user.silver,
-        'gld2': -1,
-        'gld3': -1,
-        'phsy': user.action_point,
-        'mcrd': mm.active_card.month_remain_times(),
-        'ltme': timelib.timestamp_to_datetime_str(user.active_time),
-        'rbag': ';'.join(('%s--1-%s' % (item_id, num) for item_id, num in mm.item.items.iteritems())),
-        'tote': mm.user_payment.charge_price * 100,
-
-    }
-
-    field_order = [
-        'ldt',
-        'gid',
-        'cid',
-        'cpd',
-        'pid',
-        'mac',
-        'aid',
-        'anm',
-        'sid',
-        'rid',
-        'rky',
-        'rnm',
-        'rlv',
-        'vip',
-        'slv',
-        'sex',
-        'uid',
-        'rip',
-        'diad',
-        'gld1',
-        'gld2',
-        'gld3',
-        'phsy',
-        'mcrd',
-        'ltme',
-        'rbag',
-        'tote',
-    ]
-    bdc_info_log.info(settings.BDC_LOG_DELITIMER.join([force_unicode(data[i]) for i in field_order]))
+    bdc_info_log.info(json.dumps(context, separators=(',', ':')))
+    return context
 
 
 def create_zip_file(sort, today=None):

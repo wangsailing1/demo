@@ -22,7 +22,7 @@ class Account(ModelBase):
     """
     SERVER_NAME = 'master'
     REGIST_COUNT_PREFIX = 'regist_account_hash_'
-    DEVICE_MARK_COUNT_PREFIX = 'regist_device_hasn_mark_'
+    DEVICE_MARK_COUNT_PREFIX = 'regist_device_hash_mark_'
     EXPIRE_TIME = 30 * 24 * 3600
 
     def __init__(self, uid):

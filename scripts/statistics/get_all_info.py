@@ -59,8 +59,13 @@ def info(mm, **kwargs):
     :return:
     """
     from lib.utils import timelib
+    from models.ranking_list import BlockRank
     info_log = kwargs.get('info_log') or get_bi_logger_by_type('info')
 
+    block_rank_uid = mm.block.get_key_profix(mm.block.block_num, mm.block.block_group,
+                                             'income')
+    br = BlockRank(block_rank_uid, mm.block._server_name)
+    income = br.get_score(mm.uid)
     user = mm.user
 
     name = str(user.name).replace('\n', '-n-', ).replace('\r', '-r-').replace('\t', '-t-')
@@ -76,23 +81,28 @@ def info(mm, **kwargs):
         'reg_time': timelib.timestamp_to_datetime_str(user.reg_time),
         'act_time': timelib.timestamp_to_datetime_str(user.active_time),
         'vip': user.vip,
+        'company_vip': user.company_vip,
+        'sex': user.get_sex(),
         'level': user.level,
         'diamond_free': user.diamond_free,
         'diamond_charge': user.diamond_charge,
         'coin': user.coin,
         'silver': user.silver,
-        'silver_ticket': user.silver_ticket,
-        'diamond_ticket': user.diamond_ticket,
-        'dark_coin': mm.user.dark_coin,
-        'challenge': mm.user.challenge,
+        # 'silver_ticket': user.silver_ticket,
+        # 'diamond_ticket': user.diamond_ticket,
+        # 'dark_coin': mm.user.dark_coin,
+        # 'challenge': mm.user.challenge,
         'guide': user.guide,
         'uuid': user.uuid,  # 设备唯一标识
-        'combat': mm.hero.get_max_combat(),
+        # 'combat': mm.hero.get_max_combat(),
         'server': user._server_name,
         'father_server': settings.get_father_server(user._server_name),
         'ip': user.register_ip,
         'appid': user.package_appid,
+        'dollar':user.dollar,
         'create_date': create_date_str,
+        'block_num': mm.block.block_num,
+        'income': income,
     }
 
     info_log.info(json.dumps(data, separators=[',', ':']))
@@ -101,46 +111,44 @@ def info(mm, **kwargs):
     #               '{vip}\t{level}\t{diamond}\t{coin}\t{silver}\t{privileges}\t{create_date}\t'.format(**data))
 
 
-def hero(mm, **kwargs):
-    """ 英雄信息
+def card(mm, **kwargs):
+    """ 艺人信息
 
     :param mm:
     :return:
     """
     from lib.utils import timelib
-
-    heros = mm.hero.heros
-
-    hero_log = kwargs.get('hero_log') or get_bi_logger_by_type('hero')
-    for hero_oid in heros:
-        hero_dict = heros[hero_oid]
-        hero_aquire_time = int(hero_oid.split('-')[1])
-        hero_aquire_time = datetime.datetime.fromtimestamp(hero_aquire_time).strftime('%Y-%m-%d %H:%M:%S')
+    from gconfig import game_config
+    cards = mm.card.cards
+    config = game_config.card_basis
+    card_log = kwargs.get('card_log') or get_bi_logger_by_type('card')
+    for card_oid in cards:
+        card_dict = cards[card_oid]
+        card_aquire_time = int(card_oid.split('-')[1])
+        card_aquire_time = datetime.datetime.fromtimestamp(card_aquire_time).strftime('%Y-%m-%d %H:%M:%S')
 
         data = {
             'user_id': mm.uid,
             'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
-            'hero_aquire_time': hero_aquire_time,
-            'hero_id': hero_dict['id'],
-            'hero_oid': hero_oid,
-            'level': hero_dict['lv'],
-            'star': hero_dict['star'],
-            'evo': hero_dict['evo'],
-            'is_awaken': hero_dict['is_awaken'],
-            'combat': hero_dict['combat'],
-            'milestone': hero_dict['milestone'],
-            'equip_pos': hero_dict['equip_pos'],
-            'hp': hero_dict.get('hp', 0),
-            'phy_atk': hero_dict.get('phy_atk', 0),
-            'phy_def': hero_dict.get('phy_def', 0),
-            'mag_atk': hero_dict.get('mag_atk', 0),
-            'mag_def': hero_dict.get('mag_def', 0),
-            'skill': hero_dict.get('skill', {}),
-            'extra_skill': hero_dict.get('extra_skill', {}),
+            'card_aquire_time': card_aquire_time,
+            'card_id': card_dict['id'],
+            'card_oid': card_oid,
+            'level': card_dict['lv'],
+            'star': card_dict['star'],
+            'evo': card_dict['evo'],
+            'love_lv': card_dict['love_lv'],
+            'love_exp': card_dict['love_exp'],
+            'popularity': card_dict['popularity'],
+            'train_times': card_dict['train_times'],
+            'style_pro': card_dict['style_pro'],
+            'equips': card_dict['equips'],
+            'gift_count': card_dict['gift_count'],
+            'is_cold': card_dict['is_cold'],
             'create_date': create_date_str,
+            'qualityid': config[card_dict['id']]['qualityid']
         }
 
-        hero_log.info(json.dumps(data, separators=[',', ':']))
+        card_log.info(json.dumps(data, separators=[',', ':']))
         # for index, value in hero_dict['skill'].iteritems():
         #     data['s%sid' % index] = value['s']
         #     data['s%slevel' % index] = 0 if value['avail'] == 0 else value['lv']
@@ -160,30 +168,73 @@ def equip(mm, **kwargs):
     from lib.utils import timelib
 
     equip_log = kwargs.get('equip_log') or get_bi_logger_by_type('equip')
-    for eid in mm.equip.equips:
-        equip_dict = mm.equip.equips[eid]
-        aquire_time = int(eid.split('-')[1])
-        aquire_time = datetime.datetime.fromtimestamp(aquire_time).strftime('%Y-%m-%d %H:%M:%S')
+    act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    for eid, num in mm.equip.equips.iteritems():
+        if num <= 0:
+            continue
 
         data = {
             'user_id': mm.uid,
-            'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
-            'aquire_time': aquire_time,
-            'equip_id': equip_dict['id'],
-            'grade': equip_dict['grade'],
-            'quality': equip_dict['quality'],
-            'init_lv': equip_dict['init_lv'],
-            'level': equip_dict.get('lv', 0),
-            'owner': equip_dict.get('owner', '-').split('-', 1)[0],
-            'base': equip_dict.get('base', []),  # 基础
-            'extra': equip_dict.get('extra', []),  # 附加属性
-            'refined_property': equip_dict.get('refined_property', None),  # 洗练的属性,extra下标
-            'st_lv': equip_dict.get('st_lv', 0),  # 精炼等级
-            'refine_count': equip_dict.get('refine_count', 0),
+            'act_time': act_time,
+            'item_id': eid,
+            'item_num': num,
             'create_date': create_date_str,
         }
 
         equip_log.info(json.dumps(data, separators=[',', ':']))
+        # equip_log.info('{uid}\t{act_time}\t{aquire_time}\t{equip_id}\t{grade}\t{quality}\t{init_lv}\t'
+        #                '{level}\t{owner}\t{base}\t{extra}\t{refined_property}\t{st_lv}\t'
+        #                '{refine_count}\t{create_date}'.format(**data))
+
+def card_pieces(mm, **kwargs):
+    """ 艺人碎片信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+
+    card_pieces_log = kwargs.get('card_pieces_log') or get_bi_logger_by_type('card_pieces')
+    act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    for cid, num in mm.card.pieces.iteritems():
+        if num <= 0:
+            continue
+        data = {
+            'user_id': mm.uid,
+            'act_time': act_time,
+            'item_id': cid,
+            'item_num': num,
+            'create_date': create_date_str,
+        }
+
+        card_pieces_log.info(json.dumps(data, separators=[',', ':']))
+        # equip_log.info('{uid}\t{act_time}\t{aquire_time}\t{equip_id}\t{grade}\t{quality}\t{init_lv}\t'
+        #                '{level}\t{owner}\t{base}\t{extra}\t{refined_property}\t{st_lv}\t'
+        #                '{refine_count}\t{create_date}'.format(**data))
+
+def equip_pieces(mm, **kwargs):
+    """ 装备碎片信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+
+    equip_pieces_log = kwargs.get('equip_pieces_log') or get_bi_logger_by_type('equip_pieces')
+    act_time = timelib.timestamp_to_datetime_str(mm.user.active_time)
+    for eid, num in mm.equip.equip_pieces.iteritems():
+        if num <= 0:
+            continue
+
+        data = {
+            'user_id': mm.uid,
+            'act_time': act_time,
+            'item_id': eid,
+            'item_num': num,
+            'create_date': create_date_str,
+        }
+
+        equip_pieces_log.info(json.dumps(data, separators=[',', ':']))
         # equip_log.info('{uid}\t{act_time}\t{aquire_time}\t{equip_id}\t{grade}\t{quality}\t{init_lv}\t'
         #                '{level}\t{owner}\t{base}\t{extra}\t{refined_property}\t{st_lv}\t'
         #                '{refine_count}\t{create_date}'.format(**data))
@@ -221,6 +272,53 @@ def item(mm, **kwargs):
             # item_log.info('{uid}\t{act_time}\t{item_id}\t{item_num}\t{create_date}'.format(**data))
 
 
+def script(mm, **kwargs):
+    """ 剧本信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+    from gconfig import game_config
+    script = mm.script.own_script
+    config = game_config.script
+    script_log = kwargs.get('script_log') or get_bi_logger_by_type('script')
+    for script_id in script:
+
+        data = {
+            'user_id': mm.uid,
+            'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
+            'star': config.get(script_id, {}).get('star', 0),
+            'script_id': script_id
+        }
+
+        script_log.info(json.dumps(data, separators=[',', ':']))
+
+
+def building(mm, **kwargs):
+    """ 建筑信息
+
+    :param mm:
+    :return:
+    """
+    from lib.utils import timelib
+    from gconfig import game_config, get_str_words
+    building = mm.user.group_ids
+    config = game_config.building
+    building_log = kwargs.get('building_log') or get_bi_logger_by_type('building')
+    for group_id, info in building.iteritems():
+        config_build = config.get(info.get('build_id', 0), {})
+        data = {
+            'user_id': mm.uid,
+            'act_time': timelib.timestamp_to_datetime_str(mm.user.active_time),
+            'group_id': group_id,
+            'lv': config_build.get('lv', 0),
+            'name': get_str_words('1', config_build.get('name', 0)),
+        }
+
+        building_log.info(json.dumps(data, separators=[',', ':']))
+
+
 def stones(mm, **kwargs):
     """ 灵魂石信息
 
@@ -254,25 +352,38 @@ def main():
     from scripts.statistics.bdc_snapshot import (
         bdc_user_info, bdc_charge_info, bdc_realtime_info, create_zip_file
     )
+    from celery_app.aliyun_bdc_log import send_bdc_log_to_aliyun
+
 
     all_loggers = dict(
         info_log=get_bi_logger_by_type('info'),
-        hero_log=get_bi_logger_by_type('hero'),
+        card_log=get_bi_logger_by_type('card'),
         equip_log=get_bi_logger_by_type('equip'),
         item_log=get_bi_logger_by_type('item'),
-        stones_log=get_bi_logger_by_type('stones'),
+        equip_pieces_log=get_bi_logger_by_type('equip_pieces'),
+        card_pieces_log=get_bi_logger_by_type('card_pieces'),
+        script_log=get_bi_logger_by_type('script'),
+        building_log=get_bi_logger_by_type('building'),
     )
+    bdc_user_info_contents = []
     act_uids = act_user.get_act_all_user(today=today)
     for uid in act_uids:
+        print uid
         try:
             mm = ModelManager(uid)
             u = mm.user
         except:
             continue
 
-        for func in (info, bdc_user_info, hero, equip, item, stones):
+        for func in (info, bdc_user_info, card, equip, item, equip_pieces, card_pieces, script, building):
             try:
-                func(mm, **all_loggers)
+                data = func(mm, **all_loggers)
+                # 发bdc userinfo
+                if func.func_name == 'bdc_user_info':
+                    bdc_user_info_contents.append(data)
+                    if not len(bdc_user_info_contents) % 50:
+                        send_bdc_log_to_aliyun(bdc_user_info_contents)
+                        bdc_user_info_contents = []
             except:
                 traceback.print_exc()
                 continue
@@ -280,8 +391,11 @@ def main():
     bdc_charge_info(today=today)
     # bdc_realtime_info(today=today)
 
-    create_zip_file('userinfo', create_day)
-    create_zip_file('chargeinfo', create_day)
+    # create_zip_file('userinfo', create_day)
+    # create_zip_file('chargeinfo', create_day)
+
+    if bdc_user_info_contents:
+        send_bdc_log_to_aliyun(bdc_user_info_contents)
 
 
 if __name__ == "__main__":

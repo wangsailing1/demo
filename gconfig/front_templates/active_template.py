@@ -406,10 +406,10 @@ first_recharge = {
     'price_CN': ('price_CN', 'int'),      # 所需rmb
     'price_TW': ('price_TW', 'float'),    # 所需美元
     'name': ('name', 'unicode'),    # 名字
-    'time': ('time', 'int'),        # 领取倒计时
+    # 'time': ('time', 'int'),        # 领取倒计时
     'gift': ('gift', 'list_3'),     # 领取奖励
-    'story': ('story', 'unicode'),  # 描述
-    # 'type': ('type', 'int'),      # 类型 0是任意金额，1是累计的，2是单笔的
+    # 'story': ('story', 'unicode'),  # 描述
+    'type': ('type', 'int'),      # 类型 0是任意金额，1是累计的，2是单笔的
 }
 
 
@@ -660,7 +660,7 @@ active_inreview = {
     'uk': ('id', 'int'),                        # 对应入口
     'is_open': ('is_open', 'int'),              # 是否开启
     'show_lv': ('show_lv', 'int'),              # 开启等级
-    'server_id': ('server_id', 'int_list'),     # 开启服务器
+    # 'server_id': ('server_id', 'int_list'),     # 开启服务器
     'server_new': ('server_new', 'int'),        # 新老服开启服务器
     'show_time': ('show_time', 'str'),          # 开启时间
 }
@@ -947,4 +947,27 @@ sign_first_week = {
 sign_daily_normal = {
     'uk': ('day', 'int'),               # 每月签到日期
     'reward': ('reward', 'list_3'),     # 每月签到奖励
+    'extra_reward': ('extra_reward', 'list_3'),     # 每月签到奖励
+}
+
+# 活动时间配置
+active = {
+    'uk':               ('id',              'int'),     # 序号
+    'active_version':   ('active_version',  'int'),     # 版本号
+    'start_time':       ('start_time',      'str'),     # 开始时间
+    'end_time':         ('end_time',        'str'),     # 结束时间
+    'active_type':      ('active_type',     'int'),     # 活动类型
+    'param1':           ('param1',          'int'),     # 参数1
+    'param2':           ('param2',          'int'),     # 参数2
+    'param3':           ('param3',          'int'),     # 参数3
+}
+
+# 累充活动
+add_recharge = {
+    'uk':               ('id',              'int'),         # 序号
+    'version':          ('version',  'int'),                # 版本号
+    'type':             ('type',     'int'),                # 充值类型
+    'number':           ('number',     'int'),              # 充值类型
+    'reward':           ('reward',          'int_list'),    # 奖励[类型，id，数量]
+    'des':              ('des',          'str'),            # des
 }

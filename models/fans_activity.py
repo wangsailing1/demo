@@ -8,7 +8,9 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
 from tools.gift import calc_gift
-
+from models.vip_company import bussiness_gold
+import settings
+from lib.utils.mail import send_dingtalk
 
 class FansActivity(ModelBase):
     # NEED_MAPPING = ['演技', '歌艺', '气质', '动感', '艺术'，'娱乐',性别，类型，分类，人气]
@@ -20,7 +22,7 @@ class FansActivity(ModelBase):
         self._attrs = {
             'activity': {},
             'unlocked_activity': [],
-            'can_unlock_activity': [],
+            # 'can_unlock_activity': [],
             'activity_log': {},  # {1:{'start_time':11,item_produce:{items:[],last_time:111},
             # gold_produce:{last_time:111},attention_produce:{last_time:111},},'cards':[]}
             'card_mapping': {},  # 记录卡牌所在活动
@@ -35,30 +37,69 @@ class FansActivity(ModelBase):
                 self.card_mapping[card_id] = [value, 0]
                 save = True
 
-        if not self.can_unlock_activity:
-            all_id = game_config.fans_activity.keys()
-            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
-            self.can_unlock_activity = list(set(all_id) - set(all_lock_id))
-            save = True
-        else:
-            all_id = game_config.fans_activity.keys()
-            all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
-            can_unlock_id = list(set(all_id) - set(all_lock_id))
-            new_can_unlock_id = list(set(can_unlock_id) - set(self.can_unlock_activity))
-            if new_can_unlock_id:
-                self.can_unlock_activity.extend(new_can_unlock_id)
+        # if not self.can_unlock_activity:
+        #     all_id = game_config.fans_activity.keys()
+        #     all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        #     self.can_unlock_activity = list(set(all_id) - set(all_lock_id))
+        #     save = True
+        # else:
+        #     all_id = game_config.fans_activity.keys()
+        #     all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        #     can_unlock_id = list(set(all_id) - set(all_lock_id))
+        #     new_can_unlock_id = list(set(can_unlock_id) - set(self.can_unlock_activity))
+        #     if new_can_unlock_id:
+        #         self.can_unlock_activity.extend(new_can_unlock_id)
 
         if save:
             self.save()
 
+    # 检测并更新粉丝建筑是否正常
+    def check_unlock_build(self):
+        config = game_config.fans_activity
+        all_filed = range(201, 209)
+        save = False
+        build_list = []
+        for group_id, fans_id in self.activity.iteritems():
+            build_id = config[fans_id]['build_id']
+            if build_id not in self.mm.user._build:
+                has_build_field = [v['field_id'] for v in self.mm.user._build.values()]
+                field_id = min(set(all_filed) - set(has_build_field))
+                self.mm.user.add_build(build_id, field_id, save=False)
+                build_list.append(build_id)
+                save = True
+        if save:
+            self.mm.user.save()
+            try:
+                import datetime
+                from lib.utils.debug import LOCAL_IP_STR
+                import socket
+                log_dict = [
+                    ('date', datetime.datetime.now()),
+                    ('hostname', LOCAL_IP_STR if LOCAL_IP_STR else socket.gethostname()),
+                    ('uid', self.mm.user.uid),
+                    ('build', '-'.join((str(i) for i in build_list))),
+                ]
+
+                l = []
+                for k, v in log_dict:
+                    l.append('%s: "%s"' % (k, v))
+                s = '\n'.join(l)
+                subject = '[%s ERROR MAIL] - %s' % (
+                    settings.ENV_NAME, 'build_unlock')
+                send_dingtalk(settings.DINGTALK_URL, subject, s)
+            except:
+                from lib.utils.debug import print_log
+                print_log('build_unlock_err')
+
+
     def count_produce(self, get_reward=False, activity_id=0, is_save=True):
         if activity_id not in self.activity_log:
-            return []
+            return [], {}
         now = int(time.time())
         config = game_config.fans_activity
         value = self.activity_log[activity_id]
         if not value:
-            return []
+            return [], {}
         config_id = config[activity_id]
         item_produce = value['item_produce']
         gold_produce = value['gold_produce']
@@ -74,7 +115,7 @@ class FansActivity(ModelBase):
         all_items = []
         item_produce_new = []
         old_items = item_produce['items']
-
+        card_effect = {}
         for card in value['cards']:
             if card in ['0']:
                 continue
@@ -86,16 +127,19 @@ class FansActivity(ModelBase):
                     item = weight_choice(config_id['item'])[:-1]
                     items.append(item)
             item_produce_new = calc_gift(items)
-
+            skill_effect = self.mm.card.get_skill_effect({card:0}, 2, 0).get(card, {}).get('effect', {})
             # 计算金币
+            card_effect[card] = skill_effect.get(17, {}).get(2, 0) + bussiness_gold(self.mm.user)
             increase = value.get('effect_id') / 10000.0  # 活动加成
-            gold_per_card = config_id['gold_per_card'] * (1 + increase)
+            gold_per_card = config_id['gold_per_card'] * (1 + increase + card_effect[card] / 10000.0)
             god_num = int((now - gold_produce['last_time']) / gold_per_time * gold_per_card)
+            god_num = god_num if god_num > 0 else 0
             new_items = [[1, 0, god_num]]
 
             # 计算关注度
             attention_per_card = config_id['attention_per_card'] * (1 + increase)
             attention_num = int((now - attention_produce['last_time']) / attention_per_time * attention_per_card)
+            attention_num = attention_num if attention_num > 0 else 0
             new_items.append([19, 1, attention_num])
             all_items.extend(new_items)
         item_produce_new.extend(old_items)
@@ -117,14 +161,40 @@ class FansActivity(ModelBase):
         if is_save:
             self.save()
 
-        return all_items
+        return all_items, card_effect
 
     # 添加可解锁粉丝活动
-    def add_can_unlock_activity(self, activity_id, is_save=False):
-        if activity_id and activity_id not in self.can_unlock_activity:
-            self.can_unlock_activity.append(activity_id)
-            if is_save:
-                self.save()
+    # def add_can_unlock_activity(self, activity_id, is_save=False):
+    #     if activity_id and activity_id not in self.can_unlock_activity:
+    #         self.can_unlock_activity.append(activity_id)
+    #         if is_save:
+    #             self.save()
+
+    @property
+    def can_unlock_activity(self):
+        info = []
+        # 需要推图解锁的
+        config = game_config.get_chapter_mapping()
+        stage_config = game_config.chapter_stage
+        all_stage = self.mm.chapter_stage.chapter
+        for chapter_id ,value in all_stage.iteritems():
+            for type_hard, s_value in value.iteritems():
+                for stage_id in s_value.keys():
+                    stage = config[chapter_id][type_hard]['stage_id'][stage_id - 1]
+                    if stage:
+                        fans_id = stage_config[stage].get('fans_activity',0)
+                        if fans_id and fans_id not in info:
+                            info.append(fans_id)
+        # 不需要解锁条件的
+        all_id = game_config.fans_activity.keys()
+        all_lock_id = [i['fans_activity'] for i in game_config.chapter_stage.values()]
+        can_unlock_id = list(set(all_id) - set(all_lock_id))
+        new_can_unlock_id = list(set(can_unlock_id) - set(info))
+        info.extend(new_can_unlock_id)
+        return info
+
+
+
 
     def get_card_effect(self, cards):
         group_list = set()
@@ -159,6 +229,35 @@ class FansActivity(ModelBase):
                 value[0] = new_id
         if is_save:
             self.save()
+
+    def fans_activity_info(self):
+        data = {'unlocked_activity': self.unlocked_activity,
+                'can_unlock_activity': self.can_unlock_activity,
+                'activity': self.activity}
+        return data
+
+    def activety_status(self,activity_id):
+        """
+        0未开启 1开启没人 2开启有人
+        :return: 
+        """
+        data = self.activity_log.get(activity_id, {})
+        if not data:
+            return 0
+        else:
+            for i in data['cards']:
+                if i in self.mm.card.cards:
+                        return 2
+        return 1
+
+    def get_fans_cards(self):
+        cards = []
+        for id, value in self.activity_log.iteritems():
+            for card_id in value.get('cards',[]):
+                cards.append(card_id)
+        return cards
+
+
 
 
 ModelManager.register_model('fans_activity', FansActivity)

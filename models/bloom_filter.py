@@ -6,6 +6,7 @@ Created on 2018-05-30
 @author: sm
 """
 
+import settings
 from lib.db import ModelBase
 
 
@@ -22,14 +23,18 @@ class SimpleHash(object):
 
 
 class BloomFilter(object):
-    # 128M 7个seed 够 4kw 条数据使用了，设备码判重也不需要那么精确，不够的话可以扩展key数量
+    # 7个seed 选m(bit位数)/n(数据条数)=26 k(hash函数)=7 容错率 0.0000408
+    # 128M 够 4kw 条数据使用了，设备码判重也不需要那么精确，不够的话可以扩展key数量
     KEY = 'bloomfilter.device_mark'
     SERVER_NAME = 'master'
 
     def __init__(self):
         self.redis = ModelBase.get_redis_client(self.SERVER_NAME)
 
-        self.bit_size = 1 << 30  # Redis的String类型最大容量为512M，现使用128M
+        if settings.DEBUG:
+            self.bit_size = 1 << 28  # Redis的String类型最大容量为512M，开发环境现使用32M 1kw数据量
+        else:
+            self.bit_size = 1 << 30  # Redis的String类型最大容量为512M，现使用128M
         self.seeds = [5, 7, 11, 13, 31, 37, 61]
         self.hash_funcs = []
 

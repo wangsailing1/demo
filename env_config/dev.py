@@ -8,7 +8,10 @@ import inspect
 
 # 每个env都需要有的全局变量
 DEBUG = True        # debug模式
+KVGAME_SDK_DEBUG = True     # 凯奇谷自有sdk 是否走测试环境验证
 BACK_BATTLE_DEBUG = False   # 后端战斗debug
+BDC_LOG_SEND_TO_ALIYUN = True   # bdc日志开关，是否发往阿里云
+
 PLATFORM = 'dev'    # 平台标示
 URL_PARTITION = 'big_sale'
 MASTER_HOST = '219.142.26.114:9180'
@@ -24,6 +27,17 @@ CURRENCY_TYPE = u'RMB'  # 货币类型
 RPC_SERVER_ADDR = ('192.168.1.99', 8000)    # c++服务器地址
 
 APP_STORE_BID_LIST = ['com.kqg.qyjy.twaos']
+
+# 前端热更资源地址
+resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
+# 前端热更配置地址
+config_resource = [
+    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
+    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
+]
+
+payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
+
 
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
@@ -49,23 +63,13 @@ celery_config = {'host': '192.168.1.103', 'port': 6311, 'socket_timeout': 5, 'db
 # 每个app配置
 apps = [
     # server, long_net_name, redis_ip, redis_port, redis_db, father_server
-    ('gtt1', 'net1', '192.168.1.103', 6311, 3),
-    ('gtt2', 'net1', '192.168.1.103', 6311, 3),
-    ('gtt3', 'net1', '192.168.1.103', 6311, 3),
-    ('gtt4', 'net1', '192.168.1.103', 6311, 3),
-    ('gtt5', 'net1', '192.168.1.103', 6311, 3),
+    ('d1', 'net1', '192.168.1.103', 6311, 3),
+    ('d2', 'net1', '192.168.1.103', 6311, 3),
+    ('d3', 'net1', '192.168.1.103', 6311, 3),
+    ('d4', 'net1', '192.168.1.103', 6311, 3),
+    ('d5', 'net1', '192.168.1.103', 6311, 3),
 ]
 
-
-# 前端热更资源地址
-resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
-# 前端热更配置地址
-config_resource = [
-    # 'http://%s/%s/lr/cr/' % (CDN, URL_PARTITION),
-    'http://%s/%s/lr/cr/' % (MASTER_HOST, URL_PARTITION),
-]
-
-payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
 PAYMENT_CONFIG = {
     'host': '192.168.1.51',

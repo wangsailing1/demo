@@ -8,7 +8,7 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils import weight_choice, get_it, not_repeat_weight_choice_2
 from gconfig import game_config
-from tools.unlock_build import check_build, PERIOD_SHOP
+from tools.unlock_build import check_build
 
 
 class Shop(ModelBase):
@@ -85,7 +85,21 @@ class Shop(ModelBase):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
+
+    def get_good_by_vip(self,goods):
+        config = game_config.shop_goods
+        goods_vip = {}
+        for pos, good in goods.iteritems():
+            if pos not in goods_vip:
+                goods_vip[pos] = []
+            for good_id, weight in good:
+                show_vip = config[good_id]['show_vip']
+                if self.mm.user.company_vip >= show_vip:
+
+                    goods_vip[pos].append([good_id, weight])
+        return goods_vip
 
     def get_price(self, price, shop_config):
         """
@@ -97,6 +111,41 @@ class Shop(ModelBase):
         discount = weight_choice(shop_config.get('discount', [10, 1]))[0]
 
         return discount, int(math.ceil(round(price * 0.1 * discount, 2)))
+
+    def vip_goods_mapping(self):
+        config = game_config.shop_goods
+        goods_mapping = {}
+        for goods_id, value in config.iteritems():
+            if value['show_vip'] and value['shop_id'] == self.shop_id:
+                if value['show_vip'] not in goods_mapping:
+                    goods_mapping[value['show_vip']] = []
+                goods_mapping[value['show_vip']].append([goods_id, value['pos_id']])
+        return goods_mapping
+
+    def add_vip_goods(self):
+        vip_goods_mapping = self.vip_goods_mapping()
+        if self.mm.user.company_vip not in vip_goods_mapping:
+            return
+        level = self.mm.user.level
+        goods_weight = self.get_shop_id_with_level(level)
+        if not goods_weight:
+            return
+        save = False
+        for i, j in goods_weight.iteritems():
+            if not j:
+                continue
+            if i not in [value[1] for value in vip_goods_mapping[self.mm.user.company_vip]]:
+                continue
+            goods_id = weight_choice(j)[0]
+            sell_config = self.get_shop_config(goods_id)
+            if not sell_config:
+                continue
+            sell_num = sell_config.get('sell_num', 0)
+            discount, price = self.get_price(sell_num, sell_config)
+            self.goods[i] = {'shop_id': goods_id, 'times': 0, 'sell_num': price, 'discount': discount}
+            save = True
+        if save:
+            self.save()
 
 
 # 神秘商店
@@ -120,10 +169,14 @@ class MysticalShop(Shop):
     def pre_use(self):
         refresh_time, next_time = self.get_refresh_time()
         now = time.strftime(self.FORMAT)
+        save = self.mysticalrefresh_times()
+        self.mysticalrefresh_times()
         if self.refresh_time < refresh_time and now > refresh_time:
             self.refresh_goods()
             self.refresh_time = refresh_time
             self.next_time = int(time.mktime(time.strptime(next_time, self.FORMAT)))
+            save = True
+        if save:
             self.save()
 
     def mysticalrefresh_times(self):
@@ -131,6 +184,8 @@ class MysticalShop(Shop):
         if self.refresh_date != today:
             self.refresh_date = today
             self.refresh_times = 0
+            return True
+        return False
 
     def refresh_goods(self, is_save=False, is_manual=False):
 
@@ -168,7 +223,8 @@ class MysticalShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
     def get_refresh_time(self):
         config = game_config.mystical_store_cd
@@ -199,14 +255,24 @@ class GiftShop(Shop):
             'refresh_time': 0,
             'refresh_times': 0,
             'goods': {},
-            'next_time': 0
+            'next_time': 0,
+            'refresh_date': '',
         }
         super(Shop, self).__init__(self.uid)
 
     def pre_use(self):
+        today = time.strftime('%F')
+        save = False
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.refresh_goods()
+            self.refresh_time = time.strftime(self.FORMAT)
+            save = True
         if not self.goods and not self.refresh_time:
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
+            save = True
+        if save:
             self.save()
 
     def refresh_goods(self, is_save=False):
@@ -244,7 +310,8 @@ class GiftShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
 
 # 资源
@@ -258,14 +325,24 @@ class ResourceShop(Shop):
             'refresh_time': 0,
             'refresh_times': 0,
             'goods': {},
-            'next_time': 0
+            'next_time': 0,
+            'refresh_date': '',
         }
         super(Shop, self).__init__(self.uid)
 
     def pre_use(self):
+        today = time.strftime('%F')
+        save = False
+        if self.refresh_date != today:
+            self.refresh_date = today
+            self.refresh_goods()
+            self.refresh_time = time.strftime(self.FORMAT)
+            save = True
         if not self.goods and not self.refresh_time:
             self.refresh_goods()
             self.refresh_time = time.strftime(self.FORMAT)
+            save = True
+        if save:
             self.save()
 
     def refresh_goods(self, is_save=False):
@@ -304,7 +381,8 @@ class ResourceShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
 
 class PeriodShop(Shop):
@@ -364,7 +442,8 @@ class PeriodShop(Shop):
         :return:
         """
         goods_weight = game_config.get_shop_id_with_level(self.shop_id, level)
-        return goods_weight
+        goods_weight_vip = self.get_good_by_vip(goods_weight)
+        return goods_weight_vip
 
     def get_refresh_time(self):
         """
@@ -380,7 +459,7 @@ class PeriodShop(Shop):
 
         :return:
         """
-        if check_build(self.mm, PERIOD_SHOP) and get_it(self.OPEN_RATE) and not self.start_time:
+        if  get_it(self.OPEN_RATE) and not self.start_time:
             self.start_time = int(time.time())
             self.show_times += 1
             self.refresh_times = 0

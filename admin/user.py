@@ -42,6 +42,22 @@ def select(req, **kwargs):
 
     return render(req, 'admin/user/index.html', **result)
 
+@require_permission
+def init_actor_chat(req):
+    uid = req.get_argument('uid', '')
+    if not uid:
+        return select(req, **{'msg': 'uid is not empty'})
+
+    mm = ModelManager(uid)
+    mm.friend.chat_over = {}
+    mm.friend.phone_daily_times = 0
+    mm.friend.phone_daily_log = {}
+    mm.friend.save()
+    msg = 'success'
+
+    return select(req, **{'msg': msg})
+
+
 
 @require_permission
 def update(req, **kwargs):
@@ -72,6 +88,12 @@ def update(req, **kwargs):
     guild_coin = int(req.get_argument('guild_coin'))
     action_point = int(req.get_argument('action_point'))
     script_license = int(req.get_argument('script_license'))
+    server_dice_num = int(req.get_argument('server_dice_num'))
+    dice_num = int(req.get_argument('dice_num'))
+    chapter = req.get_argument('chapter')
+    skip_dialouge = int(req.get_argument('skip_dialouge'))
+    company_vip_exp = int(req.get_argument('company_vip_exp'))
+    directing_times = int(req.get_argument('directing_times'))
 
     cur_level = mm.user.level
     level = min(level, max(game_config.player_level))
@@ -80,12 +102,48 @@ def update(req, **kwargs):
         if level < cur_level:
             cur_level = mm.user.level = 1
         for lv in xrange(cur_level, level):
-            add_exp += game_config.hero_exp.get(lv, {}).get('player_exp', 0)
+            add_exp += game_config.player_level.get(lv, {}).get('exp', 0)
         if add_exp > 0:
             mm.user.add_player_exp(add_exp)
     else:
         mm.user.exp = exp
     mm.user.name = name
+    mm.user.company_vip_exp = company_vip_exp
+
+    mm.script.directing_times = directing_times
+
+    # 调章节
+    chapter_id, stage = [int(i) for i in chapter.split('-')]
+    config = game_config.get_chapter_mapping()
+    stage_list = [i for i in config[chapter_id][0]['stage_id'] if i != -1]
+    all_stage = len(stage_list)
+    stage = min(stage, all_stage)
+    if stage == 1 and chapter_id not in mm.chapter_stage.chapter and chapter_id != 1:
+        chapter_id -= 1
+        stage = len([i for i in config[chapter_id][0]['stage_id'] if i != -1])
+
+    chapter_config = game_config.chapter
+    mm.chapter_stage.next_chapter = [1]
+    mm.chapter_stage.chapter = {}
+    for k, v in chapter_config.iteritems():
+        if k <= chapter_id and v['hard_type'] == 0:
+            stage_list = [i for i in config[k][0]['stage_id'] if i != -1]
+            all_stage = len(stage_list)
+            stage = min(stage, all_stage)
+            if k < chapter_id:
+                stage_max = all_stage
+            else:
+                stage_max = stage
+            if k not in mm.chapter_stage.chapter:
+                mm.chapter_stage.chapter[k] = {0: {}}
+                if stage_max == all_stage:
+                    mm.chapter_stage.next_chapter.extend(v['next_chapter'])
+            for stage_id in range(stage_max):
+                if v['stage_id'][stage_id]:
+                    mm.chapter_stage.chapter[k][0][stage_id+1] = {'fight_times': 0, 'star': 7}
+                else:
+                    mm.chapter_stage.chapter[k][0][stage_id + 1] = {}
+
 
     # 钻石
     admin = auth.get_admin_by_request(req)
@@ -145,7 +203,7 @@ def update(req, **kwargs):
     if diff_action_point > 0:
         mm.user.decr_action_point(diff_action_point)
     elif diff_action_point < 0:
-        mm.user.add_action_point(-diff_action_point)
+        mm.user.add_action_point(-diff_action_point,force=True)
 
     # # 统帅精力
     # diff_energy = mm.commander.energy - energy
@@ -160,13 +218,20 @@ def update(req, **kwargs):
     #     mm.user.deduct_box_key(diff_box_key)
     # elif diff_box_key < 0:
     #     mm.user.add_box_key(-diff_box_key)
+    mm.user.skip_dialouge = skip_dialouge
     mm.user.script_license = script_license
-    vip = min(max(game_config.vip), vip)
-    if mm.user.vip != vip:
-        mm.user.vip = vip
-        mm.user.vip_exp = 0
+    mm.carnival.server_dice_num = server_dice_num
+    mm.carnival.dice_num = dice_num
+    # vip = min(max(game_config.vip_company), vip)
+    # if mm.user.vip != vip:
+    #     mm.user.vip = vip
+    #     mm.user.vip_exp = 0
 
     mm.user.save()
+    mm.carnival.save()
+    mm.chapter_stage.save()
+    mm.fans_activity.save()
+    mm.script.save()
 
     msg = 'success'
 

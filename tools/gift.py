@@ -7,6 +7,8 @@ from collections import Counter
 from lib.utils import weight_choice
 from lib.utils import add_dict
 from gconfig import game_config
+from return_msg_config import i18n_msg
+from gconfig import get_str_words
 
 
 def calc_gift(gift_config, num=3):
@@ -55,13 +57,26 @@ def add_gift_by_weights(mm, gift_sort, gift_config, cur_data=None):
     _gift_config = weight_choice(gift_config)
     return add_gift(mm, gift_sort, [_gift_config[:-1]], cur_data=cur_data)
 
+def check_item_enough(func):
+    def wrapper(mm,gift_config,*args,**kwargs):
+        config =game_config.use_item
+        add_food_num = 0
+        for item in gift_config:
+            if item[0] == 3 and config[item[1]]['type'] == 2:
+                add_food_num += item[2]
+        if mm.item.check_food_enough(add_food_num):
+            return 'error_food_enough'
+        data = func(mm,gift_config,*args,**kwargs)
+        return data
+    return wrapper
 
-def add_mult_gift(mm, gift_config, cur_data=None):
+def add_mult_gift(mm, gift_config, cur_data=None,source=0):
     """ 获取统一多项奖励
 
     :param mm:
     :param gift_config: [[类型, id, 数量]], [[类型, id, 数量, 权重]]
     :param cur_data:
+    :param source:  来源 1 代表充值
     :param save:
     :return:
     """
@@ -71,7 +86,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
 
     for pkg in gift_config:
         sort = pkg[0]
-        add_gift(mm, sort, [pkg[1:]], cur_data=data)
+        add_gift(mm, sort, [pkg[1:]], cur_data=data,source=source)
 
     return data
 
@@ -97,7 +112,7 @@ def add_mult_gift(mm, gift_config, cur_data=None):
 """
 
 
-def add_gift(mm, gift_sort, gift_config, cur_data=None):
+def add_gift(mm, gift_sort, gift_config, cur_data=None,source=0):
     """ 获取统一奖励
 
     :param mm:
@@ -111,7 +126,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
                 7   点赞
                 8   艺人
                 9   艺人碎片
-                10
+                10  装备碎片
                 11  玩家经验
                 12  公会资金
                 13  公会贡献
@@ -168,9 +183,13 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             item_num = pkg[1]
             if not item_num:
                 continue
-            mm.item.add_item(item_id, item_num)
-            add_dict(data.setdefault('item', {}), item_id, item_num)
-        mm.item.save()
+            stats = mm.item.add_item(item_id, item_num)
+            if not stats:
+                add_dict(data.setdefault('item', {}), item_id, item_num)
+                mm.item.save()
+            else:
+                add_dict(data.setdefault('mail_food_enough', {}), item_id, item_num)
+                mm.mail.save()
     elif gift_sort == 6:  # 装备（资产）
         for pkg in gift_config:
             equip_id = pkg[0]
@@ -195,11 +214,12 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             if not hero_num:
                 continue
             for i in xrange(hero_num):
-                status = mm.card.add_card(hero_id)
+                status = mm.card.add_card(hero_id,source=source)
                 if isinstance(status, bool) and status:
                     card_config = game_config.card_basis.get(hero_id)
+                    p_num = card_config['star_cost'] if source == 1 else card_config['star_giveback']
                     add_dict(data.setdefault('pieces', {}), card_config['piece_id'],
-                             card_config['star_giveback'])
+                             p_num)
                 elif not isinstance(status, bool):
                     data.setdefault('cards', []).append(status)
         mm.card.save()
@@ -212,7 +232,7 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.card.add_piece(item_id, item_num)
             add_dict(data.setdefault('pieces', {}), item_id, item_num)
         mm.card.save()
-    elif gift_sort == 10:
+    elif gift_sort == 10:  # 装备碎片
         for pkg in gift_config:
             item_id = pkg[0]
             item_num = pkg[1]
@@ -289,6 +309,55 @@ def add_gift(mm, gift_sort, gift_config, cur_data=None):
             mm.user.add_attention(add_type,add_num)
             add_dict(data.setdefault('attention', {}), add_type, add_num)
         mm.user.save()
+
+    elif gift_sort == 20:  # 卡牌人气
+        for pkg in gift_config:
+            add_type = pkg[0]
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.card.add_card_popularity(add_type,add_num)
+            add_dict(data.setdefault('popularity', {}), add_type, add_num)
+        mm.card.save()
+
+    elif gift_sort == 21:  # 导演
+        for pkg in gift_config:
+            director_id = pkg[0]
+            director_num = pkg[1]
+            if not director_num:
+                continue
+            status = mm.director.add_director(director_id)
+            if not status:
+                continue
+            data.setdefault('directors', []).append(status)
+        mm.director.save()
+
+    elif gift_sort == 102:  # 成就点
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_achieve_point(add_num)
+            add_dict(data, 'achieve', add_num)
+        mm.mission.save()
+
+    elif gift_sort == 101:  # 目标点
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_liveness(add_num)
+            add_dict(data, 'liveness', add_num)
+        mm.mission.save()
+
+    elif gift_sort == 103:  # 业绩
+        for pkg in gift_config:
+            add_num = pkg[1]
+            if not add_num:
+                continue
+            mm.mission.add_performance(add_num)
+            add_dict(data, 'performance', add_num)
+        mm.mission.save()
 
     # elif gift_sort == 10:  # 公会经验, 需要在调用地方单独加, 有些逻辑多个用户操作公会数据
     #     for pkg in gift_config:
@@ -392,7 +461,7 @@ def del_goods(mm, goods_sort, goods_config):
             item_id = pkg[0]
             item_num = pkg[1]
             if not mm.equip.del_piece(item_id, item_num):
-                return 'error_piece', 0
+                return 'error_equip_piece', 0
         mm.equip.save()
     elif goods_sort == 11:  # 玩家经验
         return 'error_exp', 0
@@ -409,6 +478,13 @@ def del_goods(mm, goods_sort, goods_config):
 
     elif goods_sort == 14:  # vip经验
         pass
+
+    elif goods_sort == 20:  # 卡牌人气
+        for pkg in goods_config:
+            # if not mm.card.is_enough_popularity(pkg[0], pkg[1]):
+            #     return 'error_popularity', 0
+            mm.card.delete_card_popularity(pkg[0], pkg[1])
+        mm.card.save()
 
     return 0, silver_count
 
@@ -479,7 +555,7 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if not mm.user.is_diamond_enough(add_diamond):
                 return False
-    elif gift_sort == 3:  # 道具
+    elif gift_sort == 5:  # 道具
         for pkg in gift_config:
             item_id = pkg[0]
             item_num = pkg[1]
@@ -487,22 +563,21 @@ def has_goods(mm, gift_sort, gift_config):
                 continue
             if mm.item.get_item(item_id) < item_num:
                 return False
-    elif gift_sort == 4:  # 灵魂石
+    elif gift_sort == 4:  # 美元
         for pkg in gift_config:
-            stone_id = pkg[0]
             stone_num = pkg[1]
             if not stone_num:
                 continue
-            if mm.hero.get_stone(stone_id) < stone_num:
+            if not mm.user.is_dollar_enough(stone_num):
                 return False
-    elif gift_sort == 5:  # 采集物
-        for pkg in gift_config:
-            citem_id = pkg[0]
-            citem_num = pkg[1]
-            if not citem_num:
-                continue
-            if mm.coll_item.get_item(citem_id) < citem_num:
-                return False
+    # elif gift_sort == 5:  # 采集物
+    #     for pkg in gift_config:
+    #         citem_id = pkg[0]
+    #         citem_num = pkg[1]
+    #         if not citem_num:
+    #             continue
+    #         if mm.coll_item.get_item(citem_id) < citem_num:
+    #             return False
     # elif gift_sort == 6:  # 装备
     #     return False
     elif gift_sort == 6:  # 基因
@@ -708,3 +783,69 @@ def has_goods(mm, gift_sort, gift_config):
                 return False
 
     return True
+
+
+def get_reward_and_num(mm, gifts):
+    msg = ''
+    lan = mm.lan
+    for gift in gifts:
+        _sort = gift[0]
+        item_id = gift[1]
+        gift_num = gift[2]
+        reward = u''
+
+        if _sort == 1:  # 金币
+            reward = i18n_msg.get(1001, lan)
+        elif _sort == 2:  # 钻石
+            reward = i18n_msg.get(1002, lan)
+        elif _sort == 3:  # 体力
+            reward = i18n_msg.get(1003, lan)
+        elif _sort == 4:  # 美元
+            reward = i18n_msg.get(1004, lan)
+        elif _sort == 5:  # 道具
+            item_name = game_config.use_item[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, item_name)
+        elif _sort == 6:  # 装备（资产）
+            equip_name = game_config.equip[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, equip_name)
+        elif _sort == 7:  # 点赞数
+            reward = i18n_msg.get(1007, lan)
+        elif _sort == 8:  # 艺人
+            card_name = game_config.card_basis[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, card_name)
+        elif _sort == 9:  # 卡牌碎片
+            card_piece_name = game_config.card_piece[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, card_piece_name)
+        elif _sort == 10:  # 装备碎片
+            equip_piece_name = game_config.equip_piece[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, equip_piece_name)
+        elif _sort == 11:  # 玩家经验
+            reward = i18n_msg.get(1011, lan)
+        elif _sort == 12:  # 公会资金
+            reward = i18n_msg.get(1012, lan)
+        elif _sort == 13:  # 公会贡献
+            reward = i18n_msg.get(1013, lan)
+        elif _sort == 14:  # vip经验
+            reward = i18n_msg.get(1014, lan)
+        elif _sort == 15:  # 获得可拍摄剧本
+            reward = i18n_msg.get(1015, lan)
+        if _sort == 16:  # 点赞
+            reward = i18n_msg.get(1016, lan)
+        elif _sort == 18:  # 增加艺人名片
+            reward = i18n_msg.get(1018, lan)
+        elif _sort == 19:  # 关注度
+            reward = i18n_msg.get(1019, lan)
+        elif _sort == 20:  # 卡牌人气
+            reward = i18n_msg.get(1020, lan)
+        elif _sort == 21:  # 导演
+            director_name = game_config.director[item_id]['name']
+            reward = get_str_words(mm.user.language_sort, director_name)
+        elif _sort == 102:  # 成就点
+            reward = i18n_msg.get(1102, lan)
+        elif _sort == 101:  # 目标点
+            reward = i18n_msg.get(1101, lan)
+
+        if reward:
+            msg += u'%(reward)s * %(gift_num)s ' % {'reward': reward, 'gift_num': gift_num}
+
+    return msg

@@ -6,6 +6,7 @@ import time
 import math
 import json
 import urllib
+import traceback
 
 import settings
 from models.payment import *
@@ -18,55 +19,9 @@ from gconfig import MUITL_LAN, charge_scheme_func
 from lib.sdk_platform.sdk_hero import save_player_charger_log
 from lib.sdk_platform.helper import http
 from lib import utils
-
-COIN_RATE = {
-    'CN': 1.0 / 8,
-    'EN': 1.0 / 8,
-    'TW': 1.0 / 8,
-    'TH': 4.4,
-    'ID': 1923.0,
-    'VN': 3280.0,
-}
-
-
-# 货币与国家映射
-CURRENCY_COUNTRY = {
-    'CNY': 'CN',
-    'TWD': 'TWD',
-    'USD': 'EN',
-    'KRW': 'KR',
-    'THB': 'TH',
-    'VND': 'VN',
-    'IDR': 'ID',
-    'MYR': 'MYR',
-    'SGD': 'SGD',
-    'AUD': 'AUD',
-    'PHP': 'PHP',
-    'BRL': 'BRL',
-    'NZD': 'NZN',
-    'INR': 'INR',
-    'MMK': 'MMK',
-}
-
-
-# 每种货币兑换元宝/vip经验数
-CURRENCY_VIP_EXP = {
-    'THB': 2.5,
-    'TWD': 2.5,
-    'USD': 65,
-    'VND': 0.003,
-    'IDR': 0.0045,
-    'KRW': 0.055,
-    'CNY': 10,
-    'MYR': 16,
-    'SGD': 50,
-    'AUD': 50,
-    'PHP': 1.5,
-    'BRL': 20,
-    'NZD': 50,
-    'INR': 1,
-    'MMK': 0.05,
-}
+from logics.egg import Egg
+from lib.utils.debug import print_log
+from tools.gift import add_mult_gift
 
 
 def pay_apply(mm, obj, charge_config):
@@ -103,15 +58,17 @@ def pay_apply(mm, obj, charge_config):
     payment = Payment()
     if payment.exists_order_id(obj['order_id']):
         return True
-
+    act_id = obj.pop('act_id') if 'act_id' in obj else 0
+    act_item_id = obj.pop('act_item_id') if 'act_item_id' in obj else 0
     if payment.insert_pay(obj, commit=False):
         order_diamond = obj['order_diamond']
-        gift_diamond = obj['gift_diamond']
+        gift_diamond = 0 # obj['gift_diamond'] # 暂时废弃
+        gift = charge_config['gift']          # 香水等礼物
         order_money = obj['order_money']
         order_rmb = obj['order_rmb']
         product_id = obj['product_id']
         double_pay = obj['double_pay']
-        open_gift = charge_config.get('open_gift', 0)
+        open_gift = charge_config.get('sort', 0)
         add_vip_exp = charge_config.get('level_exp', 0)
 
         if double_pay:
@@ -123,58 +80,82 @@ def pay_apply(mm, obj, charge_config):
             # mm.user.add_diamond(order_diamond + gift_diamond)
 
         mm.user.diamond_charge += amount
+        # 助理,月卡，至尊月卡 特权礼包 主动领取
+        if open_gift in [4, 5, 6]:
+            gift = []
 
-        add_diamond = mm.user_payment.add_pay(open_gift, price=order_money, order_diamond=order_diamond, order_rmb=order_rmb, product_id=product_id, can_open_gift=can_open_gift)
+        add_diamond = mm.user_payment.add_pay(open_gift, obj['currency'], price=order_money, order_diamond=order_diamond, order_rmb=order_rmb,
+                                              product_id=product_id, can_open_gift=can_open_gift,act_id=act_id,act_item_id=act_item_id)
         if add_diamond:
             mm.user.add_diamond(int(add_diamond))
+
+        # 砸金蛋
+        egg = Egg(mm)
+        try:
+            egg.add_payment_and_item_times(order_diamond)
+        except:
+            print_log(traceback.format_exc())
+
+        # 钻石福利基金
+        try:
+            mm.foundation.add_score(order_diamond)
+        except:
+            print_log(traceback.format_exc())
+
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
         if server_type == 1:
-            mm.server_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
-            # 每日充值活动记录钻石
-            mm.server_daily_recharge.reward(order_diamond + gift_diamond, product_id)
-
-            # 豪华签到记录钻石或者现金
-            mm.server_sign_recharge.reward(order_diamond + gift_diamond, order_money)
-            # 每日礼包
-            mm.server_daily_package.recharge_reward(product_id)
-
-            # 许愿池
-            mm.server_charge_roulette.add_out_remain_time(order_diamond + gift_diamond, product_id)
-
-            # 限时特惠
-            mm.server_limit_discount.buy_gift(product_id)
-
-            # 天降红包
-            mm.server_red_bag.pay_trigger(product_id, amount)
+            pass
+            # mm.server_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
+            # # 每日充值活动记录钻石
+            # mm.server_daily_recharge.reward(order_diamond + gift_diamond, product_id)
+            #
+            # # 豪华签到记录钻石或者现金
+            # mm.server_sign_recharge.reward(order_diamond + gift_diamond, order_money)
+            # # 每日礼包
+            # mm.server_daily_package.recharge_reward(product_id)
+            #
+            # # 许愿池
+            # mm.server_charge_roulette.add_out_remain_time(order_diamond + gift_diamond, product_id)
+            #
+            # # 限时特惠
+            # mm.server_limit_discount.buy_gift(product_id)
+            #
+            # # 天降红包
+            # mm.server_red_bag.pay_trigger(product_id, amount)
         else:
-            mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
-            # 每日充值活动记录钻石
-            mm.active_daily_recharge.reward(order_diamond + gift_diamond, product_id)
-
-            # 豪华签到记录钻石或者现金
-            mm.sign_recharge.reward(order_diamond + gift_diamond, order_money)
-            # 每日礼包
-            mm.daily_package.recharge_reward(product_id)
-
-            # 许愿池
-            mm.charge_roulette.add_out_remain_time(order_diamond + gift_diamond, product_id)
-
-            # 限时特惠
-            mm.limit_discount.buy_gift(product_id)
-
-            # 天降红包
-            mm.red_bag.pay_trigger(product_id, amount)
+            pass
+            # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
+            # # 每日充值活动记录钻石
+            # mm.active_daily_recharge.reward(order_diamond + gift_diamond, product_id)
+            #
+            # # 豪华签到记录钻石或者现金
+            # mm.sign_recharge.reward(order_diamond + gift_diamond, order_money)
+            # # 每日礼包
+            # mm.daily_package.recharge_reward(product_id)
+            #
+            # # 许愿池
+            # mm.charge_roulette.add_out_remain_time(order_diamond + gift_diamond, product_id)
+            #
+            # # 限时特惠
+            # mm.limit_discount.buy_gift(product_id)
+            #
+            # # 天降红包
+            # mm.red_bag.pay_trigger(product_id, amount)
 
         # mm.user.record_privilege_gift(charge_config=charge_config)
-        mm.user.add_vip_exp(add_vip_exp, is_save=True)
+        mm.superplayer.add_day_pay(order_diamond)
+        mm.user.add_vip_exp(add_vip_exp, is_save=False)
+        add_mult_gift(mm, gift)
+        mm.user.save()
+        mm.rmbfoundation.save()
 
         # 购买商品日期记录，用于刷新次数
         mm.user_payment.add_buy_log(product_id)
 
         # 首充礼包
         mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
-
+        mm.user_payment.add_add_recharge(price_dict={1:order_diamond,2:order_rmb})
         # # 超值签到
         # mm.pay_sign.set_pay_sign_status(order_money+gift_diamond, product_id)
 
@@ -203,27 +184,31 @@ def pay_apply(mm, obj, charge_config):
 def analysis_order(order_id, split='-'):
     """ 解析游戏订单号
 
-    :param order_id:
+    :param order_id:  tw19920896-t1-4-1553022721-popstar_twandriod-0-0
     :param split:
     :return:
     """
     order_list = order_id.split(split)
     order_len = len(order_list)
-    if order_len == 4:
-        user_id, server_id, goods_id, _ = order_list
+    if order_len == 6:
+        user_id, server_id, goods_id, _, act_id, act_item_id = order_list
         goods_id = int(goods_id)
         charge_config = game_config.charge[goods_id]
-    elif order_len == 3:
-        user_id, server_id, goods_id = order_list
+    elif order_len == 5:
+        user_id, server_id, goods_id, act_id, act_item_id = order_list
+        goods_id = int(goods_id)
+        charge_config = game_config.charge[goods_id]
+    elif order_len == 7:
+        user_id, server_id, goods_id, ts, appid, act_id, act_item_id = order_list
         goods_id = int(goods_id)
         charge_config = game_config.charge[goods_id]
     else:
-        user_id, goods_id, charge_config = None, 0, {}
+        user_id, goods_id, charge_config, act_id, act_item_id = None, 0, {}, 0, 0
 
-    return user_id, goods_id, charge_config
+    return user_id, goods_id, charge_config, int(act_id), int(act_item_id)
 
 
-def generate_pay(user_id, goods_id, order_id, amount, uin, platform, raw_data='',
+def generate_pay(user_id, goods_id, order_id, amount, uin, platform, act_id, act_item_id, raw_data='',
                  currency=CURRENCY_CNY, charge_config=None, pay_tp=-1, game_order_id=''):
     """ 生成支付数据
 
@@ -288,6 +273,8 @@ def generate_pay(user_id, goods_id, order_id, amount, uin, platform, raw_data=''
         'real_product_id': real_product_id,
         'lan_sort': lan_sort,
         'over_diamond': over_diamond,
+        'act_id': act_id,
+        'act_item_id': act_item_id,
     }
 
     flag = pay_apply(mm, obj, charge_config)
@@ -341,23 +328,23 @@ def payment_verify(req, tp=None):
     platform = pay_data['platform']
     pay_tp = pay_data.get('pay_tp', -1)
 
-    user_id, goods_id, charge_config = analysis_order(game_order_id)
+    user_id, goods_id, charge_config, act_id, act_item_id = analysis_order(game_order_id)
     if user_id is None:
         return return_data[1]
     real_price = charge_config['price_TW']
     if pay_data.get('currency', ''):
         currency = pay_data['currency']
         success = generate_pay(user_id, goods_id, order_id, amount, uin,
-                               platform, charge_config=charge_config, currency=currency, pay_tp=pay_tp, game_order_id=game_order_id)
+                               platform, act_id, act_item_id, charge_config=charge_config, currency=currency, pay_tp=pay_tp, game_order_id=game_order_id)
     else:
         success = generate_pay(user_id, goods_id, order_id, amount, uin,
-                               platform, charge_config=charge_config, pay_tp=pay_tp, game_order_id=game_order_id)
+                               platform, act_id, act_item_id, charge_config=charge_config, pay_tp=pay_tp, game_order_id=game_order_id)
     rc = 0 if success else 1
 
     return return_data[rc]
 
 
-def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', currency=CURRENCY_CNY, charge_config=None):
+def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', currency=CURRENCY_CNY, charge_config=None, act_id=0, act_item_id=0):
     """ tp: admin 后台代充，算真实收入
         admin_test  管理员测试用
 
@@ -371,10 +358,10 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
     """
     goods_id = int(goods_id)
     charge_config = charge_config or game_config.charge[goods_id]
-    scheme_id = charge_config['cost']
+    # scheme_id = charge_config['cost']
     order_diamond = charge_config['diamond']
     gift_diamond = charge_config['gift_diamond']
-    order_money = charge_config['price_CN']
+    order_money = charge_config['price_rmb']
 
     order_id = '%s-%s-%s-%s_%s' % (mm.user.uid, mm.user._server_name, goods_id, int(time.time()), utils.rand_string(3))
 
@@ -384,7 +371,7 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
 
     obj = {
         'product_id': goods_id,
-        'scheme_id': scheme_id,
+        'scheme_id': 1,
         'order_diamond': order_diamond,
         'gift_diamond': gift_diamond,
         'double_pay': mm.user_payment.is_double_pay(goods_id, charge_config),
@@ -398,6 +385,8 @@ def virtual_pay_by_admin(mm, goods_id, admin=None, reason='', tp='admin', curren
         'currency': currency,
         'admin': admin,
         'reason': reason,
+        'act_id': act_id,
+        'act_item_id': act_item_id,
     }
     save_player_charger_log(mm, obj, order_id)
 
@@ -466,6 +455,8 @@ def pay_apple(hm):
     user = hm.mm.user
     receipt_data = hm.get_argument('receipt-data', '')
     real_product_id = hm.get_argument('productIndex', is_int=True)
+    order_id_own = hm.get_argument('order_id')
+    user_id, _, _, act_id, act_item_id = analysis_order(order_id_own)
     if not receipt_data:
         body_date = hm.req.request.body
         body_str = json.loads(body_date)
@@ -545,6 +536,9 @@ def pay_apple(hm):
         'can_open_gift': True,
         'real_product_id': goods_id,
         'lan_sort': lan_sort,
+        'act_id': act_id,
+        'act_item_id': act_item_id,
+        'currency': lan_sort
     }
     return pay_apply(hm.mm, obj, charge_config)
 

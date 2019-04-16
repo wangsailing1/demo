@@ -3,7 +3,7 @@ import time
 from lib.core.environ import ModelManager
 from gconfig import game_config, get_str_words
 from models.ranking_list import BlockRank
-from models.block import REWARD_TIME, get_date
+from tools.gift import add_mult_gift
 
 rank_mapping = {1: 'appeal_rank', 2: 'output_rank', 3: 'alloutput_rank'}
 block_mapping = {1: 'script', 2: 'income'}
@@ -125,10 +125,14 @@ def rank_index(hm):
                                             'rank_own': ar.get_rank(mm.uid),
                                             'group_name': game_config.script_group_object.get(group_id, {}).get(
                                                 'name', '')})
+        rank_before = ar.get_rank_before(mm.uid)
+        rank_reward_got = mm.block.rank_reward_got
 
         return 0, {
             'rank_list': alloutput_rank_list,
-            'rank_own': alloutput_rank_own_list
+            'rank_own': alloutput_rank_own_list,
+            'rank_before': rank_before,
+            'rank_reward_got': rank_reward_got,
         }
 
 
@@ -179,7 +183,7 @@ def get_user_info(hm):
         'group_info': mm.script.get_scrip_info_by_num(is_type=2),
         'script_info': mm.script.get_scrip_info_by_num(),
         'name': mm.user.name,
-        'vip': mm.user.vip,
+        'vip': mm.user.company_vip,
         'guild_name': mm.user.guild_name,
         'actor_num': len(mm.card.cards),
         'level': mm.user.level,
@@ -197,6 +201,7 @@ def block_index(hm):
     :param hm: 
     :return: 
     """
+    from models.block import REWARD_TIME, get_date
     mm = hm.mm
     rank_id = hm.get_argument('rank_id', 1, is_int=True)
     start = hm.get_argument('start_num', 1, is_int=True)
@@ -269,3 +274,29 @@ def block_index(hm):
             'rank_own': income_rank_own_list,
             'own_info': own_info
         }
+
+
+def get_reward(hm):
+    mm = hm.mm
+    config = game_config.rank_reward_list
+    ar = mm.get_obj_tools(rank_mapping[3])
+    rank = ar.get_rank_before(mm.uid)
+    if not rank:
+        return 1, {}  # 本人没有排行
+    if mm.block.rank_reward_got:
+        return 2, {}  # 已领奖励
+    gift = []
+    for id, value in config.iteritems():
+        if value['rank'][0] <= rank <= value['rank'][1]:
+            gift.extend(value['daily_reward'])
+    mm.block.rank_reward_got = gift
+    build_effect = mm.user.build_effect
+    effect_coin = build_effect.get(4, 0)
+    gift.append([1, 0, effect_coin])
+    reward = add_mult_gift(mm, gift)
+    mm.block.save()
+    return 0, {'reward':reward,
+               'rank_before':rank,
+               'rank_reward_got':mm.block.rank_reward_got,}
+
+

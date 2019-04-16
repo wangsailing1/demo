@@ -1,16 +1,14 @@
 #! --*-- coding: utf-8 --*--
 __author__ = 'kaiqigu'
 
-import datetime
 import time
-import cPickle as pickle
 
 from lib.core.environ import ModelManager
 from lib.db import ModelTools
 from lib.utils import generate_rank_score, round_float_or_str
 import settings
 from lib.db import get_redis_client
-from models.block import get_date
+
 
 
 class AllRank(ModelTools):
@@ -61,15 +59,15 @@ class AllRank(ModelTools):
         """
         return self.fredis.zrevrange(self._key, start, end, withscores=withscores, score_cast_func=score_cast_func)
 
-    def get_rank_user(self, start, end, withscores=False, score_cast_func=round_float_or_str):
+    def nearby_score(self, min, max, start=None, num=None, withscores=False, score_cast_func=round_float_or_str):
         """
-        获取指定rank值范围内的玩家
+        获取指定score值范围内的玩家
         :param start:
         :param end:
         :param withscores:
         :return:
         """
-        return self.fredis.zrangebyscore(self._key, start, end, withscores=withscores, score_cast_func=score_cast_func)
+        return self.fredis.zrangebyscore(self._key, min, max, withscores=withscores, score_cast_func=score_cast_func)
 
     def get_score(self, uid, score_cast_func=round_float_or_str):
         """
@@ -137,6 +135,15 @@ class AllRank(ModelTools):
         key_by_date = '%s_%s' % (self._key, 'backup')
         return key_by_date
 
+    def get_rank_before(self, uid):
+        key_by_date = self.backup_key()
+        rank = self.fredis.zrevrank(key_by_date, uid)
+        if rank is None:
+            rank = -1
+
+        return rank + 1
+
+
 
 class AppealRank(AllRank):
     """
@@ -144,7 +151,11 @@ class AppealRank(AllRank):
     uid 格式 uid + '|' + group_id 
     """
 
-    # def __init__(self, uid='', server='', *args, **kwargs):
+    def __init__(self, uid='', server='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
@@ -159,7 +170,11 @@ class OutPutRank(AllRank):
     """
 
 
-    # def __init__(self,uid='', server='', *args, **kwargs):
+    def __init__(self,uid='', server='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
@@ -173,12 +188,19 @@ class AllOutPutRank(AllRank):
     uid 格式 uid + '|' + group_id
     """
 
-    # def __init__(self,uid='', server='', *args, **kwargs):
+    def __init__(self,uid='', server='', date='', *args, **kwargs):
+        super(AllRank, self).__init__()
+        father_server = server
+        self._key = self.make_key(self.__class__.__name__, server_name=father_server)
+        self.fredis = self.get_redis_client(father_server)
+
     #     super(AllRank, self).__init__()
     #     self.fredis = get_redis_client(settings.public)
     #     self._key = self.make_key(self.__class__.__name__, server_name='master')
     #     weekday = time.strftime("%F")
     #     self._key_date = '%s_%s' % (self._key, weekday)
+
+
 
 
 class GuildTaskRank(AllRank):
@@ -501,10 +523,12 @@ class BlockRank(AllRank):
         super(AllRank, self).__init__()
         father_server = settings.get_father_server(server)
         self._key = self.make_key_cls('rank_%s' % uid, server_name=father_server)
-        self.fredis = self.get_father_redis(father_server)
+        # self.fredis = self.get_father_redis(father_server)
+        self.fredis = get_redis_client(settings.public)
         self._key_date = self.key_date(date)
 
     def key_date(self, date=''):
+        from models.block import get_date
         if not date:
             date = get_date()
         return self._key + '||' + date
@@ -512,7 +536,7 @@ class BlockRank(AllRank):
     # 把玩家添加到所属街区
     def add_user_by_block(self, uid=None, score=0):
         self.fredis.zadd(self._key_date, uid, score)
-        self.fredis.expire(self._key_date, 3 * 24 * 3600)
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     # 从街区删除玩家（玩家升级街区后操作）
     def delete_user_by_block(self, uid=None):
@@ -524,16 +548,15 @@ class BlockRank(AllRank):
 
     # 获取编号
     def get_num(self):
-        return self.fredis.incr('%s_%s' % (self._key_date, 'num'))
+        num = self.fredis.incr('%s_%s' % (self._key_date, 'num'))
+        self.fredis.expire('%s_%s' % (self._key_date, 'num'), 7 * 24 * 3600)
+        return num
 
     # 计算玩家所属组
     def get_group(self, uid=None):
         rank = self.fredis.zrank(self._key_date, uid)
-        if rank == 0:
-            return 1
-        if rank % 100 or not rank % 100 and rank / 100:
-            return rank / 100 + 1
-        return rank / 100
+        return rank / 100 + 1
+
 
     # 记录最大的有人街区
     def set_max_block(self, block_num):
@@ -555,6 +578,7 @@ class BlockRank(AllRank):
         :return:
         """
         self.fredis.zadd(self._key_date, uid, generate_rank_score(rank))
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     def incr_rank(self, uid, score):
         """
@@ -564,6 +588,7 @@ class BlockRank(AllRank):
         :return:
         """
         self.fredis.zincrby(self._key_date, uid, int(score))
+        self.fredis.expire(self._key_date, 7 * 24 * 3600)
 
     def del_rank(self, uid):
         """
@@ -583,15 +608,15 @@ class BlockRank(AllRank):
         """
         return self.fredis.zrevrange(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
 
-    def get_rank_user(self, start, end, withscores=False, score_cast_func=round_float_or_str):
+    def nearby_score(self, min, max, start=None, num=None, withscores=False, score_cast_func=round_float_or_str):
         """
-        获取指定rank值范围内的玩家
+        获取指定score值范围内的玩家
         :param start:
         :param end:
         :param withscores:
         :return:
         """
-        return self.fredis.zrangebyscore(self._key_date, start, end, withscores=withscores, score_cast_func=score_cast_func)
+        return self.fredis.zrangebyscore(self._key_date, min, max, withscores=withscores, score_cast_func=score_cast_func)
 
     def get_score(self, uid, score_cast_func=round_float_or_str):
         """

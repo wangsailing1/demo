@@ -65,7 +65,9 @@ from lib.utils import filedefaultdict
 from lib.utils.mail import send_sys_mail
 from lib.db import ModelTools
 from models.server import ServerUidList
-from logics.ranking_list import send_output_reward
+from logics.script import genearte_random_event, genearte_global_event
+from logics.ranking_list import rank_list_backup
+from logics.toy import send_rank_reward
 
 # from lib.statistics.data_analysis import do_data_process_hourly, level_pass_rate
 # from scrips.statistics.dmp_snapshot import do_snapshot
@@ -73,6 +75,7 @@ from lib.utils.online_user import backup_all_server_online_count
 
 # from logics.decisive_battle import mapping_battle_uid, send_duel_rank_award
 # from logics.decisive_battle import one_server_battle, vip_auto_enroll
+from logics.super_player import super_player_refresh_time, active_reward_time, refresh, active_reward
 
 JOBS_RUNTIME_KEY = 'jobs_runtime_key'
 # 任务配置，添加分服或任务后，需要重启进程使之生效
@@ -83,6 +86,8 @@ TIMER_JOBS = (
 
     # 每5分钟记录一次在线数据
     ('cron', dict(minute='*/5'), backup_all_server_online_count, 1),
+    ('cron', dict(hour='*'), genearte_random_event, 1),
+    ('cron', dict(minute='30'), genearte_global_event, 1),
 
     # 公会战
     # 筛选可参与的公会,分组
@@ -91,7 +96,8 @@ TIMER_JOBS = (
     # ('cron', dict(day_of_week='2,3', hour='22'), group_team, 0),
     # 公会战周五晚上结算发奖
     # ('cron', dict(day_of_week='4', hour='22'), settlement_reward, 0),
-    ('cron', dict(hour=6), send_output_reward, 0),
+    ('cron', dict(hour=6), rank_list_backup, 0),
+    ('cron', dict(hour=0, minute=5), send_rank_reward, 0),
 
 )
 DATE_LIST_JOBS = (
@@ -102,6 +108,10 @@ DATE_LIST_JOBS = (
     # (limit_hero_mail_time                       , send_limit_hero_rank_award            , 1),
     # # 新服限时英雄排名发奖
     # (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
+    # 超级大玩家刷新
+    (super_player_refresh_time                  , refresh           , 1),
+    # 超级大玩家发奖
+    (active_reward_time                         , active_reward     , 1),
 )
 
 

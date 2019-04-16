@@ -1,9 +1,10 @@
 <style>
-.item {width: 150px; padding: 2px; float: left;}
+.item {width: 150px; padding: 2px; float: left; word-break: break-all}
 </style>
 
 <body>
 {% import json %}
+{% from gconfig import game_config %}
 <h3>后端配置：</h3>
 
 <hr>
@@ -57,8 +58,16 @@
 </table>
 -->
 <div style="float: left; width: 45%; overflow:auto;">
-    {% for config, value in sorted(mapping_config.iteritems()) %}
-        <div class="item"><a href="/{{url_partition}}/admin/config/select/?config_key={{config}}&">{{ value[0] if value[0] else config }}</a></div>
+    {% for config, value in sorted_config_mapping %}
+        <div class="item">
+            <a href="/{{url_partition}}/admin/config/select/?config_key={{config}}&">
+                {% if getattr(game_config, config, None) %}
+                    {{ config }}
+                {%else%}
+                    <span style="color: red">{{ config }}
+                {%end%}
+            </a>
+        </div>
     {% end %}
 </div>
 

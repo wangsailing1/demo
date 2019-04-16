@@ -51,7 +51,24 @@ card_basis = {
     'ex_special_rate': ('ex_special_rate', 'int'),  # 额外触发概率( 万分比）
     'special_quality': ('special_quality', 'int_list'),  # 艺术/娱乐触发权重
     'last_lv': ('last_lv', 'int'),  # 艺术/娱乐触发权重
-
+    'adle_action': ('adle_action', 'str'),  #
+    'ui': ('ui', 'int'),  # ui
+    'physical': ('physical', 'int'),  # 艺人体力上限
+    'physical_recovery': ('physical_recovery', 'int'),  # 艺人恢复速度（秒/点）
+    'mood': ('mood', 'int'),  # 艺人心情
+    'mood_recovery': ('mood_recovery', 'int'),  # 艺人心情恢复速度（秒/点）
+    'health': ('health', 'int'),  # 艺人健康
+    'health_recovery': ('health_recovery', 'int'),  # 艺人健康恢复速度（秒/点）
+    'physical_cost': ('physical_cost', 'int'),  # 体力回复价格(元/点)
+    'physical_diamondcost': ('physical_diamondcost', 'int'),  # 体力回复钻石价格
+    'mood_cost': ('mood_cost', 'int'),  # 心情回复价格(元/点)
+    'mood_diamondcost': ('mood_diamondcost', 'int'),  # 心情回复钻石价格
+    'health_cost': ('health_cost', 'int'),  # 健康回复价格(元/点)
+    'health_diamondcost': ('health_diamondcost', 'int'),  # 健康回复钻石价格
+    'skill': ('skill', 'int_list'),  # 技能
+    'adle_action1': ('adle_action1', 'str'),  # 待机动画
+    'adle_action_img': ('adle_action_img', 'str'),  # 待机动画
+    'card_kind': ('card_kind', 'int'),  # 艺人种类
 }
 
 card_level = {
@@ -86,6 +103,9 @@ card_love_level = {
     'star_cost': ('star_cost', 'list_2'),
     'train_count': ('train_count', 'int'),  # 培养次数上限
     'dps_rate': ('dps_rate', 'int_list'),  # 伤害输出系数区间值（万分之)
+    'icon': ('icon', 'str'),  # 羁绊等级icon
+    'name': ('name', 'str'),  # 羁绊关系名字
+    'gift_num_max': ('gift_num_max', 'int'),
 
 }
 
@@ -143,7 +163,7 @@ card_piece = {
     'star': ('star', 'int'),  # 星级
     'use_num': ('use_num', 'int'),  # 碎片合成数量
     'card_id': ('card_id', 'int'),  # 对应艺人
-    'guide': ('guide', 'list_int_list'),  # 掉落指引
+    'guide': ('guide', 'int_list'),  # 掉落指引
 }
 
 # 卡牌品质

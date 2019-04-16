@@ -7,6 +7,7 @@ Created on 2018-08-24
 """
 
 from logics.card import CardLogic
+from gconfig import game_config
 
 
 def open(hm):
@@ -149,3 +150,126 @@ def up_card_building(hm):
     return rc, data
 
 
+def add_card_box(hm):
+    mm = hm.mm
+    cost = game_config.common[6]
+    if mm.user.diamond < cost:
+        return 1, {}  # 钻石不足
+    mm.card.card_box += 1
+    mm.user.deduct_diamond(cost)
+    mm.user.save()
+    mm.card.save()
+    return 0, {'card_box': mm.card.card_box}
+
+
+def add_card_popularity(hm):
+    mm = hm.mm
+    count = hm.get_argument('count', 1, is_int=True)
+    card_id = hm.get_argument('card_id', '')
+    max_num = mm.item.get_item(mm.item.PERFUME)
+    if count > max_num:
+        return 1, {}  # 数量不足
+    if card_id not in mm.card.cards:
+        return 2, {}  # 未拥有此卡牌
+    add_num = game_config.use_item.get(mm.item.PERFUME, {}).get('use_effect', 1) * count
+    mm.card.add_card_popularity(card_id, add_num)
+    mm.item.del_item(mm.item.PERFUME, count)
+
+    add_exp = int(count * game_config.common[89])
+    mm.user.add_company_vip_exp(add_exp, is_save=True)
+    mm.card.save()
+    mm.item.save()
+    return 0, {
+        'card_info': mm.card.cards[card_id],
+        'company_vip_exp': mm.user.company_vip_exp
+    }
+
+
+def skill_level_up(hm):
+    cl = CardLogic(hm.mm)
+    card_oid = hm.get_argument('card_oid', '')
+    skill_id = hm.get_argument('skill_id', 0, is_int=True)
+    rc, data = cl.skill_level_up(card_oid, skill_id)
+    return rc, data
+
+
+def train_card(hm):
+    card_oid = hm.get_argument('card_oid', '')
+    if not hm.mm.card.cards.get(card_oid):
+        return 1, {}  # 未拥有该卡牌
+
+    cl = CardLogic(hm.mm)
+    rc, data = cl.train_card(card_oid)
+    return rc, data
+
+
+def use_exp_item(hm):
+    card_oid = hm.get_argument('card_oid', '')
+    item_id = hm.get_argument('item_id', '', is_int=True)
+    item_num = hm.get_argument('item_num', '', is_int=True)
+    cl = CardLogic(hm.mm)
+    rc, data = cl.use_exp_item(card_oid, item_id, item_num)
+    return rc, data
+
+
+def training_room_index(hm):
+    mm = hm.mm
+    return 0, mm.card.training_room
+
+
+def finish_train(hm):
+    mm = hm.mm
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not training_position_id:
+        return 1, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 2, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.finish_train(training_position_id)
+    return rc, data
+
+
+def train_speed_up(hm):
+    mm = hm.mm
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not training_position_id:
+        return 1, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 2, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.train_speed_up(training_position_id)
+    return rc, data
+
+
+def add_train_place(hm):
+    mm = hm.mm
+    cl = CardLogic(mm)
+    rc, data = cl.add_train_place()
+    return rc, data
+
+
+def choice_train_card(hm):
+    mm = hm.mm
+    return 0, mm.card.choice_train_card()
+
+
+def train(hm):
+    mm = hm.mm
+    card_oid = hm.get_argument('card_oid', '')
+    training_position_id = hm.get_argument('tr_id', 0, is_int=True)
+    if not mm.card.cards.get(card_oid):
+        return 1, {}  # 未拥有该卡牌
+
+    if not training_position_id:
+        return 2, {}  # 未传递参数tr_id
+
+    if training_position_id not in mm.card.training_room:
+        return 3, {}  # 训练位未开启
+
+    cl = CardLogic(mm)
+    rc, data = cl.train(card_oid, training_position_id)
+    return rc, data
