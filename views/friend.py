@@ -503,11 +503,11 @@ def rapport_index(hm):
     return 0, {'unlocked_appointment': mm.friend.unlocked_appointment,
                'chat_log': mm.friend.appointment_log,
                'appointment_times': mm.friend.appointment_times,
-               'unlocked_session': mm.friend.unlocked_session
+               'unlocked_section': mm.friend.unlocked_section
                }
 
 # 消耗道具解锁约会
-def unlock_session(hm):
+def unlock_section(hm):
     mm = hm.mm
     chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
     if chapter_id not in mm.friend.unlocked_appointment:
@@ -515,11 +515,15 @@ def unlock_session(hm):
     config = game_config.date_chapter
     if chapter_id not in config:
         return 2, {}  # 解锁的约会地点错误
+    if config[chapter_id]['preid'] == -1:
+        return 3, {}  # 第一次约会地点无需解锁
+    if chapter_id in mm.friend.unlocked_section:
+        return 4, {}  # 已经可以前往约会地点了
     need_item = config[chapter_id]['need_item']
     rc, data = del_mult_goods(mm, need_item)
     if rc:
         return rc, {}  # 消耗不足
-    mm.friend.unlocked_session.append(chapter_id)
+    mm.friend.unlocked_section.append(chapter_id)
     mm.friend.save()
     _, data = rapport_index(hm)
     return 0, data

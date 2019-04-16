@@ -86,7 +86,7 @@ class Friend(ModelBase):
             'last_week': '',
             'got_point_daily': 0,
             'unlocked_appointment': [],
-            'unlocked_session': [],
+            'unlocked_section': [],
 
         }
         super(Friend, self).__init__(self.uid)
@@ -126,6 +126,10 @@ class Friend(ModelBase):
         for k, v in game_config.date_chapter.iteritems():
             if v['preid'] == -1 and k not in self.unlocked_appointment:
                 self.unlocked_appointment.append(k)
+                is_save = True
+        for k, v in game_config.date_chapter.iteritems():
+            if v['preid'] == -1 and k not in self.unlocked_section:
+                self.unlocked_section.append(k)
                 is_save = True
         if is_save:
             self.save()
