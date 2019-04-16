@@ -222,10 +222,10 @@ def update(req, **kwargs):
     mm.user.script_license = script_license
     mm.carnival.server_dice_num = server_dice_num
     mm.carnival.dice_num = dice_num
-    vip = min(max(game_config.vip), vip)
-    if mm.user.vip != vip:
-        mm.user.vip = vip
-        mm.user.vip_exp = 0
+    # vip = min(max(game_config.vip_company), vip)
+    # if mm.user.vip != vip:
+    #     mm.user.vip = vip
+    #     mm.user.vip_exp = 0
 
     mm.user.save()
     mm.carnival.save()
