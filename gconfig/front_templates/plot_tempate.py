@@ -219,6 +219,9 @@ phone_daily_dialogue = {
     'date_dialogue2': ('date_dialogue2', 'int_list'),
     # 'travel_dialogue1': ('travel_dialogue1', 'int_list'),
     # 'travel_dialogue2': ('travel_dialogue2', 'int_list'),
+    'appointment_lh': ('appointment_lh', 'str'),
+    'introduce_id': ('introduce_id', 'str'),
+    'sex': ('sex', 'int'),
 }
 
 # 手机互动剧情
