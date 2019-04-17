@@ -410,7 +410,7 @@ def merge_complex_dict(source, target):
             if tp == list:
                 source[target_key].extend(target_value)
             elif tp == dict:
-                source[target_key].update(target_value)
+                merge_complex_dict(source[target_key], target_value)
             else:
                 source[target_key] += target_value
         else:
