@@ -61,3 +61,47 @@ def auto_sweep(hm):
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.chapter_stage_fight_new(stage, type_hard, auto=True, times=times, align=align)
     return rc, data
+
+
+# 故事会
+def story_index(hm):
+    mm = hm.mm
+    if not mm.chapter_stage.story_unlock:
+        return 1, {}  # 故事会尚未开启
+    return 0, {
+        'story_can_unlock': mm.chapter_stage.story_can_unlock,
+        'story_unlock': mm.chapter_stage.story_unlock,
+        'got_reward_story': mm.chapter_stage.got_reward_story
+    }
+
+
+# 讲故事
+def story(hm):
+    mm = hm.mm
+    choice_id = hm.get_argument('choice_id', 0, is_int=True)
+    now_stage = hm.get_argument('now_stage', 0, is_int=True)
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    if not mm.chapter_stage.story_unlock:
+        return 1, {}  # 故事会尚未开启
+    if not choice_id or not now_stage or not chapter_id:
+        return 2, {}  # 章节数据出错了
+    if chapter_id not in mm.chapter_stage.story_unlock:
+        return 3, {}  # 故事未解锁
+    chapter_stage = Chapter_stage(mm)
+    rc, data = chapter_stage.story(chapter_id, now_stage, choice_id)
+    _, data_index = story_index(hm)
+    data.updata(data_index)
+    return rc, data
+
+
+# 解锁
+def unlock_story(hm):
+    mm = hm.mm
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    if not mm.chapter_stage.story_unlock:
+        return 1, {}  # 故事会尚未开启
+    if chapter_id not in mm.chapter_stage.story_can_unlock:
+        return 3, {}  # 请先听听前一个故事
+    if chapter_id in mm.chapter_stage.story_unlock:
+        return 4, {}  # 已经解锁过了
+    
