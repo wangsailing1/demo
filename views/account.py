@@ -416,23 +416,26 @@ def get_user_server_list(hm, account=None):
 def get_server_list(server_list, current_server):
     if current_server:
         return [server for server in server_list if server['server'] == current_server]
-    new_servers = []
-    not_enough_new_servers = []
-    for server_id in server_list:
-        if server_id['server'] in ['master', 'public']:
-            continue
-        if game_config.get_config_type(server_id['server']) == 1:
-            new_servers.append(server_id)
-            server_uid = ServerUid(server_id['server'])
-            if server_uid.owned_count() <= 2000:
-                not_enough_new_servers.append(server_id)
-    if not_enough_new_servers:
-        return [random.choice(not_enough_new_servers)]
-    if new_servers:
-        return [random.choice(new_servers)]
+
+    # 关闭选服功能
+    # new_servers = []
+    # not_enough_new_servers = []
+    # for server_id in server_list:
+    #     if server_id['server'] in ['master', 'public']:
+    #         continue
+    #     if game_config.get_config_type(server_id['server']) == 1:
+    #         new_servers.append(server_id)
+    #         server_uid = ServerUid(server_id['server'])
+    #         if server_uid.owned_count() <= 2000:
+    #             not_enough_new_servers.append(server_id)
+    # if not_enough_new_servers:
+    #     return [random.choice(not_enough_new_servers)]
+    # if new_servers:
+    #     return [random.choice(new_servers)]
+
     # all_list = server_list[-2:] if len(server_list) >= 2 else server_list
     # return [random.choice(all_list)]
-    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['open_time']))
+    server_list.sort(key=lambda x: (x['server'] not in ['master', 'public'], x['sort_id'], x['open_time']))
     return [server_list[-1]]
 
 
