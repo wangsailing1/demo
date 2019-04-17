@@ -12,6 +12,8 @@ dan_grading_list = {
     'standard_box': ('standard_box', 'float'),
     'privilage': ('privilage', 'int_list'),
     'icon': ('icon', 'str'),
+    'lh': ('lh', 'str'),
+    'title': ('title', 'str'),
 
 }
 
