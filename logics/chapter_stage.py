@@ -3,7 +3,7 @@
 import random
 
 from gconfig import game_config
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift, del_mult_goods
 from lib.utils import weight_choice
 import copy
 import random
@@ -573,3 +573,84 @@ class Chapter_stage(object):
         data['next_chapter'] = self.chapter_stage.next_chapter
         data['stage_id'] = stage_id
         return 0, data
+
+    def story(self, chapter_id, now_stage, choice_id):
+        config = game_config.story_stage.get(chapter_id, {})
+        if not config:
+            return 11, {}  # 找不到章节
+        if len(set([config['avg'] / 1000, now_stage / 1000, choice_id / 1000])) != 1:
+            return 12 , {}  # 故事id错误
+        avg_config = game_config.avg_dialogue
+        if choice_id not in avg_config or now_stage not in avg_config:
+            return 13, {}  # 找不到故事
+        if not avg_config[choice_id]['is_end'] and choice_id not in avg_config[now_stage]['option_team']:
+            return 12, {}  # 故事发展不正确
+        card_config = game_config.card_basis
+        card_id = avg_config[choice_id]['hero_id']
+
+        save = False
+        reward = {}
+        add_value = {}
+
+        if avg_config[choice_id]['is_end'] and config['unlockid'] not in self.chapter_stage.story_can_unlock:
+            self.chapter_stage.story_can_unlock.append(config['unlockid'])
+            add_mult_gift(self.mm, config['award'], cur_data=reward)
+            save = True
+        if not card_id:
+            gift = avg_config[choice_id]['reward']
+
+            if gift and chapter_id not in self.chapter_stage.got_reward_story:
+                self.chapter_stage.got_reward_story.append(chapter_id)
+                add_mult_gift(self.mm, gift, cur_data=reward)
+                save = True
+            if save:
+                self.chapter_stage.save()
+            return 0, {
+                'add_value': {},
+                'reward': reward,
+                'love_lv': 0,
+                'old_value': {}
+            }
+
+        if card_id not in card_config and not avg_config[choice_id]['is_end']:
+            return 13, {}  # 卡牌id错误
+        if card_id not in card_config and avg_config[choice_id]['is_end']:
+            group_id = 0
+        else:
+            group_id = card_config[card_id]['group']
+        old_value = copy.deepcopy(self.mm.card.attr.get(group_id, {}))
+        old_value.setdefault('like', 0)
+
+        if chapter_id not in self.chapter_stage.got_reward_story:
+            gift = avg_config[choice_id]['reward']
+            add_val = avg_config[choice_id]['add_value']
+            self.chapter_stage.got_reward_story.append(chapter_id)
+            add_value = self.mm.card.add_value(group_id, add_val)
+            add_mult_gift(self.mm, gift, cur_data=reward)
+            save = True
+        if save:
+            self.mm.card.save()
+            self.chapter_stage.save()
+        if group_id not in self.mm.card.group_ids:
+            love_lv = 0
+        else:
+            love_lv = self.mm.card.get_card(self.mm.card.group_ids[group_id])['love_lv']
+
+        return 0, {
+            'add_value': add_value,
+            'reward': reward,
+            'love_lv': love_lv,
+            'old_value': old_value
+        }
+
+    def unlock_story(self, chapter_id):
+        config = game_config.story_stage.get(chapter_id, {})
+        if not config:
+            return 11, {}  # 配置错误
+        need_item = config['need_item']
+        rc, data = del_mult_goods(self.mm, need_item)
+        if rc:
+            return rc, {}
+        self.chapter_stage.story_unlock.append(chapter_id)
+        self.chapter_stage.save()
+        return 0, {}

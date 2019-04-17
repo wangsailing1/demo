@@ -302,3 +302,19 @@ date_chapter = {
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),
 }
+
+story_stage = {
+    'uk': ('id', 'int'),
+    'name': ('name', 'str'),
+    'avg': ('avg', 'int'),
+    'like': ('like', 'int'),
+    'gender': ('gender', 'int'),
+    'unlockid': ('unlockid', 'int'),
+    'preid': ('preid', 'int'),
+    'need_item': ('need_item', 'int_list'),
+    'icon': ('icon', 'str'),
+    'chapter': ('chapter', 'int'),
+    'chapter_name': ('chapter_name', 'str'),
+    'chapter_des': ('chapter_des', 'str'),
+    'award': ('award', 'int_list'),
+}

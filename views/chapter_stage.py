@@ -104,4 +104,8 @@ def unlock_story(hm):
         return 3, {}  # 请先听听前一个故事
     if chapter_id in mm.chapter_stage.story_unlock:
         return 4, {}  # 已经解锁过了
-    
+    chapter_stage = Chapter_stage(mm)
+    rc, data = chapter_stage.unlock_story(chapter_id)
+    _, data_index = story_index(hm)
+    data.updata(data_index)
+    return rc, data
