@@ -103,6 +103,7 @@ def info(mm, **kwargs):
         'create_date': create_date_str,
         'block_num': mm.block.block_num,
         'income': income,
+        'like': user.like,
     }
 
     info_log.info(json.dumps(data, separators=[',', ':']))
