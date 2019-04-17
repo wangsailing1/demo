@@ -529,6 +529,27 @@ def unlock_section(hm):
     return 0, data
 
 
+#清除
+def delete_rapport_log(hm):
+    mm = hm.mm
+    group_id = hm.get_argument('group_id', 0, is_int=True)
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    if not group_id or not chapter_id:
+        return 1, {}
+    times = mm.friend.get_rapport_times(group_id, chapter_id)
+    if not times:
+        return 2, {}
+    config = game_config.date_chapter
+    need_item = config[chapter_id]['need_item']
+    rc, data = del_mult_goods(mm, need_item)
+    if rc:
+        return rc, {}  # 消耗不足
+    mm.friend.delete_rapport_log(times, save=False)
+    mm.friend.save()
+    _, data = rapport_index(hm)
+    return 0, data
+
+
 # 约会
 @check_unlock
 def rapport(hm):
@@ -573,7 +594,7 @@ def rapport(hm):
     #                'tourism_times': mm.friend.tourism_times, }
 
     else:
-        rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
+        rc, data = fl.rapport(group_id, choice_id, now_stage, chapter_id, type=tp)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times

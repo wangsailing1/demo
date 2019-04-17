@@ -495,7 +495,7 @@ class Friend(ModelBase):
         self.add_newest_uid(group_id)
         if is_save:
             self.save()
-        return {group_id:config['dialogue_id']}
+        return {group_id: config['dialogue_id']}
 
     def new_actor(self, group_id, is_save=False):
         if group_id not in self.actors:
@@ -640,8 +640,8 @@ class Friend(ModelBase):
         times = self.appointment_times
         common_config = game_config.common
         max_times = common_config[44]
-        if times >= max_times:
-            return -3
+        # if times >= max_times:
+        #     return -3
         like = self.mm.card.attr.get(group_id, {}).get('like', 0)
         if like < config['like']:
             return -2
@@ -673,6 +673,20 @@ class Friend(ModelBase):
                 if dialogue:
                     data[group_id] = dialogue
         return data
+
+    def get_rapport_times(self, group_id, chapter_id):
+        info = self.appointment_log
+        for times, value in info.iteritems():
+            if value['group_id'] ==  group_id and value['chapter_id'] == chapter_id:
+                return times
+        return 0
+
+    def delete_rapport_log(self, times, save=True):
+        if times not in  self.appointment_log:
+            return 1
+        self.appointment_log[times]['log'] = self.appointment_log[times]['log'][:1]
+        if save:
+            self.save()
 
 
 ModelManager.register_model('friend', Friend)
