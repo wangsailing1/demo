@@ -90,7 +90,7 @@ def story(hm):
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.story(chapter_id, now_stage, choice_id)
     _, data_index = story_index(hm)
-    data.updata(data_index)
+    data.update(data_index)
     return rc, data
 
 
@@ -107,5 +107,5 @@ def unlock_story(hm):
     chapter_stage = Chapter_stage(mm)
     rc, data = chapter_stage.unlock_story(chapter_id)
     _, data_index = story_index(hm)
-    data.updata(data_index)
+    data.update(data_index)
     return rc, data

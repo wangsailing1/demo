@@ -307,7 +307,6 @@ story_stage = {
     'uk': ('id', 'int'),
     'name': ('name', 'str'),
     'avg': ('avg', 'int'),
-    'like': ('like', 'int'),
     'gender': ('gender', 'int'),
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),

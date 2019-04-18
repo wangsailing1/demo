@@ -583,8 +583,6 @@ class Chapter_stage(object):
         avg_config = game_config.avg_dialogue
         if choice_id not in avg_config or now_stage not in avg_config:
             return 13, {}  # 找不到故事
-        if not avg_config[choice_id]['is_end'] and choice_id not in avg_config[now_stage]['option_team']:
-            return 12, {}  # 故事发展不正确
         card_config = game_config.card_basis
         card_id = avg_config[choice_id]['hero_id']
 
@@ -613,7 +611,7 @@ class Chapter_stage(object):
             }
 
         if card_id not in card_config and not avg_config[choice_id]['is_end']:
-            return 13, {}  # 卡牌id错误
+            return 15, {}  # 卡牌id错误
         if card_id not in card_config and avg_config[choice_id]['is_end']:
             group_id = 0
         else:
