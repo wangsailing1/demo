@@ -628,5 +628,12 @@ super_player_mapping = {
     'server_play_rankreward': ('server_play_rankreward', True),
     'server_play_points': ('server_play_points', True),
 }
+
+strategy_mission_mapping = {
+    'strategy_mission': ('strategy_mission', True),
+    'strategy_gift': ('strategy_gift', True),
+    'strategy_lv': ('strategy_lv', True),
+    'strategy_once': ('strategy_once', True),
+}
 # 注册需要写到最下面
 register_handler()
