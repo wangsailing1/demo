@@ -367,7 +367,8 @@ def show_run_timer_jobs(req):
     dates_today = req.get_argument('dates_today', '') or time.strftime('%Y%m%d')
     import glob
 
-    dates = [k.split('/')[-1] for k in glob.glob('{0}logs/run_timer/*'.format(settings.BASE_ROOT))[-10:]]
+    dates = [k.split('/')[-1] for k in glob.glob('{0}logs/run_timer/*'.format(settings.BASE_ROOT))]
+    dates = sorted(dates)[-10:]
     if dates_today not in dates:
         dates.append(dates_today)
     timer_log = ''
