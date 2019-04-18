@@ -68,6 +68,7 @@ class FansActivity(object):
             return 17, {}  # 美元不足
 
         gift = []
+        gold_num = 0
         for k, card_id in enumerate(cards):
             if card_id in ['0']:
                 continue
@@ -90,7 +91,9 @@ class FansActivity(object):
                     if self.mm.card.cards[card_id]['popularity'] < need_num:
                         return 16, {}  # 有卡牌人气不足
             _gift = self.check_and_remove_cards(card_id, activity_id)
+            gold_num += config.get('firststart_gold_per_card', 100)
             gift.extend(_gift)
+        gift.append([1, 0, gold_num])
         reward = add_mult_gift(self.mm, gift)
         effect_id = self.mm.fans_activity.get_card_effect(cards)
         self.mm.fans_activity.activity_log[activity_id] = {
