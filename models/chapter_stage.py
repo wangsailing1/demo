@@ -17,6 +17,8 @@ class Chapter_stage(ModelBase):
     FORMAT = '%Y-%m-%d'
     MAPPING = {1: 'like'}
 
+    UNLOCK_STORY_CHAPTER_ID = 7
+
     def __init__(self, uid=None):
         self.uid = uid
         self._attrs = {
@@ -24,12 +26,19 @@ class Chapter_stage(ModelBase):
             'last_time': 0,  # 最近操作时间
             'next_chapter': [1],  # 解锁章节
             'got_reward_dialogue': [],  # 已领奖剧情关
-            'done_chapter_log': []
+            'done_chapter_log': [],
+            'story_can_unlock': [],  # 可解锁故事
+            'story_unlock': [],  # 已解锁故事
+            'got_reward_story': [], # 已经领奖的故事
         }
         super(Chapter_stage, self).__init__(self.uid)
 
+
     def pre_use(self):
         now = time.strftime(self.FORMAT)
+        save = False
+        if self.unlock_story():
+            save = True
         if not self.next_chapter:
             self.next_chapter = [1]
         if now != self.last_time:
@@ -38,6 +47,8 @@ class Chapter_stage(ModelBase):
                 for type_hard, type_v in value.iteritems():
                     for stage_id, s_v in type_v.iteritems():
                         s_v['fight_times'] = 0
+            save = True
+        if save:
             self.save()
 
     def get_now_stage(self):
@@ -61,6 +72,25 @@ class Chapter_stage(ModelBase):
                     dialogue_list.append(stage_config['dialogue_id'][stage_id])
         return dialogue_list
 
+    def unlock_story(self):
+        if self.story_can_unlock:
+            return False
+        if self.UNLOCK_STORY_CHAPTER_ID not in self.next_chapter:
+            return False
+        sex = self.mm.user.get_sex()
+        config = game_config.story_stage
+        for story_id, value in config.iteritems():
+            if value['preid'] != -1 or value['gender'] != sex:
+                continue
+            self.story_can_unlock.append(story_id)
+            self.story_unlock.append(story_id)
+        return True
+
+    # 第一次听故事
+    def first_listen_story(self, chapter_id):
+        if chapter_id in self.got_reward_story:
+            return False
+        return True
 
 
 
