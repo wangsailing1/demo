@@ -477,9 +477,9 @@ def pay_apple(hm):
     from lib.sdk_platform import sdk_appstore as platform_app
     user = hm.mm.user
     receipt_data = hm.get_argument('receipt-data', '')
-    real_product_id = hm.get_argument('productIndex', is_int=True)
+    # real_product_id = hm.get_argument('productIndex', is_int=True)
     order_id_own = hm.get_argument('order_id')
-    user_id, _, _, act_id, act_item_id = analysis_order(order_id_own)
+    user_id, real_product_id, _, act_id, act_item_id = analysis_order(order_id_own)
     if not receipt_data:
         body_date = hm.req.request.body
         body_str = json.loads(body_date)
