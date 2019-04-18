@@ -7,7 +7,7 @@ import time
 
 import settings
 from lib.sdk_platform.helper import http
-from lib.utils import md5, config_md5
+from lib.utils import md5
 from lib.db import ModelBase, ModelTools
 from lib.db import get_redis_client
 
@@ -87,7 +87,7 @@ class ConfigMd5(ModelBase):
         if not isinstance(data, (dict, set, list, tuple)):
             return md5(data)
         else:
-            return config_md5(repr(data))
+            return md5(repr(data))
 
 
 class ConfigVersion(ModelBase):
