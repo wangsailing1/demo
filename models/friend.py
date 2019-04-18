@@ -681,12 +681,16 @@ class Friend(ModelBase):
                 return times
         return 0
 
-    def delete_rapport_log(self, times, save=True):
+    def delete_rapport_log(self, times, stage_id, save=True):
         if times not in  self.appointment_log:
             return 1
-        self.appointment_log[times]['log'] = self.appointment_log[times]['log'][:1]
+        if stage_id not in self.appointment_log[times]['log']:
+            return 2
+        idx = self.appointment_log[times]['log'].index(stage_id)
+        self.appointment_log[times]['log'] = self.appointment_log[times]['log'][:idx + 1]
         if save:
             self.save()
+        return 0
 
 
 ModelManager.register_model('friend', Friend)

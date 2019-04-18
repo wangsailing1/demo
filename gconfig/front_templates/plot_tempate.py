@@ -306,4 +306,5 @@ date_chapter = {
     'group_name': ('group_name', 'str'),
     'bg': ('bg', 'str'),
     'need_item': ('need_item', 'int_list'),
+    'need_item2': ('need_item2', 'int_list'),
 }

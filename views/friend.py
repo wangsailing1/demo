@@ -534,17 +534,22 @@ def delete_rapport_log(hm):
     mm = hm.mm
     group_id = hm.get_argument('group_id', 0, is_int=True)
     chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
-    if not group_id or not chapter_id:
+    stage_id = hm.get_argument('stage_id', 0, is_int=True)
+    if not group_id or not chapter_id or not stage_id:
         return 1, {}
     times = mm.friend.get_rapport_times(group_id, chapter_id)
     if not times:
         return 2, {}
     config = game_config.date_chapter
-    need_item = config[chapter_id]['need_item']
+    rc = mm.friend.delete_rapport_log(times, stage_id, save=False)
+    if rc:
+        return rc, {}
+
+    need_item = config[chapter_id]['need_item2']
     rc, data = del_mult_goods(mm, need_item)
     if rc:
         return rc, {}  # 消耗不足
-    mm.friend.delete_rapport_log(times, save=False)
+
     mm.friend.save()
     _, data = rapport_index(hm)
     return 0, data
