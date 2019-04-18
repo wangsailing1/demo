@@ -22,4 +22,5 @@ fans_activity = {
     'item': ('item', 'int_list'),  # item
     'build_id': ('build_id', 'int'),  # 建筑id
     'card_need': ('card_need', 'int_list'),  # 艺人要求[艺人位置编号，艺人性别，艺人类型，艺人分类，演技要求，歌艺要求，气质要求，动感要求，娱乐要求，人气要求]
+    'firststart_gold_per_card': ('firststart_gold_per_card', 'int'),  # 建筑id
 }
