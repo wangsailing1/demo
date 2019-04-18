@@ -591,9 +591,13 @@ class Chapter_stage(object):
         add_value = {}
 
         if avg_config[choice_id]['is_end'] and config['unlockid'] not in self.chapter_stage.story_can_unlock:
-            self.chapter_stage.story_can_unlock.append(config['unlockid'])
-            add_mult_gift(self.mm, config['award'], cur_data=reward)
-            save = True
+            if config['unlockid'] != -1:
+                self.chapter_stage.story_can_unlock.append(config['unlockid'])
+                add_mult_gift(self.mm, config['award'], cur_data=reward)
+                save = True
+            if chapter_id not in self.chapter_stage.story_done:
+                self.chapter_stage.story_done.append(chapter_id)
+                save = True
         if not card_id:
             gift = avg_config[choice_id]['reward']
 

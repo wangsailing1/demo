@@ -30,6 +30,7 @@ class Chapter_stage(ModelBase):
             'story_can_unlock': [],  # 可解锁故事
             'story_unlock': [],  # 已解锁故事
             'got_reward_story': [], # 已经领奖的故事
+            'story_done': [],  # 已通关故事
         }
         super(Chapter_stage, self).__init__(self.uid)
 

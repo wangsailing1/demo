@@ -71,7 +71,8 @@ def story_index(hm):
     return 0, {
         'story_can_unlock': mm.chapter_stage.story_can_unlock,
         'story_unlock': mm.chapter_stage.story_unlock,
-        'got_reward_story': mm.chapter_stage.got_reward_story
+        'got_reward_story': mm.chapter_stage.got_reward_story,
+        'story_done': mm.chapter_stage.story_done
     }
 
 
