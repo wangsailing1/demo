@@ -98,6 +98,7 @@ class Block(object):
                     id += 1
         big_sale_info = self.get_big_sale_info()
         data['big_sale_info'] = big_sale_info
+        data['block_num'] = self.block.block_num
         if not self.block.award_ceremony:
             self.block.award_ceremony = 1
             self.block.save()
