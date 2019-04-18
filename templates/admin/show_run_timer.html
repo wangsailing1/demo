@@ -19,6 +19,7 @@
 2. 任务到执行时间后，最多一分钟待执行任务列表才会刷新，请耐心等待。<br>
 </font></p>
 
+<div style="width: 50%; float: left">
 <h2>待执行的定时任务（每分钟刷新）</h2>
 <table id="data" class="hovertable">
     <tr>
@@ -34,7 +35,9 @@
         </tr>
     {% end %}
 </table>
+</div>
 
+<div>
 <h2>已执行的任务</h2>
 <form action="/{{url_partition}}/admin/data/show_run_timer_jobs/" method="get">
 日期：
@@ -48,9 +51,9 @@
     {% end %}
 </select>
 <button type="submit" name="save" value="True">查看</button></p>
-<br>
-<textarea style="width: 70%; height: 100%">
+<textarea style="width: 45%; height: 50%">
     {{ timer_log }}
 </textarea><br/>
 
+</div>
 {% end %}
