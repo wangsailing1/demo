@@ -1,0 +1,56 @@
+{% extends "./fields.html" %}
+
+{% block fieldbody %}
+
+
+<p>当前正确时间: {{ real_time }}</p>
+<p>当前进程时间: {{ sys_time}}</p>
+<form action="/{{url_partition}}/admin/config/modify_time/" method="get">
+<p>修改进程时间: <input type="text" name="sys_time" value="" />(想恢复正确时间时，填写0)
+<button type="submit" name="save" value="True">保存</button></p>
+<input type="submit" name="sub_day" value="-1天"/>
+<input type="submit" name="add_day" value="+1天"/>
+<input type="hidden" name="from_timer" value="1">
+</form>
+
+<p ><font color='red'>
+改时间说明：后台每分钟检测是否修改了系统时间，待执行的定时任务也是每分钟刷新。<br>
+1. 测试将执行的任务时，请将时间调到距离1分钟以上，再等待后台执行。<br>
+2. 任务到执行时间后，最多一分钟待执行任务列表才会刷新，请耐心等待。<br>
+</font></p>
+
+<h2>待执行的定时任务（每分钟刷新）</h2>
+<table id="data" class="hovertable">
+    <tr>
+        <th>执行时间</th>
+        <th>任务id</th>
+        <th>任务名称</th>
+    </tr>
+    {% for t, job_id, job_name in show_jobs %}
+        <tr onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+            <td>{{ t }}</td>
+            <td>{{ job_id }}</td>
+            <td>{{ job_name }}</td>
+        </tr>
+    {% end %}
+</table>
+
+<h2>已执行的任务</h2>
+<form action="/{{url_partition}}/admin/data/show_run_timer_jobs/" method="get">
+日期：
+<select name="dates_today" value="">
+    {% for date in dates %}
+    {% if date == dates_today %}
+        <option value="{{ date }}" selected>{{ date }}</option>
+    {% else %}
+        <option value="{{ date }}">{{ date }}</option>
+    {% end %}
+    {% end %}
+</select>
+<button type="submit" name="save" value="True">查看</button></p>
+<br>
+<textarea style="width: 70%; height: 100%">
+    {{ timer_log }}
+</textarea><br/>
+
+{% end %}

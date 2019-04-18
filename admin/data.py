@@ -13,7 +13,9 @@ from gconfig import game_config
 from settings import get_channel_name
 from models.ranking_list import WorldBossRank
 import settings
-
+from lib.utils.zip_date import dencrypt_data
+from lib.utils import change_time
+from lib.db import ModelTools
 
 limit_days = 30
 
@@ -333,3 +335,54 @@ def slg_status(req):
         if not rc:
             data.append(status)
     return render(req, 'admin/data/slg_status.html', **{'data': data})
+
+
+def show_run_timer_jobs(req):
+    '''显示待执行的run_timer定时任务'''
+    from lib.db import get_redis_client
+    FUNC_NAME_DICT = {
+        'do_data_process_hourly'     : u'数据统计',
+        'genearte_global_event'      : u'全球随机事件',
+
+    }
+    JOBS_RUNTIME_KEY = 'jobs_runtime_key'
+    cache = ModelTools.get_redis_client('public')
+
+    run_timer_jobs = cache.get(JOBS_RUNTIME_KEY)
+    run_timer_jobs = dencrypt_data(run_timer_jobs) if run_timer_jobs else {}
+    # 武林中的定时任务显示
+    JOBS_WORLD_RUNTIME_KEY = 'jobs_world_runtime_key'
+    run_world_timer_jobs = cache.get(JOBS_WORLD_RUNTIME_KEY)
+    if run_world_timer_jobs:
+        run_timer_jobs.update(dencrypt_data(run_world_timer_jobs))
+
+    show_jobs = []
+    for job_id, job_time_str in sorted(run_timer_jobs.iteritems(), key=lambda a: (a[1], a[0])):
+        job_name = FUNC_NAME_DICT.get(job_id.split(':')[1], '')
+        show_jobs.append([job_time_str, job_id, job_name])
+    # 系统时间
+    real_time = change_time.REAL_DATETIME_FUNC()
+    sys_time = datetime.datetime.now()
+    # timer记录
+    dates_today = req.get_argument('dates_today', '') or time.strftime('%Y%m%d')
+    import glob
+
+    dates = [k.split('/')[-1] for k in glob.glob('{0}logs/run_timer/*'.format(settings.BASE_ROOT))[-10:]]
+    if dates_today not in dates:
+        dates.append(dates_today)
+    timer_log = ''
+    try:
+        with open('{0}logs/run_timer/{1}'.format(settings.BASE_ROOT, dates_today)) as f:
+            timer_log = f.read()
+    except:
+        timer_log = 'there is no log today!'
+    data = {
+        'show_jobs'   : show_jobs,
+        'real_time'   : real_time,
+        'sys_time'    : sys_time,
+        'dates'       : dates,
+        'dates_today' : dates_today,
+        'timer_log'   : timer_log,
+    }
+    return render(req, 'admin/show_run_timer.html', **data)
+
