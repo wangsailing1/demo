@@ -279,6 +279,7 @@ def modify_time(req):
     sys_time = req.get_argument('sys_time', '').strip('')
     add_day = req.get_argument('add_day', '')
     sub_day = req.get_argument('sub_day', '')
+    from_timer = req.get_argument('from_timer', '')
 
     real_time = change_time.REAL_TIME_FUNC()
     if add_day:
@@ -295,7 +296,10 @@ def modify_time(req):
 
     change_time.change_time(new_time)   # 更改系统时间
     ChangeTime.set(delta_seconds)
-
+    print 'from_timer:', from_timer
+    if from_timer:
+        from admin.data import show_run_timer_jobs
+        return show_run_timer_jobs(req)
     return modify_time_index(req, msg='success')
 
 

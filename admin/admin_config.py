@@ -301,7 +301,14 @@ menu_config = {
             'sub': [('select_pay', u'查询充值记录', 1), ('pay_day', u'查询某天的充值', 1),
                     ('pay_person', u'查询某人的充值', 1)],
         }],
-        'data': [{
+        'data': [
+            {
+                'name': u'查看定时任务',
+                'sub': [
+                    ('show_run_timer_jobs', u'查看定时任务', 1)
+                ]
+            },
+            {
             'name': u"数据统计[uid]",
             'sub': [
                 ('statistics_index', u'数据统计[uid]', 1),
