@@ -697,15 +697,15 @@ class Script(ModelBase):
         else:
             can_use_ids = common_scripts
 
-        choice_recent = False
         can_use_ids = [i for i in can_use_ids if i[0] not in self.recent_script]
         for i in xrange(self.POOL_SIZE):
             if not can_use_ids and not self.recent_script:
                 break
-            if self.recent_script and not choice_recent:
-                choice_recent = True
+            if self.recent_script:
                 choice = self.recent_script.pop()
             else:
+                if not can_use_ids:
+                    break
                 id_weight = weight_choice(can_use_ids)
                 can_use_ids.remove(id_weight)
                 choice = id_weight[0]
@@ -714,14 +714,14 @@ class Script(ModelBase):
         # 续集
         can_use_sequel_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if
                               k in self.group_sequel.values() and k not in self.recent_sequel]
-        choice_recent = False
         for i in xrange(self.POOL_SIZE):
             if not can_use_sequel_ids and not self.recent_sequel:
                 break
-            if self.recent_sequel and not choice_recent:
-                choice_recent = True
+            if self.recent_sequel:
                 choice = self.recent_sequel.pop()
             else:
+                if not can_use_sequel_ids:
+                    break
                 id_weight = weight_choice(can_use_sequel_ids)
                 can_use_sequel_ids.remove(id_weight)
                 choice = id_weight[0]
