@@ -243,6 +243,40 @@ def build(hm, data, mission):
     return {mission._BUILD: {'target1': group_id, 'value': 1}}
 
 
+# 约餐
+def card_add_love_exp(hm, data, mission):
+    items = hm.get_mapping_arguments('items')
+    config = game_config.use_item
+    data = {}
+    for item_id, item_num in items:
+        item_config = config[item_id]
+        star = item_config['star']
+        if star not in data:
+            data[star] = item_num
+        else:
+            data[star] += item_num
+    return {mission._DINNER: {'target1': 0, 'value': data}}
+
+# 装备
+def equip(hm, data, mission):
+    equip_ids = hm.get_mapping_argument('equip_ids', num=0)
+    config = game_config.equip
+    data = {}
+    for equip_id in equip_ids:
+        equip_config = config[equip_id]
+        star = equip_config['star']
+        if star not in data:
+            data[star] = 1
+        else:
+            data[star] += 1
+
+    return {mission._EQUIP: {'target1': 0, 'value': data}}
+
+# 处理公务
+def business(hm, data, mission):
+    return {mission._BUSINESS: {'target1': 0, 'value': 1}}
+
+
 # =================================需要自检的数值类任务func=================================
 
 # 玩家等级
@@ -356,6 +390,7 @@ FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
 BUILD = 26  # 建筑
 MISSIONNUM = 27  # 任务完成次数
 TOPINCOME = 28 # 单片最大票房次数
+CONTRAST = [30, 31]  # 任务目标比较大小 返回的value {target1:0 ,value :{key:num}}
 
 
 class Mission(ModelBase):
@@ -404,8 +439,10 @@ class Mission(ModelBase):
         'user.buy_point': buy_point,  # 购买体力
         'fans_activity.unlock_activity': build,  # 建筑任务
         'user.build': build,  # 建筑任务
-        'mission.get_reward': mission_num,  # 建筑任务
+        'mission.get_reward': mission_num,  # 完成任务个数
         # 'mission.get_reward': mission_args,                           # 成就
+        'business.handling': business,  # 处理公务
+        'card.card_add_love_exp': card_add_love_exp,  # 约餐
 
     }
     # mission_mapping
@@ -446,6 +483,9 @@ class Mission(ModelBase):
     _BUILD = 26  # 建筑任务
     _MISSIONNUM = 27  # 完成任务次数
     _TOPINCOME = 28  # 单片最大收入
+    _BUSINESS = 29  # 处理公务
+    _EQUIP = 30  # 装备
+    _DINNER = 31  # 约餐
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
@@ -942,6 +982,19 @@ class DoMission(object):
                     self.data[mission_id] += value['value']
                 else:
                     self.data[mission_id] = value['value']
+
+
+        elif self.config[mission_id]['sort'] == CONTRAST:
+            v = value['value']
+            num_ = 0
+            for target , num in v.iteritems():
+                if target >= target_data[0]:
+                    num_ += num
+
+            if mission_id in self.data:
+                self.data[mission_id] += num_
+            else:
+                self.data[mission_id] = num_
 
         else:
             if mission_id in self.data:
