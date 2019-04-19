@@ -59,12 +59,12 @@ import settings
 
 settings.set_env(options.env, 'all')
 
-from gconfig import game_config, front_game_config
+from gconfig import game_config, front_game_config, auto_reload_all
 from lib.utils.debug import print_log
 from lib.utils import filedefaultdict
 from lib.utils.mail import send_sys_mail
 from lib.db import ModelTools
-from models.server import ServerUidList
+from models.server import ServerUidList, ServerConfig
 from logics.script import genearte_random_event, genearte_global_event
 from logics.ranking_list import rank_list_backup
 from logics.toy import send_rank_reward
@@ -127,8 +127,7 @@ class SelfGeventScheduler(GeventScheduler):
         self.config_time = 0
         while self.running:
             if self.config_time % 59 == 0:
-                if (game_config and game_config.reload()) or \
-                        (front_game_config and front_game_config.reload()):
+                if auto_reload_all():
                     print '----game_config.auto_reload, reload_all_jobs'
                     self.reload_all_jobs()
 
@@ -170,7 +169,8 @@ class SelfGeventScheduler(GeventScheduler):
                                **trigger_kwargs)
             print job
         else:
-            for server_id in ServerUidList.all_server():
+            sc = ServerConfig.get()
+            for server_id, _ in sc.yield_open_servers():
                 job_id = '%s:%s' % (job_func_name, server_id)
                 job = self.add_job(job_func_name, trigger_name, args=(server_id,),
                                    id=job_id, name=job_id,
@@ -196,7 +196,8 @@ class SelfGeventScheduler(GeventScheduler):
                                    **trigger_kwargs)
                 print job
         else:
-            for server_id in ServerUidList.all_server():
+            sc = ServerConfig.get()
+            for server_id, _ in sc.yield_open_servers():
                 for index, dt in enumerate(time_list_func(server_id)):
                     # 过期的timer不再加
                     if str(dt) < time.strftime('%F %T'):
