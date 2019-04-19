@@ -241,36 +241,36 @@ def active_reward():
 
 
 # # 刷新时间func
-# def super_player_refresh_time():
-#     config = game_config.active
-#     now_str = time.strftime('%Y-%m-%d %H:%M:%S')
-#     l = [k for k, v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str]
-#     if not l:
-#         return []
-#     a_id = min([k for k,v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str])
-#     str_time = config[a_id]['start_time']
-#     str_end_time = config[a_id]['end_time']
-#     result = []
-#     now = time.time()
-#
-#     tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
-#     utc_time = time.mktime(tmp_time) - 30 *60
-#     if utc_time not in result:
-#         result.append(utc_time)
-#     i = 0
-#     while True:
-#         next_time = (ceil(now / 1800) + i) * 1800
-#         i += 1
-#         tmp_end_time = time.strptime(str_end_time, '%Y-%m-%d %H:%M:%S')
-#         utc_end_time = time.mktime(tmp_end_time)
-#         if next_time > utc_end_time:
-#             break
-#         if next_time in result:
-#             continue
-#         result.append(next_time)
-#
-#
-#     return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
+def super_player_refresh_time():
+    config = game_config.active
+    now_str = time.strftime('%Y-%m-%d %H:%M:%S')
+    l = [k for k, v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str]
+    if not l:
+        return []
+    a_id = min([k for k,v in config.items() if v['active_type'] == 2010 and v['start_time'] >= now_str])
+    str_time = config[a_id]['start_time']
+    str_end_time = config[a_id]['end_time']
+    result = []
+    now = time.time()
+
+    tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+    utc_time = time.mktime(tmp_time) - 30 *60
+    if utc_time not in result:
+        result.append(utc_time)
+    i = 0
+    while True:
+        next_time = (ceil(now / 1800) + i) * 1800
+        i += 1
+        tmp_end_time = time.strptime(str_end_time, '%Y-%m-%d %H:%M:%S')
+        utc_end_time = time.mktime(tmp_end_time)
+        if next_time > utc_end_time:
+            break
+        if next_time in result:
+            continue
+        result.append(next_time)
+
+
+    return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
 
 # 发奖时间func
 def active_reward_time():
