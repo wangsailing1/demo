@@ -32,6 +32,9 @@ class Script(ModelBase):
     _need_diff = ('own_script',)
     SEXMAPPING = {1: 'nv', 2: 'nan'}
 
+    RECENT_SCRIPT_NUM = 5
+    RECENT_SEQUEL_SCRIPT_NUM = 1
+
     def __init__(self, uid=None):
         """
 
@@ -56,7 +59,8 @@ class Script(ModelBase):
         self.uid = uid
         self._attrs = {
             'refresh_date': '',
-
+            'recent_script': [],        # 最近获得的剧本
+            'recent_sequel': [],        # 最近获得的续集剧本
             'newbie': True,         # 是否新用户首次拍片
             'sequel_script': [],  # 已获得的可拍摄的续集片子
             'continued_script': {},         # 持续收益的片子
@@ -198,12 +202,6 @@ class Script(ModelBase):
         if self.refresh_date != today:
             self.refresh_date = today
             self.directing_times = 0
-
-        # todo 开发期容错，不走数据升级， 上线后删除
-        if self.cur_script:
-            for i in ['director_effect', 'skill_effect']:
-                if i not in self.cur_script:
-                    self.cur_script[i] = {}
 
         # 连续拍片类型，保留最近10个
         self.style_log = self.style_log[-10:]
@@ -503,6 +501,11 @@ class Script(ModelBase):
             if group_info['cur_top_income'] > group_info['last_top_income']:
                 group_info['last_top_income'] = group_info['cur_top_income']
                 group_info['top_script'] = cur_script
+
+        if has_next and next_id:
+            if next_id not in self.recent_sequel:
+                self.recent_sequel.append(next_id)
+                self.recent_sequel = self.recent_sequel[-self.RECENT_SEQUEL_SCRIPT_NUM:]
         return has_next and next_id
 
     def check_top_income(self, film_info):
@@ -657,6 +660,8 @@ class Script(ModelBase):
             return False
         self.own_script.append(script_id)
         self.mm.script_book.add_book(script_id)
+        self.recent_script.append(script_id)
+        self.recent_script = self.recent_script[-self.RECENT_SCRIPT_NUM:]
         return True
 
     @classmethod
@@ -691,22 +696,36 @@ class Script(ModelBase):
             self.newbie = False
         else:
             can_use_ids = common_scripts
+
+        choice_recent = False
+        can_use_ids = [i for i in can_use_ids if i[0] not in self.recent_script]
         for i in xrange(self.POOL_SIZE):
-            if not can_use_ids:
+            if not can_use_ids and not self.recent_script:
                 break
-            id_weight = weight_choice(can_use_ids)
-            can_use_ids.remove(id_weight)
-            self.script_pool[id_weight[0]] = 0
+            if self.recent_script and not choice_recent:
+                choice_recent = True
+                choice = self.recent_script.pop()
+            else:
+                id_weight = weight_choice(can_use_ids)
+                can_use_ids.remove(id_weight)
+                choice = id_weight[0]
+            self.script_pool[choice] = 0
 
         # 续集
         can_use_sequel_ids = [(k, v['rate']) for k, v in game_config.script.iteritems() if
-                              k in self.group_sequel.values()]
+                              k in self.group_sequel.values() and k not in self.recent_sequel]
+        choice_recent = False
         for i in xrange(self.POOL_SIZE):
-            if not can_use_sequel_ids:
+            if not can_use_sequel_ids and not self.recent_sequel:
                 break
-            id_weight = weight_choice(can_use_sequel_ids)
-            can_use_sequel_ids.remove(id_weight)
-            self.sequel_script_pool[id_weight[0]] = 0
+            if self.recent_sequel and not choice_recent:
+                choice_recent = True
+                choice = self.recent_sequel.pop()
+            else:
+                id_weight = weight_choice(can_use_sequel_ids)
+                can_use_sequel_ids.remove(id_weight)
+                choice = id_weight[0]
+            self.sequel_script_pool[choice] = 0
 
         # 初始化市场关注度
         all_market = [(v['market'], v['rate']) for k, v in game_config.script_market.iteritems()]
