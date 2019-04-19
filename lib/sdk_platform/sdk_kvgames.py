@@ -49,12 +49,12 @@ def login_verify(req, params=None, DEBUG=False):
             'session_id': req.get_argument('session_id', ''),
             'user_id': req.get_argument('user_id', ''),
         }
-
-    # 先不做验证，等确定是接国内还是台湾的sdk服务
-    # return {
-    #     'openid': params['uid'],
-    #     'openname': '',
-    # }
+    # todo 先不做验证，等确定是接国内还是台湾的sdk服务
+    if settings.DEBUG:
+        return {
+            'openid': params['uid'],
+            'openname': '',
+        }
 
     # 两个地址，签名参数名 user_id, app_id 不同
     # http://app.tw.hi365.com/taiwan/backend_account_check/
@@ -86,7 +86,7 @@ def login_verify(req, params=None, DEBUG=False):
         return None
     result = json.loads(content)
     if result['status'] == -6:
-        # 开发环境参数发到测试环境验证 status = -6
+        # 开发环境参数发到正式环境验证 status = -6
         # print result
         http_code, content = http.post(TEST_VERIFT, query_data)
         if http_code != 200:
