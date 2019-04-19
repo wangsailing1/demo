@@ -984,7 +984,7 @@ class DoMission(object):
                     self.data[mission_id] = value['value']
 
 
-        elif self.config[mission_id]['sort'] == CONTRAST:
+        elif self.config[mission_id]['sort'] in CONTRAST:
             v = value['value']
             num_ = 0
             for target , num in v.iteritems():
