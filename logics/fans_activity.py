@@ -69,6 +69,7 @@ class FansActivity(object):
 
         gift = []
         gold_num = 0
+        ex_gift = []
         for k, card_id in enumerate(cards):
             if card_id in ['0']:
                 continue
@@ -93,8 +94,9 @@ class FansActivity(object):
             _gift = self.check_and_remove_cards(card_id, activity_id)
             gold_num += config.get('firststart_gold_per_card', 100)
             gift.extend(_gift)
-        gift.append([1, 0, gold_num])
+        ex_gift.append([1, 0, gold_num])
         reward = add_mult_gift(self.mm, gift)
+        ex_reward = add_mult_gift(self.mm, ex_gift)
         effect_id = self.mm.fans_activity.get_card_effect(cards)
         self.mm.fans_activity.activity_log[activity_id] = {
             'start_time': now,
@@ -111,6 +113,7 @@ class FansActivity(object):
         self.mm.fans_activity.save()
         self.mm.user.save()
         _, data = self.fans_index()
+        data['reward'] = ex_reward
         return 0, data
 
     def check_and_remove_cards(self, card_id, activity_id):
