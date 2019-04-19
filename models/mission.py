@@ -443,6 +443,7 @@ class Mission(ModelBase):
         # 'mission.get_reward': mission_args,                           # 成就
         'business.handling': business,  # 处理公务
         'card.card_add_love_exp': card_add_love_exp,  # 约餐
+        'card.set_equip': equip,  # 装备
 
     }
     # mission_mapping
