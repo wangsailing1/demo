@@ -9,5 +9,6 @@ statistic
 logs
 upload_xls
 test/local_config.py
+env_config/local.py
 
 dump.rdb
