@@ -294,11 +294,8 @@ def server_active_reward_time(server):
     version, new_server, s_time, e_time = get_inreview_version(mm.user, mm.serversuperplayer.ACTIVE_ID)
     str_times = strftimestamp(datetime_to_timestamp(e_time))
     result = []
-    for str_time in str_times:
-        tmp_time = time.strptime(str_time, '%Y-%m-%d %H:%M:%S')
-        utc_time = time.mktime(tmp_time) + 5
-        if utc_time in result:
-            continue
-        result.append(utc_time)
+    tmp_time = time.strptime(str_times, '%Y-%m-%d %H:%M:%S')
+    utc_time = time.mktime(tmp_time) + 5
+    result.append(utc_time)
 
     return [datetime.datetime.fromtimestamp(t) for t in sorted(result)]
