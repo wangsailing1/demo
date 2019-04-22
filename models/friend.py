@@ -85,8 +85,8 @@ class Friend(ModelBase):
             'tourism_log': {},  # 旅游记录
             'last_week': '',
             'got_point_daily': 0,
-            'unlocked_appointment': [],
-            'unlocked_section': [],
+            'unlocked_appointment': [],  # 解锁约会 剧情解锁
+            'unlocked_section': [],  # 解锁的约会  道具解锁
 
         }
         super(Friend, self).__init__(self.uid)

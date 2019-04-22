@@ -312,6 +312,7 @@ date_chapter = {
     'need_item': ('need_item', 'int_list'),
     'need_item2': ('need_item2', 'int_list'),
     'cg': ('cg', 'str'),
+    'sex': ('sex', 'int'),
 }
 
 story_stage = {
