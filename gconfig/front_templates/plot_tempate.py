@@ -219,6 +219,7 @@ phone_daily_dialogue = {
     'date_dialogue2': ('date_dialogue2', 'int_list'),
     # 'travel_dialogue1': ('travel_dialogue1', 'int_list'),
     # 'travel_dialogue2': ('travel_dialogue2', 'int_list'),
+    'group': ('group', 'int_list'),
 }
 
 # 手机互动剧情
@@ -307,4 +308,5 @@ date_chapter = {
     'bg': ('bg', 'str'),
     'need_item': ('need_item', 'int_list'),
     'need_item2': ('need_item2', 'int_list'),
+    'cg': ('cg', 'str'),
 }
