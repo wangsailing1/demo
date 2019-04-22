@@ -89,7 +89,7 @@ TIMER_JOBS = (
     ('cron', dict(hour='*'), genearte_random_event, 1),
     ('cron', dict(minute='30'), genearte_global_event, 1),
     ('cron', dict(minute='*/30'), refresh, 1),
-    ('cron', dict(minute='*/30'), server_refresh, 1),
+    ('cron', dict(minute='*/30'), server_refresh, 0),
 
     # 公会战
     # 筛选可参与的公会,分组
