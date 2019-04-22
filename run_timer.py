@@ -89,6 +89,7 @@ TIMER_JOBS = (
     ('cron', dict(hour='*'), genearte_random_event, 1),
     ('cron', dict(minute='30'), genearte_global_event, 1),
     ('cron', dict(minute='*/30'), refresh, 1),
+    ('cron', dict(minute='*/30'), server_refresh, 1),
 
     # 公会战
     # 筛选可参与的公会,分组
@@ -114,7 +115,7 @@ DATE_LIST_JOBS = (
     # (super_player_refresh_time                  , refresh           , 1),
     # 超级大玩家发奖
     (active_reward_time                         , active_reward     , 1),
-    (server_super_player_refresh_time           , server_refresh           , 0),
+    # (server_super_player_refresh_time           , server_refresh           , 0),
     # 超级大玩家发奖
     (server_active_reward_time                  , server_active_reward     , 0),
 )
