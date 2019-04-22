@@ -965,7 +965,7 @@ class FriendLogic(object):
                    'old_value': old_value
                    }
 
-    def rapport(self, group_id, choice_id, now_stage, type=2):
+    def rapport(self, group_id, choice_id, now_stage, chapter_id, type=2):
         tp = self.friend.TYPEMAPPING[type]
         config = getattr(game_config, tp)
         if now_stage not in config:
@@ -980,7 +980,7 @@ class FriendLogic(object):
         times_, flag, has_chat = self.friend.check_chat_end(group_id, type=type)
         if type == 2:
             chat_log = self.friend.appointment_log.get(times_, {}).get('log', {})
-            times = self.friend.appointment_times
+            times = self.friend.get_rapport_times(group_id, chapter_id)
             max_times = self.friend.get_max_avgdate_times()
         # elif type == 3:
         #     chat_log = self.friend.tourism_log.get(times_,{}).get('log',{})

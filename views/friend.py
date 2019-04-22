@@ -7,6 +7,7 @@ from logics.friend import FriendLogic
 # from logics.manufacture import ManufactureLogic
 from lib.utils.sensitive import is_sensitive
 from gconfig import game_config
+from tools.gift import del_mult_goods
 
 
 def check_unlock(func):
@@ -502,7 +503,56 @@ def rapport_index(hm):
     return 0, {'unlocked_appointment': mm.friend.unlocked_appointment,
                'chat_log': mm.friend.appointment_log,
                'appointment_times': mm.friend.appointment_times,
+               'unlocked_section': mm.friend.unlocked_section
                }
+
+# 消耗道具解锁约会
+def unlock_section(hm):
+    mm = hm.mm
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    if chapter_id not in mm.friend.unlocked_appointment:
+        return 1, {}  # 请先前往上一个约会地点
+    config = game_config.date_chapter
+    if chapter_id not in config:
+        return 2, {}  # 解锁的约会地点错误
+    if config[chapter_id]['preid'] == -1:
+        return 3, {}  # 第一次约会地点无需解锁
+    if chapter_id in mm.friend.unlocked_section:
+        return 4, {}  # 已经可以前往约会地点了
+    need_item = config[chapter_id]['need_item']
+    rc, data = del_mult_goods(mm, need_item)
+    if rc:
+        return rc, {}  # 消耗不足
+    mm.friend.unlocked_section.append(chapter_id)
+    mm.friend.save()
+    _, data = rapport_index(hm)
+    return 0, data
+
+
+#清除
+def delete_rapport_log(hm):
+    mm = hm.mm
+    group_id = hm.get_argument('group_id', 0, is_int=True)
+    chapter_id = hm.get_argument('chapter_id', 0, is_int=True)
+    stage_id = hm.get_argument('stage_id', 0, is_int=True)
+    if not group_id or not chapter_id or not stage_id:
+        return 1, {}
+    times = mm.friend.get_rapport_times(group_id, chapter_id)
+    if not times:
+        return 2, {}
+    config = game_config.date_chapter
+    rc = mm.friend.delete_rapport_log(times, stage_id, save=False)
+    if rc:
+        return rc, {}
+
+    need_item = config[chapter_id]['need_item2']
+    rc, data = del_mult_goods(mm, need_item)
+    if rc:
+        return rc, {}  # 消耗不足
+
+    mm.friend.save()
+    _, data = rapport_index(hm)
+    return 0, data
 
 
 # 约会
@@ -549,7 +599,7 @@ def rapport(hm):
     #                'tourism_times': mm.friend.tourism_times, }
 
     else:
-        rc, data = fl.rapport(group_id, choice_id, now_stage, type=tp)
+        rc, data = fl.rapport(group_id, choice_id, now_stage, chapter_id, type=tp)
     _, actor_data = fl.actor_chat_index()
     data['actor'] = actor_data
     data['phone_daily_times'] = mm.friend.phone_daily_times

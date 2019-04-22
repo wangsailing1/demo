@@ -222,6 +222,7 @@ phone_daily_dialogue = {
     'appointment_lh': ('appointment_lh', 'str'),
     'introduce_id': ('introduce_id', 'str'),
     'sex': ('sex', 'int'),
+    'group': ('group', 'int_list'),
 }
 
 # 手机互动剧情
@@ -304,6 +305,13 @@ date_chapter = {
     'like': ('like', 'int'),
     'unlockid': ('unlockid', 'int'),
     'preid': ('preid', 'int'),
+    'group': ('group', 'int'),
+    'section': ('section', 'int'),
+    'group_name': ('group_name', 'str'),
+    'bg': ('bg', 'str'),
+    'need_item': ('need_item', 'int_list'),
+    'need_item2': ('need_item2', 'int_list'),
+    'cg': ('cg', 'str'),
 }
 
 story_stage = {
