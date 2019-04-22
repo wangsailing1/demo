@@ -11,6 +11,8 @@
         <th>配置id</th>
         <th>名字</th>
         <th>等级</th>
+        <th>来源</th>
+        <th>雪藏</th>
         <!--<th>经验</th>-->
         <!--<th>进阶等级</th>-->
         <!--<th>星级</th>-->
@@ -27,6 +29,8 @@
         <td>{{ card_dict['id'] }}</td>
         <td>{{ get_str_words('1', game_config.card_basis[card_dict['id']]['name'] )}}</td>
         <td><input type="text" name="lv" value="{{ card_dict['lv'] }}" size="5" /></td>
+        <td>{{ card_dict['_source'] }}</td>
+        <td>{{ card_dict['is_cold'] }}</td>
         <!--<td>{{ card_dict['exp'] }}</td>-->
         <!--<td><input type="text" name="evo" value="{{ card_dict['evo'] }}" size="5" /></td>-->
         <!--<td><input type="text" name="star" value="{{ card_dict['star'] }}" size="5" /></td>-->
