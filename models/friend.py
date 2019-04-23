@@ -679,10 +679,12 @@ class Friend(ModelBase):
 
     def get_rapport_times(self, group_id, chapter_id):
         info = self.appointment_log
+        times_ = 0
         for times, value in info.iteritems():
             if value['group_id'] ==  group_id and value['chapter_id'] == chapter_id:
-                return times
-        return 0
+                if times > times_:
+                    times_ = times
+        return times_
 
     def delete_rapport_log(self, times, stage_id, save=True):
         if times not in  self.appointment_log:
