@@ -65,12 +65,13 @@ def login_verify(req, params=None, DEBUG=False):
         'uid': params['uid'],
         'sign': sign,
     })
-
+    sandbox = req.get_argument('sandbox', '')
     http_code, content = http.post(VERIFY_SESSIONID_URI, query_data)
     if http_code != 200:
         return None
     result = json.loads(content)
-    if result['status'] == -6:
+    # if result['status'] == -6:
+    if sandbox:
         # 开发环境参数发到测试环境验证 status = -6
         # print result
         http_code, content = http.post(TEST_VERIFT, query_data)
