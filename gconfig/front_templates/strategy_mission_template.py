@@ -12,6 +12,8 @@ strategy_mission = {
     'target4':          ('target4',         'int'),                 # 目标4
     'target5':          ('target5',         'int'),                 # 目标5
     'reward':           ('reward',          'int_list'),            # 奖励
+    'reward_a':         ('reward_a',        'float'),               # 奖励参数a
+    'reward_b':         ('reward_b',        'float'),               # 奖励参数b
     'jump':             ('jump',            'int_list'),            # 跳转
     'weight':           ('weight',          'int'),                 # 权重
     'unlock_lvl':       ('unlock_lvl',      'int'),                 # 解锁等级
