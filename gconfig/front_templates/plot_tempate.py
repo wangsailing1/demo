@@ -278,6 +278,8 @@ tour_dialogue = {
     'box_center': ('box_center', 'int_list'),
     'cg_picture': ('cg_picture', 'str'),
     'Recall_effects': ('Recall_effects', 'int'),
+    'player_sex': ('player_sex', 'int'),
+    'chapter': ('chapter', 'int'),
 }
 
 explain = {
