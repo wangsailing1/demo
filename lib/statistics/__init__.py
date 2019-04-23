@@ -49,18 +49,6 @@ path = os.path.join(settings.BASE_ROOT, 'logs/action/')
 
 os.system("""[ ! -d '%s' ] && mkdir -p %s"""%(path, path))
 
-now = time.time()
-for abs_path, dirs, files in os.walk(path):
-    for file_name in files:
-        file_path = os.path.join(abs_path, file_name)
-        try:
-            st = os.stat(file_path)
-            # 删除超过两周的文件
-            if now - st.st_mtime > 3600 * 24 * 14:
-                os.remove(file_path)
-        except Exception, e:
-            print_log(e)
-
 
 def logger(hm, args, data):
     from models.logging import Logging
