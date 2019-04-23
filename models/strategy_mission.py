@@ -349,6 +349,7 @@ class Mission(ModelBase):
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
+            'date': '',                 # 登陆时间
             'strategy_info': {},        # 合作信息
             'strategy_data': {},        # 任务数据
             'strategy_done': [],        # 已完成的任务记录
@@ -492,7 +493,7 @@ class DoMission(object):
 
     def add_count(self, mission_id, value, **kwargs):
 
-        target_data = self.config[mission_id]['target']
+        target_data = [self.config[mission_id]['target%s' % i] for i in range(1, 6)]
         if self.config[mission_id]['sort'] in MissionTools.TYPE_MAPPING:
             type = MissionTools.TYPE_MAPPING[self.config[mission_id]['sort']]
             script_type = game_config.script[value['target1']][type]
