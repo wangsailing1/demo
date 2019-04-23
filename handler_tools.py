@@ -31,6 +31,14 @@ def user_status(mm):
     if mm is None:
         return {}
 
+    strategy = mm.strategy
+    strategy_info = {}
+    if not strategy.strategy_uid:
+        strategy_info = {
+            'invite_info': strategy.invite_info,
+            'refuse_info': strategy.refuse_info,
+        }
+
     user = mm.user
 
     guild_name = user.guild_name
@@ -89,6 +97,7 @@ def user_status(mm):
         'build_effect': {i: j for i, j in mm.user.build_effect.iteritems() if i in [7, 9]},
         'company_vip_reward': mm.user.company_vip_reward,   #  已领等级礼包
         'assistant': mm.assistant.assistant,  # 终身助理
+        'strategy_info': strategy_info,
     }
     return data
 

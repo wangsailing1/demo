@@ -347,6 +347,8 @@ class GameConfigMixIn(object):
         self.server_add_recharge_mapping = {}
         self.server_free_reward_weight_mapping = {}
         self.server_rmb_reward_weight_mapping = {}
+        self.strategy_mission_mapping = {}
+        self.strategy_gift_mapping = {}
 
 
     def reset(self):
@@ -460,6 +462,8 @@ class GameConfigMixIn(object):
         self.server_add_recharge_mapping.clear()
         self.server_free_reward_weight_mapping.clear()
         self.server_rmb_reward_weight_mapping.clear()
+        self.strategy_mission_mapping.clear()
+        self.strategy_gift_mapping.clear()
 
 
     def update_funcs_version(self, config_name):
@@ -2737,6 +2741,27 @@ class GameConfigMixIn(object):
                 self.server_rmb_reward_weight_mapping[v['library_id']][v['group']].append([k,v['weight_show']])
         return self.server_rmb_reward_weight_mapping
 
+    def get_strategy_mission_mapping(self):
+        if not self.strategy_mission_mapping:
+            for k, v in self.strategy_mission.iteritems():
+                unlock_lvl = v['unlock_lvl']
+                if unlock_lvl not in self.strategy_mission_mapping:
+                    self.strategy_mission_mapping[unlock_lvl] = {}
+                self.strategy_mission_mapping[unlock_lvl][k] = v
+        return self.strategy_mission_mapping
+
+    def get_strategy_gift_mapping(self):
+        if not self.strategy_gift_mapping:
+            for k, v in self.strategy_gift.iteritems():
+                kind = v['kind']
+                partner_street = v['partner_street']
+                v['id'] = k
+                if kind not in self.strategy_gift_mapping:
+                    self.strategy_gift_mapping[kind] = {}
+                if kind not in self.strategy_gift_mapping[kind]:
+                    self.strategy_gift_mapping[kind][partner_street] = {}
+                self.strategy_gift_mapping[kind][partner_street] = v
+        return self.strategy_gift_mapping
 
 
 
