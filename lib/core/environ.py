@@ -308,7 +308,7 @@ class ModelManager(object):
 
         return obj
 
-    def get_obj_by_id(self, model, iid=''):
+    def get_obj_by_id(self, model, iid='', server=''):
         """ 获取models对象, 区别于get_obj, 用于公共的数据, 如公会类
 
         :param model: 字符串 build
@@ -320,7 +320,8 @@ class ModelManager(object):
             obj = self._model_ids[key]
         elif model in self._register_base_iids:
             mm_proxy = weakref.proxy(self)
-            obj = self._register_base_iids[model].get(iid, self.server, mm=mm_proxy)
+            server = server or self.server
+            obj = self._register_base_iids[model].get(iid, server, mm=mm_proxy)
             setattr(obj, 'mm', mm_proxy)
             if hasattr(obj, 'pre_use'):
                 obj.pre_use()
