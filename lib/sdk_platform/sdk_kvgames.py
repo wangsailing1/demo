@@ -48,6 +48,7 @@ def login_verify(req, params=None, DEBUG=False):
         params = {
             'session_id': req.get_argument('session_id', ''),
             'uid': req.get_argument('user_id', ''),
+            'sandbox': req.get_argument('account_env', '')
         }
 
     # todo 先不做验证，等确定是接国内还是台湾的sdk服务
@@ -65,14 +66,14 @@ def login_verify(req, params=None, DEBUG=False):
         'uid': params['uid'],
         'sign': sign,
     })
-    sandbox = req.get_argument('sandbox', '')
     http_code, content = http.post(VERIFY_SESSIONID_URI, query_data)
     if http_code != 200:
         return None
     result = json.loads(content)
     # if result['status'] == -6:
-    if sandbox:
         # 开发环境参数发到测试环境验证 status = -6
+    if params['sandbox']:
+        # 前端数据
         # print result
         http_code, content = http.post(TEST_VERIFT, query_data)
         if http_code != 200:
@@ -225,4 +226,4 @@ def make_sign(params):
 
 
 if __name__ == '__main__':
-    print login_verify('', {'session_id': 'vfsyi8vvoi0mxkaghueowgykyhgu0u89', 'uid': '364'})
+    print login_verify('', {'session_id': 'vfsyi8vvoi0mxkaghueowgykyhgu0u89', 'uid': '364', 'sandbox': 'sandbox'})
