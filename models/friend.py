@@ -139,7 +139,7 @@ class Friend(ModelBase):
         chapter_config = game_config.date_chapter
         all_list = []
         for chapter_id, v in chapter_config.iteritems():
-            if v['group'] == chapter_group and v['sex'] == sex:
+            if v['group'] in chapter_group and v['sex'] == sex:
                 all_list.append(chapter_id)
         all_list = list(set(all_list))
         return all_list
