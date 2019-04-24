@@ -189,7 +189,6 @@ class Card(ModelBase):
 
     def data_update_func_1(self):
         is_save = False
-        print 111111
         for card_id, value in self.cards.iteritems():
             if not value.get('skill'):
                 self.unlock_skill(card_id)
