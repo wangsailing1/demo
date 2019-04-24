@@ -545,6 +545,8 @@ class Carnival(ModelBase):
         reg_day = self.reg_days()
         if reg_day > open_day - 1 + days:
             return False
+        if self.server_carvical_open() <= 0:
+            return False
         return True
 
     def send_mail(self, num, tp, save=True):
