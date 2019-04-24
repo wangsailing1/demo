@@ -6,11 +6,12 @@ strategy_mission = {
     'name':             ('name',            'int'),                 # 任务名称
     'describe':         ('describe',        'int'),                 # 描述
     'sort':             ('sort',            'int'),                 # 类型
-    'target1':          ('target1',         'int'),                 # 目标1
+    # 'target1':          ('target1',         'int'),                 # 目标1
     'target2':          ('target2',         'int'),                 # 目标2
-    'target3':          ('target3',         'int'),                 # 目标3
-    'target4':          ('target4',         'int'),                 # 目标4
-    'target5':          ('target5',         'int'),                 # 目标5
+    # 'target3':          ('target3',         'int'),                 # 目标3
+    # 'target4':          ('target4',         'int'),                 # 目标4
+    # 'target5':          ('target5',         'int'),                 # 目标5
+    'target': (('target1', 'target2', 'target3','target4','target5',), ('int_list_or_int2', 'mult_force_num_list')),
     'reward':           ('reward',          'int_list'),            # 奖励
     'reward_a':         ('reward_a',        'float'),               # 奖励参数a
     'reward_b':         ('reward_b',        'float'),               # 奖励参数b
