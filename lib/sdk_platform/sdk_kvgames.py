@@ -75,7 +75,7 @@ def login_verify(req, params=None, DEBUG=False):
     # if result['status'] == -6:
         # 开发环境参数发到测试环境验证 status = -6
     if sandbox:
-        # 前端数据
+        # 根据前端传的参数判断 是否把参数发到测试环境验证
         # print result
         http_code, content = http.post(TEST_VERIFT, query_data)
         if http_code != 200:
