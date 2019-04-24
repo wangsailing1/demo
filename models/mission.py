@@ -935,7 +935,7 @@ class DoMission(object):
             # star = value.get('star', 0)
             type_hard = value['target1']
             # if type_hard == target_data[0] and star >= target_data[2] and value['value'] > 0:
-            if ((type_hard and type_hard == target_data[0]) or not type_hard) and value['value'] > 0:
+            if ((target_data[0] and type_hard == target_data[0]) or not target_data[0]) and value['value'] > 0:
                 if mission_id in self.data:
                     self.data[mission_id] += value['value']
                 else:
