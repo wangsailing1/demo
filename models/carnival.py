@@ -533,6 +533,20 @@ class Carnival(ModelBase):
         reg_time = self.mm.user.reg_time
         return timestamp_different_days(reg_time, now) + 1
 
+    def server_carnival_open(self):
+        config = game_config.carnival_days.get(1)
+        if not config:
+            return False
+        days = config.get('days', 7)
+        open_time = config.get('open')
+        if not open_time:
+            return False
+        open_day = int(open_time.split(' ')[1])
+        reg_day = self.reg_days()
+        if reg_day > open_day - 1 + days:
+            return False
+        return True
+
     def send_mail(self, num, tp, save=True):
         config = game_config.carnival_days[tp]
         gift = config['reward'] * num

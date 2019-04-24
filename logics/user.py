@@ -97,6 +97,7 @@ class UserLogic(object):
         result['question_done'] = self.user.question_done
         result['script_continued_summary'] = self.mm.script.script_continued_summary()
         result['story'] = self.mm.chapter_stage.story_unlock
+        result['server_carnival'] = self.mm.carnival.server_carnival_open()
 
         # 竞技场第一
         high_ladder_top_one_info = self.get_high_ladder_top_one()
