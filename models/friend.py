@@ -138,15 +138,17 @@ class Friend(ModelBase):
             self.save()
 
     # 按性别获取能开启的聊天场景
-    def get_own_dialogue(self):
-        pre_str = 'date_dialogue'
-        sex = game_config.main_hero.get(self.mm.user.role, {}).get('sex', 1)
-        key_word = '%s%s' % (pre_str, sex)
-        config = game_config.phone_daily_dialogue
+    def get_own_dialogue(self, group_id):
+        config = game_config.phone_daily_dialogue.get(group_id)
+        if not config:
+            return []
+        chapter_group = config['group']
+        sex = config['sex']
+        chapter_config = game_config.date_chapter
         all_list = []
-        for _, v in config.iteritems():
-            if v[key_word]:
-                all_list.extend(v[key_word])
+        for chapter_id, v in chapter_config.iteritems():
+            if v['group'] == chapter_group and v['sex'] == sex:
+                all_list.append(chapter_id)
         all_list = list(set(all_list))
         return all_list
 
