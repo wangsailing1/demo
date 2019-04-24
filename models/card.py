@@ -187,6 +187,16 @@ class Card(ModelBase):
         # 刷新训练室状态
         self.change_training_room_status()
 
+    def data_update_func_1(self):
+        is_save = False
+        print 111111
+        for card_id, value in self.cards.iteritems():
+            if not value.get('skill'):
+                self.unlock_skill(card_id)
+                is_save = True
+        if is_save:
+            self.save()
+
     def init_card(self):
         return
 
