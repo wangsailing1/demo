@@ -764,7 +764,7 @@ class Card(ModelBase):
             return False
 
     def get_end_train_time(self, start_time_stamp):
-        build_effect = self.mm.user.build_effect[11]
+        build_effect = self.mm.user.build_effect.get(11, [0, 0])
         training_times = game_config.common[87] * 60 - build_effect[0]
         end_train_time = start_time_stamp + training_times
         return int(end_train_time)
