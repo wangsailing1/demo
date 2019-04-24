@@ -37,6 +37,7 @@ pvp_dialogue = {
     'group':        ('group',        'int'),            #
     'random':       ('random',        'int'),           #
     'pic':          ('pic',        'str'),              #
+    'group_lh':     ('group_lh',        'int'),         #
     'name':         ('name',        'unicode'),         #
     'dialogue':     ('dialogue',        'unicode'),     #
 }

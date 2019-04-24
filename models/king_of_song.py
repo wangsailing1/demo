@@ -179,7 +179,7 @@ class KingOfSong(ModelBase):
                     enemy_mm = self.mm.get_mm(i)
                     name = enemy_mm.user.name
                     cards = {}
-                    for card_oid, card_info in sorted(enemy_mm.card.cards.iteritems(), key=lambda x: x[1]['lv']):
+                    for card_oid, card_info in sorted(enemy_mm.card.cards.iteritems(), key=lambda x: x[1]['lv'], reverse=True):
                         cards[card_oid] = card_info
                         if len(cards) >= rank_config['card_num']:
                             break
