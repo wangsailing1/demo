@@ -191,6 +191,8 @@ class Card(ModelBase):
         is_save = False
         for card_id, value in self.cards.iteritems():
             if not value.get('skill'):
+                value['skill'] = {}
+                value['skill_exp'] = 0
                 self.unlock_skill(card_id)
                 is_save = True
         if is_save:
@@ -665,7 +667,7 @@ class Card(ModelBase):
         card_info = self.cards[card_oid]
         card_id = card_info['id']
         lv = card_info['lv']
-        skills = card_info['skill']
+        skills = card_info.get('skill', {})
         unlock_config = game_config.card_skill_unlock
         skill_list = game_config.card_basis[card_id]['skill']
 
