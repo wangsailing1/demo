@@ -153,3 +153,17 @@ def quick_done(hm):
     rc, data = sl.quick_done()
     return rc, data
 
+
+def help_done(hm):
+    """ 去帮忙
+    """
+    mm = hm.mm
+    task_id = hm.get_argument('task_id', is_int=1)
+
+    if not task_id:
+        return 'error_100', {}
+
+    sl = Strategy(mm)
+    rc, data = sl.help_done(task_id)
+    return rc, data
+

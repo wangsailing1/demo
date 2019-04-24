@@ -308,3 +308,39 @@ class Strategy(object):
         data = self.index()
 
         return 0, data
+
+    def help_done(self, task_id):
+        """ 去帮忙
+        """
+        uid = self.mm.uid
+        strategy_mission = game_config.strategy_mission
+        mission_config = strategy_mission.get(task_id)
+        if not mission_config:
+            return 1, {}
+
+        strategy_mission = self.strategy.strategy_mission
+        if not strategy_mission:
+            return 'error_strategy', {}     # 没有合作对象
+
+        strategy_data = strategy_mission.strategy_data
+        if task_id not in strategy_data:
+            return 2, {}            # 没有该任务
+
+        task_info = strategy_data[task_id]
+        status = task_info['status']
+        if status:
+            return 3, {}            # 任务已经完成
+        owner = task_info['owner']
+        if not owner:
+            return 4, {}            # 无主的任务,不能帮忙哦
+        if owner == uid:
+            return 5, {}            # 自己的任务哦, 快去完成吧
+        if uid not in task_info['do_uid']:
+            task_info['do_uid'].append(uid)
+            strategy_mission.save()
+
+        data = self.index()
+
+        return 0, data
+
+
