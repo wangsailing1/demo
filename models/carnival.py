@@ -455,6 +455,7 @@ class Carnival(ModelBase):
 
     def pre_use(self, save=False):
         server_days = self.server_carvical_open()
+        reg_days = self.reg_days()
         carnival_days = self.server_carvical_open(tp=2)
         start_time = game_config.carnival_days[2]['open'].split(' ')[0]
 
@@ -486,12 +487,12 @@ class Carnival(ModelBase):
             self.carnival_days = 0
             self.carnival_step = 1
             save = True
-        if server_days and server_days != self.server_carnival_days:
-            self.server_carnival_days = server_days
+        if server_days and reg_days != self.server_carnival_days:
+            self.server_carnival_days = reg_days
             self.server_carnival_data = {}
             mission_config = game_config.carnival_mission
             for mission_id, value in mission_config.iteritems():
-                if value['days_new'] == server_days:
+                if value['days_new'] == reg_days:
                     self.server_carnival_data[mission_id] = 0
                     mission_sort = value['sort']
                     if mission_sort in self.NEEDCHECKMISSIONID:
@@ -526,6 +527,11 @@ class Carnival(ModelBase):
             self.dice_num = 0
             self.carnival_days = 0
             self.carnival_step = 1
+
+    def reg_days(self):
+        now = int(time.time())
+        reg_time = self.mm.user.reg_time
+        return timestamp_different_days(reg_time, now) + 1
 
     def send_mail(self, num, tp, save=True):
         config = game_config.carnival_days[tp]
