@@ -106,7 +106,7 @@ def choice(hm):
 
 
 def task_reward(hm):
-    """ 选择任务
+    """ 领取任务奖励
     """
     mm = hm.mm
     task_id = hm.get_argument('task_id', is_int=1)
