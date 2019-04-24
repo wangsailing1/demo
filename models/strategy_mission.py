@@ -345,6 +345,8 @@ class Mission(ModelBase):
 
     RANDOM_NUM = 5                      # 默认 5个 合作任务    # TODO 先写死5个, 后期走commen表
     QUICK_DONE = 1                      # 快速完成数量
+    TITLE = 31410195                    # 升级后奖励邮件标题
+    CONTENT = 31410196                  # 升级后奖励邮件内容
 
     def __init__(self, uid):
         self.uid = uid
@@ -426,6 +428,7 @@ class Mission(ModelBase):
         self.strategy_info = strategy_info
         self.ts = int(time.time())
         self.point = 0
+        self.done_num = 0
 
     def fresh_strategy_mission(self):
         """ 刷新战略任务
@@ -458,6 +461,7 @@ class Mission(ModelBase):
     def add_done_num(self, task_id, num=1):
         """ 领取奖励做记录
         """
+        self.point += num
         self.done_num += num
         self.strategy_done.append(task_id)
 
@@ -466,6 +470,15 @@ class Mission(ModelBase):
         self.strategy_data[task_id]['status'] = 3
         self.strategy_data[task_id]['quick_uid'] = uid
         self.add_done_num(task_id)
+
+    def add_tacit(self, num):
+        self.tacit += num
+
+    def lvl_up(self):
+
+        self.point = 0
+        self.strategy_done = []
+        self.fresh_strategy_mission()
 
     # 获取成就目标id
     def get_strategy_id(self):

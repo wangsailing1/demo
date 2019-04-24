@@ -3,6 +3,7 @@
 import time
 import random
 import settings
+from math import ceil
 from gconfig import game_config
 from tools.user import user_info
 from lib.utils.debug import print_log
@@ -180,7 +181,12 @@ class Strategy(object):
         if not mission_config:
             return 1, {}
 
-        gift = mission_config['reward']
+        a = mission_config['reward_a']
+        b = mission_config['reward_b']
+        y_income = strategy_mission.strategy_info[self.mm.uid]['y_income']
+        gift_num = ceil((a * y_income + b))
+        per_reward = mission_config['reward']
+        gift = [p[:1] + [p[2] * gift_num] for p in per_reward]
 
         strategy_mission = self.strategy.strategy_mission
 
@@ -216,18 +222,39 @@ class Strategy(object):
     def level_reward(self):
         """ 升级奖励
         """
-        strategy_mission = self.strategy.strategy_mission
+        strategy = self.strategy
+        strategy_mission = strategy.strategy_mission
         level = strategy_mission.level
 
         strategy_lv_config = game_config.strategy_lv
         lv_config = strategy_lv_config.get(level, {})
         if not lv_config:
             return 1, {}            # 奖励不存在
-        gift = lv_config['level_gift']
 
+        mission_amount = lv_config['mission_amount']
+        if strategy_mission.done_num < mission_amount:
+            return 2, {}            # 完成任务数不足
+
+        gift = lv_config['level_gift']
+        friendly = lv_config['friendly']
+
+        if friendly:
+            strategy_mission.add_tacit(friendly)
+        strategy_mission.lvl_up()
+
+        reward = {}
         if gift:
             gift = calc_gift(gift)
-            pass
+            reward = add_mult_gift(self.mm, gift)
+            target = strategy.strategy_uid
+            target_mm = self.mm.get_mm(target)
+            title = strategy_mission.TITLE
+            content = strategy_mission.CONTENT
+            msg = target_mm.mail.generate_mail_lan(content, title=title, gift=gift)
+            target_mm.mail.add_mail(msg)
+        strategy_mission.save()
+        data = self.index()
+        data['reward'] = reward
 
         return 0, {}
 
