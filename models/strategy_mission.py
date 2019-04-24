@@ -465,10 +465,10 @@ class Mission(ModelBase):
                 return
             mission.do_task(kwargs, hm)
 
-    def do_task(self, kwargs, hm):
+    def do_task(self, kwargs, hm=None):
         """ 做任务
         """
-        hm_uid = hm.mm.uid
+        hm_uid = hm.mm.uid if hm else ''
         for k, value in self.strategy_data.iteritems():
             if not value['owner']:      # 无主的任务不计数
                 continue
@@ -493,7 +493,7 @@ class DoMission(object):
 
     def add_count(self, mission_id, value, **kwargs):
 
-        target_data = [self.config[mission_id]['target%s' % i] for i in range(1, 6)]
+        target_data = self.config[mission_id]['target']
         if self.config[mission_id]['sort'] in MissionTools.TYPE_MAPPING:
             type = MissionTools.TYPE_MAPPING[self.config[mission_id]['sort']]
             script_type = game_config.script[value['target1']][type]
