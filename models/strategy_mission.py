@@ -1,7 +1,7 @@
 # -*- coding: utf-8 –*-
 
 import time
-import random
+import datetime
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
@@ -345,11 +345,13 @@ class Mission(ModelBase):
 
     RANDOM_NUM = 5                      # 默认 5个 合作任务    # TODO 先写死5个, 后期走commen表
     QUICK_DONE = 1                      # 快速完成数量
+    TITLE = 31410195                    # 升级后奖励邮件标题
+    CONTENT = 31410196                  # 升级后奖励邮件内容
 
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
-            'date': '',                 # 登陆时间
+            'day_str': '',              # 每日刷新时间
             'strategy_info': {},        # 合作信息
             'strategy_data': {},        # 任务数据
             'strategy_done': [],        # 已完成的任务记录
@@ -365,11 +367,53 @@ class Mission(ModelBase):
 
     def pre_use(self):
         is_save = False
+        today = time.strftime('%F')
+        if self.day_str != today:
+            self.daily_fresh()
+            self.day_str = today
+            is_save = True
         if not self.strategy_data:
             self.fresh_strategy_mission()
             is_save = True
         if is_save:
             self.save()
+
+    def daily_fresh(self):
+        self.quick_done = 0
+        uid1, uid2 = self.uid.split('_')
+        mm1 = ModelManager(uid1)
+        mm2 = ModelManager(uid2)
+        strategy_info = {
+            mm1.uid: user_info(mm1),
+            mm2.uid: user_info(mm2),
+        }
+        y_income = self.get_yesterday_income(mm1, mm2)
+        strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
+        strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
+        self.strategy_info = strategy_info
+
+    @staticmethod
+    def get_yesterday():
+        yesterday = datetime.date.today() + datetime.timedelta(-1)
+        return yesterday
+
+    def get_yesterday_income(self, mm1=None, mm2=None):
+        if not mm1 or not mm2:
+            uid1, uid2 = self.uid.split('_')
+            mm1 = ModelManager(uid1)
+            mm2 = ModelManager(uid2)
+        y_str = self.get_yesterday().strftime('%F')
+
+        top_script1 = mm1.block.top_script.get(y_str, {})
+        top_script2 = mm2.block.top_script.get(y_str, {})
+        income1 = 0 if not top_script1 else sum([v['finished_summary']['income'] for v in top_script1.itervalues()])
+        income2 = 0 if not top_script1 else sum([v['finished_summary']['income'] for v in top_script2.itervalues()])
+
+        y_income = {
+            mm1.uid: income1,
+            mm2.uid: income2,
+        }
+        return y_income
 
     def start_strategy(self, mm1, mm2):
         """ 合作开始
@@ -378,9 +422,13 @@ class Mission(ModelBase):
             mm1.uid: user_info(mm1),
             mm2.uid: user_info(mm2),
         }
+        y_income = self.get_yesterday_income(mm1, mm2)
+        strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
+        strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
         self.strategy_info = strategy_info
         self.ts = int(time.time())
         self.point = 0
+        self.done_num = 0
 
     def fresh_strategy_mission(self):
         """ 刷新战略任务
@@ -413,6 +461,7 @@ class Mission(ModelBase):
     def add_done_num(self, task_id, num=1):
         """ 领取奖励做记录
         """
+        self.point += num
         self.done_num += num
         self.strategy_done.append(task_id)
 
@@ -421,6 +470,15 @@ class Mission(ModelBase):
         self.strategy_data[task_id]['status'] = 3
         self.strategy_data[task_id]['quick_uid'] = uid
         self.add_done_num(task_id)
+
+    def add_tacit(self, num):
+        self.tacit += num
+
+    def lvl_up(self):
+
+        self.point = 0
+        self.strategy_done = []
+        self.fresh_strategy_mission()
 
     # 获取成就目标id
     def get_strategy_id(self):
@@ -469,6 +527,7 @@ class Mission(ModelBase):
         """ 做任务
         """
         hm_uid = hm.mm.uid if hm else ''
+        is_save = 0
         for k, value in self.strategy_data.iteritems():
             if not value['owner']:      # 无主的任务不计数
                 continue
@@ -477,8 +536,9 @@ class Mission(ModelBase):
             sort = game_config.strategy_mission[k]['sort']
             if sort in kwargs:
                 self.strategy_mission.add_count(k, kwargs[sort], hm_uid=hm_uid)
-
-        self.save()
+                is_save = 1
+        if is_save:
+            self.save()
 
 
 class DoMission(object):
