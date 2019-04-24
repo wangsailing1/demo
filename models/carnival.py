@@ -541,7 +541,7 @@ class Carnival(ModelBase):
         open_time = config.get('open')
         if not open_time:
             return False
-        open_day = int(open_time.split(' ')[1])
+        open_day = int(open_time.split(' ')[0])
         reg_day = self.reg_days()
         if reg_day > open_day - 1 + days:
             return False
