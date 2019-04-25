@@ -373,7 +373,7 @@ class Script(ModelBase):
 
             sort_effect = all_effect.get(sort, {})
             for method, method_value in sort_effect.iteritems():
-                if method == 2 or sort in [7, 8]:
+                if method == 2 or sort in [7]:
                     add_value += value * method_value / 10000.0
                 elif method == 1:
                     add_value += method_value
