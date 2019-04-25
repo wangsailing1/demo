@@ -262,7 +262,7 @@ class Strategy(object):
         """ 增送礼物
         """
         strategy_kind_gift = game_config.get_strategy_gift_mapping().get(kind, {})
-        if strategy_kind_gift:
+        if not strategy_kind_gift:
             return 'error_100', {}          # 参数错误
 
         strategy_uid = self.strategy.strategy_uid
