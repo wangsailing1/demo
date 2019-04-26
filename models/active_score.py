@@ -363,10 +363,10 @@ MISSIONNUM = 27  # 任务完成次数
 TOPINCOME = 28  # 单片最大票房次数
 
 
-class Mission(ModelBase):
+class ActiveScoreData(ModelBase):
     """各种奖励数据模型
 
-        奖励分为每日、新手、随机，存储在此模块，调用分别MissionDaily、MissionGuide、MissionRandom 对象封装
+        奖励分为新老服，存储在此模块，调用分别MissionDaily 对象封装
 
         @property
         def daily(self):
@@ -374,17 +374,6 @@ class Mission(ModelBase):
                 self._daily = MissionDaily(self)
             return self._daily
 
-        @property
-        def once(self):
-            if not hasattr(self, '_guide'):
-                self._guide = MissionGuide(self)
-            return self._guide
-
-        @property
-        def once(self):
-            if not hasattr(self, '_random'):
-                self._random = MissionRandom(self)
-            return self._random
         """
     # 接口名到内置函数的映射
     _METHOD_FUNC_MAP = {
@@ -467,18 +456,18 @@ class Mission(ModelBase):
             'server_last_date': '',
 
         }
-        super(Mission, self).__init__(self.uid)
+        super(ActiveScoreData, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
         a_id, version = self.get_version()
         if version > self.version:
             self.version = version
-            self.score = 0
             self.total_score = 0
-            self.data = {}
         if version and today != self.last_date:
+            self.last_date = today
             self.score = 0
+            self.data = {}
 
 
     def get_version(self):
@@ -498,8 +487,6 @@ class Mission(ModelBase):
         if not hasattr(self, '_daily'):
             self._daily = MissionDaily(self)
         return self._daily
-
-
 
 
     @classmethod
@@ -540,10 +527,7 @@ class DoMission(object):
     def __init__(self, obj):
         super(DoMission, self).__init__()
         self.uid = obj.uid
-        self.done = obj.done
         self.data = obj.data
-        self.num = obj.num
-        self.days = obj.days
         self.config = obj.config
 
     def add_count(self, mission_id, value):
@@ -719,16 +703,23 @@ class DoMission(object):
         return True
 
 
-class MissionDaily(DoMission):
+class ServerActiveScore(DoMission):
     def __init__(self, obj):
         super(DoMission, self).__init__()
         self.uid = obj.uid
-        self.done = obj.daily_done
-        self.data = obj.daily_data
+        self.data = obj.server_data
+        self.config = game_config.liveness
+
+
+class ActiveScore(DoMission):
+    def __init__(self, obj):
+        super(DoMission, self).__init__()
+        self.uid = obj.uid
+        self.data = obj.server_data
         self.config = game_config.liveness
 
 
 
 
 
-ModelManager.register_model('active_score', Mission)
+ModelManager.register_model('active_score', ActiveScoreData)
