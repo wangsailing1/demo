@@ -537,8 +537,8 @@ class Mission(ModelBase):
             self.live_done = []
             self.liveness = 0
             self.refresh_times = 0
-            self.performance = 0
-            self.performance_done = []
+            # self.performance = 0
+            # self.performance_done = []
             # if not self.guide_done and not self.guide_data:
             #     self.get_guide_mission()
             # if not self.achieve_done and not self.achieve_data:
