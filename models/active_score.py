@@ -483,10 +483,10 @@ class ActiveScoreData(ModelBase):
 
 
     @property
-    def daily(self):
-        if not hasattr(self, '_daily'):
-            self._daily = MissionDaily(self)
-        return self._daily
+    def activescore(self):
+        if not hasattr(self, '_activescore'):
+            self._activescore = ActiveScore(self)
+        return self._activescore
 
 
     @classmethod
@@ -508,18 +508,10 @@ class ActiveScoreData(ModelBase):
             mission.do_task(kwargs)
 
     def do_task(self, kwargs):
-
-        for k, value in self.box_office_data.iteritems():
-            if isinstance(k, basestring) and 'time' in k:
-                continue
-            sort = game_config.box_office[k]['sort']
-            if sort in kwargs and sort == self._INCOME:
-                self.box_office.add_count(k, kwargs[sort])
-
-        for k, value in self.new_guide_data.iteritems():
-            sort = game_config.new_guide_mission[k]['sort']
+        for k, value in self.data.iteritems():
+            sort = game_config.active_score_mission[k]['sort']
             if sort in kwargs:
-                self.new_guide.add_count(k, kwargs[sort])
+                self.activescore.add_count(k, kwargs[sort])
         self.save()
 
 
@@ -716,7 +708,7 @@ class ActiveScore(DoMission):
         super(DoMission, self).__init__()
         self.uid = obj.uid
         self.data = obj.server_data
-        self.config = game_config.liveness
+        self.config = game_config.active_score_mission
 
 
 
