@@ -2,7 +2,7 @@
 
 from gconfig import game_config
 from logics.strategy import Strategy
-from return_msg_config import get_msg_str
+from return_msg_config import get_error_14_msg
 
 
 def get_enter_level():
@@ -16,7 +16,7 @@ def level_limit(method):
         u = hm.mm.user
         enter_level = get_enter_level()
         if u.level < enter_level:
-            return 'error_14', {'custom_msg': get_msg_str(u.language_sort).get('error_14', '%s') % enter_level}
+            return 'error_14', {'custom_msg': get_error_14_msg(u.language_sort, 'error_14') % enter_level}
         else:
             return method(hm, *args, **kwargs)
     return wrapper

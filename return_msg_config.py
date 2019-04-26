@@ -72,7 +72,7 @@ def get_error_14_msg(lan, lv):
     :param lv: 需要的等级
     :return:
     """
-    msg = get_msg_str(lan).get('error_14') % lv
+    msg = get_msg_str(lan).get('error_14', '%s') % lv
     return msg
 
 i18n_msg = I18nMsg(i18n)
