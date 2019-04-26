@@ -306,7 +306,7 @@ class Strategy(object):
 
         task_id = random.choice(no_owner)
 
-        strategy_mission.quick_done(task_id, self.mm.uid)
+        strategy_mission.quick_done_func(task_id, self.mm.uid)
         strategy_mission.save()
 
         data = self.index()

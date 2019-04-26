@@ -465,7 +465,7 @@ class Mission(ModelBase):
         self.done_num += num
         self.strategy_done.append(task_id)
 
-    def quick_done(self, task_id, uid):
+    def quick_done_func(self, task_id, uid):
         self.quick_done += 1
         self.strategy_data[task_id]['status'] = 3
         self.strategy_data[task_id]['quick_uid'] = uid
