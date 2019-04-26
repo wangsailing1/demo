@@ -438,7 +438,8 @@ class ActiveScoreData(ModelBase):
     _MISSIONNUM = 27  # 完成任务次数
     _TOPINCOME = 28  # 单片最大收入
 
-    ACTIVE_TYPE = 2040
+    ACTIVE_TYPE = 2031
+    SERVER_ACTIVE_TYPE = 2032
 
 
     def __init__(self, uid):
