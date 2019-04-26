@@ -6,7 +6,7 @@ from return_msg_config import get_error_14_msg
 
 
 def get_enter_level():
-    return game_config.common.get(100, 1)             # 等级拦截
+    return game_config.common.get(100, 10)             # 等级拦截
 
 
 def level_limit(method):
@@ -16,7 +16,7 @@ def level_limit(method):
         u = hm.mm.user
         enter_level = get_enter_level()
         if u.level < enter_level:
-            return 'error_14', {'custom_msg': get_error_14_msg(u.language_sort, 'error_14') % enter_level}
+            return 'error_14', {'custom_msg': get_error_14_msg(u.language_sort, enter_level)}
         else:
             return method(hm, *args, **kwargs)
     return wrapper
