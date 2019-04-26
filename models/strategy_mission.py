@@ -387,9 +387,9 @@ class Mission(ModelBase):
             mm1.uid: user_info(mm1),
             mm2.uid: user_info(mm2),
         }
-        y_income = self.get_yesterday_income(mm1, mm2)
-        strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
-        strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
+        # y_income = self.get_yesterday_income(mm1, mm2)
+        # strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
+        # strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
         self.strategy_info = strategy_info
 
     @staticmethod
@@ -422,9 +422,9 @@ class Mission(ModelBase):
             mm1.uid: user_info(mm1),
             mm2.uid: user_info(mm2),
         }
-        y_income = self.get_yesterday_income(mm1, mm2)
-        strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
-        strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
+        # y_income = self.get_yesterday_income(mm1, mm2)
+        # strategy_info[mm1.uid]['y_income'] = y_income[mm1.uid]
+        # strategy_info[mm2.uid]['y_income'] = y_income[mm2.uid]
         self.strategy_info = strategy_info
         self.ts = int(time.time())
         self.point = 0
@@ -474,11 +474,17 @@ class Mission(ModelBase):
     def add_tacit(self, num):
         self.tacit += num
 
-    def lvl_up(self):
-
+    def lvl_up(self, next_lv):
+        """ 升级
+        """
+        self.level = next_lv or self.get_next_lv()
         self.point = 0
         self.strategy_done = []
         self.fresh_strategy_mission()
+
+    def get_next_lv(self):
+        strategy_lv = game_config.strategy_lv
+        return self.level +1 if self.level < max(strategy_lv.keys()) else 1
 
     # 获取成就目标id
     def get_strategy_id(self):

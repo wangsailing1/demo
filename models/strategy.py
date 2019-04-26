@@ -2,6 +2,7 @@
 
 import time
 import random
+import datetime
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils.zip_date import encrypt_data, dencrypt_data
@@ -21,8 +22,32 @@ class Strategy(ModelBase):
             'strategy_id': '',          # 战略合作id
             'strategy_uid': '',         # 战略合作uid
             'strategy_server': '',      # 战略合作区服信息
+            'yesterday_str': '',        # 昨天日期
+            'y_income': 0,              # 昨天最高票房
         }
         super(Strategy, self).__init__(self.uid)
+
+    def pre_use(self):
+        y_str = self.get_yesterday().strftime('%F')
+        if self.yesterday_str != y_str:
+            self.yesterday_str = y_str
+            self.daily_fresh(y_str)
+
+    @staticmethod
+    def get_yesterday():
+        yesterday = datetime.date.today() + datetime.timedelta(-1)
+        return yesterday
+
+    def daily_fresh(self, y_str=None):
+        self.y_income = self.get_yesterday_income(y_str)
+
+    def get_yesterday_income(self, y_str=None):
+        mm = self.mm
+        y_str = y_str or self.get_yesterday().strftime('%F')
+        top_script = mm.block.top_script.get(y_str, {})
+        y_income = 0 if not top_script else sum([v['finished_summary']['income'] for v in top_script.itervalues()])
+
+        return y_income
 
     def get_apply_key(self, sort='apply'):
         """ 获取申请信息的key

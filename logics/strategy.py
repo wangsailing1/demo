@@ -18,7 +18,9 @@ class Strategy(object):
         self.strategy = self.mm.strategy
 
     def index(self):
-
+        """ 首页
+        """
+        strategy = self.strategy
         if not self.strategy.strategy_uid:
 
             data = {
@@ -29,6 +31,7 @@ class Strategy(object):
         else:
             mission = self.mm.strategy.strategy_mission
             data = {
+                'y_income': strategy.y_income,              # 昨日最高票房
                 'tacit': mission.tacit,                     # 默契值
                 'level': mission.level,                     # 合作等级
                 'point': mission.point,                     # 任务积分
@@ -176,17 +179,18 @@ class Strategy(object):
         :param task_id: 任务id
         :return:
         """
-        strategy_mission = game_config.strategy_mission
-        mission_config = strategy_mission.get(task_id)
+        strategy_mission_config = game_config.strategy_mission
+        mission_config = strategy_mission_config.get(task_id)
         if not mission_config:
             return 1, {}
 
         a = mission_config['reward_a']
         b = mission_config['reward_b']
-        y_income = strategy_mission.strategy_info[self.mm.uid]['y_income']
+        strategy = self.strategy
+        y_income = strategy.y_income
         gift_num = ceil((a * y_income + b))
         per_reward = mission_config['reward']
-        gift = [p[:1] + [p[2] * gift_num] for p in per_reward]
+        gift = [p[:2] + [p[2] * gift_num] for p in per_reward]
 
         strategy_mission = self.strategy.strategy_mission
 
@@ -224,10 +228,10 @@ class Strategy(object):
         """
         strategy = self.strategy
         strategy_mission = strategy.strategy_mission
-        level = strategy_mission.level
+        next_lv = strategy_mission.get_next_lv()
 
         strategy_lv_config = game_config.strategy_lv
-        lv_config = strategy_lv_config.get(level, {})
+        lv_config = strategy_lv_config.get(next_lv, {})
         if not lv_config:
             return 1, {}            # 奖励不存在
 
@@ -240,7 +244,7 @@ class Strategy(object):
 
         if friendly:
             strategy_mission.add_tacit(friendly)
-        strategy_mission.lvl_up()
+        strategy_mission.lvl_up(next_lv)
 
         reward = {}
         if gift:
