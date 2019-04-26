@@ -471,6 +471,11 @@ class Mission(ModelBase):
         self.strategy_data[task_id]['quick_uid'] = uid
         self.add_done_num(task_id)
 
+    def get_quik_done_times(self):
+        """ 本日剩余快速完成次数
+        """
+        return max(self.QUICK_DONE - self.quick_done, 0)
+
     def add_tacit(self, num):
         self.tacit += num
 
