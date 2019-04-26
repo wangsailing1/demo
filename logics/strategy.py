@@ -295,6 +295,10 @@ class Strategy(object):
         if not strategy_mission:
             return 'error_strategy', {}     # 没有合作对象
 
+        times = strategy_mission.get_quik_done_times()
+        if not times:
+            return 2, {}            # 没有快速完成次数了
+
         no_owner = []
 
         strategy_data = strategy_mission.strategy_data

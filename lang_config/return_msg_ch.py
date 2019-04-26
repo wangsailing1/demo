@@ -1079,6 +1079,7 @@ strategy_msg = {
     },
     'strategy.quick_done': {
         1: u'没有符合快速完成条件的任务',
+        2: u'剩余次数不足',
     },
     'strategy.help_done': {
         1: u'没有该任务',
