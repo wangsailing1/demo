@@ -367,8 +367,8 @@ class Script(ModelBase):
         if skill_effect:
             all_effect = {}
             for card_oid, card_effect in skill_effect.iteritems():
-                for sort, effect in card_effect.get('effect', {}).iteritems():
-                    sort_all_effect = all_effect.setdefault(sort, {})
+                for sort1, effect in card_effect.get('effect', {}).iteritems():
+                    sort_all_effect = all_effect.setdefault(sort1, {})
                     merge_dict(sort_all_effect, effect)
 
             sort_effect = all_effect.get(sort, {})
