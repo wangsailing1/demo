@@ -23,6 +23,9 @@ DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_ret
 DATA_RETENTION_DAILY_KEY_FOR_DEVICE = ModelTools.make_key_cls('data_retention_daily_key_for_device', 'public')
 DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE = ModelTools.make_key_cls('data_retention_channel_daily_key_for_device', 'public')
 
+DATA_LTV_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_ltv_daily_key_for_account', 'public')
+DATA_LTV_DAILY_KEY_FOR_DEVICE = ModelTools.make_key_cls('data_ltv_daily_key_for_device', 'public')
+
 DATA_STATISTICS_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_statistics_daily_key_for_account', 'public')
 DATA_STATISTICS_CHANNEL_DAILY_KEY_FOR_ACCOUNT = ModelTools.make_key_cls('data_statistics_channel_key_for_account', 'public')
 DATA_RETENTION_DAILY_KEY = ModelTools.make_key_cls('data_retention_daily_key', 'public')
@@ -97,6 +100,7 @@ def get_statistics_retention_data(query_date):
     s_day = s_time.strftime('%Y-%m-%d %H:%M:%S')
     e_day = e_time.strftime('%Y-%m-%d %H:%M:%S')
     pay_data = defaultdict(int)
+    pay_data_by_day = {}
     charge_config = game_config.charge
     payment = Payment()
     for item in payment.find_by_time(s_day, e_day):
@@ -110,7 +114,10 @@ def get_statistics_retention_data(query_date):
         #     continue
         # pay_data[item['user_id']] += float(item['order_money'])
         # 台湾正式服用美元计算
-        pay_data[item['user_id']] += float(charge_config.get(item['product_id'], {}).get('price_%s' % settings.get_admin_charge(settings.CURRENCY_TYPE), 0))
+        money = float(charge_config.get(item['product_id'], {}).get('price_%s' % settings.get_admin_charge(settings.CURRENCY_TYPE), 0))
+        pay_data[item['user_id']] += money
+        user_pay_day = pay_data_by_day.setdefault(item['user_id'], defaultdict(int))
+        user_pay_day[query_datestr] += money
 
     server_uid_data = {}
     sc = ServerConfig.get()
@@ -171,6 +178,7 @@ def get_statistics_retention_data(query_date):
     return {
         'user_data': user_data,    # 用户数据
         'pay_data': pay_data,      # 支付数据
+        'pay_data_by_day': pay_data_by_day,
     }
 
 
@@ -363,12 +371,20 @@ def get_statistics_retention_data_for_account(all_data, target='token'):
     for uid, pay_money in all_data['pay_data'].iteritems():
         if uid not in all_data['user_data']:
             continue
-        account = all_data['user_data'][uid]['token']
+        account = all_data['user_data'][uid][target]
         pay_data[account] += pay_money
+
+    pay_data_by_day = defaultdict(dict)
+    for uid, pay_money in all_data['pay_data_by_day'].iteritems():
+        if uid not in all_data['user_data']:
+            continue
+        account = all_data['user_data'][uid][target]
+        merge_dict(pay_data_by_day[account], pay_money)
 
     return {
         'user_data': user_data,    # 用户数据
         'pay_data': pay_data,      # 支付数据
+        'pay_data_by_day': pay_data_by_day,     # 按日期区分的支付数据
     }
 
 
@@ -475,14 +491,19 @@ def update_cache_retention_data_for_account(query_datetime, data, tp='token'):
     }
         tp: token 账号 | device 设备码
     """
+    query_daystr = query_datetime.strftime('%Y-%m-%d')
+
     if tp == 'token':
         channel_daily_key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_ACCOUNT
         retention_daily_key = DATA_RETENTION_DAILY_KEY_FOR_ACCOUNT
+        ltv_daily_key = DATA_LTV_DAILY_KEY_FOR_ACCOUNT
     else:
         channel_daily_key = DATA_RETENTION_CHANNEL_DAILY_KEY_FOR_DEVICE
         retention_daily_key = DATA_RETENTION_DAILY_KEY_FOR_DEVICE
+        ltv_daily_key = DATA_LTV_DAILY_KEY_FOR_DEVICE
 
     cache = get_global_cache()
+    pay_data_by_day = data['pay_data_by_day']
 
     add_data = {}
     for uid, obj in data['user_data'].iteritems():
@@ -511,6 +532,11 @@ def update_cache_retention_data_for_account(query_datetime, data, tp='token'):
         total_vaulue = total_values[idx]
         total_old_value = dencrypt_data(total_vaulue) if total_vaulue else {}
 
+        day_money = 0
+        # ltv 数据统计
+        ltv_value = cache.hget(ltv_daily_key, day)
+        ltv_old_value = dencrypt_data(ltv_value) if ltv_value else {}
+
         add_value = add_data[day]
         # for server_id, server_data in add_value.iteritems():
             # channel_old_value.setdefault(server_id, {})
@@ -525,6 +551,23 @@ def update_cache_retention_data_for_account(query_datetime, data, tp='token'):
                     total_old_value[login_day] = set(uid_sets)
                 else:
                     total_old_value[login_day].update(uid_sets)
+
+                if login_day == query_daystr:
+                    # 统计留存用户当前查询日的总付费
+                    pay_uids = uid_sets & set(pay_data_by_day)
+                    for uid in pay_uids:
+                        if login_day in pay_data_by_day[uid]:
+                            money = pay_data_by_day[uid][login_day]
+                            day_money += money
+
+        regist_count = len(total_old_value.get(day, set()))
+        ltv_old_value['regist_count'] = regist_count
+        if day_money:
+            ltv_old_value[query_daystr] = day_money
+
+        encrypt_ltv_data = encrypt_data_by_pickle(ltv_old_value, 1)
+        cache.hset(ltv_daily_key, day, encrypt_ltv_data)
+        # print '---ltv', ltv_daily_key, day, query_daystr, day_money, ltv_old_value
 
         channel_new_data[day] = encrypt_data_by_pickle(channel_old_value, 1)
         total_new_data[day] = encrypt_data_by_pickle(total_old_value, 1)
@@ -869,6 +912,42 @@ def get_retention_data(days=30, for_account=False, **kwargs):
                 result[day] = new_temp
 
     return result
+
+
+def get_ltv_data(days=30, for_device=False, **kwargs):
+    """获取ltv统计数据
+    """
+    cache = get_global_cache()
+    for_device = kwargs.get('for_device')
+    if for_device:
+        key = DATA_LTV_DAILY_KEY_FOR_DEVICE
+    else:
+        key = DATA_LTV_DAILY_KEY_FOR_ACCOUNT
+
+    now = datetime.datetime.now()
+    now_str = now.strftime('%Y-%m-%d')
+    keys = [(now - datetime.timedelta(days=delta)).strftime('%Y-%m-%d')
+            for delta in xrange(0, days)]
+    values = cache.hmget(key, keys)
+    result = {}
+    regist_count = {}
+    for idx, day in enumerate(keys):
+        day_date = datetime.datetime.strptime(day, '%Y-%m-%d')
+        raw_data = values[idx]
+        if raw_data:
+            temp = dencrypt_data(raw_data)
+            regist_count[day] = temp.get('regist_count', 0)
+            new_temp = {}
+            for lday, money in temp.iteritems():
+                print now_str, lday, day
+                if now_str >= lday >= day:
+                    lday_date = datetime.datetime.strptime(lday, '%Y-%m-%d')
+                    delta = (lday_date - day_date).days
+                    new_temp[delta+1] = money
+            if new_temp:
+                result[day] = new_temp
+
+    return result, regist_count
 
 
 def save_one_day_rank_data(which_rank):
