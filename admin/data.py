@@ -223,7 +223,6 @@ def ltv_index(req):
     """
 
     for_device = bool(req.get_argument('for_device', ''))
-    for_device = True
     if for_device:
         field = 'ltv_for_device'
     else:

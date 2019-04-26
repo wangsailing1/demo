@@ -918,7 +918,6 @@ def get_ltv_data(days=30, for_device=False, **kwargs):
     """获取ltv统计数据
     """
     cache = get_global_cache()
-    for_device = kwargs.get('for_device')
     if for_device:
         key = DATA_LTV_DAILY_KEY_FOR_DEVICE
     else:
