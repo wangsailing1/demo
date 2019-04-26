@@ -1,0 +1,54 @@
+{% extends "../fields.html" %}
+
+{% block fieldbody %}
+
+{% import datetime %}
+
+<hr/>
+<!--{{regist_count}}<br/>-->
+<!--{{retention_data}}-->
+<p>最近30日收入记录(每小时的半点更新)</p>
+<table id="data">
+    <tr>
+        <th>日期</th>
+        <th>新增账号</th>
+        {% for num in days_delta %}
+        <th>第{{ num }}天</th>
+        {% end %}
+    </tr>
+    {% for idx, (date, obj) in enumerate(sorted(retention_data.iteritems(), reverse=False)) %}
+    <tr class="retention_{{idx}}" onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ date }}</td>
+        <td>{{ regist_count.get(date, 0) }}</td>
+        {% for num in days_delta %}
+        <td>{{ obj.get(num, '') }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+</table>
+
+<br/>
+<button onclick="mySwitch()"><font color="red"> <big>显示/隐藏 最近30日LTV</big></font></button>
+<div id="switch_display" style="display:none;">
+<table id="data">
+    <tr>
+        <th>日期</th>
+        <th>新增账号</th>
+        {% for rd in rate_days %}
+        <th>{{ rd }}日LTV</th>
+        {% end %}
+    </tr>
+    {% for idx, (date, obj) in enumerate(sorted(rate_data.iteritems(), reverse=False)) %}
+    <tr class="retention_{{idx}}" onmouseover="return changecolor(this, '#B3D9D9')" onmouseout="return changecolor(this, '')">
+        <td>{{ date }}</td>
+        <td>{{ regist_count.get(date, 0) }}</td>
+        {% for rd in rate_days %}
+        <td>{{ obj.get(rd, '') or '' }}</td>
+        {% end %}
+    </tr>
+    {% end %}
+</table>
+</div>
+
+<hr/>
+{% end %}
