@@ -210,6 +210,70 @@ def retention_index_device(req):
 
 
 @require_permission
+def ltv_index_device(req):
+    req.request.arguments['for_device'] = ['1']
+    return ltv_index(req)
+
+
+def ltv_index(req):
+    """
+
+    :param req:
+    :return:
+    """
+
+    for_device = bool(req.get_argument('for_device', ''))
+    for_device = True
+    if for_device:
+        field = 'ltv_for_device'
+    else:
+        field = ''
+
+    channel_data = {}
+
+    retention_data, regist_count_info = data_analysis.get_ltv_data(days=limit_days, for_device=for_device)
+    rate_data = {}
+    channel_rate_data = {}
+    rate_days = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30)
+    day_keys = sorted(retention_data.iterkeys())
+    days_delta = range(1, limit_days + 1)
+    if day_keys:
+        datetime_strptime = datetime.datetime.strptime
+        first_date = datetime_strptime(day_keys[0], '%Y-%m-%d')
+        for day in day_keys:
+            delta = (datetime_strptime(day, '%Y-%m-%d')-first_date).days
+            # days_delta.append(delta+1)
+            value = retention_data[day]
+            temp = {}
+            # first = value.get(1, 1)
+            first = regist_count_info.get(day, 1)
+            for dd in rate_days:
+                temp[dd] = round(value.get(dd, 0) / (first or 1), 2)
+            rate_data[day] = temp
+        # for channel, data in channel_data.iteritems():
+        #     pass
+
+    sc = ServerConfig.get()
+
+    # print 'retention_data-----', retention_data, regist_count_info
+    html_data = {
+        'day_keys': day_keys,
+        'days_delta': days_delta,
+        'regist_count': regist_count_info,
+        'retention_data': retention_data,
+        'rate_data': rate_data,
+        'rate_days': rate_days,
+        'channel_data': channel_data,
+        'channel_rate_data': channel_rate_data,
+        'select_server': '',
+        'select_day': '',
+        'sc': sc,
+    }
+
+    return data_index(req, field=field, **html_data)
+
+
+@require_permission
 def retention_channel(req):
     """分渠道留存统计
     """
