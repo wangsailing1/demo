@@ -337,7 +337,13 @@ menu_config = {
                 'name': u"留存统计[device]",
                 'sub': [
                     ('retention_index_device', u'留存统计[device]', 1),
-                    ('retention_index_device', u'留存统计[device]', 1),
+                ]
+            },
+            {
+                'name': u"LTV统计[device]",
+                'sub': [
+                    ('ltv_index_device', u'LTV统计[device]', 1),
+                    ('ltv_index_account', u'LTV统计[account]', 1),
                 ]
             },
 
