@@ -18,6 +18,7 @@ from lib.core.environ import ModelManager
 from lib.utils import weight_choice
 from tools.gift import add_mult_gift
 from models import vip_company
+from return_msg_config import i18n_msg
 
 
 class KingOfSongLogics(object):
@@ -32,10 +33,15 @@ class KingOfSongLogics(object):
         today = datetime.datetime.now()
         return {
             'open': king.OPEN_DAY[0] <= today.day <= king.OPEN_DAY[1],
-            'open_day': king.OPEN_DAY
+            'open_day': king.OPEN_DAY,
+            'custom_msg':  i18n_msg.get('king_of_song_close', self.mm.lan).format(*king.OPEN_DAY),
         }
 
     def index(self, check_season_award=False):
+        open_info = self.open_info()
+        if not open_info['open']:
+            return -1, open_info
+
         king = self.mm.king_of_song
         # 从view层index接口进来检查赛季奖励
         season_award = {}
