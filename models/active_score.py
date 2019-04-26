@@ -7,7 +7,8 @@ from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
-from lib.utils.active_inreview_tools import get_version_by_active_id, active_inreview_open_and_close
+from lib.utils.active_inreview_tools import get_version_by_active_id, active_inreview_open_and_close, get_inreview_version
+
 import settings
 
 """
@@ -461,19 +462,31 @@ class ActiveScoreData(ModelBase):
 
     def pre_use(self):
         today = time.strftime('%F')
-        a_id, version = self.get_version()
-        if version > self.version:
-            self.version = version
-            self.total_score = 0
-        if version and today != self.last_date:
-            self.last_date = today
-            self.score = 0
-            self.data = {}
+        if self.mm.user.config_type == 2:
+            version = self.get_version()
+            if version > self.version:
+                self.version = version
+                self.total_score = 0
+            if version and today != self.last_date:
+                self.last_date = today
+                self.score = 0
+                self.data = {mission_id: 0 for mission_id in
+                             game_config.active_score.get(self.version,{}).get('mission', [])}
+        else:
+            version = self.get_server_version()
+            if version > self.version:
+                self.server_version = version
+                self.server_total_score = 0
+            if version and today != self.last_date:
+                self.server_last_date = today
+                self.server_score = 0
+                self.server_data = {mission_id: 0 for mission_id in
+                             game_config.server_active_score.get(self.version, {}).get('mission', [])}
 
 
     def get_version(self):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
-        return a_id, version
+        return version
 
     def get_inreview(self):
         server_num = settings.get_server_num(self.mm.user._server_name)
@@ -482,12 +495,22 @@ class ActiveScoreData(ModelBase):
             return True
         return False
 
+    def get_server_version(self):
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.SERVER_ACTIVE_TYPE)
+        return version
+
 
     @property
     def activescore(self):
         if not hasattr(self, '_activescore'):
             self._activescore = ActiveScore(self)
         return self._activescore
+
+    @property
+    def serveractivescore(self):
+        if not hasattr(self, '_serveractivescore'):
+            self._serveractivescore = ServerActiveScore(self)
+        return self._serveractivescore
 
 
     @classmethod
@@ -522,6 +545,7 @@ class DoMission(object):
         self.uid = obj.uid
         self.data = obj.data
         self.config = obj.config
+        self.obj = obj
 
     def add_count(self, mission_id, value):
 
@@ -643,13 +667,12 @@ class DoMission(object):
             else:
                 self.data[mission_id] = value['value']
 
-                # # 判断任务是否完成 自动领奖
-                # if self.data[mission_id] >= target_data[1]:
-                #     if mission_id in self.done.get(self.days, []) and not self.config[mission_id]['if_reuse']:
-                #         return
-                #     self.done.setdefault(self.days, []).append(mission_id)
-                #     self.num += self.config[mission_id]['reward']
-                #     self.data[mission_id] = 0
+        # 判断任务是否完成 自动领奖
+        if self.data[mission_id] >= target_data[1]:
+            config = self.config[mission_id]
+            self.obj.score += config['reward']
+            self.obj.total_score += config['reward']
+            self.data[mission_id] = 0
 
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
@@ -701,17 +724,15 @@ class ServerActiveScore(DoMission):
         super(DoMission, self).__init__()
         self.uid = obj.uid
         self.data = obj.server_data
-        self.config = game_config.liveness
+        self.config = game_config.server_active_score_mission
 
 
 class ActiveScore(DoMission):
     def __init__(self, obj):
         super(DoMission, self).__init__()
         self.uid = obj.uid
-        self.data = obj.server_data
+        self.data = obj.data
         self.config = game_config.active_score_mission
-
-
 
 
 

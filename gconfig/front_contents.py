@@ -628,5 +628,13 @@ super_player_mapping = {
     'server_play_rankreward': ('server_play_rankreward', True),
     'server_play_points': ('server_play_points', True),
 }
+
+
+active_score_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'active_score': ('active_score', True),
+    'active_score_mission': ('active_score_mission', True),
+    'active_score_rank': ('active_score_rank', True),
+}
 # 注册需要写到最下面
 register_handler()
