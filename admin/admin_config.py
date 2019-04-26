@@ -343,6 +343,7 @@ menu_config = {
                 'name': u"LTV统计[device]",
                 'sub': [
                     ('ltv_index_device', u'LTV统计[device]', 1),
+                    ('ltv_index_account', u'LTV统计[account]', 1),
                 ]
             },
 

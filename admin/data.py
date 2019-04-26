@@ -215,6 +215,12 @@ def ltv_index_device(req):
     return ltv_index(req)
 
 
+@require_permission
+def ltv_index_account(req):
+    req.request.arguments['for_account'] = ['1']
+    return ltv_index(req)
+
+
 def ltv_index(req):
     """
 
@@ -226,7 +232,7 @@ def ltv_index(req):
     if for_device:
         field = 'ltv_for_device'
     else:
-        field = ''
+        field = 'ltv_for_device'
 
     channel_data = {}
 
