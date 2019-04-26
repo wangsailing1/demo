@@ -74,6 +74,9 @@ class Strategy(object):
         target_mm = self.mm.get_mm(target)
         if target_mm.strategy.strategy_uid:
             return 3, {}                # 对方战略合作伙伴已满
+        limit_lv = game_config.common.get(100, 1)
+        if target_mm < limit_lv:
+            return 4, {}                # 对方等级不足
 
         target_mm.strategy.strategy_uid = self.mm.uid
         self.mm.strategy.strategy_uid = target

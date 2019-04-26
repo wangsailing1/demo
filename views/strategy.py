@@ -1,8 +1,28 @@
 # -*- coding: utf-8 –*-
 
+from gconfig import game_config
 from logics.strategy import Strategy
+from return_msg_config import get_msg_str
 
 
+def get_enter_level():
+    return game_config.common.get(100, 1)             # 等级拦截
+
+
+def level_limit(method):
+    """判断是否符合等级要求
+    """
+    def wrapper(hm, *args, **kwargs):
+        u = hm.mm.user
+        enter_level = get_enter_level()
+        if u.level < enter_level:
+            return 'error_14', {'custom_msg': get_msg_str(u.language_sort).get('error_14', '%s') % enter_level}
+        else:
+            return method(hm, *args, **kwargs)
+    return wrapper
+
+
+@level_limit
 def index(hm):
     """ 首页
     """
@@ -13,6 +33,7 @@ def index(hm):
     return 0, data
 
 
+@level_limit
 def apply(hm):
     """ 申请
     """
@@ -29,8 +50,9 @@ def apply(hm):
     return rc, data
 
 
+@level_limit
 def agree(hm):
-    """ 申请
+    """ 同意申请
     """
     mm = hm.mm
     target = hm.get_argument('target')
@@ -90,6 +112,7 @@ def quit(hm):
     return rc, data
 
 
+@level_limit
 def choice(hm):
     """ 选择任务
     """
@@ -105,6 +128,7 @@ def choice(hm):
     return rc, data
 
 
+@level_limit
 def task_reward(hm):
     """ 领取任务奖励
     """
@@ -120,6 +144,7 @@ def task_reward(hm):
     return rc, data
 
 
+@level_limit
 def level_reward(hm):
     """ 领取等级奖励
     """
@@ -131,6 +156,7 @@ def level_reward(hm):
     return rc, data
 
 
+@level_limit
 def send_gift(hm):
     """ 送礼
     """
@@ -143,6 +169,7 @@ def send_gift(hm):
     return rc, data
 
 
+@level_limit
 def quick_done(hm):
     """
     快速完成任务

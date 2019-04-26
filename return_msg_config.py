@@ -64,4 +64,15 @@ def get_msg_str(lan_sort):
     return_msg_config = getattr(module, "return_msg_config")
     return return_msg_config
 
+
+def get_error_14_msg(lan, lv):
+    """
+    获取级别不足的全局提示信息
+    :param lan: 语言 sort
+    :param lv: 需要的等级
+    :return:
+    """
+    msg = get_msg_str(lan).get('error_14') % lv
+    return msg
+
 i18n_msg = I18nMsg(i18n)
