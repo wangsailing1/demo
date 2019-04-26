@@ -1034,6 +1034,7 @@ strategy_msg = {
     },
     'strategy.quick_done': {
         1: u'沒有符合快速完成條件的任務',
+        2: u'剩餘次數不足',
     },
     'strategy.help_done': {
         1: u'沒有該任務',
