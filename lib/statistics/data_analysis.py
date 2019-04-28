@@ -943,6 +943,13 @@ def get_ltv_data(days=30, for_device=False, **kwargs):
                     lday_date = datetime.datetime.strptime(lday, '%Y-%m-%d')
                     delta = (lday_date - day_date).days
                     new_temp[delta+1] = money
+
+            # 注册日到登录日的累加充值总和
+            all_money = 0
+            for i in xrange(1, days + 1):
+                all_money += new_temp.get(i, 0)
+                new_temp[i] = all_money
+
             if new_temp:
                 result[day] = new_temp
 
