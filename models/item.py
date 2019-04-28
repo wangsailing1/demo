@@ -5,11 +5,13 @@ __author__ = 'sm'
 """
 考虑到有长连接, 所有把数据分开
 """
+import copy
 
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
 from lib.utils import add_dict
 from gconfig import game_config, get_str_words
+from lib.utils import weight_choice, not_repeat_weight_choice_2
 
 
 class Item(ModelBase):
@@ -117,6 +119,27 @@ class Item(ModelBase):
 
     def check_food_enough(self, add_num=0):
         return self.all_food() + add_num > self.mm.user.build_effect[7]
+
+
+    def get_random_reward(self, use_effect):
+        l_id = use_effect[0]
+        repeat = use_effect[1]
+        num = use_effect[2]
+        config = copy.deepcopy(game_config.get_item_reward_mapping()[l_id])
+        gift = []
+        if repeat:
+            for _ in range(num):
+                reward = weight_choice(config)[:-1]
+                gift.extend(reward)
+        else:
+            t_num = num / len(config)  # 获得几个完整的奖励
+            i_num= num % len(config)   # 需要随机剩余的数量
+            reward = []
+            reward.extend(config * t_num)
+            reward.extend(not_repeat_weight_choice_2(config, i_num))
+            for i in reward:
+                gift.extend(i[:-1])
+        return gift
 
 
 class GradeItem(ModelBase):

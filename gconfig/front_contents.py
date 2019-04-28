@@ -206,6 +206,7 @@ item_config_mapping = {
     'use_item_box': ('use_item_box', True),
     # 'collection_resource': ('collection_resource', True),
     'special_use_item': ('special_use_item', True),
+    'item_reward': ('item_reward', True),
 }
 
 equip_config_mapping = {

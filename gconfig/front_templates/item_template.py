@@ -100,3 +100,11 @@ special_use_item = {
     'lvl': ('lvl', 'int'),                      # 基因等级/英雄等级
     'star': ('star', 'int'),                    # 星级
 }
+
+# 道具箱随机库
+item_reward = {
+    'uk': ('id', 'int'),                        # 编号
+    'library_id': ('library_id', 'int'),                    # 库id
+    'weight': ('weight', 'int'),      # 库内权重
+    'reward': ('reward', 'int_list'),                      # 奖励
+}

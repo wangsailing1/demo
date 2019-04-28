@@ -349,7 +349,7 @@ class GameConfigMixIn(object):
         self.server_rmb_reward_weight_mapping = {}
         self.strategy_mission_mapping = {}
         self.strategy_gift_mapping = {}
-
+        self.item_reward_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -464,7 +464,7 @@ class GameConfigMixIn(object):
         self.server_rmb_reward_weight_mapping.clear()
         self.strategy_mission_mapping.clear()
         self.strategy_gift_mapping.clear()
-
+        self.item_reward_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2762,6 +2762,19 @@ class GameConfigMixIn(object):
                     self.strategy_gift_mapping[kind][partner_street] = {}
                 self.strategy_gift_mapping[kind][partner_street] = v
         return self.strategy_gift_mapping
+
+    # 随机奖励库 mapping
+    def get_item_reward_mapping(self):
+        if not self.item_reward_mapping:
+            for k , v in self.item_reward.iteritems():
+                gift = []
+                if v['library_id'] not in self.item_reward_mapping:
+                    self.item_reward_mapping[v['library_id']] = []
+                gift.extend(copy.deepcopy(v['reward']))
+                gift.append(v['weight'])
+                self.item_reward_mapping[v['library_id']].append(gift)
+        return self.item_reward_mapping
+
 
 
 
