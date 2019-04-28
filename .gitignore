@@ -11,3 +11,4 @@ upload_xls
 test/local_config.py
 
 dump.rdb
+env_config/local.py
