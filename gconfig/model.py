@@ -342,6 +342,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping = {}
         self.server_add_recharge_limit_mapping = {}
         self.foundation_mapping = {}
+        self.item_reward_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -449,6 +450,7 @@ class GameConfigMixIn(object):
         self.add_recharge_limit_mapping.clear()
         self.server_add_recharge_limit_mapping.clear()
         self.foundation_mapping.clear()
+        self.item_reward_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2674,6 +2676,18 @@ class GameConfigMixIn(object):
                     self.foundation_mapping[version] = {}
                 self.foundation_mapping[version][j['id']] = j
         return self.foundation_mapping
+
+    # 随机奖励库 mapping
+    def get_item_reward_mapping(self):
+        if not self.item_reward_mapping:
+            for k , v in self.item_reward.iteritems():
+                gift = []
+                if v['library_id'] not in self.item_reward_mapping:
+                    self.item_reward_mapping[v['library_id']] = []
+                gift.extend(copy.deepcopy(v['reward']))
+                gift.append(v['weight'])
+                self.item_reward_mapping[v['library_id']].append(gift)
+        return self.item_reward_mapping
 
 
 
