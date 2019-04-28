@@ -944,6 +944,11 @@ def get_ltv_data(days=30, for_device=False, **kwargs):
                     delta = (lday_date - day_date).days
                     new_temp[delta+1] = money
             if new_temp:
+                # 注册日到登录日的累加充值总和
+                all_money = 0
+                for i in xrange(1, (now - day_date).days + 2):
+                    all_money += new_temp.get(i, 0)
+                    new_temp[i] = all_money
                 result[day] = new_temp
 
     return result, regist_count
