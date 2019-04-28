@@ -242,6 +242,14 @@ def build(hm, data, mission):
     group_id = data['group_id']
     return {mission._BUILD: {'target1': group_id, 'value': 1}}
 
+# 探寻艺人
+def card_gacha_times(hm, data, mission):
+    return {mission._GACHA_TIMES: {'target1': 0, 'value': 1}}
+
+# 升级羁绊
+def card_love_lvup(hm, data, mission):
+    return {mission._LOVE_LVUP: {'target1': 0, 'value': 1}}
+
 
 # =================================需要自检的数值类任务func=================================
 
@@ -406,6 +414,9 @@ class Mission(ModelBase):
         'user.build': build,  # 建筑任务
         'mission.get_reward': mission_num,  # 建筑任务
         # 'mission.get_reward': mission_args,                           # 成就
+        'gacha.get_gacha': card_gacha_times,  # 艺人探寻
+        'gacha.clear_gacha_cd': card_gacha_times,  # 艺人探寻
+        'card.card_love_lvup': card_love_lvup,  # 卡牌提升羁绊
 
     }
     # mission_mapping
@@ -446,6 +457,8 @@ class Mission(ModelBase):
     _BUILD = 26  # 建筑任务
     _MISSIONNUM = 27  # 完成任务次数
     _TOPINCOME = 28  # 单片最大收入
+    _GACHA_TIMES = 32  # 艺人探寻次数
+    _LOVE_LVUP = 33  # 艺人提升羁绊
 
     RANDOMREFRESHTIME = 4 * 60 * 60
 
@@ -470,7 +483,7 @@ class Mission(ModelBase):
             'achieve': 0,
             'new_guide_data': {},
             'new_guide_done': [],
-            'performance': 0, # 业绩
+            'performance': 0,  # 业绩
             'performance_done': []  #
 
         }
@@ -977,7 +990,7 @@ class DoMission(object):
         else:
             script_id = info[0] if info else 0
             star = game_config.script.get(script_id, {}).get('star', 0)
-            if star >= target[2]:
+            if star >= target[2] or target[3] == 1:
                 return 1
         return 0
 

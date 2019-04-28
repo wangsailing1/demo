@@ -3,11 +3,15 @@
 
 import time
 import random
-from lib.db import ModelBase
+from lib.db import ModelBase, ModelTools
 from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.utils import weight_choice
-from lib.utils.active_inreview_tools import get_version_by_active_id, active_inreview_open_and_close, get_inreview_version
+from lib.utils.active_inreview_tools import get_version_by_active_id, active_inreview_open_and_close, \
+    get_inreview_version
+from lib.db import get_redis_client
+from lib.utils import generate_rank_score, round_float_or_str
+from lib.utils.time_tools import server_active_inreview_open_and_close
 
 import settings
 
@@ -247,6 +251,12 @@ def build(hm, data, mission):
     group_id = data['group_id']
     return {mission._BUILD: {'target1': group_id, 'value': 1}}
 
+def card_gacha_times(hm, data, mission):
+    return {mission._GACHA_TIMES: {'target1': 0, 'value': 1}}
+
+def card_love_lvup(hm, data, mission):
+    return {mission._LOVE_LVUP: {'target1': 0, 'value': 1}}
+
 
 # =================================需要自检的数值类任务func=================================
 
@@ -263,24 +273,6 @@ def target_sort2(mm, mission_obj, target):
         if value['lv'] >= target[0]:
             info.append(card_id)
     return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': info}}
-
-
-#
-# # 关卡通关
-# def target_sort7(mm, mission_obj, target):
-#     config = game_config.chapter
-#     chapter = 0
-#     type_hard = 0
-#     stage = 0
-#     for value in config.values():
-#         if target[0] in value['stage_id']:
-#             chapter = value['num']
-#             type_hard = value['hard_type']
-#             stage = value['stage_id'].index(target[0]) + 1
-#     info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
-#     info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
-#     return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-#                                          'star': info1.get('star', 0)}}
 
 
 # 关卡通关
@@ -364,18 +356,10 @@ MISSIONNUM = 27  # 任务完成次数
 TOPINCOME = 28  # 单片最大票房次数
 
 
-class ActiveScoreData(ModelBase):
-    """各种奖励数据模型
-
-        奖励分为新老服，存储在此模块，调用分别MissionDaily 对象封装
-
-        @property
-        def daily(self):
-            if not hasattr(self, '_daily'):
-                self._daily = MissionDaily(self)
-            return self._daily
-
-        """
+class ActiveScore(ModelBase):
+    """
+    老服活动积分活动
+    """
     # 接口名到内置函数的映射
     _METHOD_FUNC_MAP = {
         'chapter_stage.chapter_stage_fight': chapter_stage_args,  # 通关
@@ -401,6 +385,9 @@ class ActiveScoreData(ModelBase):
         'user.build': build,  # 建筑任务
         'mission.get_reward': mission_num,  # 建筑任务
         # 'mission.get_reward': mission_args,                           # 成就
+        'gacha.get_gacha': card_gacha_times,  # 艺人探寻
+        'gacha.clear_gacha_cd': card_gacha_times,  # 艺人探寻
+        'card.card_love_lvup': card_love_lvup,  # 卡牌提升羁绊
 
     }
     # mission_mapping
@@ -438,51 +425,51 @@ class ActiveScoreData(ModelBase):
     _BUILD = 26  # 建筑任务
     _MISSIONNUM = 27  # 完成任务次数
     _TOPINCOME = 28  # 单片最大收入
+    _GACHA_TIMES = 32  # 艺人探寻次数
+    _LOVE_LVUP = 33  # 艺人提升羁绊
 
     ACTIVE_TYPE = 2031
-    SERVER_ACTIVE_TYPE = 2032
 
-
-    def __init__(self, uid):
+    def __init__(self, uid=''):
         self.uid = uid
         self._attrs = {
             'version': 0,  # 版本号
-            'score': 0,  # 积分
-            'total_score': 0,  # 总积分
+            'score_daily': 0,  # 每日积分
+            'score_total': 0,  # 总积分
             'data': {},  # 任务数据
-            'last_date': '', # 最近登陆日期
-            'server_version': 0,  # 版本号
-            'server_score': 0,  # 积分
-            'server_total_score': 0,  # 总积分
-            'server_data': {},  # 任务数据
-            'server_last_date': '',
-
+            'last_date': '',  # 最近登陆日期
+            'got_reward_daily': [],  # 已领每日奖励
+            'got_reward_total': [],  # 已领累充奖励
+            'got_rank_reward': False
         }
-        super(ActiveScoreData, self).__init__(self.uid)
+        super(ActiveScore, self).__init__(self.uid)
 
     def pre_use(self):
         today = time.strftime('%F')
-        if self.mm.user.config_type == 2:
-            version = self.get_version()
-            if version > self.version:
-                self.version = version
-                self.total_score = 0
-            if version and today != self.last_date:
-                self.last_date = today
-                self.score = 0
-                self.data = {mission_id: 0 for mission_id in
-                             game_config.active_score.get(self.version,{}).get('mission', [])}
-        else:
-            version = self.get_server_version()
-            if version > self.version:
-                self.server_version = version
-                self.server_total_score = 0
-            if version and today != self.last_date:
-                self.server_last_date = today
-                self.server_score = 0
-                self.server_data = {mission_id: 0 for mission_id in
-                             game_config.server_active_score.get(self.version, {}).get('mission', [])}
+        version = self.get_version()
+        if version > self.version:
+            self.version = version
+            self.score_total = 0
+            self.got_reward_total = []
+            self.data = self.get_data()
+        if version and today != self.last_date:
+            self.last_date = today
+            self.score_daily = 0
+            self.got_reward_daily = []
 
+    def get_data(self):
+        return {mission_id: 0 for mission_id in
+                         game_config.active_score.get(self.version, {}).get('mission', [])}
+
+    @property
+    def config(self):
+        """任务配置"""
+        return game_config.active_score_mission
+
+    @property
+    def config_score(self):
+        """任务奖励配置"""
+        return game_config.active_score
 
     def get_version(self):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
@@ -494,24 +481,6 @@ class ActiveScoreData(ModelBase):
         if self.ACTIVE_TYPE in active_switch:
             return True
         return False
-
-    def get_server_version(self):
-        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.SERVER_ACTIVE_TYPE)
-        return version
-
-
-    @property
-    def activescore(self):
-        if not hasattr(self, '_activescore'):
-            self._activescore = ActiveScore(self)
-        return self._activescore
-
-    @property
-    def serveractivescore(self):
-        if not hasattr(self, '_serveractivescore'):
-            self._serveractivescore = ServerActiveScore(self)
-        return self._serveractivescore
-
 
     @classmethod
     def do_task_api(cls, method, hm, rc, data):
@@ -526,26 +495,24 @@ class ActiveScoreData(ModelBase):
         if rc != 0 or method not in cls._METHOD_FUNC_MAP:
             return
 
-        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, hm.mm.mission)
+        if hm.mm.user.config_type == 1:
+            active_score = hm.mm.server_active_score
+        else:
+            active_score = hm.mm.active_score
+
+        kwargs = cls._METHOD_FUNC_MAP[method](hm, data, active_score)
         if kwargs:
-            mission = hm.mm.mission
-            mission.do_task(kwargs)
+
+            if not active_score.get_version():
+                return
+            active_score.do_task(kwargs)
 
     def do_task(self, kwargs):
         for k, value in self.data.iteritems():
-            sort = game_config.active_score_mission[k]['sort']
+            sort = self.config[k]['sort']
             if sort in kwargs:
-                self.activescore.add_count(k, kwargs[sort])
+                self.add_count(k, kwargs[sort])
         self.save()
-
-
-class DoMission(object):
-    def __init__(self, obj):
-        super(DoMission, self).__init__()
-        self.uid = obj.uid
-        self.data = obj.data
-        self.config = obj.config
-        self.obj = obj
 
     def add_count(self, mission_id, value):
 
@@ -670,9 +637,47 @@ class DoMission(object):
         # 判断任务是否完成 自动领奖
         if self.data[mission_id] >= target_data[1]:
             config = self.config[mission_id]
-            self.obj.score += config['reward']
-            self.obj.total_score += config['reward']
+            self.score_daily += config['reward']
+            self.score_total += config['reward']
             self.data[mission_id] = 0
+            # 更新排行
+            self.update_rank(self.score_total)
+
+    @property
+    def active_rank(self):
+        server = 'public'
+        return ActiveScoreRank(self.version, server)
+
+    def update_rank(self, score):
+        self.active_rank.add_rank(self.uid, score)
+
+    def get_rank_all(self, start=0, end=-1, withscores=False):
+        return self.active_rank.get_all_user(start=start, end=end, withscores=withscores)
+
+    def get_score(self):
+        return self.active_rank.get_score(self.uid)
+
+    def get_rank(self):
+        return self.active_rank.get_rank(self.uid)
+
+    def get_reward_daily_red_dot(self):
+        config = self.config_score.get(self.version, {}).get('need_daily', [])
+        if not config:
+            return False
+        can_get_reward = [i for i, j in enumerate(config, 1) if self.score_daily >= j]
+        return sorted(can_get_reward) != self.got_reward_daily
+
+    def get_reward_total_red_dot(self):
+        config = self.config_score.get(self.version, {}).get('need_total', [])
+        if not config:
+            return False
+        can_get_reward = [i for i, j in enumerate(config, 1) if self.score_total >= j]
+        return sorted(can_get_reward) != self.got_reward_total
+
+    def get_reward_rank_red_dot(self):
+        if self.get_version():
+            return False
+        return not self.got_rank_reward
 
     # 判断抽卡与抽剧本
     def check_gacha(self, target, gacha_type, sort, info, tp):
@@ -693,7 +698,7 @@ class DoMission(object):
         else:
             script_id = info[0] if info else 0
             star = game_config.script.get(script_id, {}).get('star', 0)
-            if star >= target[2]:
+            if star >= target[2] or target[3] == 1:
                 return 1
         return 0
 
@@ -719,21 +724,100 @@ class DoMission(object):
         return True
 
 
-class ServerActiveScore(DoMission):
-    def __init__(self, obj):
-        super(DoMission, self).__init__()
-        self.uid = obj.uid
-        self.data = obj.server_data
-        self.config = game_config.server_active_score_mission
+class ServerActiveScore(ActiveScore):
+    """
+    新服积分活动
+    """
+    ACTIVE_TYPE = 2032
 
 
-class ActiveScore(DoMission):
-    def __init__(self, obj):
-        super(DoMission, self).__init__()
-        self.uid = obj.uid
-        self.data = obj.data
-        self.config = game_config.active_score_mission
+    def get_data(self):
+        return {mission_id: 0 for mission_id in
+                         game_config.active_score_new.get(self.version, {}).get('mission', [])}
+
+    @property
+    def config(self):
+        return game_config.active_score_mission_new
+
+    @property
+    def config_score(self):
+        """任务奖励配置"""
+        return game_config.active_score_new
+
+    def get_version(self):
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
+        return version
+
+    def get_inreview(self):
+        active_switch, _ = server_active_inreview_open_and_close(self.mm)
+        if self.ACTIVE_TYPE in active_switch:
+            return True
+        return False
+
+    @property
+    def active_rank(self):
+        server = self._server_name
+        return ActiveScoreRank(self.version, server)
 
 
+class ActiveScoreRank(ModelTools):
+    def __init__(self, uid='', server='', *args, **kwargs):
+        super(ActiveScoreRank, self).__init__()
+        server_name = server
+        pre_fix = '%s_%s' % (self.__class__.__name__, uid)
+        self._key = self.make_key_cls(pre_fix, server_name=server_name)
+        self.fredis = get_redis_client(settings.public)
 
-ModelManager.register_model('active_score', ActiveScoreData)
+    def add_rank(self, uid, score):
+        """
+        增加排名
+        :param uid:
+        :param rank:
+        :return:
+        """
+        self.fredis.zadd(self._key, uid, generate_rank_score(score))
+        self.fredis.expire(self._key, 7 * 24 * 3600)
+
+    def del_rank(self, uid):
+        """
+        删除排名
+        :param uid:
+        :return:
+        """
+        self.fredis.zrem(self._key, uid)
+
+    def get_all_user(self, start=0, end=-1, withscores=False, score_cast_func=round_float_or_str):
+        """
+        获取排名所有玩家
+        :param start:
+        :param end:
+        :param withscores:
+        :return:
+        """
+        return self.fredis.zrevrange(self._key, start, end, withscores=withscores, score_cast_func=score_cast_func)
+
+    def get_score(self, uid, score_cast_func=round_float_or_str):
+        """
+        获取积分
+        :param uid:
+        :return:
+        """
+        score = self.fredis.zscore(self._key, uid) or 0
+        score = score_cast_func(score)
+
+        return score
+
+    def get_rank(self, uid):
+        """
+        获取排名
+        :param uid:
+        :return:
+        """
+        rank = self.fredis.zrevrank(self._key, uid)
+        if rank is None:
+            rank = -1
+        return rank + 1
+
+
+ModelManager.register_model('active_score', ActiveScore)
+ModelManager.register_model('server_active_score', ServerActiveScore)

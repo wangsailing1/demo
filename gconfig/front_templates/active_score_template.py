@@ -6,7 +6,7 @@ __author__ = 'ljm'
 
 # 积分活动版本
 active_score = {
-    'uk': ('id', 'int'),                                            # 活动id
+    'uk': ('version', 'int'),                                       # 活动id
     'title_png': ('title_png', 'str'),                              # 活动标题图
     'title': ('title', 'str'),                                      # 活动副标题
     'score_icon': ('score_icon', 'str'),                            # 积分图标
@@ -31,15 +31,18 @@ active_score = {
     'mail': ('mail', 'str'),                                         # 邮件内容
 }
 
+active_score_new = active_score
+
 # 积分活动任务
 active_score_mission = {
     'uk': ('id', 'int'),                                            # 活动id
     'des': ('des', 'str'),                                          # 活动标题图
     'sort': ('sort', 'int'),                                        # 类型
     'target': (('target1', 'target2', 'target3', 'target4', 'target5'), ('int_list_or_int2', 'mult_force_num_list')),  # 目标
-    'reward': ('reward', 'int_list'),                               # 奖励
+    'reward': ('reward', 'int'),                               # 奖励
 }
 
+active_score_mission_new = active_score_mission
 
 # 积分活动排行奖励
 active_score_rank = {
@@ -48,3 +51,5 @@ active_score_rank = {
     'award': ('award', 'int_list'),                                 # 奖励道具
     'active_id': ('active_id', 'int_list'),                         # 活动id组
 }
+
+active_score_rank_new = active_score_rank

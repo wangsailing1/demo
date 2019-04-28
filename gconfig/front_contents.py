@@ -635,6 +635,9 @@ active_score_mapping = {
     'active_score': ('active_score', True),
     'active_score_mission': ('active_score_mission', True),
     'active_score_rank': ('active_score_rank', True),
+    'active_score_new': ('active_score_new', True),
+    'active_score_mission_new': ('active_score_mission_new', True),
+    'active_score_rank_new': ('active_score_rank_new', True),
 }
 # 注册需要写到最下面
 register_handler()

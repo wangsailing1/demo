@@ -484,14 +484,17 @@ def split_time_list(tm, open_dt, diff_hour=0):
 
 
 # 获取inreview表的活动时间确定版本信息
-def get_inreview_version(user, active_id, diff_hour=0):
+def get_inreview_version(user, active_id, diff_hour=0, show=False):
     opening = user.server_opening_time_info()
     open_time = opening['open_time']
     open_dt = datetime.datetime.strptime(open_time, "%Y-%m-%d")  # 开服时间
     if active_id not in game_config.server_inreview:
         now = datetime.datetime.now()
         return 0, 0, now, now
-    time_list = game_config.server_inreview[active_id]['name']
+    str_word = 'name'
+    if show:
+        str_word = 'name_show'
+    time_list = game_config.server_inreview[active_id][str_word]
     version, s_time, e_time = split_time_list(time_list, open_dt, diff_hour=diff_hour)
     new_server = 0  # 是否为开服活动期间
     if version:
