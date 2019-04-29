@@ -23,6 +23,7 @@ class DailyRecharge(object):
 
         return 0, {
             'day': day,
+            'end_time': dailyrecharge.end_time,
             'version': version,
             'dailyrecharge': dailyrecharge.done_data,
         }

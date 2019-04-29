@@ -5,7 +5,7 @@ import datetime
 from lib.db import ModelBase
 from gconfig import game_config
 from lib.core.environ import ModelManager
-from lib.utils.time_tools import strftimestamp, datetime_to_timestamp
+from lib.utils.time_tools import strftimestamp, datetime_to_timestamp, str2timestamp
 from lib.utils.active_inreview_tools import get_version_by_active_id, get_inreview_version
 
 
@@ -24,12 +24,16 @@ class DailyRecharge(ModelBase):
             'done': [],                     # 完成的日期
             'done_data': {},                # 数据
         }
+        self.end_time = 0
         self.cache = {}
 
         super(DailyRecharge, self).__init__(uid)
 
     def pre_use(self):
-        _, version = self.get_version()
+        active_id, version = self.get_version()
+        if active_id:
+            end_time = str2timestamp(game_config.active[active_id]['end_time'])
+            self.end_time = end_time
         if version and self.version != version:
             self.fresh()
             self.version = version
