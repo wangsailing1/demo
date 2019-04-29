@@ -150,12 +150,10 @@ class ServerDailyRecharge(ModelBase):
 
     def pre_use(self):
         version, new_server, s_time, e_time = self.get_version()
-        if e_time:
-            self.end_time = e_time
         if version and self.version != version:
             self.fresh()
-            self.start_time = strftimestamp(datetime_to_timestamp(s_time))
-            self.end_time = strftimestamp(datetime_to_timestamp(e_time))
+            self.start_time = datetime_to_timestamp(s_time)
+            self.end_time = datetime_to_timestamp(e_time)
             self.version = version
         day_str = self.get_day_str()
         if self.day_str < day_str:
