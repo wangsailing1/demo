@@ -5,7 +5,7 @@ import time
 import random
 from lib.db import ModelBase, ModelTools
 from lib.core.environ import ModelManager
-from gconfig import game_config
+from gconfig import game_config, MUITL_LAN
 from lib.utils import weight_choice
 from lib.utils.active_inreview_tools import get_version_by_active_id, active_inreview_open_and_close, \
     get_inreview_version
@@ -447,19 +447,89 @@ class ActiveScore(ModelBase):
     def pre_use(self):
         today = time.strftime('%F')
         version = self.get_version()
+        save = False
+        flag = self.send_mail_all()
+        if flag:
+            save = True
         if version > self.version:
             self.version = version
             self.score_total = 0
             self.got_reward_total = []
             self.data = self.get_data()
+            self.got_rank_reward = False
         if version and today != self.last_date:
+            self.send_mail_all(daily=True)
             self.last_date = today
             self.score_daily = 0
             self.got_reward_daily = []
+            save = True
+        if save:
+            self.save()
+
+
 
     def get_data(self):
         return {mission_id: 0 for mission_id in
                          game_config.active_score.get(self.version, {}).get('mission', [])}
+
+    def send_mail_all(self, daily=False):
+        flag = False
+        if not daily:
+            if self.get_inreview():
+                return False
+            if not self.get_reward_total_red_dot() and self.got_rank_reward:
+                return False
+            if not self.got_rank_reward:
+                flag = True
+                rank = self.get_rank()
+                if rank:
+                    config_id = 0
+                    for k, v in self.config_rank.iteritems:
+                        if v['rank'][0] <= rank <= v['rank'][1] and self.version in v['active_id']:
+                            config_id = k
+                            break
+                    if config_id:
+                        lan = getattr(self.mm, 'lan', 1)
+                        lan = MUITL_LAN[lan]
+                        title = self.config_rank[config_id].get('title', '')
+                        content = self.config_rank[config_id].get('content', '')
+                        gift = self.config_rank[config_id]['award']
+                        title = game_config.get_language_config(lan).get(title, '')
+                        content = game_config.get_language_config(lan).get(content, '')
+                        msg = self.mm.mail.generate_mail(content, title=title, gift=gift)
+                        self.mm.mail.add_mail(msg)
+                self.got_rank_reward = True
+            if self.get_reward_total_red_dot():
+                flag = True
+                for step in self.get_reward_total_red_dot():
+                    lan = getattr(self.mm, 'lan', 1)
+                    lan = MUITL_LAN[lan]
+                    title = self.config_score[self.version]['mail_title']
+                    content = self.config_score[self.version]['mail']
+                    gift = self.config_score[self.version]['award_total'][step - 1]
+                    title = game_config.get_language_config(lan)[title]
+                    content = game_config.get_language_config(lan)[content]
+                    msg = self.mm.mail.generate_mail(content, title=title, gift=gift)
+                    self.mm.mail.add_mail(msg)
+                    self.got_reward_total.append(step)
+        else:
+            if self.get_reward_daily_red_dot():
+                flag = True
+                for step in self.get_reward_daily_red_dot():
+                    lan = getattr(self.mm, 'lan', 1)
+                    lan = MUITL_LAN[lan]
+                    title = self.config_score[self.version]['mail_title']
+                    content = self.config_score[self.version]['mail']
+                    gift = self.config_score[self.version]['award_daily'][step - 1]
+                    title = game_config.get_language_config(lan)[title]
+                    content = game_config.get_language_config(lan)[content]
+                    msg = self.mm.mail.generate_mail(content, title=title, gift=gift)
+                    self.mm.mail.add_mail(msg)
+                    self.got_reward_daily.append(step)
+        if flag:
+            self.mm.mail.save()
+            return True
+        return False
 
     @property
     def config(self):
@@ -470,6 +540,10 @@ class ActiveScore(ModelBase):
     def config_score(self):
         """任务奖励配置"""
         return game_config.active_score
+
+    @property
+    def config_rank(self):
+        return game_config.active_score_rank
 
     def get_version(self):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
@@ -663,16 +737,16 @@ class ActiveScore(ModelBase):
     def get_reward_daily_red_dot(self):
         config = self.config_score.get(self.version, {}).get('need_daily', [])
         if not config:
-            return False
+            return []
         can_get_reward = [i for i, j in enumerate(config, 1) if self.score_daily >= j]
-        return sorted(can_get_reward) != self.got_reward_daily
+        return list(set(can_get_reward) - set(self.got_reward_daily))
 
     def get_reward_total_red_dot(self):
         config = self.config_score.get(self.version, {}).get('need_total', [])
         if not config:
-            return False
+            return []
         can_get_reward = [i for i, j in enumerate(config, 1) if self.score_total >= j]
-        return sorted(can_get_reward) != self.got_reward_total
+        return list(set(can_get_reward) - set(self.got_reward_total))
 
     def get_reward_rank_red_dot(self):
         if self.get_version():
@@ -743,6 +817,10 @@ class ServerActiveScore(ActiveScore):
     def config_score(self):
         """任务奖励配置"""
         return game_config.active_score_new
+
+    @property
+    def config_rank(self):
+        return game_config.active_score_rank_new
 
     def get_version(self):
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
