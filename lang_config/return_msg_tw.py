@@ -96,6 +96,7 @@ return_msg_config = {
     'error_assistant': u'請先聘請終身助理',
     'error_superplayer': u'活動未開啟',
     'error_sensitive_name': u'名字不合法',
+    'error_active_time': u'活動未開啟',
 
 }
 
@@ -1086,6 +1087,21 @@ strategy_msg = {
         3: u'任務已經完成',
         4: u'無主的任務,不能幫忙哦',
         5: u'自己的任務, 快去完成吧',
+    },
+}
+
+daily_recharge_msg = {
+    'daily_recharge.reward': {
+        1: u'領取時間錯誤',
+        2: u'還沒完成',
+        3: u'已經領取獎勵',
+        4: u'數據異常',
+    },
+    'daily_recharge.server_reward': {
+        1: u'領取時間錯誤',
+        2: u'還沒完成',
+        3: u'已經領取獎勵',
+        4: u'數據異常',
     },
 }
 

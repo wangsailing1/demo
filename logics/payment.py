@@ -129,6 +129,8 @@ def pay_apply(mm, obj, charge_config):
             #
             # # 天降红包
             # mm.server_red_bag.pay_trigger(product_id, amount)
+            # 新服天天充值
+            mm.server_daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
         else:
             # pass
             # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)

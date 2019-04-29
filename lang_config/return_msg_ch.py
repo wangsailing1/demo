@@ -96,6 +96,7 @@ return_msg_config = {
     'error_assistant': u'请先聘请终身助理',
     'error_superplayer': u'活动未开启',
     'error_sensitive_name': u'名字不合法',
+    'error_active_time': u'活动未开启',
 
 }
 
@@ -1088,6 +1089,21 @@ strategy_msg = {
         3: u'任务已经完成',
         4: u'无主的任务,不能帮忙哦',
         5: u'自己的任务哦, 快去完成吧',
+    },
+}
+
+daily_recharge_msg = {
+    'daily_recharge.reward': {
+        1: u'领取时间错误',
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
+    },
+    'daily_recharge.server_reward': {
+        1: u'领取时间错误',
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
     },
 }
 

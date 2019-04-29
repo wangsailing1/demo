@@ -71,27 +71,27 @@ server_recharge = {
     'is_open': ('is_open', 'int'),
 }
 
-# 每日充值活动
-server_daily_recharge = {
-    'uk': ('id', 'int'),
-    'version': ('version', 'int'),
-    'show_id': ('show_id', 'int'),              # 展示id
-    'show_time': ('show_time', 'unicode'),      # 展示时间
-    'server_start_time': ('server_start_time', 'str'),        # 开始时间
-    'server_end_time': ('server_end_time', 'str'),            # 结束时间
-    'num': ('num', 'float'),                      # 数值
-    'reward_show': ('reward_show', 'list_3', check.check_reward(),),   # 奖品
-    'level': ('level', 'int_list'),             # 展示大奖
-    'reward': ('reward', 'list_3', check.check_reward(),),             # 等级
-    'server_id': ('server_id', 'int_list'),     # 服务器id
-    'mail_title': ('mail_title', 'unicode'),    # 邮件名
-    'des': ('des', 'unicode'),                  # 邮件内容描述
-    'num_type': ('num_type', 'int'),            # 计数类型
-    'currency': ('currency', 'str'),            # 币种
-    'currency_name': ('currency_name', 'unicode'),     # 种名
-    'daily_reward': ('daily_reward', 'list_3', check.check_reward()),     # 累充（单充）补给奖励
-    'show_des': ('show_des', 'unicode'),
-}
+# # 每日充值活动
+# server_daily_recharge = {
+#     'uk': ('id', 'int'),
+#     'version': ('version', 'int'),
+#     'show_id': ('show_id', 'int'),              # 展示id
+#     'show_time': ('show_time', 'unicode'),      # 展示时间
+#     'server_start_time': ('server_start_time', 'str'),        # 开始时间
+#     'server_end_time': ('server_end_time', 'str'),            # 结束时间
+#     'num': ('num', 'float'),                      # 数值
+#     'reward_show': ('reward_show', 'list_3', check.check_reward(),),   # 奖品
+#     'level': ('level', 'int_list'),             # 展示大奖
+#     'reward': ('reward', 'list_3', check.check_reward(),),             # 等级
+#     'server_id': ('server_id', 'int_list'),     # 服务器id
+#     'mail_title': ('mail_title', 'unicode'),    # 邮件名
+#     'des': ('des', 'unicode'),                  # 邮件内容描述
+#     'num_type': ('num_type', 'int'),            # 计数类型
+#     'currency': ('currency', 'str'),            # 币种
+#     'currency_name': ('currency_name', 'unicode'),     # 种名
+#     'daily_reward': ('daily_reward', 'list_3', check.check_reward()),     # 累充（单充）补给奖励
+#     'show_des': ('show_des', 'unicode'),
+# }
 
 # 常规兑换活动
 server_normal_exchange = {

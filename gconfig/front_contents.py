@@ -455,7 +455,7 @@ server_active_mapping = {
     'server_consume': ('server_consume', True),
     'server_daily_consume': ('server_daily_consume', True),
     'server_recharge': ('server_recharge', True),
-    'server_daily_recharge': ('server_daily_recharge', True),
+    # 'server_daily_recharge': ('server_daily_recharge', True),
     'server_normal_exchange': ('server_normal_exchange', True),
     'server_omni_exchange': ('server_omni_exchange', True),
     'server_sign_daily_charge': ('server_sign_daily_charge', True),
@@ -655,6 +655,7 @@ strategy_mission_mapping = {
 daily_recharge_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'daily_recharge': ('daily_recharge', True),
+    'server_daily_recharge': ('server_daily_recharge', True),
 }
 
 # 注册需要写到最下面
