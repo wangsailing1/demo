@@ -143,12 +143,15 @@ class ServerDailyRecharge(ModelBase):
             'done_data': {},                # 数据
 
         }
+        self.end_time = 0
         self.cache = {}
 
         super(ServerDailyRecharge, self).__init__(uid)
 
     def pre_use(self):
         version, new_server, s_time, e_time = self.get_version()
+        if e_time:
+            self.end_time = e_time
         if version and self.version != version:
             self.fresh()
             self.start_time = strftimestamp(datetime_to_timestamp(s_time))
