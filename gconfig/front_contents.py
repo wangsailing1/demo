@@ -651,5 +651,11 @@ strategy_mission_mapping = {
     'strategy_lv': ('strategy_lv', True),
     'strategy_once': ('strategy_once', True),
 }
+
+daily_recharge_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'daily_recharge': ('daily_recharge', True),
+}
+
 # 注册需要写到最下面
 register_handler()

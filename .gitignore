@@ -12,3 +12,4 @@ test/local_config.py
 env_config/local.py
 
 dump.rdb
+env_config/local.py
