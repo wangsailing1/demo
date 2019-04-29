@@ -88,6 +88,8 @@ TIMER_JOBS = (
     ('cron', dict(minute='*/5'), backup_all_server_online_count, 1),
     ('cron', dict(hour='*'), genearte_random_event, 1),
     ('cron', dict(minute='30'), genearte_global_event, 1),
+    ('cron', dict(minute='*/30'), refresh, 1),
+    ('cron', dict(minute='*/30'), server_refresh, 0),
 
     # 公会战
     # 筛选可参与的公会,分组
@@ -99,6 +101,7 @@ TIMER_JOBS = (
     ('cron', dict(hour=6), rank_list_backup, 0),
     ('cron', dict(hour=0, minute=5), send_rank_reward, 0),
 
+
 )
 DATE_LIST_JOBS = (
     # 返回时间列表的函数（类似要执行的函数，分全局和非全局）   要执行的函数， 是否是全局的(0,1)
@@ -109,10 +112,10 @@ DATE_LIST_JOBS = (
     # # 新服限时英雄排名发奖
     # (server_limit_hero_mail_time                , server_send_limit_hero_rank_award     , 0),
     # 超级大玩家刷新
-    (super_player_refresh_time                  , refresh           , 1),
+    # (super_player_refresh_time                  , refresh           , 1),
     # 超级大玩家发奖
     (active_reward_time                         , active_reward     , 1),
-    (server_super_player_refresh_time           , server_refresh           , 0),
+    # (server_super_player_refresh_time           , server_refresh           , 0),
     # 超级大玩家发奖
     (server_active_reward_time                  , server_active_reward     , 0),
 )
