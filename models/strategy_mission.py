@@ -31,14 +31,10 @@ class MissionTools(object):
     def chapter_stage_args(hm, data, mission):
         type_hard = hm.get_argument('type_hard', 0, is_int=True)
         stage_id = data.get('stage_id', 0)
-        star = data.get('star', 0)
         target_sort_first = mission._CHAPTER_FIRST
         target_sort_num = mission._CHAPTER_NUM
-        return {target_sort_first: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
-                                    'star': star},
-                target_sort_num: {'target1': type_hard, 'value': 1 if data.get('win', 0) else 0, 'stage_id': stage_id,
-                                  'star': star}, }
-
+        return {target_sort_first: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},
+                target_sort_num: {'target1': type_hard, 'value': 1 , 'stage_id': stage_id,},}
     # 拍摄（type，style，income）
     @staticmethod
     def script_make(hm, data, mission):
@@ -50,12 +46,18 @@ class MissionTools(object):
         target_limit_actor = mission._LIMIT_ACTOR
         target_once = mission._ONCE
         target_first_income = mission._FIRST_INCOME
+        target_top_income = mission._TOPINCOME
         ids = [int(card_id.split('-')[0]) for card_id in data['cur_script']['card'].values()]
         return {target_sort_type: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-                target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1},
-                target_sort_income: {'target1': 0, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income']},
-                target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids, 'style': data['cur_script']['style']},
-                target_once: {'target1': script_id, 'end_lv': end_lv, 'value': data['cur_script']['finished_summary']['income'],
+                target_sort_style: {'target1': script_id, 'end_lv': end_lv, 'value': 1, 'style': data['cur_script']['style']},
+                target_sort_income: {'target1': 0, 'end_lv': end_lv,
+                                     'value': data['cur_script']['finished_summary']['income']},
+                target_top_income: {'target1': data['cur_script']['finished_summary']['income'], 'end_lv': end_lv,
+                                     'value': 1},
+                target_limit_actor: {'target1': script_id, 'end_lv': end_lv, 'value': ids,
+                                     'style': data['cur_script']['style']},
+                target_once: {'target1': script_id, 'end_lv': end_lv,
+                              'value': data['cur_script']['finished_summary']['income'],
                               'style': data['cur_script']['style']},
                 target_first_income: {'target1': script_id, 'end_lv': end_lv, 'style': data['cur_script']['style'],
                                       'value': data['cur_script']['finished_first_income']['first_income']}, }
@@ -78,7 +80,9 @@ class MissionTools(object):
         gacha_id = hm.get_argument('gacha_id', is_int=True)
         reward = game_config.coin_gacha[gacha_id]['reward']
         target_sort = mission._CARD_GACHA
-        return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1}}
+        num = len(data.get('reward', {}).get('cards', []))
+        return {target_sort: {'target1': sort, 'value': count, 'info': reward, 'tp': 1},
+                mission._CARD_NUM: {'target1': 0, 'value': num}}
 
     # 抓娃娃
     @staticmethod
@@ -184,10 +188,28 @@ class MissionTools(object):
     @staticmethod
     def mission_args(hm, data, mission):
         mm = hm.mm
-        strategy = mm.mission.strategy
-        return {mission._strategy: {'target1': 0, 'value': strategy}}
+        achieve = mm.mission.achieve
+        return {mission._ACHIEVE: {'target1': 0, 'value': achieve}}
 
+    # 购买体力
+    @staticmethod
+    def buy_point(hm, data, mission):
+        mm = hm.mm
+        return {mission._SHOP: {'target1': 1, 'value': 1}}
 
+    # 完成任务次数
+    @staticmethod
+    def mission_num(hm, data, mission):
+        mm = hm.mm
+        tp_id = hm.get_argument('tp_id', 0, is_int=True)
+        return {mission._MISSIONNUM: {'target1': tp_id, 'value': 1}}
+
+    # 建筑任务
+    @staticmethod
+    def build(hm, data, mission):
+        mm = hm.mm
+        group_id = data['group_id']
+        return {mission._BUILD: {'target1': group_id, 'value': 1}}
     # =================================需要自检的数值类任务func=================================
 
     # 玩家等级
@@ -199,11 +221,11 @@ class MissionTools(object):
     # 艺人等级
     @staticmethod
     def target_sort2(mm, mission_obj, target):
-        value = []
+        info = []
         for card_id, value in mm.card.cards.iteritems():
             if value['lv'] >= target[0]:
-                value.append(card_id)
-        return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': value}}
+                info.append(card_id)
+        return {mission_obj._CARD_LV: {'target1': 0, 'value': target[0], 'card_id': info}}
 
     # 关卡通关
     @staticmethod
@@ -214,12 +236,14 @@ class MissionTools(object):
         stage = 0
         for value in config.values():
             if target[0] in value['stage_id']:
-                chapter = value['chapter_id']
+                chapter = value['num']
                 type_hard = value['hard_type']
                 stage = value['stage_id'].index(target[0]) + 1
-        info = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
+        info = stage in mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {})
+        info1 = mm.chapter_stage.chapter.get(chapter, {}).get(type_hard, {}).get(stage, {})
         return {mission_obj._CHAPTER_FIRST: {'target1': type_hard, 'value': 1 if info else 0, 'stage_id': target[0],
-                                             'star': info.get('star', 0)}}
+                                             }}
+
     # 艺人数量
     @staticmethod
     def target_sort15(mm, mission_obj, target):
@@ -258,21 +282,30 @@ class MissionTools(object):
             if value['love_exp'] >= target[0]:
                 num += 1
         for g_id in mm.card.attr:
-            if g_id not in group_ids and mm.card.attr[g_id]['like'] >= target[0]:
+            if g_id not in group_ids and mm.card.attr[g_id].get('like', 0) >= target[0]:
                 num += 1
         return {mission_obj._ACTOR_LOVE: {'target1': target[0], 'value': num}}
 
+    # 建造任务
+    @staticmethod
+    def target_sort26(mm, mission_obj, target):
+        build_info = mm.user.group_ids
+        info = target[0] in build_info
+        return {mission_obj._BUILD: {'target1': target[0], 'value': 1 if info else 0}}
 
     TYPE_MAPPING = {12: 'type', 14: 'style'}  # 剧本拍摄
     MULT_TYPE = 22  # 剧本拍摄多要求
     TYPE_STYLE = [24, 25]
-    CHANGE_NUM = [1, 19, 21]  # 纯数值 玩家等级  公司市值
+    CHANGE_NUM = [1, 19, 21, 15]  # 纯数值 玩家等级  公司市值
     CARD_LEVEL = 2  # 艺人等级
     FIRST_CHAPTER = 7  # 首次通关
     NUM_CHAPTER = 8  # 通关次数
     GACHA = [3, 4]
     GACHA_MAPPING = {8: 1, 9: 2}  # 8整卡 9碎片
     FANS_ACTIVITY = [10, 17]  # 粉丝活动，商店购物
+    BUILD = 26  # 建筑
+    MISSIONNUM = 27  # 任务完成次数
+    TOPINCOME = 28 # 单片最大票房次数
 
 
 class Mission(ModelBase):
@@ -306,6 +339,10 @@ class Mission(ModelBase):
         'shop.resource_buy': MissionTools.shop_args,  # 资源商店购买
         'shop.mystical_buy': MissionTools.shop_args,  # 神秘商店购买
         'shop.period_buy': MissionTools.shop_args,  # 限时商店购买
+        'user.buy_point': MissionTools.buy_point,  # 购买体力
+        'fans_activity.unlock_activity': MissionTools.build,  # 建筑任务
+        'user.build': MissionTools.build,  # 建筑任务
+        'mission.get_reward': MissionTools.mission_num,  # 建筑任务
 
     }
     # mission_mapping
@@ -313,7 +350,7 @@ class Mission(ModelBase):
     BOXOFFICEREFRESHTIME = '05:00:00'
 
     # 数值类任务初始化时需要自检的
-    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23]
+    NEEDCHECKMISSIONID = [1, 2, 7, 15, 16, 19, 23, 26]
 
     # 配置target_sort映射
 
@@ -342,6 +379,9 @@ class Mission(ModelBase):
     _ACTOR_LOVE = 23  # 艺人好感度
     _ONCE = 24  # 单次自制票房
     _FIRST_INCOME = 25  # 首映票房/收视
+    _BUILD = 26  # 建筑任务
+    _MISSIONNUM = 27  # 完成任务次数
+    _TOPINCOME = 28  # 单片最大收入
 
     RANDOM_NUM = 5                      # 默认 5个 合作任务    # TODO 先写死5个, 后期走commen表
     QUICK_DONE = 1                      # 快速完成数量
