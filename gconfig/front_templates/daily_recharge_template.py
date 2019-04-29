@@ -8,6 +8,7 @@ __author__ = 'kaiqigu'
 daily_recharge = {
     'uk':               ('id',              'int'),                 # id
     'version':          ('version',         'int'),                 # 版本号
+    'day':              ('day',             'int'),                 # 第几天
     'type':             ('type',            'int'),                 # 充值类型
     'number':           ('number',          'int'),                 # 充值数量
     'reward':           ('reward',          'int_list'),            # 奖励[类型，id，数量]

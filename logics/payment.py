@@ -91,16 +91,10 @@ def pay_apply(mm, obj, charge_config):
 
         # 砸金蛋
         egg = Egg(mm)
-        try:
-            egg.add_payment_and_item_times(order_diamond)
-        except:
-            print_log(traceback.format_exc())
+        egg.add_payment_and_item_times(order_diamond)
 
         # 钻石福利基金
-        try:
-            mm.foundation.add_score(order_diamond)
-        except:
-            print_log(traceback.format_exc())
+        mm.foundation.add_score(order_diamond)
 
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
@@ -159,6 +153,9 @@ def pay_apply(mm, obj, charge_config):
 
         mm.limit_sign.add_score(order_diamond, order_money)
         mm.server_limit_sign.add_score(order_diamond, order_money)
+
+        # 天天充值
+        mm.daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
         # # 超值签到
         # mm.pay_sign.set_pay_sign_status(order_money+gift_diamond, product_id)
 
