@@ -36,6 +36,7 @@ dialogue_guide = {
     'uk': ('dialogueid', 'int'),  # id
     'roleid': ('roleid', 'int'),  # 角色id
     'dialogkind': ('dialogkind', 'int'),  # 对话框种类
-    'type': ('type', 'int'),  # 角色id
-    'words': ('words', 'str'),  # 角色id
+    'type': ('type', 'int'),  # 类型
+    'words': ('words', 'str'),  # 对话
+    'voice': ('voice', 'str'),  # 配音
 }
