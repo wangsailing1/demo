@@ -141,9 +141,8 @@ class ServerDailyRecharge(ModelBase):
             'charge_data': {},              # 充值数据
             'done': [],                     # 完成的日期
             'done_data': {},                # 数据
-
+            'end_time': 0,                  # 结束时间
         }
-        self.end_time = 0
         self.cache = {}
 
         super(ServerDailyRecharge, self).__init__(uid)
