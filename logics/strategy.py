@@ -234,7 +234,7 @@ class Strategy(object):
         next_lv = strategy_mission.get_next_lv()
 
         strategy_lv_config = game_config.strategy_lv
-        cur_config = strategy_lv_config.get(strategy_mission.strategy_lv, {})
+        cur_config = strategy_lv_config.get(strategy_mission.level, {})
         lv_config = strategy_lv_config.get(next_lv, {})
         if not lv_config:
             return 1, {}            # 奖励不存在
