@@ -95,6 +95,7 @@ return_msg_config = {
     'error_assistant': u'请先聘请终身助理',
     'error_superplayer': u'活动未开启',
     'error_sensitive_name': u'名字不合法',
+    'error_active_time': u'活动未开启',
 
 }
 
@@ -1006,6 +1007,21 @@ mail_msg = {
     },
     'mail.receive_all': {
         1: u'邮箱已空空如也',
+    },
+}
+
+daily_recharge_msg = {
+    'daily_recharge.reward': {
+        1: u'领取时间错误',
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
+    },
+    'daily_recharge.server_reward': {
+        1: u'领取时间错误',
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
     },
 }
 
