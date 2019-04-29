@@ -234,11 +234,12 @@ class Strategy(object):
         next_lv = strategy_mission.get_next_lv()
 
         strategy_lv_config = game_config.strategy_lv
+        cur_config = strategy_lv_config.get(strategy_mission.strategy_lv, {})
         lv_config = strategy_lv_config.get(next_lv, {})
         if not lv_config:
             return 1, {}            # 奖励不存在
 
-        mission_amount = lv_config['mission_amount']
+        mission_amount = cur_config['mission_amount']
         if strategy_mission.done_num < mission_amount:
             return 2, {}            # 完成任务数不足
 
