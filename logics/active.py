@@ -282,6 +282,7 @@ class OmniExchange(object):
             'reward': reward,
             'exchange_log': self.exchange.get_cur_exchange_log(),
             'version': self.exchange.version,
+            'remain_time': self.remain_time(),
         }
         return 0, result
 
@@ -353,6 +354,7 @@ class ServerOmniExchange(object):
             'reward': reward,
             'exchange_log': self.exchange.get_cur_exchange_log(),
             'version': self.exchange.version,
+            'remain_time': self.remain_time(),
         }
         return 0, result
 

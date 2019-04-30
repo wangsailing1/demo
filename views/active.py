@@ -157,6 +157,5 @@ def omni_exchange(hm):
     else:
         nel = OmniExchange(mm)
     rs, result = nel.omni_exchange(exchange_id, times)
-    print result
 
     return rs, result
