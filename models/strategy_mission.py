@@ -388,6 +388,9 @@ class Mission(ModelBase):
     TITLE = 31410195                    # 升级后奖励邮件标题
     CONTENT = 31410196                  # 升级后奖励邮件内容
 
+    GIFT_TITLE = 31411068               # 合作伙伴送礼邮件标题
+    GIFT_CONTENT = 31411069             # 合作伙伴送礼邮件内容
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {
@@ -469,6 +472,9 @@ class Mission(ModelBase):
         self.ts = int(time.time())
         self.point = 0
         self.done_num = 0
+
+    def update_user_info(self, mm):
+        self.strategy_info[mm.uid] = user_info(mm)
 
     def fresh_strategy_mission(self):
         """ 刷新战略任务

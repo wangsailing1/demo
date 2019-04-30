@@ -713,6 +713,16 @@ class UserLogic(object):
             return 4, {}    # 请选择一个角色
         if self.user.set_name_unique(name):
             return 5, {}   # 名字存在
+
+        ################### 战略合作要求头像实时更新 #################
+        if self.user.role != role or self.user.name != name:
+            if hasattr(self.mm, 'strategy'):
+                strategy_mission = self.mm.strategy.strategy_mission
+                if strategy_mission:
+                    strategy_mission.update_user_info(self.mm)
+                    strategy_mission.save()
+        ################### 战略合作要求头像实时更新 #################
+
         self.user.name = name
         self.user.role = role
         self.user.got_icon.append(role)
