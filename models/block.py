@@ -86,6 +86,9 @@ class Block(ModelBase):
         if self.cup >= config[self.block_num]['promotion_cup_num']:
             self.block_num += 1
             self.cup = 0
+            if self.block_num > max(config.keys()):
+                self.block_num = max(config.keys())
+                self.cup = config[self.block_num]['promotion_cup_num']
         if is_save:
             self.save()
 
