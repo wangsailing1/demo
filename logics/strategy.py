@@ -264,7 +264,7 @@ class Strategy(object):
         data = self.index()
         data['reward'] = reward
 
-        return 0, {}
+        return 0, data
 
     def send_gift(self, kind):
         """ 增送礼物
