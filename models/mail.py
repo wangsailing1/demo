@@ -126,7 +126,7 @@ class Mail(ModelBase):
         :param format_str: 格式化内容
         :return:
         """
-        lan = getattr(self.mm,'lan', 1)
+        lan = getattr(self.mm,'language_sort', 1)
         lan = MUITL_LAN[lan]
         lan_language_config = game_config.get_language_config(lan)
         title = lan_language_config.get(title, '')
