@@ -332,6 +332,7 @@ gacha_msg = {
     },
 }
 
+
 script_msg = {
     'script.pre_filming': {
         1: u'许可证不足',
@@ -677,6 +678,14 @@ active_msg = {
     'active.get_gift': {
         1: u'充值尚未完成，请稍后重试',
         2: u'已经领取过了',
+    },
+    'active.omni_exchange': {
+        1: u'无此兑换',
+        2: u'尚未开始',
+        3: u'兑换次数已达到上限',
+        4: u'兑换id错误',
+        5: u'配置错误',
+        6: u'扣除道具失败',
     },
 }
 

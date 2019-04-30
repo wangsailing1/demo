@@ -3,8 +3,9 @@
 import time
 
 from gconfig import game_config
-from tools.gift import add_mult_gift
+from tools.gift import add_mult_gift, del_mult_goods
 from logics.user import UserLogic
+from lib.utils.time_tools import datetime_to_timestamp, str2timestamp
 
 
 class ActiveCard(object):
@@ -225,3 +226,145 @@ class MonthlySignLogic(object):
         result.update(self.index())
         return 0, result
 
+
+class OmniExchange(object):
+    """
+       限时兑换逻辑
+    """
+    def __init__(self, mm):
+        self.mm = mm
+        self.exchange = self.mm.omni_exchange
+        super(OmniExchange, self).__init__()
+
+    def omni_exchange(self, exchange_id, times):
+        """
+        限时兑换
+        :return:
+        """
+        need_items = []
+        reward_items = []
+        exchange_config = game_config.omni_exchange.get(exchange_id)
+        if not exchange_config:
+            return 1, {}  # 无此兑换
+
+        exchange_num = exchange_config['exchange_num']
+
+        # 检查时间
+        if not self.exchange.is_open():
+            return 2, {}  # 尚未开始
+
+        # 检验兑换次数
+        if self.exchange.get_exchange_times(exchange_id) + times > exchange_num:
+            return 3, {}  # 兑换次数已达到上限
+
+        # 判断兑换id是否正确
+        if exchange_id not in self.exchange.get_cur_exchange_log():
+            return 4, {}  # 兑换id错误
+
+        for m in xrange(times):
+            need_items += exchange_config['need_item']
+            reward_items += exchange_config['out_item']
+        rc, silver_count = del_mult_goods(self.mm, need_items)
+        if rc:
+            return 6, {}  # 扣除道具失败
+
+        # 兑换
+        reward = {}
+        reward = add_mult_gift(self.mm, reward_items, reward)
+        if not reward:
+            return 5, {}  # 配置错误
+
+        self.exchange.set_exchange_times(exchange_id, times)
+        self.exchange.save()
+
+        result = {
+            'effect': {},
+            'reward': reward,
+            'exchange_log': self.exchange.get_cur_exchange_log(),
+            'version': self.exchange.version,
+        }
+        return 0, result
+
+    def remain_time(self):
+        """ 获取剩余时间
+        :return:
+        """
+        now = time.time()
+        version, end = self.exchange.get_start_end_time()
+        end = str2timestamp(end)
+        if not version:
+            return 0
+
+        return int(end - now)
+
+
+class ServerOmniExchange(object):
+    """
+       限时兑换逻辑
+    """
+    def __init__(self, mm):
+        self.mm = mm
+        self.exchange = self.mm.server_omni_exchange
+        super(ServerOmniExchange, self).__init__()
+
+    def omni_exchange(self, exchange_id, times):
+        """
+        限时兑换
+        :return:
+        """
+        need_items = []
+        reward_items = []
+        exchange_config = game_config.server_omni_exchange.get(exchange_id)
+        if not exchange_config:
+            return 1, {}  # 无此兑换
+
+        exchange_num = exchange_config['exchange_num']
+
+        # 检查时间
+        if not self.exchange.is_open():
+            return 2, {}  # 尚未开始
+
+        # 检验兑换次数
+        if self.exchange.get_exchange_times(exchange_id) + times > exchange_num:
+            return 3, {}  # 兑换次数已达到上限
+
+        # 判断兑换id是否正确
+        if exchange_id not in self.exchange.get_cur_exchange_log():
+            return 4, {}  # 兑换id错误
+
+        for m in xrange(times):
+            need_items += exchange_config['need_item']
+            reward_items += exchange_config['out_item']
+        rc, silver_count = del_mult_goods(self.mm, need_items)
+        if rc:
+            return 6, {}  # 扣除道具失败
+
+        # 兑换
+        reward = {}
+        reward = add_mult_gift(self.mm, reward_items, reward)
+        if not reward:
+            return 5, {}  # 配置错误
+
+        self.exchange.set_exchange_times(exchange_id, times)
+        self.exchange.save()
+
+        result = {
+            'effect': {},
+            'reward': reward,
+            'exchange_log': self.exchange.get_cur_exchange_log(),
+            'version': self.exchange.version,
+        }
+        return 0, result
+
+    def remain_time(self):
+        """ 获取剩余时间
+        :return:
+        """
+        now = time.time()
+        version, end = self.exchange.get_start_end_time()
+
+        end = datetime_to_timestamp(end)
+        if not version:
+            return 0
+
+        return int(end - now)

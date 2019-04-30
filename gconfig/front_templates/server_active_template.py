@@ -109,20 +109,20 @@ server_normal_exchange = {
 }
 
 # 限时兑换活动
-server_omni_exchange = {
-    'uk': ('id', 'int'),
-    'version': ('version', 'int'),
-    'show_id': ('show_id', 'int'),              # 展示id
-    'show_time': ('show_time', 'unicode'),       # 展示时间
-    'exchange_type': ('exchange_type', 'int'),  # 兑换类型
-    'server_start_time': ('server_start_time', 'str'),        # 开始时间
-    'server_end_time': ('server_end_time', 'str'),            # 结束时间
-    'exchange_num': ('exchange_num', 'int'),    # 可兑换次数
-    'need_item': ('need_item', 'list_3'),       # 兑换道具
-    'out_item': ('out_item', 'list_3'),         # 兑换得到的奖品
-    'reward_show': ('reward_show', 'list_3'),   # 大奖
-    'show_des': ('show_des', 'unicode'),
-}
+# server_omni_exchange = {
+#     'uk': ('id', 'int'),
+#     'version': ('version', 'int'),
+#     'show_id': ('show_id', 'int'),              # 展示id
+#     'show_time': ('show_time', 'unicode'),       # 展示时间
+#     'exchange_type': ('exchange_type', 'int'),  # 兑换类型
+#     'server_start_time': ('server_start_time', 'str'),        # 开始时间
+#     'server_end_time': ('server_end_time', 'str'),            # 结束时间
+#     'exchange_num': ('exchange_num', 'int'),    # 可兑换次数
+#     'need_item': ('need_item', 'list_3'),       # 兑换道具
+#     'out_item': ('out_item', 'list_3'),         # 兑换得到的奖品
+#     'reward_show': ('reward_show', 'list_3'),   # 大奖
+#     'show_des': ('show_des', 'unicode'),
+# }
 
 # 豪华签到
 server_sign_daily_charge = {
