@@ -8,6 +8,8 @@ single_recharge = {
     'charge_id':    ('charge_id',       'int'),             # 购买项
     'limit_num':    ('limit_num',       'int'),             # 限次
     'reward':       ('reward',          'int_list'),        # 奖励[类型，id，数量]
+    'mail_title':   ('mail_title',      'int'),             # 邮件标题
+    'mail':         ('mail',            'int'),             # 邮件内容
 }
 
 
@@ -18,4 +20,6 @@ server_single_recharge = {
     'charge_id':    ('charge_id',       'int'),             # 购买项
     'limit_num':    ('limit_num',       'int'),             # 限次
     'reward':       ('reward',          'int_list'),        # 奖励[类型，id，数量]
+    'mail_title':   ('mail_title',      'int'),             # 邮件标题
+    'mail':         ('mail',            'int'),             # 邮件内容
 }
