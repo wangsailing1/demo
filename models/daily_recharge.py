@@ -4,6 +4,7 @@ import time
 import datetime
 from lib.db import ModelBase
 from gconfig import game_config
+from tools.gift import calc_gift
 from lib.core.environ import ModelManager
 from lib.utils.time_tools import strftimestamp, datetime_to_timestamp, str2timestamp
 from lib.utils.active_inreview_tools import get_version_by_active_id, get_inreview_version
@@ -23,18 +24,22 @@ class DailyRecharge(ModelBase):
             'charge_data': {},              # 充值数据
             'done': [],                     # 完成的日期
             'done_data': {},                # 数据
+            'reward_mail': [],              # 发送邮件id
+            'end_time': 0,                  # 结束时间
         }
-        self.end_time = 0
         self.cache = {}
 
         super(DailyRecharge, self).__init__(uid)
 
     def pre_use(self):
+
+        now_time = int(time.time())
+        if now_time >= self.end_time:
+            self.send_mail()
         active_id, version = self.get_version()
-        if active_id:
+        if version and self.version != version:
             end_time = str2timestamp(game_config.active[active_id]['end_time'])
             self.end_time = end_time
-        if version and self.version != version:
             self.fresh()
             self.version = version
         day_str = self.get_day_str()
@@ -109,6 +114,35 @@ class DailyRecharge(ModelBase):
         self.day = 1
         self.done = []
         self.done_data = {}
+        self.reward_mail = []
+
+    def send_mail(self):
+        """发未领取奖励
+        """
+        if self.reward_mail:
+            return
+        version = self.version
+        done_data = self.done_data
+        day_ids = []
+        gift = []
+        for k, v in done_data.iteritems():
+            if v['reward'] >= v['is_complete']:
+                continue
+            day_ids.append(k)
+        if day_ids:
+            config_mapping = game_config.get_daily_recharge_mapping().get(version, {})
+            if config_mapping:
+                for d in day_ids:
+                    config = config_mapping[d]
+                    gift.extend(config['reward'])
+        if gift:
+            gift = calc_gift(gift)
+            mail = config_mapping[d]['mail']
+            mail_title = config_mapping[d]['mail_title']
+            msg = self.mm.mail.generate_mail_lan(mail, title=mail_title, gift=gift)
+            self.mm.mail.add_mail(msg)
+        self.reward_mail = day_ids if day_ids else ['No mail']
+        self.save()
 
     def is_open(self):
         """ 是否开启
@@ -141,6 +175,7 @@ class ServerDailyRecharge(ModelBase):
             'charge_data': {},              # 充值数据
             'done': [],                     # 完成的日期
             'done_data': {},                # 数据
+            'reward_mail': [],              # 发送邮件id
             'end_time': 0,                  # 结束时间
         }
         self.cache = {}
@@ -148,6 +183,9 @@ class ServerDailyRecharge(ModelBase):
         super(ServerDailyRecharge, self).__init__(uid)
 
     def pre_use(self):
+        now_time = int(time.time())
+        if now_time >= self.end_time:
+            self.send_mail()
         version, new_server, s_time, e_time = self.get_version()
         if version and self.version != version:
             self.fresh()
@@ -226,6 +264,35 @@ class ServerDailyRecharge(ModelBase):
         self.day = 1
         self.done = []
         self.done_data = {}
+        self.reward_mail = []
+
+    def send_mail(self):
+        """发未领取奖励
+        """
+        if self.reward_mail:
+            return
+        version = self.version
+        done_data = self.done_data
+        day_ids = []
+        gift = []
+        for k, v in done_data.iteritems():
+            if v['reward'] >= v['is_complete']:
+                continue
+            day_ids.append(k)
+        if day_ids:
+            config_mapping = game_config.get_server_daily_recharge_mapping().get(version, {})
+            if config_mapping:
+                for d in day_ids:
+                    config = config_mapping[d]
+                    gift.extend(config['reward'])
+        if gift:
+            gift = calc_gift(gift)
+            mail = config_mapping[d]['mail']
+            mail_title = config_mapping[d]['mail_title']
+            msg = self.mm.mail.generate_mail_lan(mail, title=mail_title, gift=gift)
+            self.mm.mail.add_mail(msg)
+        self.reward_mail = day_ids if day_ids else ['No mail']
+        self.save()
 
     def is_open(self):
         """ 是否开启

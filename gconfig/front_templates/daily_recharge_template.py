@@ -13,6 +13,8 @@ daily_recharge = {
     'number':           ('number',          'int'),                 # 充值数量
     'reward':           ('reward',          'int_list'),            # 奖励[类型，id，数量]
     'des':              ('des',             'int'),                 # 描述
+    'mail_title':       ('mail_title',      'int'),                 # 邮件标题
+    'mail':             ('mail',            'int'),                 # 邮件内容
 }
 
 
@@ -25,4 +27,6 @@ server_daily_recharge = {
     'number':           ('number',          'int'),                 # 充值数量
     'reward':           ('reward',          'int_list'),            # 奖励[类型，id，数量]
     'des':              ('des',             'int'),                 # 描述
+    'mail_title':       ('mail_title',      'int'),                 # 邮件标题
+    'mail':             ('mail',            'int'),                 # 邮件内容
 }
