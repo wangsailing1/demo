@@ -8,7 +8,8 @@ from lib.core.environ import ModelManager
 from gconfig import game_config
 from lib.db import ModelBase
 from lib.utils.timelib import datetime_to_str
-from lib.utils.active_inreview_tools import active_inreview_version
+from lib.utils.active_inreview_tools import active_inreview_version, get_active_inreview_start_end_time, \
+    get_server_active_start_end_time, get_inreview_version, get_version_by_active_id
 
 
 class ActiveCard(ModelBase):
@@ -303,7 +304,142 @@ class MonthlySign(ModelBase):
         return 1 if cur_time != monthly_sign['date'] else 0
 
 
+class OmniExchange(ModelBase):
+    """用来记录各类兑换的历史兑换次数
+       一般性结构 xxx_log: { config_id : 次数(int) }
+    """
+    _need_diff = ('items',)
+    TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+    def __init__(self, uid=None):
+        self.uid = uid
+        self._attrs = {
+            'version': '',  # 版本号
+            'last_version': '',  # 上一期版本号
+            'last_log': {},  # 上一期的兑换记录
+            'omni_exchange_log': {}  # 普通兑换记录
+        }
+        super(OmniExchange, self).__init__(self.uid)
+
+    def get_start_end_time(self):
+        a_id, version = get_version_by_active_id(active_id=3103)
+        end_time = game_config.active[a_id]['end_time']
+        return version, end_time
+
+    def pre_use(self):
+        version, _ = self.get_start_end_time()
+
+        if self.version != version:
+            self.last_log = self.omni_exchange_log
+            self.last_version = self.version
+
+            self.version = version
+            self.omni_exchange_log = {}
+
+            self.save()
+
+    def get_cur_exchange_log(self):
+        """
+        获取当前版本的兑换记录
+        :return:
+        """
+        log = {}
+        for i, j in game_config.omni_exchange.iteritems():
+            if j['version'] != self.version:
+                continue
+
+            log[i] = self.omni_exchange_log.get(i, 0)
+
+        return log
+
+    def get_exchange_times(self, exchange_id):
+        """获取兑换次数"""
+        return self.omni_exchange_log.get(exchange_id, 0)
+
+    def set_exchange_times(self, exchange_id, times=1):
+        """记录兑换次数"""
+        if exchange_id not in self.omni_exchange_log:
+            self.omni_exchange_log[exchange_id] = times
+        else:
+            self.omni_exchange_log[exchange_id] += times
+
+    def is_open(self):
+        """ 是否开启
+        :param config: 配置
+        :return:
+        """
+        return True if self.version else False
+
+
+class ServerOmniExchange(ModelBase):
+    """用来记录各类兑换的历史兑换次数
+       一般性结构 xxx_log: { config_id : 次数(int) }
+    """
+    _need_diff = ('items',)
+    TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+    def __init__(self, uid=None):
+        self.uid = uid
+        self._attrs = {
+            'last_log': {},  # 上一期的兑换记录
+            'last_version': '',  # 上一期版本号
+            'omni_exchange_log': {},  # 普通兑换记录
+            'version': ''
+        }
+        super(ServerOmniExchange, self).__init__(self.uid)
+
+    def pre_use(self):
+        version, _ = self.get_start_end_time()
+
+        if version != self.version:
+            self.last_log = self.omni_exchange_log
+            self.last_version = self.version
+
+            self.version = version
+            self.omni_exchange_log = {}
+
+            self.save()
+
+    def get_start_end_time(self):
+        version, new_server, s_time, e_time = get_inreview_version(self.mm.user, active_id=3003)
+        return version, e_time
+
+    def get_cur_exchange_log(self):
+        """
+        获取当前版本的兑换记录
+        :return:
+        """
+        log = {}
+        for i, j in game_config.server_omni_exchange.iteritems():
+            if j['version'] != self.version:
+                continue
+
+            log[i] = self.omni_exchange_log.get(i, 0)
+
+        return log
+
+    def get_exchange_times(self, exchange_id):
+        """获取兑换次数"""
+        return self.omni_exchange_log.get(exchange_id, 0)
+
+    def set_exchange_times(self, exchange_id, times=1):
+        """记录兑换次数"""
+        if exchange_id not in self.omni_exchange_log:
+            self.omni_exchange_log[exchange_id] = times
+        else:
+            self.omni_exchange_log[exchange_id] += times
+
+    def is_open(self):
+        """ 是否开启
+        :param config: 配置
+        :return:
+        """
+        return True if self.version else False
+
+
 ModelManager.register_model('active_card', ActiveCard)
 ModelManager.register_model('seven_login', SevenLogin)
 ModelManager.register_model('monthly_sign', MonthlySign)
 ModelManager.register_model('big_month', BigMonth)
+ModelManager.register_model('omni_exchange', OmniExchange)
+ModelManager.register_model('server_omni_exchange', ServerOmniExchange)

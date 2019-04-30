@@ -563,18 +563,21 @@ normal_exchange = {
 # 限时兑换活动
 omni_exchange = {
     'uk': ('id', 'int'),
-    'show_id': ('show_id', 'int'),              # 展示id
-    'version': ('version', 'int'),              # version
-    'show_time': ('show_time', 'unicode'),       # 展示时间
-    'exchange_type': ('exchange_type', 'int'),  # 兑换类型
-    'start_time': ('start_time', 'str', check.check_time(tformat="%Y-%m-%d %H:%M:%S"),),        # 开始时间
-    'end_time': ('end_time', 'str', check.check_time(tformat="%Y-%m-%d %H:%M:%S"),),            # 结束时间
-    'exchange_num': ('exchange_num', 'int'),    # 可兑换次数
+    # 'show_id': ('show_id', 'int'),              # 展示id
+    'version': ('version', 'int'),                # version
+    # 'show_time': ('show_time', 'unicode'),      # 展示时间
+    # 'exchange_type': ('exchange_type', 'int'),  # 兑换类型
+    # 'start_time': ('start_time', 'str', check.check_time(tformat="%Y-%m-%d %H:%M:%S"),),        # 开始时间
+    # 'end_time': ('end_time', 'str', check.check_time(tformat="%Y-%m-%d %H:%M:%S"),),            # 结束时间
+    'exchange_num': ('exchange_num', 'int'),      # 可兑换次数
     'need_item': ('need_item', 'list_3', check.check_reward(),),       # 兑换道具
     'out_item': ('out_item', 'list_3', check.check_reward(),),         # 兑换得到的奖品
-    'reward_show': ('reward_show', 'list_3', check.check_reward(),),   # 大奖
-    'show_des': ('show_des', 'unicode'),
+    # 'reward_show': ('reward_show', 'list_3', check.check_reward(),),   # 大奖
+    'des': ('des', 'str'),                        # 描述
 }
+
+# 限时兑换活动
+server_omni_exchange = omni_exchange
 
 # 限时兑换活动
 sign_daily_charge = {
