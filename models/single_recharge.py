@@ -173,7 +173,7 @@ class ServerSingleRecharge(ModelBase):
             v['send_mail'] = left_num
             left_dict[k] = left_num
         if left_dict:
-            config_mapping = game_config.get_single_recharge_mapping().get(version, {})
+            config_mapping = game_config.get_server_single_recharge_mapping().get(version, {})
             if config_mapping:
                 for id_, num in left_dict.iteritems():
                     config = config_mapping[id_]
