@@ -7,6 +7,7 @@ import time
 from lib.utils import salt_generator
 from lib.db import ModelBase
 from lib.core.environ import ModelManager
+from gconfig import game_config, MUITL_LAN
 
 
 class Mail(ModelBase):
@@ -101,6 +102,50 @@ class Mail(ModelBase):
             'read_time': 0,
             'over_time': over_time,
             'auto_over_time': cls.AUTO_DEL_TIME,
+            'status': 0,  # 邮件读取状态,0: 未读取, 1: 已读取, 2: 已领取
+            'content': content,
+            'gift': [] if gift is None else gift,
+            'url': url,
+        }
+        return mail_dict
+
+    def generate_mail_lan(self, content, title='', gift=None, sort=SORT_SYSTEM,
+                      send_uid='', send_name='', send_role='', send_level=1, over_time=0, url='', send_block=1,
+                      send_block_rank=0, format_str=None):
+        """ 生成邮件内容
+
+        :param content: 邮件内容
+        :param title: 邮件标题啊
+        :param gift:
+        :param sort:
+        :param send_uid:
+        :param send_name:
+        :param send_role:
+        :param send_level:
+        :param over_time: 过期时间
+        :param format_str: 格式化内容
+        :return:
+        """
+        lan = getattr(self.mm,'language_sort', 1)
+        lan = MUITL_LAN[lan]
+        lan_language_config = game_config.get_language_config(lan)
+        title = lan_language_config.get(title, '')
+        content = lan_language_config.get(content, '')
+        if format_str and content:
+            content = content % format_str
+        mail_dict = {
+            'sort': sort,
+            'send_uid': send_uid,
+            'send_name': send_name,
+            'send_role': send_role,
+            'send_level': send_level,
+            'send_block':send_block,
+            'send_block_rank':send_block_rank,
+            'title': title,
+            'send_time': 0,
+            'read_time': 0,
+            'over_time': over_time,
+            'auto_over_time': self.AUTO_DEL_TIME,
             'status': 0,  # 邮件读取状态,0: 未读取, 1: 已读取, 2: 已领取
             'content': content,
             'gift': [] if gift is None else gift,

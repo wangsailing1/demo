@@ -4,6 +4,7 @@ import time
 import datetime
 from lib.db import ModelBase
 from gconfig import game_config
+from tools.gift import calc_gift
 from lib.core.environ import ModelManager
 from lib.utils.time_tools import strftimestamp, datetime_to_timestamp, str2timestamp
 from lib.utils.active_inreview_tools import get_version_by_active_id, get_inreview_version
@@ -22,12 +23,16 @@ class SingleRecharge(ModelBase):
             'version': '',                  # 版本号
             'charge_data': {},              # 充值数据
             'end_time': 0,                  # 活动结束时间
+            'reward_mail': {},              # 发送邮件信息
         }
         self.cache = {}
 
         super(SingleRecharge, self).__init__(uid)
 
     def pre_use(self):
+        now_time = int(time.time())
+        if now_time >= self.end_time:
+            self.send_mail()
         active_id, version = self.get_version()
         if version and self.version != version:
             self.fresh(version)
@@ -38,13 +43,38 @@ class SingleRecharge(ModelBase):
     def fresh(self, new_version):
         """ 刷新
         """
-        del_ids = []
+        self.charge_data = {}
+        self.reward_mail = {}
+
+    def send_mail(self):
+        """ 发放未领取奖励
+        """
+        if self.reward_mail:
+            return
+        version = self.version
         charge_data = self.charge_data
+        left_dict = {}
+        gift = []
         for k, v in charge_data.iteritems():
-            if v['version'] != new_version and v['complete_times'] <= v['reward']:
-                del_ids.append(k)
-        for del_k in del_ids:
-            charge_data.pop(del_k, None)
+            left_num = max(v['complete_times']-v['reward'], 0)
+            if not left_num:
+                continue
+            v['send_mail'] = left_num
+            left_dict[k] = left_num
+        if left_dict:
+            config_mapping = game_config.get_single_recharge_mapping().get(version, {})
+            if config_mapping:
+                for id_, num in left_dict.iteritems():
+                    config = config_mapping[id_]
+                    gift.extend(config['reward'] * num)
+        if gift:
+            gift = calc_gift(gift)
+            mail = config_mapping[id_]['mail']
+            mail_title = config_mapping[id_]['mail_title']
+            msg = self.mm.mail.generate_mail_lan(mail, title=mail_title, gift=gift)
+            self.mm.mail.add_mail(msg)
+        self.reward_mail = left_dict if left_dict else {'send': 1}
+        self.save()
 
     def is_open(self):
         """ 是否开启
@@ -104,12 +134,16 @@ class ServerSingleRecharge(ModelBase):
             'version': '',                  # 版本号
             'charge_data': {},              # 充值数据
             'end_time': 0,                  # 活动结束时间
+            'reward_mail': {},              # 发送邮件信息
         }
         self.cache = {}
 
         super(ServerSingleRecharge, self).__init__(uid)
 
     def pre_use(self):
+        now_time = int(time.time())
+        if now_time >= self.end_time:
+            self.send_mail()
         version, new_server, s_time, e_time = self.get_version()
         if version and self.version != version:
             self.fresh(version)
@@ -120,13 +154,38 @@ class ServerSingleRecharge(ModelBase):
     def fresh(self, new_version):
         """ 刷新
         """
-        del_ids = []
+        self.charge_data = {}
+        self.reward_mail = {}
+
+    def send_mail(self):
+        """ 发放未领取奖励
+        """
+        if self.reward_mail:
+            return
+        version = self.version
         charge_data = self.charge_data
+        left_dict = {}
+        gift = []
         for k, v in charge_data.iteritems():
-            if v['version'] != new_version and v['complete_times'] <= v['reward']:
-                del_ids.append(k)
-        for del_k in del_ids:
-            charge_data.pop(del_k, None)
+            left_num = max(v['complete_times']-v['reward'], 0)
+            if not left_num:
+                continue
+            v['send_mail'] = left_num
+            left_dict[k] = left_num
+        if left_dict:
+            config_mapping = game_config.get_single_recharge_mapping().get(version, {})
+            if config_mapping:
+                for id_, num in left_dict.iteritems():
+                    config = config_mapping[id_]
+                    gift.extend(config['reward'] * num)
+        if gift:
+            gift = calc_gift(gift)
+            mail = config_mapping[id_]['mail']
+            mail_title = config_mapping[id_]['mail_title']
+            msg = self.mm.mail.generate_mail_lan(mail, title=mail_title, gift=gift)
+            self.mm.mail.add_mail(msg)
+        self.reward_mail = left_dict if left_dict else {'send': 1}
+        self.save()
 
     def is_open(self):
         """ 是否开启

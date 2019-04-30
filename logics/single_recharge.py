@@ -36,6 +36,8 @@ class SingleRecharge(object):
             return 2, {}            # 还没完成
         if charge_data[reward_id]['reward'] >= charge_data[reward_id]['complete_times']:
             return 3, {}            # 已经领取奖励
+        if charge_data[reward_id]['reward'] + charge_data[reward_id].get('send_mail', 0) >= charge_data[reward_id]['complete_times']:
+            return 5, {}            # 已通过邮件发放
 
         version = singlerecharge.version
         config = game_config.get_single_recharge_mapping().get(version, {}).get(reward_id, {})
@@ -86,6 +88,8 @@ class ServerSingleRecharge(object):
             return 2, {}            # 还没完成
         if charge_data[reward_id]['reward'] >= charge_data[reward_id]['complete_times']:
             return 3, {}            # 已经领取奖励
+        if charge_data[reward_id]['reward'] + charge_data[reward_id].get('send_mail', 0) >= charge_data[reward_id]['complete_times']:
+            return 5, {}            # 已通过邮件发放
 
         version = singlerecharge.version
         config = game_config.get_server_single_recharge_mapping().get(version, {}).get(reward_id, {})
