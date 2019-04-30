@@ -388,6 +388,9 @@ class Mission(ModelBase):
     TITLE = 31410195                    # 升级后奖励邮件标题
     CONTENT = 31410196                  # 升级后奖励邮件内容
 
+    GIFT_TITLE = 31411068               # 合作伙伴送礼邮件标题
+    GIFT_CONTENT = 31411069             # 合作伙伴送礼邮件内容
+
     def __init__(self, uid):
         self.uid = uid
         self._attrs = {

@@ -285,11 +285,15 @@ class Strategy(object):
 
         rc, _ = del_mult_goods(self.mm, cost)
         if rc:
-            return rc, 0
-        reward = add_mult_gift(target_mm, gift)
+            return rc, {}
+        gift = calc_gift(gift)
+        strategy_mission = self.strategy.strategy_mission
+        title = strategy_mission.GIFT_TITLE
+        content = strategy_mission.GIFT_CONTENT
+        msg = target_mm.mail.generate_mail_lan(content, title=title, gift=gift)
+        target_mm.mail.add_mail(msg)
 
         data = self.index()
-        data['reward'] = reward
 
         return 0, data
 
