@@ -1595,6 +1595,14 @@ class User(ModelBase):
             # 上传uc玩家数据
             send_role_data_uc(self)
 
+            ################### 战略合作要求头像实时更新 #################
+            if hasattr(self.mm, 'strategy'):
+                strategy_mission = self.mm.strategy.strategy_mission
+                if strategy_mission:
+                    strategy_mission.update_user_info(self.mm)
+                    strategy_mission.save()
+            ################### 战略合作要求头像实时更新 #################
+
         kwargs = {
             'old_exp': cur_exp,
             'cur_exp': self.exp,

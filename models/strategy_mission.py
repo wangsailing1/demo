@@ -473,6 +473,9 @@ class Mission(ModelBase):
         self.point = 0
         self.done_num = 0
 
+    def update_user_info(self, mm):
+        self.strategy_info[mm.uid] = user_info(mm)
+
     def fresh_strategy_mission(self):
         """ 刷新战略任务
         """
