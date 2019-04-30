@@ -352,6 +352,8 @@ class GameConfigMixIn(object):
         self.item_reward_mapping = {}
         self.daily_recharge_mapping = {}
         self.server_daily_recharge_mapping = {}
+        self.single_recharge_mapping = {}
+        self.server_single_recharge_mapping = {}
 
     def reset(self):
         """ 配置更新后重置数据
@@ -469,6 +471,8 @@ class GameConfigMixIn(object):
         self.item_reward_mapping.clear()
         self.daily_recharge_mapping.clear()
         self.server_daily_recharge_mapping.clear()
+        self.single_recharge_mapping.clear()
+        self.server_single_recharge_mapping.clear()
 
     def update_funcs_version(self, config_name):
         """
@@ -2798,6 +2802,26 @@ class GameConfigMixIn(object):
                     self.server_daily_recharge_mapping[version] = {}
                 self.server_daily_recharge_mapping[version][j['day']] = j
         return self.server_daily_recharge_mapping
+
+    def get_single_recharge_mapping(self):
+        if not self.single_recharge_mapping:
+            for i, j in self.single_recharge.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.single_recharge_mapping:
+                    self.single_recharge_mapping[version] = {}
+                self.single_recharge_mapping[version][i] = j
+        return self.single_recharge_mapping
+
+    def get_server_single_recharge_mapping(self):
+        if not self.server_single_recharge_mapping:
+            for i, j in self.server_single_recharge.iteritems():
+                version = j['version']
+                j['active_id'] = i
+                if version not in self.server_single_recharge_mapping:
+                    self.server_single_recharge_mapping[version] = {}
+                self.server_single_recharge_mapping[version][i] = j
+        return self.server_single_recharge_mapping
 
 
 class GameConfig(GameConfigMixIn):

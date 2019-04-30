@@ -1107,6 +1107,19 @@ daily_recharge_msg = {
     },
 }
 
+single_recharge_msg = {
+    'single_recharge.reward': {
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
+    },
+    'single_recharge.server_reward': {
+        2: u'还没完成',
+        3: u'已经领取奖励',
+        4: u'数据异常',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
