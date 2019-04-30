@@ -1007,6 +1007,19 @@ mail_msg = {
     },
 }
 
+single_recharge_msg = {
+    'single_recharge.reward': {
+        2: u'還沒完成',
+        3: u'已經領取獎勵',
+        4: u'數據異常',
+    },
+    'single_recharge.server_reward': {
+        2: u'還沒完成',
+        3: u'已經領取獎勵',
+        4: u'數據異常',
+    },
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂臺',

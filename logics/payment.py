@@ -142,6 +142,8 @@ def pay_apply(mm, obj, charge_config):
             #
             # # 天降红包
             # mm.red_bag.pay_trigger(product_id, amount)
+        mm.server_single_recharge.add_charge_value(product_id, is_save=True)
+        mm.single_recharge.add_charge_value(product_id, is_save=True)
 
         # mm.user.record_privilege_gift(charge_config=charge_config)
         mm.superplayer.add_day_pay(order_diamond)
