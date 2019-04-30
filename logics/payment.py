@@ -131,6 +131,8 @@ def pay_apply(mm, obj, charge_config):
             # mm.server_red_bag.pay_trigger(product_id, amount)
             # 新服天天充值
             mm.server_daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
+            # 新服单笔充值
+            mm.server_single_recharge.add_charge_value(product_id, is_save=True)
         else:
             # pass
             # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
@@ -150,9 +152,6 @@ def pay_apply(mm, obj, charge_config):
             #
             # # 天降红包
             # mm.red_bag.pay_trigger(product_id, amount)
-        mm.server_single_recharge.add_charge_value(product_id, is_save=True)
-        mm.single_recharge.add_charge_value(product_id, is_save=True)
-
             # mm.user.record_privilege_gift(charge_config=charge_config)
 
             #超级大玩家
@@ -166,6 +165,8 @@ def pay_apply(mm, obj, charge_config):
             mm.limit_sign.add_score(order_diamond, order_money)
             # 天天充值
             mm.daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
+            # 单笔充值
+            mm.single_recharge.add_charge_value(product_id, is_save=True)
 
             add_mult_gift(mm, gift)
             mm.rmbfoundation.save()
