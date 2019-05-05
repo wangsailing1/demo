@@ -379,8 +379,8 @@ def request_handler(client_socket, addr):
 
 def send_to_other_client(client, info):
         """
-        :param client 发送方信息: kqgFlag为 first 标记时候发送的信息，玩家uid， guild_id等
-                    {'uid': '', 'guild_id': ''}
+        :param client 发送方信息: Client._attrs 里的信息，指定玩家uid， guild_id，server_name等
+                    {'uid': '', 'guild_id': '', 'server_name': ''}
         :param info: 消息详情
         :return:
         """
