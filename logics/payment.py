@@ -22,6 +22,7 @@ from lib import utils
 from logics.egg import Egg
 from lib.utils.debug import print_log
 from tools.gift import add_mult_gift
+from logics.server_egg import ServerEgg
 
 
 def pay_apply(mm, obj, charge_config):
@@ -89,18 +90,18 @@ def pay_apply(mm, obj, charge_config):
         if add_diamond:
             mm.user.add_diamond(int(add_diamond))
 
-        # 砸金蛋
-        egg = Egg(mm)
-        egg.add_payment_and_item_times(order_diamond)
+        # # 砸金蛋
+        # egg = Egg(mm)
+        # egg.add_payment_and_item_times(order_diamond)
 
         # 钻石福利基金
-        mm.foundation.add_score(order_diamond)
+        # mm.foundation.add_score(order_diamond)
 
         # 新服钻石福利基金
-        try:
-            mm.serverfoundation.add_score(order_diamond)
-        except:
-            print_log(traceback.format_exc())
+        # try:
+        #     mm.serverfoundation.add_score(order_diamond)
+        # except:
+        #     print_log(traceback.format_exc())
 
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
@@ -108,13 +109,17 @@ def pay_apply(mm, obj, charge_config):
         # 首充礼包
         mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
         if server_type == 1:
-
+            # 新服钻石福利基金
+            mm.serverfoundation.add_score(order_diamond)
             # 新服累充
             mm.server_user_payment.add_add_recharge(price_dict={1: order_diamond, 2: order_rmb})
             # 新服限时签约
             mm.server_limit_sign.add_score(order_diamond, order_money)
-
-            # pass
+            # 新服砸金蛋
+            server_egg = ServerEgg(mm)
+            server_egg.add_payment_and_item_times(order_diamond)
+            # 新服超级大玩家
+            mm.serversuperplayer.add_day_pay(order_diamond)
             # mm.server_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
             # # 每日充值活动记录钻石
             # mm.server_daily_recharge.reward(order_diamond + gift_diamond, product_id)
@@ -136,6 +141,7 @@ def pay_apply(mm, obj, charge_config):
             mm.server_daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
             # 新服单笔充值
             mm.server_single_recharge.add_charge_value(product_id, is_save=True)
+
         else:
             # pass
             # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
@@ -168,6 +174,11 @@ def pay_apply(mm, obj, charge_config):
             mm.daily_recharge.add_charge_value(order_diamond, order_money, is_save=True)
             # 单笔充值
             mm.single_recharge.add_charge_value(product_id, is_save=True)
+            # 钻石福利基金
+            mm.foundation.add_score(order_diamond)
+            # 砸金蛋
+            egg = Egg(mm)
+            egg.add_payment_and_item_times(order_diamond)
 
             add_mult_gift(mm, gift)
             mm.rmbfoundation.save()
