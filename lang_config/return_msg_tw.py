@@ -48,7 +48,7 @@ return_msg_config = {
     'error_dollar': u"美元不足",
     'error_no_ceremony': u'敬請期待明天晚上九點的頒獎典禮',
 
-    'error_card_cold': u'藝人被雪藏中',
+    'error_card_cold': u'藝人被冷凍中',
     'error_card_piece': u'藝人碎片不足',
     'error_equip_piece': u'裝備碎片不足',
     'error_stone': u"靈魂石不足",
@@ -255,7 +255,7 @@ card_msg = {
     },
     'card.card_piece_exchange': {
         1: u'已有此類藝人',
-        2: u'活躍卡牌已達上限，請先雪藏藝人',
+        2: u'活躍卡牌已達上限，請先冷凍藝人',
     },
     'card.up_card_building': {
         1: u'等級最大',
@@ -325,7 +325,7 @@ gacha_msg = {
     'gacha.receive': {
         1: u"沒有此藝人",
         2: u'已簽約過',
-        3: u'活躍卡牌已達上限，請先雪藏藝人',
+        3: u'活躍卡牌已達上限，請先冷凍藝人',
     },
 
     'gacha.up_gacha': {
