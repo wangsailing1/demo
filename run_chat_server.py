@@ -45,8 +45,13 @@ PORT = settings.SERVERS[[s for s in settings.SERVERS if s != 'master'][0]]['chat
 # HOST = settings.SERVERS[sorted(settings.SERVERS.keys())[0]]['chat_ip']
 HOST = '0.0.0.0'
 # HOST = '192.168.1.100'
-# define("port", default=9999, help="run on the given port", type=int)
-# options.parse_command_line()
+
+from optparse import OptionParser
+usage = "usage: %prog [options] arg"
+
+parser = OptionParser(usage=usage)
+parser.add_option('-p', '--port', dest='PORT', help=u'启动端口', default=PORT, type=int)
+(options, args) = parser.parse_args()
 
 
 POOLNUM = 1000
@@ -483,4 +488,4 @@ def socket_server(host, port):
 
 
 if __name__ == '__main__':
-    socket_server(HOST, PORT)
+    socket_server(HOST, options.PORT)
