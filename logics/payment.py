@@ -104,6 +104,9 @@ def pay_apply(mm, obj, charge_config):
 
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
+
+        # 首充礼包
+        mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
         if server_type == 1:
 
             # 新服累充
@@ -154,14 +157,13 @@ def pay_apply(mm, obj, charge_config):
             #超级大玩家
             mm.superplayer.add_day_pay(order_diamond)
 
-            # 首充礼包
-            mm.user_payment.add_first_charge(price=order_rmb, charge_config=charge_config)
             # 累充
             mm.user_payment.add_add_recharge(price_dict={1: order_diamond, 2: order_rmb})
             # 限时签约
             mm.limit_sign.add_score(order_diamond, order_money)
             add_mult_gift(mm, gift)
             mm.rmbfoundation.save()
+
 
         mm.user.add_vip_exp(add_vip_exp, is_save=False)
 
