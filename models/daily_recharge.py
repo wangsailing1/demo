@@ -160,6 +160,18 @@ class DailyRecharge(ModelBase):
         a_id, version = get_version_by_active_id(active_id=self.ACTIVE_TYPE)
         return a_id, version
 
+    def get_red_dot(self):
+        """ 小红点
+        """
+        if not self.is_open():
+            return 0
+        done_data = self.done_data
+        for k, v in done_data.iteritems():
+            if v['reward'] >= v['is_complete']:
+                continue
+            return 1
+        return 0
+
 
 class ServerDailyRecharge(ModelBase):
     """ 新服天天充值
@@ -311,6 +323,18 @@ class ServerDailyRecharge(ModelBase):
         """
         version, new_server, s_time, e_time = get_inreview_version(self.mm.user, self.ACTIVE_TYPE)
         return version, new_server, s_time, e_time
+
+    def get_red_dot(self):
+        """ 小红点
+        """
+        if not self.is_open():
+            return 0
+        done_data = self.done_data
+        for k, v in done_data.iteritems():
+            if v['reward'] >= v['is_complete']:
+                continue
+            return 1
+        return 0
 
 
 ModelManager.register_model('daily_recharge', DailyRecharge)
