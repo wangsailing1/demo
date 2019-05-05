@@ -43,7 +43,7 @@ class DailyRecharge(ModelBase):
             self.fresh()
             self.version = version
         day_str = self.get_day_str()
-        if self.day_str < day_str:
+        if version and self.day_str < day_str:
             self.daily_fresh()
             self.day_str = day_str
 
@@ -111,6 +111,8 @@ class DailyRecharge(ModelBase):
     def fresh(self):
         """ 刷新
         """
+        day_str = self.get_day_str()
+        self.day_str = day_str
         self.day = 1
         self.done = []
         self.done_data = {}
@@ -193,7 +195,7 @@ class ServerDailyRecharge(ModelBase):
             self.end_time = datetime_to_timestamp(e_time)
             self.version = version
         day_str = self.get_day_str()
-        if self.day_str < day_str:
+        if version and self.day_str < day_str:
             self.daily_fresh()
             self.day_str = day_str
 
@@ -261,6 +263,8 @@ class ServerDailyRecharge(ModelBase):
     def fresh(self):
         """ 刷新
         """
+        day_str = self.get_day_str()
+        self.day_str = day_str
         self.day = 1
         self.done = []
         self.done_data = {}
