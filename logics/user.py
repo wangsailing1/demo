@@ -267,6 +267,8 @@ class UserLogic(object):
             'business': ('business', 'get_red_dot'),  # 公司事务
             'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
             'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
+            'single_recharge': ('single_recharge', 'get_red_dot'),                  # 老服单笔充值红点
+            'server_single_recharge': ('server_single_recharge', 'get_red_dot'),    # 新服单笔充值红点
         }
 
         # 特殊的几个红点,todo

@@ -120,6 +120,19 @@ class SingleRecharge(ModelBase):
         if is_save:
             self.save()
 
+    def get_red_dot(self):
+        """ 小红点
+        """
+        if not self.is_open():
+            return 0
+        charge_data = self.charge_data
+        for k, v in charge_data.iteritems():
+            left_num = max(v['complete_times']-v['reward'], 0)
+            if not left_num:
+                continue
+            return 1
+        return 0
+
 
 class ServerSingleRecharge(ModelBase):
     """ 新服单笔充值
@@ -230,6 +243,20 @@ class ServerSingleRecharge(ModelBase):
 
         if is_save:
             self.save()
+
+    def get_red_dot(self):
+        """ 小红点
+        """
+        if not self.is_open():
+            return 0
+        charge_data = self.charge_data
+        for k, v in charge_data.iteritems():
+            left_num = max(v['complete_times']-v['reward'], 0)
+            if not left_num:
+                continue
+            return 1
+        return 0
+
 
 ModelManager.register_model('single_recharge', SingleRecharge)
 ModelManager.register_model('server_single_recharge', ServerSingleRecharge)
