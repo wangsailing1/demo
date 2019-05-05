@@ -398,7 +398,7 @@ def server_active_inreview_open_and_close(mm):
     now = int(time.time())
     for k in server_inreview_config:
         s_time, e_time = get_server_activity_time(k, mm.user._server_name)
-        if server_inreview_config[k]['is_open'] == 2 and s_time <= now <= e_time:
+        if server_inreview_config[k]['is_open'] == 2 and mm.user.level >= server_inreview_config[k]['show_lv'] and s_time <= now <= e_time:
             server_inreview[k] = 1
             active_remain_time[k] = e_time
     return server_inreview, active_remain_time
