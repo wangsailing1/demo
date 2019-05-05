@@ -129,8 +129,8 @@ class Mail(ModelBase):
         lan = getattr(self.mm.user,'language_sort', 1)
         lan = MUITL_LAN[lan]
         lan_language_config = game_config.get_language_config(lan)
-        title = lan_language_config.get(title, '')
-        content = lan_language_config.get(content, '')
+        title = lan_language_config.get(str(title), '')
+        content = lan_language_config.get(str(content), '')
         if format_str and content:
             content = content % format_str
         mail_dict = {
