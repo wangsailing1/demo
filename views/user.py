@@ -864,3 +864,11 @@ def can_buy_level_gift(hm):
     return 0, {'level_limit_gift':level_gift_data,
                'level_flag': rc}
 
+
+# 游乐场活动时间
+def get_active_end_time(hm):
+    mm = hm.mm
+    ul = UserLogic(mm)
+    rc, data = ul.get_active_end_time()
+    return rc, data
+
