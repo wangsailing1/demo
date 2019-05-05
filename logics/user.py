@@ -273,6 +273,8 @@ class UserLogic(object):
             'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
             'daily_recharge': ('daily_recharge', 'get_red_dot'),                # 老服天天充值
             'server_daily_recharge': ('server_daily_recharge', 'get_red_dot'),  # 新服天天充值
+            'single_recharge': ('single_recharge', 'get_red_dot'),                  # 老服单笔充值红点
+            'server_single_recharge': ('server_single_recharge', 'get_red_dot'),    # 新服单笔充值红点
         }
 
         # 特殊的几个红点,todo
