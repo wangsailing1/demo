@@ -533,3 +533,34 @@ def get_version_by_active_id(format='%Y-%m-%d %H:%M:%S', active_id=0, differ_tim
         if start_time_stamp <= now - differ_time <= end_time_stamp:
             return version, value['active_version']
     return 0, 0
+
+def get_version_start_and_end_time_by_active_id(format='%Y-%m-%d %H:%M:%S', active_id=0, differ_time=0):
+    """
+    #获取活动的版本号
+    :param config: 配置表 如game_config.roulette
+    :param format: 时间的格式为%Y-%m-%d 或者 %Y-%m-%d
+    :param differ_time: 活动结束几小时之后发奖, differ_time是时间差值
+    :return: id,版本号
+    """
+    config = game_config.active
+    if not active_id:
+        return 0, 0, 0, 0
+    now = time.time()
+    for version, value in config.iteritems():
+        if value['active_type'] != active_id:
+            continue
+        if 'start_time' not in value or 'end_time' not in value:
+            return 0, 0, 0, 0
+        start_time = value['start_time']
+        if not start_time:
+            return 0, 0, 0, 0
+        s_time = time.strptime(start_time, format)
+        start_time_stamp = time.mktime(s_time)
+        end_time = value['end_time']
+        if not end_time:
+            return 0, 0, 0, 0
+        e_time = time.strptime(end_time, format)
+        end_time_stamp = time.mktime(e_time)
+        if start_time_stamp <= now - differ_time <= end_time_stamp:
+            return version, value['active_version'], start_time_stamp, end_time_stamp
+    return 0, 0, 0, 0

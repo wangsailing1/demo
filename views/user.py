@@ -891,3 +891,11 @@ def gift_award(hm):
     return 0, {
         'reward': reward,
     }
+
+# 游乐场活动时间
+def get_active_end_time(hm):
+    mm = hm.mm
+    ul = UserLogic(mm)
+    rc, data = ul.get_active_end_time()
+    return rc, data
+

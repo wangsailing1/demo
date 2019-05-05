@@ -14,9 +14,10 @@ from lib.utils.sensitive import is_sensitive
 from tools.user import user_rank_info, guild_rank_info
 from tools.hero import hero_info
 from tools.pay import get_buy_point_need_diamond
-from lib.utils.active_inreview_tools import active_inreview_open_and_close
+from lib.utils.active_inreview_tools import active_inreview_open_and_close, get_version_start_and_end_time_by_active_id, \
+    get_inreview_version
 import settings
-from lib.utils.time_tools import server_active_inreview_open_and_close
+from lib.utils.time_tools import server_active_inreview_open_and_close, strftimestamp, dt2timestamp
 from models import server as serverM
 from lib.utils import weight_choice
 from tools.hero import format_hero_info
@@ -32,8 +33,7 @@ def refresh_roulette_ranktime():
 
 
 class UserLogic(object):
-
-    PRE_PLAYER_TIME = 60    # 一分钟产x经验
+    PRE_PLAYER_TIME = 60  # 一分钟产x经验
 
     def __init__(self, mm):
         self.mm = mm
@@ -117,7 +117,7 @@ class UserLogic(object):
                 'first_charge_pop': self.mm.user_payment.get_first_charge_pop(),  # 首充弹板
                 # 'first_remain_time': self.mm.user_payment.get_first_charge_remain_time(),   # 首充倒计时
                 'level_limit_gift': self.mm.user.level_gift,  # 限时等级礼包
-                'level_gift_open':self.mm.user.level_gift_red_dot()
+                'level_gift_open': self.mm.user.level_gift_red_dot()
             }
         result['activity_status'] = activity_status
 
@@ -151,7 +151,7 @@ class UserLogic(object):
 
         data = {
             'top_one_user': {
-                'name':'',
+                'name': '',
                 'role': 1,
                 'lv': 1,
                 'hero_id': 1,
@@ -199,7 +199,7 @@ class UserLogic(object):
             # 'task_main': ('task', 'get_task_main_red_dot'),
             # 'task_daily': ('daily_task', 'get_daily_task_red_dot'),
             # 'task_achievement': ('task', 'get_get_achievement_red_dot'),
-            'gacha': ('gacha', 'get_gacha_red_dot', ),      #可抽艺人
+            'gacha': ('gacha', 'get_gacha_red_dot',),  # 可抽艺人
             # 'hero_summon': ('hero', 'get_hero_summon_red_dot'),
             # 'adventure': ('private_city', 'get_chapter_red_dot'),
             # 'chapter_mile': ('private_city', 'get_chapter_mile_red_dot'),
@@ -316,12 +316,12 @@ class UserLogic(object):
 
         # 特殊的几个红点,todo
         mission = Mission(mm)
-        data['dailymission'] = mission.mission_red_dot()   #每日任务红点
-        if mission.mission_red_dot(type = 'guide') or mission.mission_red_dot(type = 'randmission'):
+        data['dailymission'] = mission.mission_red_dot()  # 每日任务红点
+        if mission.mission_red_dot(type='guide') or mission.mission_red_dot(type='randmission'):
             data['randomemission'] = True  # 随机任务红点
         else:
             data['randomemission'] = False
-        if mission.mission_red_dot(type = 'achieve_mission'):
+        if mission.mission_red_dot(type='achieve_mission'):
             data['achieve_mission'] = True  # 业绩目标红点
         else:
             data['achieve_mission'] = False
@@ -360,19 +360,19 @@ class UserLogic(object):
 
             # 奖励未领取提示
             elif sort == 2:
-                if help_id == 12:       # 星级奖励
+                if help_id == 12:  # 星级奖励
                     if self.mm.private_city.get_chapter_red_dot():
                         help_ids.append(help_id)
-                elif help_id == 13:     # 主线任务奖励
+                elif help_id == 13:  # 主线任务奖励
                     if self.mm.task.get_task_main_red_dot():
                         help_ids.append(help_id)
-                elif help_id == 14:     # 每日任务奖励
+                elif help_id == 14:  # 每日任务奖励
                     if self.mm.daily_task.get_daily_task_red_dot():
                         help_ids.append(help_id)
-                elif help_id == 15:     # 成就奖励
+                elif help_id == 15:  # 成就奖励
                     if self.mm.task.get_get_achievement_red_dot():
                         help_ids.append(help_id)
-                elif help_id == 16:     # 体力领取
+                elif help_id == 16:  # 体力领取
                     if self.mm.gift_center.get_welfare_energy_red_dot():
                         help_ids.append(help_id)
 
@@ -381,13 +381,13 @@ class UserLogic(object):
                 # if help_id == 21:       # 银币副本
                 #     if self.mm.daily_boss.remainder_times():
                 #         help_ids.append(help_id)
-                if help_id == 17:     # 徽章副本
+                if help_id == 17:  # 徽章副本
                     if self.mm.daily_advance.get_all_remainder_times():
                         help_ids.append(help_id)
                 # elif help_id == 23:     # 经验副本
                 #     if self.mm.daily_nightmares.remainder_times():
                 #         help_ids.append(help_id)
-                elif help_id == 18:     # 战队技能副本
+                elif help_id == 18:  # 战队技能副本
                     if self.mm.teams_chapter.get_remain_times():
                         help_ids.append(help_id)
                 # elif help_id == 25:     # 组队boss副本
@@ -396,10 +396,10 @@ class UserLogic(object):
                 # elif help_id == 26:     # 统帅
                 #     if self.mm.commander.energy > 10:
                 #         help_ids.append(help_id)
-                elif help_id == 19:     # 血尘拉力赛
+                elif help_id == 19:  # 血尘拉力赛
                     if self.mm.rally.remainder_reset_times():  # 剩余重置次数
                         help_ids.append(help_id)
-                elif help_id == 20:     # 末日狩猎
+                elif help_id == 20:  # 末日狩猎
                     if self.mm.doomsday_hunt.remain_battle_times():
                         help_ids.append(help_id)
                 elif help_id == 21:  # 黑街擂台
@@ -417,13 +417,13 @@ class UserLogic(object):
 
             # 主线任务指引
             elif sort == 4:
-                if help_id == 29:       # 主线任务指引
+                if help_id == 29:  # 主线任务指引
                     if self.mm.task.has_not_done_task():
                         help_ids.append(help_id)
 
             # 每日任务指引
             elif sort == 5:
-                if help_id == 30:       # 每日任务指引
+                if help_id == 30:  # 每日任务指引
                     if self.mm.daily_task.has_not_done_task():
                         help_ids.append(help_id)
 
@@ -482,7 +482,7 @@ class UserLogic(object):
 
         if save:
             self.user.save()
-        #新手引导解锁建筑
+        # 新手引导解锁建筑
         task_event_dispatch = self.mm.get_event('task_event_dispatch')
         task_event_dispatch.call_method('level_upgrade', self.user.level)
 
@@ -561,7 +561,7 @@ class UserLogic(object):
                                                  'income')
         br = BlockRank(block_rank_uid, mm.block._server_name)
         user_dict['block_rank'] = br.get_rank(self.mm.uid)
-        user_dict['like'] = self.mm.friend.friends_info.get(user_id,{}).get('like',0)
+        user_dict['like'] = self.mm.friend.friends_info.get(user_id, {}).get('like', 0)
         # if not self.mm.high_ladder.is_robot(user_id):
         #     mm = self.mm.get_mm(user_id)
         #     user_dict = user_info(mm)
@@ -631,7 +631,7 @@ class UserLogic(object):
         """
         exp_pot = self.user.exp_pot
         if not exp_pot:
-            return 1, {}    # 没有经验领取
+            return 1, {}  # 没有经验领取
 
         self.user.receive_exp(save=True)
 
@@ -678,7 +678,7 @@ class UserLogic(object):
         if is_sensitive(name, self.mm.lan):
             return 1, {}
         if name == self.user.name:
-            return 2, {}  #名字已使用
+            return 2, {}  # 名字已使用
 
         # cost_list = game_config.get_value(15, [200])
         # if self.user.change_name < len(cost_list):
@@ -689,7 +689,7 @@ class UserLogic(object):
         if not self.user.is_diamond_enough(cost):
             return 'error_diamond', {}
         if self.user.set_name_unique(name):
-            return 5, {}   # 名字存在
+            return 5, {}  # 名字存在
         self.user.del_name_unique(self.user.name)
 
         self.user.name = name
@@ -707,14 +707,14 @@ class UserLogic(object):
         :return:
         """
         if not name:
-            return 3, {}    # 名字不能为空
+            return 3, {}  # 名字不能为空
         if is_sensitive(name, self.mm.lan):
-            return 1, {}    # 名字不合法
+            return 1, {}  # 名字不合法
 
         if self.user.reg_name:
-            return 'error_21', {'custom_msg': i18n_msg.get(1209, self.mm.lan)}    # 已经有名字了
+            return 'error_21', {'custom_msg': i18n_msg.get(1209, self.mm.lan)}  # 已经有名字了
         if not role:
-            return 4, {}    # 请选择一个角色
+            return 4, {}  # 请选择一个角色
         if self.user.set_name_unique(name):
             return 5, {}   # 名字存在
 
@@ -756,12 +756,12 @@ class UserLogic(object):
         """
         max_point_buy_times = self.user.get_max_point_buy_times()
         if self.user.buy_point_times >= max_point_buy_times:
-            return 1, {}    # 今日已达购买上限
+            return 1, {}  # 今日已达购买上限
 
         diamond = get_buy_point_need_diamond(self.mm)
 
         if not self.user.is_diamond_enough(diamond):
-            return 'error_diamond', {}    # 钻石不足
+            return 'error_diamond', {}  # 钻石不足
 
         self.user.deduct_diamond(diamond)
         reward = add_mult_gift(self.mm, [[3, 0, self.user.PUR_BUY_POINT]])
@@ -774,7 +774,7 @@ class UserLogic(object):
 
         self.user.save()
 
-        return 0, {'reward':reward}
+        return 0, {'reward': reward}
 
     def opera_awards_index(self):
         """
@@ -782,7 +782,7 @@ class UserLogic(object):
         :return:
         """
         data = {
-            'opera_awards': list(self.user.opera_awards),   # 已领取的奖励id
+            'opera_awards': list(self.user.opera_awards),  # 已领取的奖励id
         }
 
         return data
@@ -795,11 +795,11 @@ class UserLogic(object):
         """
         opera_awards = self.user.get_opera_awards()
         if reward_id in opera_awards:
-            return 1, {}    # 已领取
+            return 1, {}  # 已领取
 
         award = game_config.opera_awards.get(reward_id, {}).get('award', [])
         if not award:
-            return 2, {}    # 没有奖励配置
+            return 2, {}  # 没有奖励配置
 
         self.user.add_opera_awards(reward_id)
         reward = add_mult_gift(self.mm, award)
@@ -858,7 +858,7 @@ class UserLogic(object):
             rank_obj = None
 
         if not rank_obj:
-            return -1, {}   # 没有该类排行榜
+            return -1, {}  # 没有该类排行榜
 
         start_rank = page * num + 1
         end_rank = start_rank + num - 1
@@ -931,7 +931,7 @@ class UserLogic(object):
         mm = self.mm.get_mm(uid)
 
         if not mm.hero.has_hero(hero_oid):
-            return 1, {}    # 没有该英雄
+            return 1, {}  # 没有该英雄
 
         return 0, {
             'hero_info': mm.hero.heros[hero_oid],
@@ -944,10 +944,10 @@ class UserLogic(object):
         :return:
         """
         if vip in self.user.vip_gift:
-            return 1, {}    # 已购买该特权礼包
+            return 1, {}  # 已购买该特权礼包
 
         if vip > self.user.vip:
-            return 2, {}    # vip等级不够
+            return 2, {}  # vip等级不够
 
         vip_config = game_config.vip.get(vip)
         if not vip_config:
@@ -980,10 +980,10 @@ class UserLogic(object):
         config = game_config.level_gift.get(lv)
         level_gift_dict = self.user.level_gift.get(lv)
         if not config or not level_gift_dict or level_gift_dict['status'] == 2:
-            return 1, {}    # 奖励已领取或者已过期
+            return 1, {}  # 奖励已领取或者已过期
 
         if level_gift_dict['status'] == 0:
-            return 2, {}    # 充值才能获得
+            return 2, {}  # 充值才能获得
 
         # if not self.user.is_diamond_enough(config['coin']):
         #     return 'error_diamond', {}
@@ -1035,30 +1035,29 @@ class UserLogic(object):
                 if self.user.level >= value:
                     flag = True
             elif sort == 6:
-                pass    # todo 特定活动
+                pass  # todo 特定活动
 
             if flag:
                 unlock_icon.add(i)
         unlock_icon = unlock_icon | set(self.user.got_icon)
         return unlock_icon
 
-    def set_got_icon(self,icon):
+    def set_got_icon(self, icon):
 
-        config = game_config.main_hero.get(icon,{})
+        config = game_config.main_hero.get(icon, {})
         if not config:
-            return 1, {} #没有头像
+            return 1, {}  # 没有头像
         if icon in self.user.got_icon:
-            return 2, {}  #头像已解锁
-        if config['sex'] != game_config.main_hero.get(self.user.role,{})['sex']:
-            return 3, {}  #性别不符
+            return 2, {}  # 头像已解锁
+        if config['sex'] != game_config.main_hero.get(self.user.role, {})['sex']:
+            return 3, {}  # 性别不符
         need_diamond = config['price']
         if not self.user.is_diamond_enough(need_diamond):
             return 'error_diamond', {}
         self.user.deduct_diamond(need_diamond)
         self.user.got_icon.append(icon)
         self.user.save()
-        return 0, {'got_icon':self.user.got_icon}
-
+        return 0, {'got_icon': self.user.got_icon}
 
     def change_icon(self, icon):
         """
@@ -1069,7 +1068,7 @@ class UserLogic(object):
         unlock_icon = self.unlock_icon()
 
         if icon not in unlock_icon:
-            return 1, {}    # 该头像未解锁
+            return 1, {}  # 该头像未解锁
         # config = game_config.main_hero.get(icon,{})
         # if not config:
         #     return 1, {} #没有头像
@@ -1115,17 +1114,17 @@ class UserLogic(object):
 
         if not down:
             if not lead_title.can_set_cur(title):
-                return 1, {}    # 还没有该称号
+                return 1, {}  # 还没有该称号
 
             if lead_title.cur and lead_title.cur == title:
-                return 2, {}    # 该称号正在使用
+                return 2, {}  # 该称号正在使用
 
             lead_title.set_cur(title)
             is_save = True
 
         else:
             if not lead_title.cur:
-                return 3, {}    # 没有称号可卸载
+                return 3, {}  # 没有称号可卸载
 
             lead_title.set_cur(0)
             is_save = True
@@ -1142,7 +1141,7 @@ class UserLogic(object):
         """
         data = {
             'buy_times': self.user.buy_silver_times,  # 金币购买次数
-            'buy_log': self.user.buy_silver_log,     # 金币购买记录
+            'buy_log': self.user.buy_silver_log,  # 金币购买记录
         }
 
         return data
@@ -1157,7 +1156,7 @@ class UserLogic(object):
         buy_times = self.user.get_buy_silver_times()
 
         if buy_times >= can_buy_times:
-            return 1, {}    # 没有购买次数
+            return 1, {}  # 没有购买次数
 
         gold_exchange_config = game_config.gold_exchange
         if not gold_exchange_config.get(1):
@@ -1292,3 +1291,31 @@ class UserLogic(object):
         if _open <= hour_minute_sec <= _close:
             return (datetime.datetime.strptime(_close, FORMAT) - datetime.datetime.strptime(hour_minute_sec, FORMAT)).total_seconds()
         return 0
+
+    def get_active_end_time(self):
+        config_type = self.user.config_type
+        # 老服活动表
+        result = {}
+        if config_type == 2:
+            server_num = settings.get_server_num(self.user._server_name)
+            active_list, _ = active_inreview_open_and_close(server_num=server_num)
+
+            for active_id in active_list:
+                a_id, version, s_time, e_time = get_version_start_and_end_time_by_active_id(active_id=active_id)
+                if version:
+                    result[active_id] = {
+                        'start_time': strftimestamp(s_time),
+                        'end_time': strftimestamp(e_time),
+                    }
+
+        # 新服活动表
+        else:
+            active_list, _ = server_active_inreview_open_and_close(self.mm)
+            for active_id in active_list:
+                version, new_server, s_time, e_time = get_inreview_version(self.user, active_id)
+                if version:
+                    result[active_id] = {
+                        'start_time': strftimestamp(dt2timestamp(s_time)),
+                        'end_time': strftimestamp(dt2timestamp(e_time))
+                    }
+        return 0, result
