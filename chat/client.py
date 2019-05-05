@@ -2,6 +2,7 @@
 
 __author__ = 'sm'
 
+import os
 import time
 import urllib
 import traceback
@@ -11,7 +12,63 @@ import settings
 from lib.utils.sensitive import replace_sensitive
 from lib.utils.debug import print_log
 from lib.utils.encoding import force_unicode, force_str
+from lib.utils.zip_date import dencrypt_data, encrypt_data
+from lib.db import get_redis_client
 from models.user import User as UserM
+
+
+def get_channel_redis():
+    r = get_redis_client(settings.chat_config)
+    return r
+
+
+def get_pub_sub():
+    r = get_channel_redis()
+    return r.pubsub()
+
+
+channel_name = 'chat_message'
+
+
+def publish_to_other_server(client_info, chat_info):
+    """ 通过pubsub将消息同步给其它的chat节点
+    :param client_info: kqgFlag为 first 标记时候发送的信息，表示发消息玩家uid， guild_id等信息
+                        {
+                         'uid': '',
+                         'guild_id': '',
+                         
+                         'msg': '',
+                         'server_name': '',
+                         'buffer': '',
+                         'device_mark': '',
+                         'device_mem': '',
+                         'domain': '',
+                         'game_id': '',
+                         'ip': '',
+                         'lan': '1',
+                         'sid': '',
+                         'team_id': '',
+                         'ttl': 1557044747,
+                         'vip': 0
+                        }
+    :param chat_info: {u"guild": u"666", u"uid": u"gtt11290798",
+                        u"combat": 227577, u"level": 260, u"kqgFlag": u"system",
+                        u"sign": u'', u"vip": 15, u"role": 23, u"time": 1507789169,
+                        u"dsign": 0, u"guild_id": u"gtt1-18", u"name": '', u"lan": "1",
+                        "inputStr": "hello world",
+                    }
+    :param tp:
+    :return:
+    """
+    if isinstance(client_info, Client):
+        client_info = client_info.dumps()
+    data = {
+        'client_info': client_info,
+        'chat_info': chat_info,
+        'pid': os.getpid()
+    }
+    r = get_channel_redis()
+    r.publish(channel_name, encrypt_data(data))
 
 
 def get_datetime_str():
@@ -34,24 +91,42 @@ class Client(object):
 
     def __init__(self, client_socket, addr):
         self.socket = client_socket
-        self.fileno = client_socket.fileno()
-        self.ttl = int(time.time()) + self.CLIENT_TIMEOUT
+        self.fileno = client_socket.fileno() if client_socket else ''
 
-        self.buffer = ''
-        self.msg = ''
+        self._attrs = dict(
+            ttl=int(time.time()) + self.CLIENT_TIMEOUT,
 
-        self.guild_id = ''
-        self.game_id = ''  # 工会战聊天模块
-        self.uid = ''
-        self.server_name = ''
-        self.vip = 0
-        self.domain = ''
-        self.team_id = ''
-        self.ip = addr
-        self.sid = ''
-        self.device_mark = ''
-        self.device_mem = ''
-        self.lan = '1'
+            buffer='',
+            msg='',
+
+            guild_id='',
+            game_id='',  # 工会战聊天模块,
+            uid='',
+            server_name='',
+            vip=0,
+            domain='',
+            team_id='',
+            ip=addr,
+            sid='',
+            device_mark='',
+            device_mem='',
+            lan='1',
+        )
+
+        self.__dict__.update(self._attrs)
+
+    def dumps(self):
+        data = {}
+        for i in self._attrs:
+            data[i] = getattr(self, i)
+        return data
+
+    @classmethod
+    def loads(cls, info, o=None):
+        o = o or Client(None, '')
+        for k, v in info.iteritems():
+            setattr(o, k, v)
+        return o
 
     def disconnect(self):
         try:
@@ -63,7 +138,8 @@ class Client(object):
         finally:
             self.socket.close()
 
-    def init_info(self, uid, guild_id, game_id, vip, domain, team_id, ip, device_mark, device_mem, lan):
+    def init_info(self, uid='', guild_id='', game_id='', vip='', domain='', team_id='', ip='',
+                  device_mark='', device_mem='', lan='', **kwargs):
         """ 初始化数据
 
         :param uid: 用户uid
