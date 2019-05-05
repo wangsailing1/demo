@@ -404,7 +404,11 @@ def send_to_other_client(client, info):
             content.save()
 
         receivers = []
-        for _fd in client_manager._clients.keys():
+        if tp in ['all_world']:
+            keys = client_manager._clients.keys()
+        else:
+            keys = client_manager.get_client_by_server_name(client.server_name).keys()
+        for _fd in keys:
             _client = client_manager._clients.get(_fd)
             if not _client:
                 continue
