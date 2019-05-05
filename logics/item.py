@@ -68,8 +68,9 @@ class ItemLogic(object):
                 return rc, {}
             reward = add_gift(self.mm, 18, [[use_effect, item_num]], cur_data=reward)
         elif is_use == 21: # 随机奖励道具箱
-            gift = self.item.get_random_reward(use_effect[0])
-            reward = add_mult_gift(self.mm, gift , cur_data=reward)
+            for _ in item_num:
+                gift = self.item.get_random_reward(use_effect[0])
+                reward = add_mult_gift(self.mm, gift , cur_data=reward)
         else:
             return 5, {}
 
