@@ -1166,6 +1166,29 @@ server_super_player_msg = {
     }
 }
 
+server_egg_msg = {
+    'server_egg.egg_index': {
+        1: u'活動未開啟',
+        2: u'獎品配置錯誤',
+    },
+    'server_egg.open_egg': {
+        1: u'參數錯誤',
+        2: u'獎品配置錯誤',
+        3: u'鑽石不足',
+        4: u'活動未開啟',
+        5: u'彩錘不足',
+        6: u'高級金錘數量不足',
+        7: u'高級彩錘數量不足',
+        11: u'已經開過這個了',
+    },
+    'server_egg.refresh_egg': {
+        1: u'活動未開啟',
+        2: u'獎品配置錯誤',
+        3: u'鑽石不足',
+        4: u'參數錯誤',
+    }
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂臺',
