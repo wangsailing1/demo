@@ -967,6 +967,28 @@ payment_msg = {
     },
 }
 
+server_super_player_msg = {
+    'server_super_player.buy_goods': {
+        -1: u'参数错误',
+        1: u'该商品已售完',
+        2: u'全服可购买次数不足',
+        3: u'个人购买次数达到上限',
+    },
+    'server_super_player.index': {
+        1: u'没有配置, 活动未开启',
+    },
+    'server_super_player.get_reward': {
+        -1: u'没有要领取的成就id',
+        -2: u'该奖励已领取',
+    },
+    'server_super_player.grab_bag': {
+        -1: u'没有要领取的红包code',
+        1: u'领取时间已过',
+        2: u'未到领取时间',
+        3: u'已全部领取完毕',
+    }
+}
+
 i18n = {
     'user_name': u'明日之星',
     'dark_steet': u'黑街擂台',
