@@ -1051,6 +1051,31 @@ server_limit_sign_msg = {
         4: u'该奖励已经领取',
     },
 }
+
+active_score_msg = {
+    'active_score.index': {
+        1: u'活动已关闭',
+        2: u'活动还未开启',
+    },
+    'active_score.get_reward': {
+        1: u'活动已关闭',
+        2: u'活动还未开启',
+        11: u'每日奖品id错误',
+        12: u'每日奖品已领',
+        13: u'每日积分未达到',
+        21: u'累积奖品id错误',
+        22: u'累积奖品已领',
+        23: u'累积积分未达到',
+        31: u'活动尚未结束',
+        32: u'没有排名信息',
+        33: u'排名奖励已领',
+    },
+    'active_score.rank_info': {
+        1: u'活动已关闭',
+        2: u'活动还未开启',
+    },
+}
+
 mail_msg = {
     'mail.delete_all': {
         1: u'邮箱已空空如也',

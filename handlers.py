@@ -456,6 +456,17 @@ class APIRequestHandler(BaseRequestHandler):
                     import traceback
                     print_log(traceback.print_exc())
 
+                # 积分活动
+                from models.active_score import ActiveScore, ServerActiveScore
+                try:
+                    if self.hm.mm.user.config_type == 1:
+                        ServerActiveScore.do_task_api(method_param, self.hm, rc, data)
+                    else:
+                        ActiveScore.do_task_api(method_param, self.hm, rc, data)
+                except:
+                    import traceback
+                    print_log(traceback.print_exc())
+
                 # 判断颁奖是否开
                 from logics.block import Block
                 try:

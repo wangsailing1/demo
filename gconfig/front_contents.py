@@ -664,5 +664,15 @@ single_recharge_mapping = {
     'server_single_recharge': ('server_single_recharge', True),
 }
 
+
+active_score_mapping = {
+    # key 为 config_name, value: 表名, 前端是否能看的
+    'active_score': ('active_score', True),
+    'active_score_mission': ('active_score_mission', True),
+    'active_score_rank': ('active_score_rank', True),
+    'active_score_new': ('active_score_new', True),
+    'active_score_mission_new': ('active_score_mission_new', True),
+    'active_score_rank_new': ('active_score_rank_new', True),
+}
 # 注册需要写到最下面
 register_handler()
