@@ -405,7 +405,7 @@ def send_to_other_client(client, info):
 
         receivers = []
         for _fd in client_manager._clients.keys():
-            _client = client_manager._client.get(_fd)
+            _client = client_manager._clients.get(_fd)
             if not _client:
                 continue
                 # for _fd, _client in client_manager.get_client_by_server_name(client.server_name).iteritems():
