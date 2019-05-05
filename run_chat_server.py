@@ -81,7 +81,7 @@ def handle_channel_message(message):
     pid = os.getpid()
     data = dencrypt_data(message['data'])
     if settings.DEBUG:
-        print pid, message, data
+        print_log(pid, data)
     if message['type'] == 'message':
         try:
             chat_info = data['chat_info']
@@ -379,9 +379,8 @@ def request_handler(client_socket, addr):
 
 def send_to_other_client(client, info):
         """
-
-        :param client: kqgFlag为 first 标记时候发送的信息，表示玩家uid， guild_id等信息
-                {'msg': '', 'kqgFlag': '', 'uid': 'gtt11234567', 'guild_id': '', ...}
+        :param client 发送方信息: kqgFlag为 first 标记时候发送的信息，玩家uid， guild_id等
+                    {'uid': '', 'guild_id': ''}
         :param info: 消息详情
         :return:
         """
@@ -405,8 +404,8 @@ def send_to_other_client(client, info):
             content.save()
 
         receivers = []
-        for _fd in client_manager.get_client_by_server_name(client.server_name).keys():
-            _client = client_manager.get_client_by_server_name(client.server_name).get(_fd)
+        for _fd in client_manager._clients.keys():
+            _client = client_manager._client.get(_fd)
             if not _client:
                 continue
                 # for _fd, _client in client_manager.get_client_by_server_name(client.server_name).iteritems():

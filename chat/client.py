@@ -92,6 +92,7 @@ class Client(object):
     def __init__(self, client_socket, addr):
         self.socket = client_socket
         self.fileno = client_socket.fileno() if client_socket else ''
+        self.blacklist = None
 
         self._attrs = dict(
             ttl=int(time.time()) + self.CLIENT_TIMEOUT,
@@ -171,10 +172,11 @@ class Client(object):
         获取黑名单
         :return:
         """
-        user = UserM.get(self.uid, from_req=False)
-        blacklist = user.blacklist
-
-        return blacklist
+        # 连接时候取一次，减少数据库压力
+        if self.blacklist is None:
+            user = UserM.get(self.uid, from_req=False)
+            self.blacklist = user.blacklist
+        return self.blacklist
 
     def update_info(self, guild_id, domain, team_id):
         if guild_id is not None:
