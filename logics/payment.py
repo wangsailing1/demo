@@ -22,6 +22,7 @@ from lib import utils
 from logics.egg import Egg
 from lib.utils.debug import print_log
 from tools.gift import add_mult_gift
+from logics.server_egg import ServerEgg
 
 
 def pay_apply(mm, obj, charge_config):
@@ -105,6 +106,9 @@ def pay_apply(mm, obj, charge_config):
         # 累积充值活动记录钻石
         server_type = int(mm.user.config_type)
         if server_type == 1:
+            server_egg = ServerEgg(mm)
+            server_egg.add_payment_and_item_times(order_diamond)
+            mm.serversuperplayer.add_day_pay(order_diamond)
             pass
             # mm.server_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
             # # 每日充值活动记录钻石
@@ -123,6 +127,7 @@ def pay_apply(mm, obj, charge_config):
             #
             # # 天降红包
             # mm.server_red_bag.pay_trigger(product_id, amount)
+
         else:
             pass
             # mm.active_recharge.reward(order_diamond + gift_diamond, order_money, product_id, charge_config=charge_config)
