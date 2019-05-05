@@ -25,7 +25,7 @@ settings.set_env(env, server_name)
 settings.ENVPROCS = 'chat'
 
 from lib.utils.debug import print_log
-from chat.client import Client, ClientManager
+from chat.client import Client, ClientManager, get_pub_sub, channel_name, publish_to_other_server
 from chat.content import ContentFactory
 from lib.utils.encoding import force_str
 from lib.utils import sid_generate, get_timestamp_from_sid
@@ -76,44 +76,28 @@ def get_datetime_str():
     return time.strftime('%F %T')
 
 
-def get_channel_redis():
-    r = get_redis_client(settings.chat_config)
-    return r
-
-
-def get_pub_sub():
-    r = get_channel_redis()
-    return r.pubsub()
-
-
 def handle_channel_message(message):
+    """处理订阅的消息，发送给对应的用户"""
     pid = os.getpid()
     data = dencrypt_data(message['data'])
-    print pid, message, data
+    if settings.DEBUG:
+        print_log(pid, data)
     if message['type'] == 'message':
         try:
             chat_info = data['chat_info']
             if pid == data['pid']:
-                print 'owner message, chat_info: ', chat_info
-                return
+                pass
+                # print 'owner message, chat_info: ', chat_info
+                # return
+
+            send_to_other_client(data['client_info'], chat_info)
+
         except Exception, e:
             tb = traceback.format_exc()
             print e.message, tb
             return
 
             # todo 发送给client
-
-
-channel_name = 'chat_message'
-
-
-def send_to_other_server(chat_info):
-    data = {
-        'chat_info': chat_info,
-        'pid': os.getpid()
-    }
-    r = get_channel_redis()
-    r.publish(channel_name, encrypt_data(data))
 
 
 # 通过redis pubsub 与其它chat server通信
@@ -387,6 +371,29 @@ def request_handler(client_socket, addr):
                 client.socket.sendall(''.join(msgs))
             continue
 
+        # 自己的信息发回给自己，前端统一处理服务端的推送
+        gevent.joinall([gevent.spawn(client.socket.sendall, client.msg)])
+        # publish to other chat sever node
+        publish_to_other_server(client, info)
+
+
+def send_to_other_client(client, info):
+        """
+        :param client 发送方信息: kqgFlag为 first 标记时候发送的信息，玩家uid， guild_id等
+                    {'uid': '', 'guild_id': ''}
+        :param info: 消息详情
+        :return:
+        """
+        if isinstance(client, dict):
+            client = Client.loads(client)
+
+        if not client.msg:
+            json_msg_str = json.dumps(info)
+            client.msg = client.format_str % (len(json_msg_str), json_msg_str)
+
+        tp = info['kqgFlag']
+        sendToUid = info.get('sendToUid', '')
+
         con_name = content_factory.MAPPINGS.get(tp)
         if con_name and con_name not in content_factory.IGNORE:
             if tp == 'all_world':
@@ -397,8 +404,8 @@ def request_handler(client_socket, addr):
             content.save()
 
         receivers = []
-        for _fd in client_manager.get_client_by_server_name(client.server_name).keys():
-            _client = client_manager.get_client_by_server_name(client.server_name).get(_fd)
+        for _fd in client_manager._clients.keys():
+            _client = client_manager._clients.get(_fd)
             if not _client:
                 continue
                 # for _fd, _client in client_manager.get_client_by_server_name(client.server_name).iteritems():
@@ -409,7 +416,7 @@ def request_handler(client_socket, addr):
 
             # 屏蔽列表
             if client.uid in _client.get_blacklist():
-                receivers.append(gevent.spawn(client.socket.sendall, client.msg))
+                # receivers.append(gevent.spawn(client.socket.sendall, client.msg))
                 continue
 
             if tp in ['all_world', 'world', 'system']:  # 世界, 本服, 系统
@@ -420,7 +427,7 @@ def request_handler(client_socket, addr):
                     receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
             elif tp == 'friend' and _client.uid == sendToUid:  # 好友
                 receivers.append(gevent.spawn(_client.socket.sendall, client.msg))
-                receivers.append(gevent.spawn(client.socket.sendall, client.msg))
+                # receivers.append(gevent.spawn(client.socket.sendall, client.msg))
                 break
             elif tp == 'guild_war':  # 工会战
                 if _client.guild_id and client.guild_id:
@@ -438,8 +445,8 @@ def request_handler(client_socket, addr):
             mm = ModelManager(client.uid)
             mm.friend.add_newest_uid(sendToUid, is_save=True)
             if client.uid not in to_user.blacklist:
-                if not receivers:
-                    receivers.append(gevent.spawn(client.socket.sendall, client.msg))
+                # if not receivers:
+                #     receivers.append(gevent.spawn(client.socket.sendall, client.msg))
                 if client.uid < sendToUid:
                     uid_key = '%s_%s' % (client.uid, sendToUid)
                 else:
