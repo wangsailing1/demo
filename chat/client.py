@@ -32,13 +32,13 @@ channel_name = 'chat_message'
 
 def publish_to_other_server(client_info, chat_info):
     """ 通过pubsub将消息同步给其它的chat节点
-    :param client_info: kqgFlag为 first 标记时候发送的信息，表示发消息玩家uid， guild_id等信息
+    :param client_info: 发送方信息: Client._attrs 里的信息，按需要指定玩家uid， guild_id，server_name等
                         {
                          'uid': '',
                          'guild_id': '',
-                         
-                         'msg': '',
                          'server_name': '',
+
+                         'msg': '',
                          'buffer': '',
                          'device_mark': '',
                          'device_mem': '',
