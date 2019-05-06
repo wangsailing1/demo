@@ -122,5 +122,23 @@ class Strategy(ModelBase):
             self._strategy_mission = self.mm.get_obj_by_id('strategy_mission', self.strategy_id, server=self.strategy_server)
         return self._strategy_mission
 
+    def get_red_dot(self):
+        """ 小红点
+        """
+        strategy_mission = self.strategy_mission
+        if not strategy_mission:
+            return False
+        strategy_data = strategy_mission.strategy_data
+        for v in strategy_data.itervalues():
+            if v['owner'] == self.mm.uid and v['status'] == 1:
+                return True         # 有任务奖励待领取
+        strategy_lv_config = game_config.strategy_lv
+        cur_config = strategy_lv_config.get(strategy_mission.level, {})
+        mission_amount = cur_config['mission_amount']
+        if strategy_mission.done_num >= mission_amount:
+            return True             # 升级奖励待领取
+        return False
+
+
 
 ModelManager.register_model('strategy', Strategy)

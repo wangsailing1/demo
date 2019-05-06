@@ -275,6 +275,7 @@ class UserLogic(object):
             'server_daily_recharge': ('server_daily_recharge', 'get_red_dot'),  # 新服天天充值
             'single_recharge': ('single_recharge', 'get_red_dot'),                  # 老服单笔充值红点
             'server_single_recharge': ('server_single_recharge', 'get_red_dot'),    # 新服单笔充值红点
+            'strategy': ('strategy', 'get_red_dot'),                                # 战略合作小红点
         }
 
         # 特殊的几个红点,todo
