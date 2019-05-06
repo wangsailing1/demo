@@ -393,7 +393,7 @@ def send_to_other_client(client, info):
             client = Client.loads(client)
 
         if not client.msg:
-            json_msg_str = json.dumps(info)
+            json_msg_str = json.dumps(info, separators=(',', ':'))
             client.msg = client.format_str % (len(json_msg_str), json_msg_str)
 
         tp = info['kqgFlag']
