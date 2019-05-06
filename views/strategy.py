@@ -6,7 +6,7 @@ from return_msg_config import get_error_14_msg
 
 
 def get_enter_level():
-    return game_config.common.get(100, 10)             # 等级拦截
+    return game_config.common.get(100, 0)             # 等级拦截
 
 
 def level_limit(method):
@@ -90,7 +90,7 @@ def del_msg(hm):
     sort = hm.get_argument('sort', )
     target = hm.get_argument('target')
 
-    if sort not in ('invite', 'refuse', 'apply') or not target:
+    if sort not in ('invite', 'refuse', 'apply', 'quit') or not target:
         return 'error_100', {}
 
     sl = Strategy(mm)
