@@ -323,6 +323,8 @@ class OmniExchange(ModelBase):
 
     def get_start_end_time(self):
         a_id, version = get_version_by_active_id(active_id=3103)
+        if not a_id:
+            return 0, ""
         end_time = game_config.active[a_id]['end_time']
         return version, end_time
 
