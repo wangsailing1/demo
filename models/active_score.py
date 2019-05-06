@@ -484,7 +484,7 @@ class ActiveScore(ModelBase):
                 rank = self.get_rank()
                 if rank:
                     config_id = 0
-                    for k, v in self.config_rank.iteritems:
+                    for k, v in self.config_rank.iteritems():
                         if v['rank'][0] <= rank <= v['rank'][1] and self.version in v['active_id']:
                             config_id = k
                             break
