@@ -292,9 +292,9 @@ class OmniExchange(object):
         """
         now = time.time()
         version, end = self.exchange.get_start_end_time()
-        end = str2timestamp(end)
         if not version:
             return 0
+        end = str2timestamp(end)
 
         return int(end - now)
 
@@ -364,9 +364,8 @@ class ServerOmniExchange(object):
         """
         now = time.time()
         version, end = self.exchange.get_start_end_time()
-
-        end = datetime_to_timestamp(end)
         if not version:
             return 0
+        end = datetime_to_timestamp(end)
 
         return int(end - now)
