@@ -362,7 +362,7 @@ class ModelBase(ModelTools):
             cls.run_data_version_update(_key, o)
 
         if settings.DEBUG:
-            print 'model get : %s, status: %s' % (_key, o.inited)
+            print 'model get : %s, status: %s, data_len: %s' % (_key, o.inited, len(redis_data) if redis_data else 0)
 
         return o
 
