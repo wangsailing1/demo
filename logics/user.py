@@ -267,6 +267,7 @@ class UserLogic(object):
             'business': ('business', 'get_red_dot'),  # 公司事务
             'company_vip_red_dot': ('user', 'get_company_vip_red_dot'),  # 公司事务
             'performance': ('mission', 'get_performance_red_dot'),  # 业绩目标红点
+            'strategy': ('strategy', 'get_red_dot'),                                # 战略合作小红点
         }
 
         # 特殊的几个红点,todo
