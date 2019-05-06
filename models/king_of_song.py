@@ -189,7 +189,7 @@ class KingOfSong(ModelBase):
                     uid = 'robot_%s' % i
                     robot_config = game_config.pvp_robots[i]
                     # name = get_str_words(language_sort, random.choice(game_config.first_random_name['first_name']))
-                    name = robot_config['name']
+                    name = get_str_words(self.mm.lan, robot_config['name'])
                     cards = {}
                     for i in robot_config['card']:
                         card_id, lv, love_lv = i[:3]
