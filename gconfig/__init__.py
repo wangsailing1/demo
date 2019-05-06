@@ -41,10 +41,10 @@ def get_str_words(languages_sort, *args):
     str_words = game_config.get_language_config(lan)
     if str_words:
         if len(args) < 2:
-            return str_words.get(str(args[0]), '')
+            return str_words.get(str(args[0]), str(args[0]))
         return_msg = []
         for str_name in args:
-            return_msg.append(str_words.get(str(str_name), ''))
+            return_msg.append(str_words.get(str(str_name), str(str_name)))
         return return_msg
 
     return ''
