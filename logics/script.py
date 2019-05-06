@@ -44,8 +44,7 @@ class ScriptLogic(object):
                     step = 3
                 if script.cur_script['style']:
                     step = 4
-
-                step += script.cur_script['finished_step']
+                    step += script.cur_script['finished_step']
         return step
 
     def directing_step(self):
