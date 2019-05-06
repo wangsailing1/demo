@@ -24,6 +24,7 @@ class Strategy(ModelBase):
             'strategy_server': '',      # 战略合作区服信息
             'yesterday_str': '',        # 昨天日期
             'y_income': 0,              # 昨天最高票房
+            'quit_msg': {},             # 解除合作提示消息
         }
         super(Strategy, self).__init__(self.uid)
 

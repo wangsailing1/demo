@@ -24,6 +24,7 @@ class Strategy(object):
         if not self.strategy.strategy_uid:
 
             data = {
+                'quit_msg': self.strategy.quit_msg,         # 解除合作消息
                 'apply_info': self.strategy.apply_info,
                 'invite_info': self.strategy.invite_info,
                 'refuse_info': self.strategy.refuse_info,
@@ -106,15 +107,23 @@ class Strategy(object):
     def del_msg(self, target, sort):
         """ 删除消息
         """
-        self.mm.strategy.del_apply(target, sort)
+        if sort == 'quit':
+            info = self.mm.strategy.quit_msg.pop(target, None)
+            if info:
+                self.mm.strategy.save()
+        else:
+            self.mm.strategy.del_apply(target, sort)
         return 0, {}
 
     def quit_strategy(self):
         """ 退出合作
         """
         strategy_uid = self.mm.strategy.strategy_uid
+        if not strategy_uid:
+            return 1, {}                # 当前没有同他人合作
         target_mm = self.mm.get_mm(strategy_uid)
         target_mm.strategy.strategy_uid = ''
+        target_mm.strategy.quit_msg[self.mm.uid] = self.get_user_info(self.mm)
         strategy_mission = self.strategy.strategy_mission
         client = strategy_mission.redis
         strategy_model_key = strategy_mission._model_key
