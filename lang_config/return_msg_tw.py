@@ -45,10 +45,10 @@ return_msg_config = {
     'error_silver': u"金幣不足",
     'error_diamond': u"鑽石不足",
     'error_coin': u"金幣不足",
-    'error_dollar': u"美元不足",
+    'error_dollar': u"美元不足，快去拍片掙錢吧",
     'error_no_ceremony': u'敬請期待明天晚上九點的頒獎典禮',
 
-    'error_card_cold': u'藝人被雪藏中',
+    'error_card_cold': u'藝人被冷凍中',
     'error_card_piece': u'藝人碎片不足',
     'error_equip_piece': u'裝備碎片不足',
     'error_stone': u"靈魂石不足",
@@ -255,7 +255,7 @@ card_msg = {
     },
     'card.card_piece_exchange': {
         1: u'已有此類藝人',
-        2: u'活躍卡牌已達上限，請先雪藏藝人',
+        2: u'活躍卡牌已達上限，請先冷凍藝人',
     },
     'card.up_card_building': {
         1: u'等級最大',
@@ -325,7 +325,7 @@ gacha_msg = {
     'gacha.receive': {
         1: u"沒有此藝人",
         2: u'已簽約過',
-        3: u'活躍卡牌已達上限，請先雪藏藝人',
+        3: u'活躍卡牌已達上限，請先冷凍藝人',
     },
 
     'gacha.up_gacha': {
@@ -672,14 +672,14 @@ fans_activity_msg = {
         14: u'有卡牌性別不符',
         15: u'有卡牌類型不符',
         16: u'有卡牌人氣不足',
-        17: u'美元不足',
+        17: u'美元不足，快去拍片掙錢吧',
         18: u'活動已結束，請先領取獎勵',
         19: u'有卡牌休息中',
     },
     'fans_activity.unlock_activity': {
         1: u'沒有活動',
         2: u'該活動尚不能解鎖',
-        3: u'美元不足',
+        3: u'美元不足，快去拍片掙錢吧',
         4: u'已解鎖',
         5: u'首次建築的等級錯誤',
         6: u'此地已有建築',
@@ -687,7 +687,7 @@ fans_activity_msg = {
     'fans_activity.up_activity': {
         1: u'活動等級已經最大',
         2: u'該活動尚不能解鎖',
-        3: u'美元不足',
+        3: u'美元不足，快去拍片掙錢吧',
         4: u'活動錯誤',
         5: u'升級id錯誤',
     },
@@ -847,7 +847,7 @@ rest_msg = {
         15: u'卡牌已在酒吧中',
         16: u'卡牌已在醫院中',
         17: u'尚未擁有建築',
-        18: u'美元不足',
+        18: u'美元不足，快去拍片掙錢吧',
         19: u'藝人狀態良好，不需休息',
         20: u'卡牌正在進行粉絲活動',
         21: u'卡牌正在拍攝中',
@@ -1145,6 +1145,51 @@ active_score_msg = {
         1: u'活動已關閉',
         2: u'活動還未開啟',
     },
+}
+
+server_super_player_msg = {
+    'server_super_player.buy_goods': {
+        -1: u'參數錯誤',
+        1: u'該商品已售完',
+        2: u'全服可購買次數不足',
+        3: u'個人購買次數達到上限',
+    },
+    'server_super_player.index': {
+        1: u'沒有配寘，活動未開啟',
+    },
+    'server_super_player.get_reward': {
+        -1: u'沒有要領取的成就id',
+        -2: u'該獎勵已領取',
+    },
+    'server_super_player.grab_bag': {
+        -1: u'沒有要領取的紅包code',
+        1: u'領取時間已過',
+        2: u'未到領取時間',
+        3: u'已全部領取完畢',
+    }
+}
+
+server_egg_msg = {
+    'server_egg.egg_index': {
+        1: u'活動未開啟',
+        2: u'獎品配置錯誤',
+    },
+    'server_egg.open_egg': {
+        1: u'參數錯誤',
+        2: u'獎品配置錯誤',
+        3: u'鑽石不足',
+        4: u'活動未開啟',
+        5: u'彩錘不足',
+        6: u'高級金錘數量不足',
+        7: u'高級彩錘數量不足',
+        11: u'已經開過這個了',
+    },
+    'server_egg.refresh_egg': {
+        1: u'活動未開啟',
+        2: u'獎品配置錯誤',
+        3: u'鑽石不足',
+        4: u'參數錯誤',
+    }
 }
 
 i18n = {

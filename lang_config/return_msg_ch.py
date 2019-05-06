@@ -45,7 +45,7 @@ return_msg_config = {
     'error_silver': u"金币不足",
     'error_diamond': u"钻石不足",
     'error_coin': u"金币不足",
-    'error_dollar': u"美元不足",
+    'error_dollar': u"美元不足，快去拍片挣钱吧！",
     'error_no_ceremony': u'敬请期待明天晚上九点的颁奖典礼',
 
     'error_card_cold': u'艺人被雪藏中',
@@ -651,14 +651,14 @@ fans_activity_msg = {
         14: u'有卡牌性别不符',
         15: u'有卡牌类型不符',
         16: u'有卡牌人气不足',
-        17: u'美元不足',
+        17: u'美元不足，快去拍片挣钱吧！',
         18: u'活动已结束，请先领取奖励',
         19: u'有卡牌休息中',
     },
     'fans_activity.unlock_activity': {
         1: u'没有活动',
         2: u'该活动尚不能解锁',
-        3: u'美元不足',
+        3: u'美元不足，快去拍片挣钱吧！',
         4: u'已解锁',
         5: u'首次建筑的等级错误',
         6: u'此地已有建筑',
@@ -666,7 +666,7 @@ fans_activity_msg = {
     'fans_activity.up_activity': {
         1: u'活动等级已经最大',
         2: u'该活动尚不能解锁',
-        3: u'美元不足',
+        3: u'美元不足，快去拍片挣钱吧！',
         4: u'活动错误',
         5: u'升级id错误',
     },
@@ -835,7 +835,7 @@ rest_msg = {
         15: u'卡牌已在酒吧中',
         16: u'卡牌已在医院中',
         17: u'尚未拥有建筑',
-        18: u'美元不足',
+        18: u'美元不足，快去拍片挣钱吧！',
         19: u'艺人状态良好，不需休息',
         20: u'卡牌正在进行粉丝活动',
         21: u'卡牌正在拍摄中',
@@ -1158,6 +1158,52 @@ single_recharge_msg = {
         5: u'已通过邮件发放',
     },
 }
+
+server_super_player_msg = {
+    'server_super_player.buy_goods': {
+        -1: u'参数错误',
+        1: u'该商品已售完',
+        2: u'全服可购买次数不足',
+        3: u'个人购买次数达到上限',
+    },
+    'server_super_player.index': {
+        1: u'没有配置, 活动未开启',
+    },
+    'server_super_player.get_reward': {
+        -1: u'没有要领取的成就id',
+        -2: u'该奖励已领取',
+    },
+    'server_super_player.grab_bag': {
+        -1: u'没有要领取的红包code',
+        1: u'领取时间已过',
+        2: u'未到领取时间',
+        3: u'已全部领取完毕',
+    }
+}
+
+server_egg_msg = {
+    'server_egg.egg_index': {
+        1: u'活动未开启',
+        2: u'奖品配置错误',
+    },
+    'server_egg.open_egg': {
+        1: u'参数错误',
+        2: u'奖品配置错误',
+        3: u'钻石不足',
+        4: u'活动未开启',
+        5: u'彩锤不足',
+        6: u'高级金锤数量不足',
+        7: u'高级彩锤数量不足',
+        11: u'已经开过这个了',
+    },
+    'server_egg.refresh_egg': {
+        1: u'活动未开启',
+        2: u'奖品配置错误',
+        3: u'钻石不足',
+        4: u'参数错误',
+    }
+}
+
 
 i18n = {
     'user_name': u'明日之星',

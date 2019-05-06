@@ -125,7 +125,7 @@ def omni_index(hm):
     server_type = int(mm.user.config_type)
     if server_type == 1:
         nel = ServerOmniExchange(mm)
-        log_m = mm.omni_exchange
+        log_m = mm.server_omni_exchange
     else:
         nel = OmniExchange(mm)
         log_m = mm.omni_exchange
