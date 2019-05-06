@@ -62,6 +62,7 @@ def publish_to_other_server(client_info, chat_info):
     """
     if isinstance(client_info, Client):
         client_info = client_info.dumps()
+        client_info.pop('msg', '')
     data = {
         'client_info': client_info,
         'chat_info': chat_info,
