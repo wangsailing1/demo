@@ -32,7 +32,7 @@ def main(hm):
         mm.user.set_tpid(tpid)
 
     ul = UserLogic(mm)
-    if mm.user.reg_time < 1557137979 and mm.mission.new_guide_data :
+    if mm.user.reg_time < 1557137979 and mm.mission.new_guide_data:
         mm.mission.new_guide_done = game_config.new_guide_mission.keys()
         mm.mission.new_guide_data = {}
         mm.user.finish_guide()
