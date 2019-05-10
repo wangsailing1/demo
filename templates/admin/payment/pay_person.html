@@ -1,6 +1,7 @@
 
 
 <body>
+{% from gconfig import game_config %}
 <p> 当前环境: {{environment}} </p>
 
 <form action="/{{url_partition}}/admin/payment/pay_person/">
@@ -40,7 +41,11 @@
           <td align="center" width="0">{{st['order_id']}}</td>
           <td align="center" width="0">{{st['order_time']}}</td>
           <td align="center" width="0">{{st.get('admin', '')}}</td>
-          <td align="center" width="0">{{st.get('reason', '')}}</td>
+          <td align="center" width="0">{{st.get('reason', '')}}
+              {% if st['order_id'] in game_config.sandbox_pay %}
+                沙盒订单
+              {% end %}
+          </td>
         </tr>
         {% end %}
         <tr>

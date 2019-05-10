@@ -107,6 +107,9 @@ def get_statistics_retention_data(query_date):
         # 跳过测试充值的记录
         if 'admin_test' in item['platform']:
             continue
+        # google_play测试账号不计入真实收入, 现在google测试账号id区分不出来是否沙盒订单，走配置过滤
+        if item['order_id'] in game_config.sandbox_pay:
+            continue
         # google_play测试账号不计入真实收入
         if item['order_id'].startswith('test'):
             continue

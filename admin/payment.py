@@ -173,7 +173,7 @@ def select_pay(req, **kwargs):
                 item['order_money'] = charge_config.get(item['product_id'], {}).get('price_TW', 0)
                 item['order_rmb'] = round(currencys.get(CURRENCY_USD, 1) * item['order_money'], 2)
             pay_diamonds += item['order_diamond']
-            if 'admin_test' in item['platform']:
+            if 'admin_test' in item['platform'] or item['order_id'] in game_config.sandbox_pay:
                 admin_pay_rmbs += charge_config.get(item['product_id'], {}).get('price_TW', 0)
             else:
                 pay_rmbs += float(item['order_rmb'] or 0)

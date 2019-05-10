@@ -23,6 +23,13 @@ common_attention = {
     'name': ('name', 'int'),  # 等级
 }
 
+
+# 测试沙盒订单，线上环境统计层面需要过滤
+sandbox_pay = {
+    'uk': ('order_id', 'str'),  # 订单id
+}
+
+
 main_hero = {
     'uk': ('id', 'int'),  # id
     'sex': ('sex', 'int'),  # 性别

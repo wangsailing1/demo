@@ -182,6 +182,9 @@ def bdc_realtime_info(today=None):
     for x in payment.find_by_time(s_dt, e_dt):
         if filter_admin_pay and 'admin_test' in x['platform']:
             continue
+        # google_play测试账号不计入真实收入, 现在google测试账号id区分不出来是否沙盒订单，走配置过滤
+        if x['order_id'] in game_config.sandbox_pay:
+            continue
         if str(x['order_id']).startswith('test'):
             continue
         x['pay_rmb'] = charge_config.get(x['product_id'], {}).get(
@@ -308,6 +311,7 @@ def bdc_charge_info(today=None):
     from lib.core.environ import ModelManager
     from lib.utils.encoding import force_unicode
     from lib.statistics.bdc_event_funcs import get_anm
+    from gconfig import game_config
 
     today = today or datetime.datetime.today()
     query_date = today - datetime.timedelta(days=1)
@@ -330,6 +334,9 @@ def bdc_charge_info(today=None):
     for item in mysql_conn.find_by_time(s_day, e_day):
         # print 'item:', item
         if filter_admin_pay and 'admin_test' in item['platform']:
+            continue
+        # google_play测试账号不计入真实收入, 现在google测试账号id区分不出来是否沙盒订单，走配置过滤
+        if item['order_id'] in game_config.sandbox_pay:
             continue
         if str(item['order_id']).startswith('test'):
             continue

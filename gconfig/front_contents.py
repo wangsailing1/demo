@@ -223,6 +223,8 @@ equip_config_mapping = {
 user_config_mapping = {
     # key 为 config_name, value: 表名, 前端是否能看的
     'server_type': ('server_type', True),
+    # 测试沙盒订单，线上环境统计层面需要过滤
+    'sandbox_pay': ('sandbox_pay', False),
     'tag': ('tag', True),
     'tag_score': ('tag_score', True),
     'player_level': ('player_level', True),

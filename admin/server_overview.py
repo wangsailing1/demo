@@ -106,6 +106,9 @@ def select(req):
     for x in payment.find_by_time(s_dt, e_dt):
         if filter_admin_pay and 'admin_test' in x['platform']:
             continue
+        # google_play测试账号不计入真实收入, 现在google测试账号id区分不出来是否沙盒订单，走配置过滤
+        if x['order_id'] in game_config.sandbox_pay:
+            continue
         if str(x['order_id']).startswith('test'):
             continue
         x['pay_rmb'] = charge_config.get(x['product_id'], {}).get('price_%s' % settings.get_admin_charge(settings.CURRENCY_TYPE), 0) * 1
