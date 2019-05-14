@@ -254,6 +254,7 @@ class UserLogic(object):
             # 'vip_gift': ('user', 'has_vip_gift'),  # 福利基金
             # 'free_sign': ('free_sign', 'is_alert'),     # 普通签到
             # 'pay_sign': ('pay_sign', 'is_alert'),       # 超值签到
+            'king_of_song': ('king_of_song', 'red_dot'),  # 旅游聊天约会
             'actor': ('friend', 'get_times'),  # 旅游聊天约会
             'monthly_sign': ('monthly_sign', 'today_can_sign'),  # 签到
             'has_ceremony': ('block', 'ceremony_red_dot'),  # 颁奖典礼

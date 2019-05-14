@@ -146,6 +146,24 @@ class KingOfSong(ModelBase):
         self.continue_win_times = 0
         return rank_down
 
+    def red_dot(self):
+        return {
+            'left_battle_times': self.left_battle_times(),
+            'has_rank_reward': self.has_rank_reward()
+        }
+
+    def has_rank_reward(self):
+        for rank in game_config.pvp_rank:
+            if rank in self.rank_reward_log:
+                continue
+            win_times = 0
+            for k, v in self.rank_win_times.items():
+                if k >= rank:
+                    win_times += v
+            if win_times >= game_config.common[77]:
+                return True
+        return False
+
     def left_battle_times(self):
         return self.MAX_TIMES + self.buy_times * self.BUY_ADD_BATTLE_TIMES - self.battle_times
 
