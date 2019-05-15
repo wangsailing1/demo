@@ -8,6 +8,7 @@ import json
 
 import settings
 from lib.utils import salt_generator
+from chat.client import publish_to_other_server
 
 
 def send_to_all(msg_dict, server_name):
@@ -24,15 +25,18 @@ def send_to_all(msg_dict, server_name):
     :return:
     """
     print server_name
-    s = get_socket(server_name)
+    # s = get_socket(server_name)
     data = {"level": 1, "combat": 1, "sign": "", "kqgFlag": "system", "guild": "",
             "uid": "", "guild_id": "", "time": 0, "vip": 0, "name": "", "role": 1, "msg": "", "server": server_name}
     # data = {"kqgFlag": "system", "server": server_name, "msg": ""}
     data.update(msg_dict)
     data['sign'] = make_sign(data['uid'])
-    msg = '<xml><content>%s</content></xml>' % json.dumps(data)
-    s.send(msg)
-    s.close()
+    data['dsign'] = int(time.time())
+    publish_to_other_server({'server_name': server_name}, data)
+
+    # msg = '<xml><content>%s</content></xml>' % json.dumps(data)
+    # s.send(msg)
+    # s.close()
 
 
 def make_sign(uid):
