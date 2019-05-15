@@ -212,7 +212,9 @@ class KingOfSongLogics(object):
             gift = add_mult_gift(self.mm, rank_config['award_lose'])
             data['rank_down'] = rank_down
 
-        self.add_rank()
+        # 星级 排行变化才更新排行榜
+        if old_rank != king.rank or old_star != king.star:
+            self.add_rank()
 
         data['gift'] = gift
         data['rank'] = king.rank
