@@ -204,6 +204,7 @@ charge = {
     'price_dollar': ('price_dollar', 'float'),  # 所需美元
     'gift': ('gift', 'int_list'),  #
     'icon2': ('icon2', 'str'),  # 是否显示
+    'price_Mycard': ('price_Mycard', 'int'),  # Mycard点数
 }
 
 # charge = {
