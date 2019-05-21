@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6ba9a4c6-3bfa-46ca-bc5d-af27138f5851" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>template</find>
+      <find>邮箱</find>
+      <find>admin</find>
+      <find>index</find>
+      <find>def index</find>
+      <find>def search_</find>
+      <find>search_uid</find>
+      <find>email</find>
+      <find>kaiqigu_sdk_password_reset</find>
+      <find>KAIQIGU_USER_PASSWORD_RESET_URL</find>
+      <find>post</find>
+    </findStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/admin</dir>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/admin/__init__.py" />
+        <option value="$PROJECT_DIR$/admin/user.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="133" />
+    <option name="y" value="31" />
+    <option name="width" value="1596" />
+    <option name="height" value="981" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane" />
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6ba9a4c6-3bfa-46ca-bc5d-af27138f5851" name="Default Changelist" comment="" />
+      <created>1557313050788</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1557313050788</updated>
+      <workItem from="1557313056849" duration="3256000" />
+      <workItem from="1557363722711" duration="4434000" />
+      <workItem from="1557546083371" duration="4000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="7694000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="133" y="31" width="1596" height="981" extended-state="0" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25611326" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.3295838" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/admin/admin_config.py" />
+    <entry file="file://$PROJECT_DIR$/admin/admin_models.py" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/ad_activate_count.html" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/ad_youxiduo_count.html" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/user_logging.html" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/user_email.html" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/user_coin_logging.html" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/user_cards.html" />
+    <entry file="file://$PROJECT_DIR$/admin/parse_battle.py" />
+    <entry file="file://$PROJECT_DIR$/admin/fabfile.py" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/admin_list.html" />
+    <entry file="file://$PROJECT_DIR$/run.py" />
+    <entry file="file://$PROJECT_DIR$/handers.py" />
+    <entry file="file://$PROJECT_DIR$/templates/admin/main.html" />
+    <entry file="file://$PROJECT_DIR$/admin/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/settings/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/logics/platform/http.py" />
+    <entry file="file://$PROJECT_DIR$/admin/user.py" />
+  </component>
+</project>
