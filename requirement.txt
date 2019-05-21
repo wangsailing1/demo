@@ -5,7 +5,7 @@ amqp==2.4.0
 APScheduler             # ==3.3.0
 celery==4.2.1
 kombu==4.3.0
-msgpack                 # ==0.5.6
+msgpack==0.5.6
 redis==2.10.6
 MySQL-python            # ==1.2.5
 psutil                  # ==5.4.6
