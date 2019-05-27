@@ -38,9 +38,9 @@ class KingOfSongLogics(object):
         }
 
     def index(self, check_season_award=False):
-        open_info = self.open_info()
-        if not open_info['open']:
-            return -1, open_info
+        # open_info = self.open_info()
+        # if not open_info['open']:
+        #     return -1, open_info
 
         king = self.mm.king_of_song
         # 从view层index接口进来检查赛季奖励
