@@ -147,7 +147,10 @@ class KingOfSong(ModelBase):
         return rank_down
 
     def left_battle_times(self):
-        return self.MAX_TIMES + self.buy_times * self.BUY_ADD_BATTLE_TIMES - self.battle_times
+        today = datetime.datetime.now()
+        if self.OPEN_DAY[0] <= today.day <= self.OPEN_DAY[1]:
+            return self.MAX_TIMES + self.buy_times * self.BUY_ADD_BATTLE_TIMES - self.battle_times
+        return 0
 
     def choice_scripts(self, num=3):
         rank_config = game_config.pvp_rank[self.rank]
