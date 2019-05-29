@@ -42,7 +42,7 @@ RPC_SERVER_ADDR = ('localhost', 8000)
 resource = 'http://%s/%s/lr' % (MASTER_HOST, URL_PARTITION)
 payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
-DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=65b10b52e5038db8362f6d6334df207dccf95410a5e74c99e64ac5dc1152a761'
+# DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=65b10b52e5038db8362f6d6334df207dccf95410a5e74c99e64ac5dc1152a761'
 
 
 # slg服务redis地址，用来查看slg在线人数等
