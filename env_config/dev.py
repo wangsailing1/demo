@@ -38,6 +38,9 @@ config_resource = [
 
 payment_callback_url = 'http://%s/%s' % (MASTER_HOST, URL_PARTITION)
 
+# 报错 钉钉通知地址
+DINGTALK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=d94d9c5425fc1fc4d9ac686ec9ad98b4080bac2ad6fa0d4c769e13f80df0de44'
+
 
 # slg服务redis地址，用来查看slg在线人数等
 SLG_REDIS_DEFAULT = {'host': '192.168.1.98', 'port': 6300, 'socket_timeout': 5, 'db': 0, 'password': 'MpkgVasDIakFEqwUgtqL'}
