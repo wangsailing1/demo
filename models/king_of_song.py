@@ -165,9 +165,14 @@ class KingOfSong(ModelBase):
         robot_pool = [k for k, v in game_config.pvp_robots.items() if v['rank'] == self.rank]
         rank_config = game_config.pvp_rank[self.rank]
 
-        rank_obj = self.mm.get_obj_tools('level_rank')
-        level = self.mm.user.level
-        uids = rank_obj.nearby_score(max(1, level - 10), level+5, start=0, num=20)
+        rank_obj = self.mm.get_obj_tools('king_of_song_rank')
+        self_rank = rank_obj.get_rank(self.uid)
+        match_range = 20
+        if self_rank:
+            start, end = max(0, self_rank - match_range), max(match_range, self_rank)
+        else:
+            start, end = -match_range, -1
+        uids = rank_obj.get_all_user(start, end)
 
         for tp, uids in [('user', uids), ('robot', robot_pool)]:
             random.shuffle(uids)
