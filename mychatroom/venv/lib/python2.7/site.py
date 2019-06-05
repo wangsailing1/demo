@@ -69,7 +69,7 @@ import sys
 try:
     import __builtin__ as builtins
 except ImportError:
-    import builtins
+    import __builtin__
 try:
     set
 except NameError:
