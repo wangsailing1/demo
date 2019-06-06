@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="{{static_url('js/jquery-3.4.1.js')}}" ></script>
+    <script type="text/javascript" src="{{static_url('js/allfunction.js')}}"></script>
+    <script type="text/javascript">
+        $(function () {
+            result = send_request('chat.get_friends');
+            if (result.status==0){
+                var s = "";
+                $.each(result.data.data, function (i, obj) {
+                    var url = 'action_chat&friend='+obj.account;
+                    var p = "<p id='"+url+"' onclick='send_request(this.id)'>"+obj.name+"</p>";
+                    s += p;
+                    console.log(s)
+                });
+                $("#show_friends").html(s)
+            }else{
+                alert(result.data.msg);
+                location.href = '/'
+            }
+        });
+    </script>
+</head>
+<body>
+    <dev id="show_friends"></dev>
+</body>
+</html>

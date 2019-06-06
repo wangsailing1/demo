@@ -79,7 +79,8 @@ class HandlerManager(object):
         """
         self.req = request_handler
         self.get_arguments = self.req.get_arguments
-        uid = self.get_argument('uid', '')
+        cookie = self.req.get_current_user()
+        uid = self.get_argument('uid', cookie)
         if uid:
             self.mm = ModelManager(uid)
         else:

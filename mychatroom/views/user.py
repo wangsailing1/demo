@@ -13,13 +13,9 @@ def register_user(hm):
     user.set_pwd(password)
     user.rename(name)
     mm = ModelManager(user.uid)
-    mm.user.name = user.name
-    mm.user.account = user.account
-    mm.user.password = user.password
-    mm.user.reg_time = user.reg_time
-    mm.user.online = user.online
+    mm.user = user
     user.save()
-    # mm.do_save()
+    mm.do_save()
     hm.mm = user
     return 0,{'msg':'注册成功'}
 def reset_pwd(hm):
@@ -50,7 +46,6 @@ def login(hm):
     account = hm.get_argument('account', '')
     password = hm.get_argument('password', '')
     user = UserData.get(account)
-    print UserData.ACCOUNT
     if user.inited:
         return 1, {'msg':'账号不存在'}
     if not user.check_pwd(password):
@@ -72,7 +67,6 @@ def index(hm):
 def logout(hm):
     mm = hm.mm
     user = UserData.get(mm.user.account)
-    print user.__dict__
     if not user.online:
         return 1,{'msg':'当前没在登陆状态'}
     user.online = False

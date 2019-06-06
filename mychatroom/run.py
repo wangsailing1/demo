@@ -24,7 +24,7 @@ app_settings = dict(
             debug=True,
             cookie_secret='1q2w3e4r',
             #设置跳转路由，为了防止在没有登录情况下，直接输入需要登录才可见的url进行访问，做判断，如果没有登录则跳转到这个路由下
-            login_url='/template/login',
+            login_url='/?template=login.html',
         )
 if __name__ == '__main__':
     app  = tornado.web.Application(handlers, **app_settings)

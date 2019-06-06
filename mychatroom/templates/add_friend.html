@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="{{static_url('js/jquery-3.4.1.js')}}" ></script>
+    <script type="text/javascript" src="{{static_url('js/allfunction.js')}}"></script>
+    <script type="text/javascript">
+        function search (){
+            result = send_request('chat.search_account', 'account');
+            if (result.status==0){
+            $("#show").html(
+                "搜索结果 : &nbsp;昵称 :"+result.data.name + "<button onclick='add_friend()'>添加</button>"
+            )}else{$("#show").html(result.data.msg)}
+        }
+        function add_friend(){
+            result = send_request('chat.send_friend_application&uid='+$('input[name="account"]').val());
+            if (result.status==0){
+            alert("已经向"+ result.data.name+"发送好友申请");
+            location.href = '/'
+            }else{
+                alert(result.data.msg);
+                location.href = '/'
+            }
+        }
+    </script>
+</head>
+<body>
+   <h4 style="color:aqua">
+       添加好友
+    </h4>
+    <p>账号 : <input type="text" name="account"><input type="submit" onclick="search()" value="查找"></p>
+    <p id="show"></p>
+</body>
+</html>
