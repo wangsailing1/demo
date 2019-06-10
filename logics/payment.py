@@ -6,6 +6,7 @@ import time
 import math
 import json
 import urllib
+import inspect
 import traceback
 
 import settings
@@ -49,6 +50,15 @@ def pay_apply(mm, obj, charge_config):
             'reason': 0,            # admin充值原因
     :return True | False
     """
+    try:
+        if not mm.action:
+            # 获取上两帧代码，找出调用pay_apply的函数
+            frame = inspect.getframeinfo(inspect.currentframe(2))
+            action = frame.function
+            mm.action = action
+    except:
+        mm.action = 'payment'
+
     amount = 0
     obj['old_diamond'] = mm.user.diamond
     obj['level'] = mm.user.level
