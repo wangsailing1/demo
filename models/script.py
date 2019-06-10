@@ -280,6 +280,13 @@ class Script(ModelBase):
         if save:
             self.save()
 
+    def data_update_func_1(self):
+        if self.cur_script:
+            finished_first_income = self.cur_script['finished_first_income']
+            # 做个容错, 处理老玩家数据
+            if 'income' in finished_first_income:
+                finished_first_income['first_income'] = finished_first_income.pop('income')
+
     def max_directing_times(self):
         return game_config.common[93]
 
@@ -973,7 +980,7 @@ class Script(ModelBase):
                 # 非爆款类型不再计入票房总数
                 if luck_type != script_type:
                     return {
-                        'income': int(first_income * (1 + (buff + debuff) / 10000.0)),
+                        'first_income': int(first_income * (1 + (buff + debuff) / 10000.0)),
                         'first_luck': trigge_first_luck,
                         'step_luck': trigge_step_luck,
                         'buff': buff,
