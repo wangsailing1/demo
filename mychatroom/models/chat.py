@@ -1,6 +1,7 @@
 #! --*-- encoding:utf8 --*--
 from models import ModelBase
 from logics import ModelManager
+import websocket
 from models.user import  UserData
 class Content(ModelBase):
     def __init__(self, uid):
@@ -48,12 +49,39 @@ class Content(ModelBase):
         acc = self.friends[account]
         if not acc:
             return 1, {'msg':"你没有添加该好友"}
-        acc[msg].append(msg)
+        acc['msg'].append(msg)
 
     def accept_msg(self, account, msg):
         acc = self.friends[account]
         acc['msg'].append(msg)
         acc['new_msg'].append(msg)
 
+class MyWebSocketHandler(websocket.WebSocket):
+    connect_user = dict()
 
+    def __init__(self, account):
+        self.account = account
+        if self.account in self.connect_user:
+            self = self.connect_user[self.account]
+
+    def open(self, account):
+        self.connect_user[account] = self
+
+    def on_message(self, account,message):
+        print account,'发来的消息', message
+
+    def on_close(self, account):
+        del self.connect_user[account]
+
+    def check_origin(self, origin):
+        return True
+
+    @classmethod
+    def send_demand_updates(cls, account, message):
+        print cls.connect_user
+        for i,v in cls.connect_user.iteritems():
+            if i == account:
+                v.write_message(message)
+
+ModelManager.register_model('myweb', MyWebSocketHandler)
 ModelManager.register_model('content', Content)

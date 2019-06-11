@@ -1,6 +1,10 @@
 #! --*-- encoding:utf8 --*--
+from Queue import Queue, Empty
 from models.user import UserData, md5
 from logics import ModelManager
+from views.chat import Chat
+from models.chat import MyWebSocketHandler
+
 def register_user(hm):
     account = hm.get_argument('account', '')
     password = hm.get_argument('password', '')
@@ -50,11 +54,16 @@ def login(hm):
         return 1, {'msg':'账号不存在'}
     if not user.check_pwd(password):
         return 2, {'msg':'密码不正确'}
-    if user.online:
-        return 3, {'msg':'账号已经在登陆状态'}
+    # if user.online:
+    #     user.online = False
+    #     return 3, {'msg':'账号已经在登陆状态'}
+    myweb = MyWebSocketHandler(account)
+    myweb.open(account)
+    print myweb.connect_user
     user.online = True
     user.save()
     hm.req.set_secure_cookie('account', account)
+
     return 0, {'msg': '登陆成功'}
 
 def index(hm):
@@ -67,10 +76,10 @@ def index(hm):
 def logout(hm):
     mm = hm.mm
     user = UserData.get(mm.user.account)
+    hm.req.clear_cookie('account')
     if not user.online:
         return 1,{'msg':'当前没在登陆状态'}
     user.online = False
     user.save()
-    hm.req.clear_cookie('account')
     return 0, {'msg':"退出成功"}
 

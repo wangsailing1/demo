@@ -2,6 +2,7 @@
 from models.chat import Content
 
 class Chat(object):
+    USER_QUEUE_DICT = {}
     def __init__(self, mm):
         self.mm = mm
         self.content = Content.get(self.mm.user.account)
@@ -24,6 +25,7 @@ class Chat(object):
         :return:
         """
         self.content.accept_msg(account, msg)
+        self.content.save()
 
     def add_friend_msg(self, account):
         """

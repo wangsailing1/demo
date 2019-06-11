@@ -19,6 +19,7 @@
     });
         function logout() {
             result = send_request('user.logout', 'uid');
+            location.reload();
             if (result.status==0){
                 location.reload()
             }
