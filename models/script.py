@@ -1023,5 +1023,12 @@ class Script(ModelBase):
             cards.append(card_id)
         return cards
 
+    def get_scripts_value(self):
+        num_value = 0
+        for i in self.own_script:
+            level = game_config.script[i]['script_level']
+            num_value += game_config.body_value[level+7]['value']
+        return num_value
+
 
 ModelManager.register_model('script', Script)

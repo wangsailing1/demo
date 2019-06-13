@@ -906,3 +906,8 @@ def get_active_end_time(hm):
     rc, data = ul.get_active_end_time()
     return rc, data
 
+# 获取用户所有的身价信息
+def get_sum_values(hm):
+    mm = hm.mm
+    data = mm.user.get_sum_values()
+    return 0, data

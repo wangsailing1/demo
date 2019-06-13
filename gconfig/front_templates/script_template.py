@@ -52,6 +52,7 @@ script = {
 
     'role_id': ('role_id', 'int_list'),     # 角色id
     'directing_policy': ('directing_policy', 'int_list'),     # 执导方针
+    'script_level' : ('script_level', 'int')    # 剧本等级
 
 }
 

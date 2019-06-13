@@ -2195,6 +2195,36 @@ class User(ModelBase):
                 effect[b_effect_type] = effect.get(b_effect_type, 0) + build_effect
         return effect
 
+    def get_builds_value(self):
+        sum_value = 0
+        for i, v in self.group_ids.iteritems():
+            if v['build_id'] == 9999:
+                continue
+            weight = int(str(v['build_id'])[-2:])
+            sum_value += game_config.body_value[weight+25]['value']
+        return sum_value
+
+
+    def get_sum_values(self, data={}):
+        cards_value = self.mm.card.get_cards_value()
+        directors_value = self.mm.director.get_directors_value()
+        builds_value = self.mm.user.get_builds_value()
+        block_value = self.mm.block.get_block_value()
+        scripts_value = self.mm.script.get_scripts_value()
+        chapter_value = self.mm.chapter_stage.get_chapter_value()
+        sum_values = round((sum(cards_value.values()) * (1 + chapter_value)) + \
+                     sum(directors_value.values()) + builds_value + block_value)
+        data.update({'values_info':{
+                        'cards_value' : cards_value,
+                        'directors_value' : directors_value,
+                        'builds_value' : builds_value,
+                        'block_value' : block_value,
+                        'scripts_value' : scripts_value,
+                        'chapter_value':chapter_value,
+                                },
+                    'sum_values': sum_values,
+                    })
+        return data
 
 class OnlineUsers(ModelTools):
     """

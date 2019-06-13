@@ -1053,6 +1053,7 @@ class ScriptLogic(object):
         # 技能效果
         skill_add_value = script.calc_skill_effect(12, all_income)
         all_income += skill_add_value
+        all_income += self.mm.user.get_sum_values()['sum_values']
         self.mm.user.add_dollar(all_income)
 
         ticket_line = script_config['ticket_line']

@@ -296,6 +296,11 @@ value = {
     'value': ('value', 'int_float_list_or_int_float'),  # 值
 }
 
+body_value = {
+    'uk': ('id', 'int'),  # id
+    'value': ('value', 'int'),  # 值
+}
+
 # 特权类型
 privilege = {
     'uk': ('id', 'int'),  # 编号

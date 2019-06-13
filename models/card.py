@@ -987,5 +987,21 @@ class Card(ModelBase):
 
         return result
 
+    def get_cards_value(self):
+        """
+        :return: 获取卡牌身价
+        """
+        cards_value_dict = {}
+        for i, v in self.cards.iteritems():
+            sum_value = 0
+            if v['is_cold']:
+                continue
+            card_config = self.get_card(i)
+            sum_value += sum([a for a in  card_config['all_char_pro'] if a >= 0]) * game_config.body_value[1]['value']
+            if card_config['skill']:
+                sum_value += sum([v['lv'] for j, v in card_config['skill'].iteritems()]) * game_config.body_value[7]['value']
+            cards_value_dict[i] = sum_value
+        return cards_value_dict
+
 
 ModelManager.register_model('card', Card)

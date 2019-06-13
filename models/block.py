@@ -166,6 +166,9 @@ class Block(ModelBase):
                     data[tp_num][script_id] = {'rank': rank, 'score': score}
         return data
 
+    def get_block_value(self):
+        return game_config.body_value[42+self.block_num]['value']
+
 
 # 获取日期
 def get_date(dt=''):

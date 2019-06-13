@@ -285,6 +285,7 @@ user_config_mapping = {
     'money_guide': ('money_guide', True),
     'assistant': ('assistant', True),
     'reward_gift': ('reward_gift', True),
+    'body_value': ('body_value', True)
 }
 
 #

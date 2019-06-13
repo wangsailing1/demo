@@ -93,6 +93,15 @@ class Chapter_stage(ModelBase):
             return False
         return True
 
+    def get_chapter_value(self):
+        sum_value = 0
+        for j, v in self.chapter.iteritems():
+            if v.get(0) and len(v.get(0)) >= len([i for i in game_config.get_chapter_mapping()[j][0]['stage_id'] if i != -1]):
+                sum_value += game_config.body_value[41]['value']
+            if v.get(1) and len(v.get(1)) >= len([i for i in game_config.get_chapter_mapping()[j][1]['stage_id'] if i != -1]):
+                sum_value += game_config.body_value[42]['value']
+        return sum_value * 0.0001    # 返回自身加百分比
+
 
 
 ModelManager.register_model('chapter_stage', Chapter_stage)

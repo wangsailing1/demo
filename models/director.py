@@ -374,6 +374,17 @@ class Director(ModelBase):
             role_class['effect'][role_id].append(r_tp)
         return role_class
 
+    def get_directors_value(self):
+        directors_value_dict = {}
+        for i, v in self.directors.iteritems():
+            sum_value = 0
+            if not v['pos']:
+                continue
+            sum_value += game_config.body_value[v['star']+19]['value']
+            sum_value += v['lv'] * game_config.body_value[v['star']+13]['value']
+            directors_value_dict[i] = sum_value
+        return directors_value_dict
+
 
 
 ModelManager.register_model('director', Director)
