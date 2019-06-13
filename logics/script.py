@@ -5,7 +5,7 @@ Created on 2018-09-04
 
 @author: sm
 """
-
+from __future__ import division
 import time
 import copy
 import math
@@ -1053,7 +1053,7 @@ class ScriptLogic(object):
         # 技能效果
         skill_add_value = script.calc_skill_effect(12, all_income)
         all_income += skill_add_value
-        all_income += self.mm.user.get_sum_values()['sum_values']
+        all_income += self.mm.user.get_sum_values()['sum_values'] * (game_config[123] / game_config[124])
         self.mm.user.add_dollar(all_income)
 
         ticket_line = script_config['ticket_line']
