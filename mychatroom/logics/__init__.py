@@ -66,6 +66,11 @@ class ModelManager(object):
             print self._mm
             mm_obj.do_save(is_save)
 
+    def get_mm(self, account):
+        if self.uid == account:
+            return self
+        return self.__class__(account)
+
 class HandlerManager(object):
     """ 请求管理类
 

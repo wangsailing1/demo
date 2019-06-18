@@ -16,6 +16,7 @@ handlers = [
     (r"/?[a-zA-Z0-9_]*/api/?", handlers.APIRequestHandler),
     (r'/?[a-zA-Z0-9_]*/template/?', handlers.TempLateHandler),
     (r'/?[a-zA-Z0-9_]*?',handlers.IndexHandler),
+    (r'/?[a-zA-Z0-9_]*/websocket/?', handlers.Myserver),
 ]
 app_settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), 'templates'),
@@ -26,7 +27,9 @@ app_settings = dict(
             #设置跳转路由，为了防止在没有登录情况下，直接输入需要登录才可见的url进行访问，做判断，如果没有登录则跳转到这个路由下
             login_url='/?template=login.html',
         )
+
+
 if __name__ == '__main__':
     app  = tornado.web.Application(handlers, **app_settings)
-    app.listen(address='127.0.0.1', port=8000)
+    app.listen(address='0.0.0.0', port=8000)
     tornado.ioloop.IOLoop.current().start()

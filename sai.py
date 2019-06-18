@@ -1,3 +1,4 @@
+#! --*-- encoding:utf-8 --*--
 # n = int(input("请输入高度"))
 # e = int(n/2+0.5)
 # for i in range(1,e+1):

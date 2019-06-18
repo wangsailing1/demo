@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .me{
+            text-align:right;
+        }
+        .you{
+            text-align:left;
+        }
+    </style>
     <script type="text/javascript" src="{{static_url('js/jquery-3.4.1.js')}}" ></script>
     <script type="text/javascript" src="{{static_url('js/allfunction.js')}}"></script>
     <script type="text/javascript">
             function get_page(){
             result = send_request('chat.get_friends');
-            if (result.status==0){
+                if (result.status==0){
                 var s = "";
                 $.each(result.data.data, function (i, obj) {
-                    if (obj.new_msg){
-                        s += '<span style="color:red;">'+obj.new_msg+'</span>'
-                    }
                     var url = 'chat.action_chat&friend='+obj.account;
-                    var p = "<p id='"+url+"' onclick='get_msg(this.id)'>"+obj.name+"</p>";
+                    var p = "<p id='"+url+"' onclick='get_msg(this.id)'>";
+                    if (obj.new_msg.length){
+                        p += '<span id="'+obj.account+'" style="background: red;">'+obj.new_msg.length+'</span>'
+                    }
+                    p += obj.name+"</p>";
                     s += p;
                 });
-                $("#show_friends").html(s)
+                $("#show_friends").html(s);
+                init(result.data.account)
             }else{
                 alert(result.data.msg);
                 location.href = '/'
@@ -39,23 +49,11 @@
                     get_msg('chat.action_chat&friend=' + $("input[name='friend']").val())
                 }
             }
+            send();
         event.returnValue = false; // 用来回车不进行换行
         return false
         }
             }
-
-
-// function longPoll () {
-//     $.get("/api/?method=chat.get_info")
-//     .done(function(res) {
-//         console.log(res)
-//     })
-//     .always(function() {
-//         setTimeout(function() {
-//             longPoll(Date.now()/1000);
-//         }, 10000);
-//     })}
-//     longPoll()
 
     </script>
 </head>

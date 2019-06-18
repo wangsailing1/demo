@@ -88,7 +88,7 @@ class ModelBase(object):
         for k in self._attrs_base:
             data = getattr(self, k)
             r[k] = data
-
+        r = str(r)
         return r
 
     @classmethod

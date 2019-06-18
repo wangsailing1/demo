@@ -1,0 +1,263 @@
+**********************************************************************************************
+---------------------------- 2018年1月22日 星期二 晴 ----------------------------爬虫(day01)---- 
+-python做爬虫的优势
+  请求模块 / 解析模块 丰富成熟,强大的scrapy框架
+
+-爬虫分类
+  1.通用网络爬虫(搜索引擎,如百度蜘蛛等.必须遵守robots协议)
+    在网址后面 加/robots.txt可以看到该网站的robots协议
+  2.聚焦网络爬虫
+    自己写的爬虫程序: 面向需求的爬虫
+
+-爬取数据步骤
+  1.确定要爬取的url地址
+  2.通过http/https协议获取相应的页面
+  3.提取响应中有用的数据
+    1.保存数据
+    2.如果页面中引用了其他url的资源,继续爬取该url
+
+-Anaconda和Spyder
+  1.Anaconda : 集成的开发环境
+  2.Spyder 编辑器快捷键
+    1. 注释/取消注释 ctrl+1
+    2. 运行程序 F5    
+
+-Chrome浏览器插件
+  1. 安装方法
+    选项->更多工具-> 扩展程序 -> 打开开发者模式 -> 把下载好的插件.crx 拖拽到页面中即可                
+  2.插件
+    1. XPath Helper: chrome爬虫网页解析工具.crx
+    2. Proxy-SwitchOmega-Chromium (通常配合Fiddler抓包工具)
+    3. JSONView: web开发格式化和高亮插件.crx
+
+-WEB回顾
+  1.HTTP和Https
+    HTTP: 80
+    HTTPS: 443, HTTP的升级版,加了安全套接层
+  2.User-Agent
+    记录用户浏览器,操作系统等
+
+-python请求模块
+  1. python2 : urllib / urllib2 
+  2. python3 : 把以上两个合并成了 urllib.request  import urllib.request
+
+  3.常用方法
+    1. res = urllib.request.urlopen('URL地址')
+      1.作用: 向网站发起请求,并获取响应
+      2. res.read()
+        读取响应内容,返回bytes类型,
+        可以采用res.read().decode('utf-8')解码获取字符串
+      ** 该方法不支持重构User-Agent
+    2.urllib.request.Request('url',headers={})
+      1.使用流程
+        1.创建请求对象          req = urllib.request.Request()
+        2.发送请求获取响应对象   res = urllib.request.urlopen(req)
+        3.读取响应内容          res.read().decode('utf-8')
+      2. 响应对象的方法
+         假设响应对象命名为res
+         res.read()             // 获取响应内容,返回字节串
+         res.getcode()          // 获取HTTP的响应码 200/404/500...
+         res.geturl()           // 获取实际返回数据的url
+    
+-URL编码模块 : urllib.parse   # import urllib.parse
+  1.urlencode({字典})
+    如: http://www.baidu.com/s?wd=美女
+        data = urllib.parse.urlencode({'wd':'美女'})
+        >>> data 为 'wd=%e7%be%8e%e5%a5%b3'
+            'http://www.baidu.com/s?'+data 即可以进行访问
+
+      ** 多个参数可以写到字典一起编码
+        data = urllib.parse.urlencode({'wd':'美女','pn':0})
+        kw=%E7%BA%B8%E8%B4%A8%E7%89%88&pn=0
+
+  示例:(baiduSearh.py)
+    写爬虫程序,运行时提示用户在终端输入搜索内容,并将返回值写入本地
+
+  2. quote('字符串')
+    如: http://www.baidu.com/s?wd=美女
+        data = urllib.parse.quote('美女')
+        >>> data 为 '%e7%be%8e%e5%a5%b3'
+            'http://www.baidu.com/s?wd='+data 即可以进行访问
+  3.unquote('%E8%Ed%d5...')
+    解码
+
+  练习: 百度贴吧数据抓取(getTieba.py)
+    1.输入抓取的贴吧名称
+    2.输入起始页
+    3.输入终止页
+    将每一页作为一个文件保存到本地
+
+-请求方式及实例
+  1.GET请求
+    1.特点: 查询参数在URL中
+    2.案例: 抓取百度贴吧
+  2.POST(在Request()中添加data参数)
+    1.urllib.request.Request(url, data=data, headers=headers)
+      data: 表单数据以bytes类型提交,因此我们提交的data也应该处理成bytes
+    2.将data处理为bytes类型
+      1.先把data定义为字典 {}
+      2.urlencode(data).encode('utf-8')
+  示例:
+    爬取有道翻译,用户输入内容,返回翻译后内容(youdao.py)
+
+**********************************************************************************************
+---------------------------- 2018年1月23日 星期三 晴 ----------------------------爬虫(day02)---- 
+-数据分类
+  1.结构化数据
+    特点: 固定格式,如html,json,xml
+  2.非结构化数据
+    图片,音频,视频,一般存储为二进制
+
+-正则解析模块re
+  1.rList = re.findall(r'表达式',目标字符串,re.S)
+  2. 写法2:  
+    1.创建编译对象
+      p = re.compile(r'',re.S)
+    2.进行字符串匹配
+      rList = p.findall(html)  
+
+- csv模块使用流程
+  1.导入模块
+    import csv
+  2.打开csv文件
+    with open('xx.csv','w') as f:
+  3.初始化写入对象
+    writer = csv.writer(f)
+  4.写入数据
+    writer.writerow([列表])      
+
+-爬取猫眼电影top100榜(maoyan.py)  
+
+cookies:
+  import warnings
+  # 过滤警告,忽略警告
+  warnings.filterwarnings('ignore')
+
+-fiddler抓包工具
+  1.配置Fiddler
+    1.添加https信任证书
+      tools -> options -> https -> 勾选Decrypt HTTPS traffic -> 按提示添加
+      **如果以上方法加不上,尝试spider/Fiddler添加证书信任的方法.zip 
+    2.Connections
+      1.设置浏览器和Fiddler之间的通信端口
+      2.需要用手机抓包时,勾选Allow remote computer to connect
+    3.重启Fiddler(重要),否则设置不生效,抓不到包儿
+
+  2.配置浏览器代理 
+    点击switchOmega -> 选项 -> 新建情景模式 -> 自己起个名 ->
+    代理协议选http -> 代理服务器填本地127.0.0.1 -> 端口写Fiddler的Connection中的端口
+    -> 应用选项  // 然后打开fiddler才能上网,除非点switchOmega切换为系统代理 
+
+  3.Fiddler常用菜单
+    1.工具栏Inspector: 查看抓到的数据包的详细内容
+      工具栏Inspector中常用的选项
+        1.Headers
+          显示客户端发送到服务器的请求头,包含客户端信息/ cookie / 传输状态
+        2.WebForms
+          显示POST请求的表单数据
+        3.Raw
+          将整个请求显示为纯文本
+
+**********************************************************************************************
+---------------------------- 2018年1月24日 星期四 晴 ----------------------------爬虫(day03)---- 
+-requests模块
+  1.安装requests模块
+    pip3 install requests 
+  2.常用方法
+    1.request.get(url,headers=headers)
+      向网站发起请求并获取响应对象res
+    2.响应对象(res)的属性
+      1. res.encoding:      获取响应内容的字符编码(对其赋值,即可指定编码格式)res.encoding='utf-8'     
+      2. res.text:          获取响应内容,字符串格式
+      3. res.content:       获取响应内容,bytes格式
+      4. res.status_code:   http响应码
+      5. res.url:           实际返回数据的url地址
+    3.非结构化数据保存(图片等)
+      html = res.content
+      with open('xxx','wb') as f:
+        f.write(html)
+    
+-request.get()方法中的参数
+  1.查询参数(params)
+    res = requests.get(url,params=params,headers=...)  
+    params为 字典, url为baseurl,发送请求时,会自动编码拼接  
+    如:
+      url = 'http://www.baidu.com/s?'
+      params = {'kw':'美女','pg':'100'}
+      res = requests.get(url,params,headers=..)
+      发送请求时,会自动编码拼接
+        'http://www.baidu.com/s?kw=%e7%be%8e%e5%a5%b3&pg=100'
+  2.代理参数(proxies)
+    1.获取代理IP的网站
+      西刺代理网
+      快代理
+      全网代理
+    2.普通代理
+      1.格式: proxies={'协议':'协议://ip:端口号'}
+        ex:
+          proxies = {'http':'http://113.13.177.80:9999'}
+      2.测试自己的出口IP的网站
+        http://httpbin.org/get
+        https://www.whatismyip.com/
+    3.私密代理
+      1.格式
+        proxies = {'协议':'协议://用户名:密码@IP:端口'}
+  3.timout 设置尝试连接的最大时间,通常设置为3,3s钟还没有响应就会抛出异常
+    res = requests.get(url,proxies=proxies,headers=headers,timeout=3)
+  4.Web客户端验证(auth)
+    1. auth=('用户名','密码')
+    示例:codeTarena.py
+  5.SSL证书认证参数(verify)
+    没有进行CA认证的网站可能会报SSLError
+      默认verify=True,进行SSL证书认证
+      设置为verify=False,不进行SSL证书认证,直接进入目标页面
+
+-练习:(neihan8.py)
+  爬取内涵吧脑筋急转弯(www.neihan8.com),写入mongodb数据库    
+
+-requests.post()
+  1.request.post(url,data=data,headers,...)  //get()方法中的其他参数都可以用  
+  2.data:
+    form要提交表单数据,字典,不用编码不用转码
+  
+  示例:
+    有道翻译破解版(youdao.py)
+    1.多抓几次包,观察表单数据的变化
+      salt,sign,ts,bv
+    2.这种表单数据的加密,通常都是JS文件做的,
+      找到JS文件,找到相关加密算法(F12,筛选JS文件进行抓取)
+    3.选中JS文件,点Preview选项预览代码,复制到本地找加密内容,搜索想要查看的字段
+    4.慢慢分析找到对应的加密算法
+      var r = function(e) {
+        var t = n.md5(navigator.appVersion)
+          , r = "" + (new Date).getTime()
+          , i = r + parseInt(10 * Math.random(), 10);
+        return {
+            ts: r,
+            bv: t,
+            salt: i,
+            sign: n.md5("fanyideskweb" + e + i + "p09@Bn{h02_BIEe]$P^nG")
+        }
+      };
+    5.一个个字段分析(对未知字段ts,salt,bv,sign)
+      1.ts: r = "" + (new Date).getTime()
+        分析得到 ts 1548320764601 是 13位的时间戳
+        可以用python中 int(time.time()*1000) 来模拟
+      2.salt: i = r + parseInt(10 * Math.random(), 10)
+        用r 在生成一个 0-9 的随机整数组成
+      3.e 为我们输入的要翻译的内容
+      4.bv: t = n.md5(navigator.appVersion)
+        navigator.appVersion 是使用的浏览器的版本号等信息,因此每次都一样
+      5.sign: n.md5("fanyideskweb" + e + i + "p09@Bn{h02_BIEe]$P^nG")
+        才用hashlib中的md5加密算法伪装sign即可
+
+**********************************************************************************************
+---------------------------- 2018年1月25日 星期五 晴 ----------------------------爬虫(day04)----
+-XPath工具(解析)
+  1.在XML文档中查找信息的语言,同样适用于HTML文档的检索   
+  2.xpath辅助插件 Xpath Helper
+    打开关闭: ctrl + Shift + x
+  3.Firefox插件: xpath Checker
+  4.匹配语句
+    ex: 匹配页面下所有clsss为movie-item-info的div下的class为name的p元素的内容
+    //div[@class="movie-item-info"]/p[@class="name"]        #@表示获取属性值,如class / id 等

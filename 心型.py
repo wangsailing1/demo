@@ -1,3 +1,4 @@
+#！--*-- encoding:utf-8 --*--
 # print('    *        *')
 # print('   * *      * *')
 # print('  *     *      *')
@@ -47,27 +48,31 @@
 # print(mymax[100,1,2,3,45])
 
 
+class Node(object):
+
+    def __init__(self, data):
+        self.data = data
+        self.parent = None
+        self.children = []
+
+    def add_child(self, child):
+        self.children.append(child)
+        child.parent = self
+
+    def __del__(self):
+        print '__del__'
+
+n = Node(0)
+del n
+# __del__
+print '执行到这里'
+n1 = Node(1)
+n2 = Node(2)
+n1.add_child(n2)
+del n1 # no output
+n2.parent
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 

@@ -3,15 +3,15 @@
 #         print("*")
 #     else:
 #         print(" ",end='')
-for j in range(9,4,-1):
-    for i in range(1,20):
-        if i==j:
-            print('*',end='')
-        elif i==20-j:
-            print('*')
-            break
-        else:
-            print(" ",end='')
+# for j in range(9,4,-1):
+#     for i in range(1,20):
+#         if i==j:
+#             print('*',end='')
+#         elif i==20-j:
+#             print('*')
+#             break
+#         else:
+#             print(" ",end='')
 # for j in range(4,10):
 #     for i in range(1.20):
 #         if i==j:

@@ -1,0 +1,1704 @@
+**********************************************************************************************
+---------------------------- 2018年11月24日 星期六 晴  -------------------MongoDB(day1)--------
+*今天加课
+
+MongoDB
+
+*查看官方文档：
+  www.mongodb.com  -->  DOCS
+
+-数据存储阶段
+  文件管理阶段(.txt .doc .xls)
+    优点：
+      数据可以长期保持
+      存储数据量大
+      使用简单
+    缺点：
+      数据的存储结构随意
+      数据的查找、修改效率低
+      不方便扩展和自动化处理
+  数据库管理阶段：
+    优点：
+      数据格式化存储，便于操作
+      降低数据的冗余，提供操作效率
+      方便程序调用
+    缺点：
+      使用需要特定的语句或者命令
+
+-几个概念
+  数据：
+    能够输入到计算机中被识别处理的信息集合
+  数据结构：
+    研究一个数据集合中，数据之间关系的学科
+  数据库：
+    按照数据结构，存储管理数据的仓库。数据库是在数据库管理系统管理
+    控制下，在一定介质上创建的数据集合。
+  数据库管理系统：
+    数据库管理软件，用于建立和维护数据库
+  数据库系统：
+    由数据库管理系统，开发工具等构成的集合
+  
+cookie推荐书籍：
+  《计算机原理》、《算法导论》、《数据结构》
+
+-关系型数据库
+  采用关系模型来组织数据结构的数据库(二维表)
+    ex: Oracle  DB2  SQLServer  MySql  SqLite   
+    优点：
+      1.容易理解，逻辑类似常见的表格
+      2.使用方便，都是用sql语句进行数据操作，sql语句很成熟
+      3.数据一致性高，冗余低，完整性好
+      4.技术成熟，可以使用表的外键关联等操作
+    缺点：
+      1.每次数据操作都需要sql解析，消耗较大
+      2.关系型数据库内部往往进行加锁处理，也影响处理速度
+      3.不能够很好地处理海量数据的高并发需求，读写效率低
+      4.由于数据的一致性等规定，导致灵活性不高
+
+-非关系型数据库(NoSql --> Not only sql)
+  优点：
+    1.并发能力强，读写速度快，可以更好的应对海量数据并发
+    2.使用灵活
+  缺点：
+    1.通用性差，没有sql那样的统一语句
+    2.技术成熟度比关系型数据库低，没有外键等复杂操作
+  NoSql 分类：
+    键值型数据库：Redis
+    列存储数据库：HBase
+    文档型数据库：MongoDB
+    图形数据库：  Graph
+  NoSql使用情况：
+    1.对数据一致性要求低
+    2.需要应对高并发的海量数据存储
+    3.比较容易建立非关系模型
+
+-MongoDB数据库
+  特点：
+    1.由c++编写的数据库管理系统
+    2.支持丰富的增删改查操作
+    3.有丰富的数据存储类型，技术相对成熟
+    4.支持众多编程语言接口
+    5.使用方便，便于部署扩展
+  安装：
+    Linux: sudo apt-get install mongodb
+    安装位置：/var/lib/mongodb
+    配置文件：/etc/mongodb.conf
+    命令集：/usr/bin
+
+    手动安装： 
+      1.www.mongodb.com  下载对应系统的安装包
+      2.将下载的安装包安装即可 
+          压缩包要解压到   /usr/local
+          如果是deb安装包  sudo dpkg -i xxx.deb
+      3.添加环境变量的方法
+        $ PATH=$PATH:/opt/mongodb/bin
+        export PATH
+
+        将以上两句放到 ~/.bashrc
+        (否则每次重启操作系统都要重新添加环境变量)
+
+-MongoDB 命令
+  数据库设置：mongod
+    设置数据库存储位置
+      mongod --dbpath  目录
+    设置端口号(默认27017)
+      mongog --port 端口号
+  
+  启动mongo shell: mongo
+    退出：ctrl-c  quit()
+
+-mongodb数据库
+  键值对  -->  文档  -->  集合  --> 数据库
+  mysql:
+  ----------------------
+    ID  |  NAME  |  AGE  
+  ----------------------
+    1   | Lily   |  18
+  ----------------------
+    2   | Lucy   |  17
+  ----------------------
+  mongodb:
+  {'ID':1,
+   'NAME':'Lily",
+   'AGE': '18'
+  },
+  {'ID':2,
+   'NAME':'Lily",
+   'AGE': '17'
+  }
+
+   mysql     mongodb     含义
+  database  database    数据库
+  table     collection  表/集合
+  colum     field       字段/域
+  row       document    记录/文档
+  index     index       索引
+
+-创建库
+  use database
+    e.g  创建一个叫stu的数据库
+          use stu
+  * use实际是选择一个数据库，当这个数据库不存在时，会自动创建
+  * 使用use创建数据库并不会马上创建出来，而是当插入数据时才会真正被创建
+
+-查看数据库：
+  show dbs 
+  
+-数据库命名规则
+  1.使用utf8字符
+  2.不能含有空格 . / \ '\0'字符
+  3.长度不超过64个字节
+  4.不要和系统数据库重名
+  
+-全局变量db: 代表当前正在使用的数据库
+  * 如果不选择任何数据库 ，db 默认为test数据库
+-删除数据库：
+  db.dropDatabase()  删除当前数据库
+-数据库的备份和恢复：
+  备份命令：
+    $ mongodump -h dbhost -d dbname -o dir
+      e.g. 备份本机数据库 stu 到 student 目录下
+        mongodump -h 127.0.0.1 -d stu -o student
+        * student目录不存在时，会自动创建该目录
+  数据库文件恢复：
+    mongorestore -h dbhost:port -d dbname -o dir
+       e.g. 把当前目录下的stu库恢复到当前主机的student数据库
+          mongorestore -h 127.0.0.1:27017 -d student ./stu
+          * 当student数据库不存在时，会自动创建该库
+
+-数据库监控命名
+   $ mongostat  查看数据库运行状态
+     insert query update delete : 每秒执行增查改善次数
+     command : 每秒mongodb命令次数
+     flushes : 和磁盘交互情况
+     vsize   : 使用的虚拟内存
+     res     : 物理内存
+     time    : 时间
+   $ mongotop  监测每个数据库中数据表的读写情况
+     ns    :  集合
+     total :  总时长
+     read  :  读时长(查询操作是读,其他的修改删除操作等都是写操作)
+     write :  写时长
+
+-创建集合
+  方法1：db.createCollection(collectionname)
+    e.g. 创建一个名为class1的集合
+      db.createCollection('class1')
+  方法2：当插入数据时，需要指定集合，如果集合不存在则自动创建
+    e.g. 创建一个名为class2的集合
+      db.class2.insert({'name':'Lucy','age':17})
+-查看当前库的集合
+  方法1：show collections
+  方法2：show tables
+
+-集合命名规则
+  1.使用utf8字符
+  2.不能含有 \0 字符
+  3.不要以system.开头
+-删除集合：db.collection.drop()
+  e.g. 删除class2集合
+    db.class2.drop()
+-集合重命名：db.collection.renameCollection('name')
+  e.g. 把集合class重命名为class0
+    db.class.renameCollection('class0')
+
+-文档
+  什么是文档？
+    * 文档是mongodb数据库中基本的数据组成形式
+    * 文档是由键值对构成，每个键值对表达一项数据
+    * mongodb中文档为bson数据类型(类似于字典)
+  bson --> json --> javascript
+
+  键：即该文档的域，表示值是什么内容
+    命名规则：
+      1.使用utf-8字符串
+      2.不能有\0
+      3.一个文档中的键不能重复
+      4.通过键取值，但是键值对位置不同，认为是不同文档
+  值：即数据库存储的数据
+        类型           值
+        数字          整数，小数
+        布尔类型       true  false
+        array         数组
+        String        字符串
+        Binary data   二进制字串
+        date          时间类型
+        Timestamp     时间戳
+        Null          空 null
+        object        对象 内部文档
+        regex         正则表达式
+        code          javascript代码
+        ObjectId      ObjectId字串
+                      *ObjectId: "_id" : ObjectId("5bf8ef161af9caf27a580ee7")
+                        _id:插入文档时自动添加的文档主键域(也可以自己手动添加)
+                        值：ObjectId类型数据，保证和其他的主键值不重复
+                            24位16进制码
+                            8位文档创建时间，6位机器id，4位进程id,6位计数器
+
+-集合中的文档
+  1.每个集合中的文档格式可以不同(域名称，域多少，种类)
+  2.一个集合中的文档尽量体现相同的存储内容
+  3.文档的表达层次尽量不要过于复杂
+
+-插入文档
+  插入单个文档：
+    db.collection.insertOne(value)
+      e.g.向class0中插入一个文档
+        db.class0.insertOne({'name':'Joy','age':18,'sex':'m'})
+    * db.class0.find()  查看插入结果
+    * 操作数据时，键的引号是可以省略的
+    * _id可以自定义值，但是不能重复
+    * 一个集合中的文档是有序的
+  插入多条文档：
+    db.collection.insertMany([{},{}...])
+      功能：同时插入多条文档
+      参数：数组中包含多个文档
+  插入文档：
+    db.collection.insert()
+      功能：插入文档
+      参数：同insertOne+insertMany
+      * 可以插入一条或多条文档
+
+save插入文档
+  db.collection.save()
+    功能：插入文档，用法同insert()
+    参数：同insert()可以插入一条或者多条文档
+    * 与insert不同的一点是,如果指定_id值存在，则替换原文档
+      db.class0.save({_id:1,name:'Tony',age:19})
+
+获取集合对象：
+  db.getCollection(collection_name)
+    功能：获取集合对象
+    e.g.
+      db.getCollection('class0') 等同于==> db.class0
+
+作业：
+  复习mysql数据库操作
+  对比关系型和非关系型数据库差别
+  复习mongodb命令
+
+**********************************************************************************************
+---------------------------- 2018年11月26日 星期一 晴  -------------------MongoDB(day2)---------
+*上午请假办居住证，下午回来上课
+
+-查找操作
+
+  mysql:  select ... from table where ... 
+
+  mongodb: db.collection.find(query,field)
+
+  查找集合中所有内容
+    db.collection.find() --> select * from table
+
+  find(query,field)
+  功能: 查找所有符合条件的数据
+  参数: query : 表示筛选条件,是一个键值对文档,默认表示查找所有内容
+          e.g. 查找年龄等于18的文档
+	          db.class0.find({age:18})
+         
+	      field : 表示要查找哪个域,是一个文档键值对.用0表示不查找的域,1表示查找的域
+    
+          e.g.  表示不查找_id域,只查找name域
+	          db.class0.find({age:18},{_id:0,name:1})
+
+	    * 当某个域设置为0时表示该域不查找,其他的域查找,如果设置为1表示该域查找,其他的不查找
+	    * _id比较特殊,如果不想查找必须设置为0
+	    * 普通域0和1不能同时出现
+         
+  findOne(query,field)
+    功能: 查找第一条符合条件的文档
+    参数: 同find
+
+    e.g. 查找第一条年龄18的文档
+         db.class0.findOne({age:18},{_id:0})
+
+
+-query的筛选功能
+
+  操作符 : 使用$符号注明的一个有特殊意义的字符串,用以表达丰富的含义.
+          比如 $lt 表示小于
+
+  比较操作符:
+    $eq  等于  == 
+      e.g. 等于18
+	      db.class0.find({age:{$eq:18}},{_id:0})
+
+    $lt 小于  <
+      e.g. 姓名小于Lily  (字符串也可以比较大小)
+	      db.class0.find({name:{$lt:'Lily'}},{_id:0})
+
+    $gt  大于 >
+    $lte  小于等于 <=
+    $gte  大于等于 >=
+    $ne   不等于  !=
+
+    e.g.  查找年龄大于等于18 小于等于20的
+    db.class0.find({age:{$gte:18,$lte:20}},{_id:0})
+
+    $in  包含
+      e.g.  年龄为14,16,18的
+      db.class0.find({age:{$in:[14,16,18]}},{_id:0})
+
+    $nin  不包含
+      e.g. 年龄不为14,16,18的
+      db.class0.find({age:{$nin:[14,16,18]}},{_id:0})
+
+
+-逻辑操作符
+
+  逻辑与
+    1. 在query中多个逗号隔开的键值对即逻辑与关系
+      e.g. 年龄17 并且 性别为女
+	      db.class0.find({age:17,sex:'w'},{_id:0})
+        
+	  2. $and 表示逻辑与
+	    e.g. 年龄17 并且 性别为女
+	      db.class0.find({$and:[{age:17},{sex:'w'}]},{_id:0})
+
+  逻辑或  $or
+    e.g. 年龄大于17 或者性别为女
+      db.class0.find({$or:[{age:{$gt:17}},{sex:'w'}]},{_id:0})
+    
+  逻辑非  $not
+  e.g. 查找年龄不小于18的
+    db.class0.find({age:{$not:{$lt:18}}},{_id:0})
+
+  逻辑既不也不  $nor not (A or B) 
+  e.g.  年龄不为18  性别不为女
+    db.class0.find({$nor:[{age:18},{sex:'w'}]},{_id:0})
+    
+  条件混合
+    年龄大于18或者年龄小于17  并且要求性别为m
+      db.class0.find({$or:[{age:{$gt:18}},{age:{$lt:17}}],sex:'m'},{_id:0})
+
+	  年龄大于等于18的男生,或者叫Sunny
+      db.class0.find({$or:[{age:{$gte:18},sex:'m'},{name:'Sunny'}]},{_id:0})
+
+-数组查找
+
+  数组 : 一组数据的有序集合,使用[]表示
+
+    * 有序的 可以用[]取值
+    * 数据类型可以不同
+
+  查找数组中包含某一项
+    e.g.  查找score数组中包含90的文档
+      db.class1.find({score:90},{_id:0})
+
+    $all  数组中同时包含多项
+      e.g.  数组中同时包含90  88 的
+        db.class1.find({score:{$all:[90,88]}},{_id:0})
+
+    $size  根据数组项目查找
+      e.g.  查找数组中包含3项的文档
+        db.class1.find({score:{$size:3}},{_id:0})
+
+    $slice  选择数组的查询部分 (用于field参数)
+      e.g.  显示数组中的前两项
+        db.class1.find({},{_id:0,score:{$slice:2}})
+
+      e.g.  跳过第一项显示后面两项
+        db.class1.find({},{_id:0,score:{$slice:[1,2]}})
+
+
+-其他查找操作符	
+
+  $exists 判断一个域是否存在
+    e.g. 查找不存在sex域的文档 (true表示存在false表示不存在)
+      db.class0.find({sex:{$exists:false}},{_id:0})
+    
+  $mod 通过除数和余数筛选
+    e.g. 筛选年龄为单数的文档
+      db.class0.find({age:{$mod:[2,1]}},{_id:0})  #[2,1]即除2余1
+
+  $regex 根据正则表达式筛选
+    e.g. 简单的正则表达式筛选中间带o的
+      db.class0.find({name:{$regex:/.*o.*/}},{_id:0})
+
+  $type 根据数据类型筛选
+    e.g. 查找所有名字域类型为2(即字符串)的文档
+      db.class0.find({name:{$type:2}},{_id:0})
+  
+-数据处理函数
+  db.collection.distinct(field)
+    功能： 获取某个域的取值范围(也可以理解为去重)
+    例： 获取age域的取值范围情况
+      db.class0.distince('age')  ==> [15,17,18,19]
+  
+  pretty()
+    功能：将find查询结果格式化显示
+     e.g.  db.class0.find().pretty()
+  
+  limit(n)
+    功能:显示查询结果的前n条
+      e.g. db.class0.find().limit(3)
+  
+  skip(n)
+    功能：跳过前n条，显示后面的内容
+
+  count()
+    功能：统计查询结果数量
+    * (必须配合query筛选条件使用，如果筛选条件为空，则可能出现统计错误)
+    db.acct.find({acct_type:1}).count()
+  
+  sort({field:1/-1})
+    功能： 对查找结果按照某个域的值排序(1升序，-1降序)
+    * 可以写多项，实现复合排序
+    例：按年龄升序排序，当年龄相同时，按姓名升序排序
+      db.class0.find().sort({age:1,name:1})
+  
+  **函数可以连续调用
+    当一个函数返回的是文档集合，则可以继续调用其他函数进行操作
+      e.g.  查找年龄最大的三个文档
+        db.class0.find({},{_id:0}).sort({age:-1}).limit(3)
+  
+  **文档的插入是有序的，可以直接索引获取
+    如：db.class0.find({},{_id:0})[2]
+
+练习：
+  1.创建数据库 名字 grade
+  2.在数据库中创建集合 class
+  3.集合中插入若干数据,格式如下
+    {name:xxx,age:xx,sex:'m',hobby:['xxx','xxx']}
+    age:7-15岁之间
+    hobby: draw dance running sing football
+           basketball computer python
+  4.查找：
+    查看班级所有人信息
+    查看班级中年龄为8岁的学生信息
+    查看年龄大于10岁的学生信息
+    查看年龄在10-14岁之间的学生信息
+    查看年龄为9岁且喜欢画画的女生
+    db.class.find({age:9,hobby:'draw',sex:'w'},{_id:0})
+    查看年龄小于8岁或者大于12岁的学生
+    db.class.find({$or:[{age:{$lt:8}},{age:{$gt:12}}]},{_id:0})
+    查看年龄为9岁或者11岁的学生
+    找到有两项兴趣的学生
+    db.class.find({hobby:{$size:2}})
+    找到喜欢计算机的学生
+    找到既喜欢跳舞又喜欢画画的学生
+    db.class.find({hobby:{$all:['dance','draw']}})
+    统计兴趣爱好有三项的学生人数
+    找到班级中年龄第二大的学生
+    查看班级中兴趣爱好的涵盖范围
+    找到班级中年龄最小的三个男生
+    db.class.find({sex:'m'}).sort({age:1}).limit(3)
+
+-删除文档(删除前备份，执行删除语句前先查找一下看看能否匹配)
+  mysql: delete from table where
+
+  mongo: db.collection.deleteOne(query)
+
+  deleteOne(query)
+    功能：删除第一条符合条件的文档
+    参数：筛选条件 用法同find query
+      e.g. 删除第一条年龄为8岁的文档,db.class.deleteOne({age:8})
+  deleteMany(query)
+    参数：删除索引符合条件的文档
+    参数：query
+    例：删除所有姓名以L开头的文档
+      db.class0.deleteMany({name:{$regex:/L.*/}})
+
+    * 如果筛选条件为空，表示删除集合中所有文档
+  
+  remove(query,justOne)
+    功能：删除文档
+    参数：query
+          justOne  默认为false此时remove == deleteMany
+                   设置为true 此时remove == deleteOne
+  
+  findOneAndDelete(query)
+    功能： 查找第一个符合条件的文档并且删除
+    参数：query
+    返回：找到的文档
+      e.g. 查找不存在sex域的文档并且删除
+        db.class0.findOneAndDelete({sex:{$exist:false}})
+  删除练习：
+    删除年龄小于8岁或者大于15岁的同学
+    删除兴趣爱好只有一项的同学
+    查找喜欢python的同学并删除
+
+-修改操作
+  mysql：update  table  set...  where ...
+
+  mongo: 
+  db.clollection.updateOne(query,update[,upsert])
+    功能：修改第一个符合条件的文档
+    参数：query     数据筛选
+          update   要修改的数据，需要配合修改操作符使用
+          upsert   bool值，默认为false表示如果没有筛选到文档则不执行操作，
+                           设置为true则当没有筛选到文档时，根据query和update插入新的文档 
+    示例：把Han的性别修改为w
+      db.class0.updateOne({name;'Han'},{$set:{sex:'w'}})
+    示例2：如果没有找到Levi则upsert表示插入新文档
+      db.class0.updateOne({name:'Levi'},{$set：{age:18}},{upsert:true})
+  
+  updateMany(query,update,upsert)
+    功能：修改所有符合条件的文档
+    参数：同updateOne
+  
+  update(query,update[,upsert,multi])
+    功能：修改文档
+    参数：query,update同updateOne,update不使用修改器会直接替换掉原来的文档
+          upsert   bool值
+          multi    默认false表示只修改一个文档
+                   设置为true表示修改所有，相当于updateMany
+    示例：把Han的性别修改为w
+      db.class0.update({name;'Han'},{$set:{sex:'w'}})
+    示例2：如果没有找到Levi则upsert表示插入新文档
+      db.class0.update({name:'Levi'},{$set：{age:18}},true)  
+      #第三个参数直接写，不用像updateOne那样用键值对传参
+
+  findOneAndUpdate(query,update)
+    功能：查找一个文档并修改
+    参数：query    查找条件
+          update  修改内容
+    返回：修改前的文档
+  
+  findOneAndReplace(query,document)
+    功能:查找一个文档并替换
+    参数:query      筛选条件
+         document   替换的文档
+    返回:原来的文档
+    e.g.  db.class0.findOneAndReplace({name:'Joy'},{name:'Lily',age:16,sex:'w'})
+
+作业：
+  复习mongodb的增删改查
+  将'三国表'建立mongo数据库，进行相应的增删改查操作
+
+**********************************************************************************************
+---------------------------- 2018年11月27日 星期二 阴  -------------------MongoDB(day3)---------
+
+-修改器的使用
+  $set ： 修改一个域的值，或者增加一个域
+    e.g. 修改Han的sex域的值，如果这个域不存在，会增加这个域
+      db.class0.updateOne({name:'Han'},{$set:{sex:'m'}})
+
+  $unset: 删除一个域
+    e.g. 删除Han的sex域
+      db.class0.updateOne({name:'Han'},{$unset:{sex:''}})
+
+  $rename: 修改域的名称
+    e.g. 将所有文档的sex域更名为gender
+      db.class0.updateMany({},{$rename:{sex:'gender'}})
+
+  $setOnInsert: 当update插入文档时，作为补充内容插入
+    e.g. 设置Tom的age为20,如果Tom文档不存在，插入name/age/的同时一起插入gender:'m',tel:86886888
+      db.class0.updateOne({name:'Tom'},{$set:{age:20},$setOnInsert:{gender:'m',tel:86886888}},{upsert:true})
+
+  $inc: 加法修改器
+    e.g. 把所有文档的age域的值都加上1
+      db.class0.updateMany({},{$inc:{age:1}})
+    * inc不仅仅可以加正整数，负数小数都可以
+  
+  $mul:乘法修改器
+    e.g. 把所有文档的age乘以1.5
+      db.class0.updateMany({},{$mul:{age:1.5}})
+    * $mul作用值可以是正数、负数、小数
+  
+  $max:指定某个域的值，如果小于指定值则改为指定值，大于指定值则不做修改
+    e.g. 将所有age小于28的文档，age值改为28
+      db.class0.updateMany({},{$max:{age:28}})
+  
+  $min: 指定某个域的值，如果大于指定值则修改为指定值，如果小于指定值，则不做修改
+    e.g. 将所有age大于18的文档，age值改为18
+      db.class0.updateMany({},{$min:{age:18}})
+
+-数组修改器
+  $push: 向数组中添加一项
+    db.class1.update({name:'小明'},{$push:{score:5}})
+  
+  $pushAll:向数组中添加多项
+    db.class1.update({name:'小明'},{$push:{score:[5,10]}})
+  
+  $pull: 删除数组中的值
+    db.class1.update({name:'小明'},{$pull:{score:5}})
+  
+  $pullAll: 从数组中删除多项值
+    db.class1.update({name:'小明'},{$pullAll:{score:[5,10]}})
+  
+  $pop: 弹出数组中的一项
+    e.g. 弹出数组中的第一项(1表示最后一项，-1表示第一项)
+      db.class1.update({name:'小刚'},{$pop:{score:-1}})
+  
+  $addToSet：向数组中添加一项，但是不能添加已有内容
+    db.class1.update({name:'小刚'},{$addToSet:{score:92}})
+
+  $each: 对多个值逐一操作
+    e.g. 向数组中添加90 和10
+      db.class1.update({name:'小明'},{$push:{score:{$each:[90,10]}}})
+
+  $position: 指定数据的插入位置，搭配each使用
+    e.g. 向name为小明的文档中，score域的索引1处，插入90
+      db.class1.update({name:'小明'},{$push:{score:{$each:[90],$position:1}}})
+  
+  $sort: 对数组进行排序操作，搭配each使用
+    e.g. 将小明的score按升序排序
+      db.class1.update({name:'小明'},{$push:{score:{$each:[],$sort:1}}})
+
+-时间类型
+  1.获取当前时间：(ISO格林尼治时间)
+    1.new Date()  自动生成当前时间
+      db.class2.insert({book:'Python入门',date:new Date()})
+
+    2.ISODate()  自动获取当前时间
+      db.class2.insert({book:'Python精通',date:ISODate()})
+  
+  2. Date()  获取系统时间，生成字符串，格式类似ctime()
+    db.class2.insert({book:'Python疯狂',date:Date()})
+  
+  3.获取任意时间：
+    1. ISODate()
+      功能：将指定时间转换为mongodb的时间格式存储
+      参数：时间字符串(固定以下格式)
+           '2018-01-01 01:12:12'
+           '20180101 11:11:11'
+           '20180101' 或 '2018-01-01'
+      例,存储指定时间：
+        db.class2.insert({book:'Python崩溃',date:ISODate('2018-01-01')})
+  
+  4.时间戳
+    valueOf() : 将标准时间转换为时间戳(计算机元年秒数，精确到ms)
+      db.class2.insert({book:'Python涅槃',date:ISODate().valueOf()})
+
+-Null类型
+  值：null
+  1.表示某个域的值为空
+    db.class2.insert({book:'Python放生',price:null})
+  2.表示某个域不存在的情况
+    e.g. 表示price域值为null 或者 不存在该域
+    db.class2.find({price:null},{_id:0})
+    
+-内部文档(Object)
+  文档中某个域的值还是一个文档，则这个文档为内部文档(或者叫对象)
+
+  * 当文档使用内部文档某个域时，需要用'外部文档.内部文档'，引号不能省略
+  e.g. 查找book值内部title为茶馆的书
+    db.class3.find({'book.title':'茶馆'})
+  
+  e.g. 为鲁迅的书添加publication域
+    db.class3.updateOne({name:'鲁迅'},{$set:{'book.publication':'中国文学'}})
+
+-数组的下标引用
+  *数组的操作也可以通过'域名.下标'的方式操作具体一项
+  e.g. 修改数组中下标为1的项
+    db.class1.update({name:'小红'},{$set:{'socre.1':100}})
+
+-练习：
+  1.将小红的年龄修改为8，兴趣爱好变为跳舞，画画
+    db.class.update({name:'小红'},{$set:{age:8,hobby:['跳舞','画画']}})
+  2.追加小明兴趣唱歌
+    db.class.update({name:'小明'},{$push:{hobby:'唱歌'}})
+  3.小王多了兴趣爱好吹牛 打篮球
+    db.class.update({name:'小王'},{$push:{hobby:['吹牛','打篮球']}})
+  4.小李兴趣爱好增加跑步唱歌，但是不要和之前的重复
+    db.class.update({name:'小李'},{$addToSet:{hobby:{$each:['跑步','唱歌']}}})
+  5.该班级所有同学年龄加1
+  6.删除小明的sex属性
+  7.删除小李兴趣中的第一个
+  8.删除小红兴趣画画和唱歌
+  9.增加小红兴趣爱好python作为第一项兴趣
+  10.为小王增加一个域 备注：{民族:'回族',习俗:'回族餐'}
+    db.class.updateOne({name:'小明'},{$set:{'备注.民族':'回族','备注.习俗':'回族餐'}})
+  11.在小王备注中增加一项'宗教':'伊斯兰'
+
+-索引
+  什么是索引
+    索引是建立文档所在位置的查找清单，使用索引可以方便地进行快速查找，
+    减少遍历次数，提高查找效率
+  
+  索引约束：
+    1.索引本身占用数据库空间，所以当数据库很小时，没有必要创建索引
+    2.如果数据修改，索引也要随之修改，因此索引会降低数据写入的效率，
+      如果数据库是频繁的写操作而不是读操作，则没有必要创建索引
+  
+  创建索引：
+    db.collection.createIndex(索引域,索引选项)
+    功能：创建索引
+    参数：索引域 和 索引选项
+          e.g. 为name域创建索引
+            db.class0.createIndex({name:1})
+          
+          *_id域会由系统自动创建索引
+          * 1表示正向索引，-1为逆向索引(常查偏小值用正向，常查偏大值用逆向)
+          *同一域不能创建相同重复索引，但是可以创建一个正向索引一个逆向索引
+        
+        索引选项:
+          e.g. 为age创建索引名称为ageIndex的索引
+            db.class0.createIndex({age:1},{name:'ageIndex'})
+  
+  查看当前集合的索引
+    db.class0.getIndexes()
+
+  删除索引：
+    db.collection.dropIndex()
+      功能：删除一个索引
+      参数：索引名称或者索引键值对
+    
+      e.g. 通过索引键值对删除索引
+        db.class0.dropIndex({name:1})
+      e.g. 通过索引名称删除索引
+        db.class0.dropIndex('ageIndex')
+    
+    db.collection.dropIndexes()
+      功能：删除集合中所有索引
+      * _id的索引是无法删除的
+
+-其他创建索引的方法
+  ensureIndex()
+    功能:创建索引
+    参数：与createIndex()一样
+  
+  createIndexes([{},{}])
+    功能：同时创建多个索引
+    参数：数组，存入多个索引键值对
+    e.g. 同时创建多个索引
+      db.class0.createIndexes([{name:1},{age:-1}])
+
+-索引类型：
+  复合索引：根据多个域创建一个索引
+    *在复合查询时可以起到作用，比创建两个索引节省空间
+      e.g. 根据name和age创建一个索引
+      db.class0.createIndex({name:-1,age:1})
+
+  子文档索引(数组索引)
+    如果对某个域创建索引，该域值为数组或内部文档，则对该数组或者内部文档中某一项的
+    查询也是索引查询
+
+    e.g. 对book创建索引，该查询也是索引查询
+      db.class3.find({'book.title':'呐喊'})
+  
+  唯一索引：
+    创建索引的域所有值不能重复
+
+    e.g. 为name域创建唯一索引
+      db.class0.createIndex({name:1},{unique:true})
+
+  稀疏索引(间隙索引)：
+    忽略没有该域的文档
+    *(如果不设置成稀疏索引，没有该域的文档也会占用一个空的索引节点)
+    
+    e.g. 针对gender域创建稀疏索引
+      db.class0.createIndex({gender:1},{sparse:true})
+
+-聚合操作:
+  对文档进行数据整理和统计
+    db.collection.aggregate()
+      功能：完成聚合操作
+      参数：聚合条件，需要配合聚合操作符   
+
+  聚合操作符：
+    $group  分组聚合  往往配合一个统计操作来完成
+      $sum 求和
+        e.g. 分组统计各个性别的人数
+          db.class0.aggregate({$group:{_id:'$gender',num:{$sum:1}}})  
+
+        e.g. 分组统计各个性别的年龄的和
+          db.class0.aggregate({$group:{_id:'$gender',num:{$sum:'$age'}}})
+
+      $avg 求平均数
+        e.g. 按性别分组求平均年龄
+          db.class0.aggregate({$group:{_id:'$gender',num:{$avg:'$age'}}})
+      
+      $max 求最大值
+        e.g. 按性别分组求最大年龄
+          db.class0.aggregate({$group:{_id:'$gender',num:{$max:'$age'}}})
+          
+      $min 求最小值
+        e.g. 按性别分组求最小年龄
+          db.class0.aggregate({$group:{_id:'$gender',num:{$min:'$age'}}})
+      
+      $first 求第一个
+      $last  求最后一个
+    
+    $project:用于格式化地显示文档
+      *用法与find第二个参数类似
+      
+      e.g. 不显示_id,只显示name,age
+        db.class0.aggregate({$project:{_id:0,name:1,age:1}})    
+
+      e.g. 以指定名称显示某个域的值(以别名NAME显示name,以AGE显示age)
+        db.class0.aggregate({$project:{_id:0,NAME:'$name',AGE:'$age'}})     
+
+    $match:用于筛选想要的文档
+      *值同find()函数query参数     
+       e.g. 查询年龄大于16的文档
+         db.class0.aggregate({$match:{age:{$gt:16}}})  
+    
+    $limit  显示前几条文档
+      e.g. 显示前三条文档
+         db.class0.aggregate({$limit:3})
+    
+    $skip 跳过几条文档显示
+      e.g. 跳过前三条文档
+         db.class0.aggregate({$skip:3})
+
+    $sort 排序(1位升序，-1为降序)
+      e.g. 按年龄升序排列
+         db.class0.aggregate({$sort:{age:1}})
+
+-聚合管道
+  指的是将多个聚合操作合并到一起完成，将上一个聚合的结果交给下一个
+  聚合作为操作对象操作
+
+  db.collection.aggregate([{},{},{}]) 
+
+    e.g. 查询年龄大于16的，不显示_id，显示三条
+      db.class0.aggregate([{$match:{age:{$gt:16}}},{$project:{_id:0}},{$limit:3}])
+
+-练习：
+  1.查询男生，按年龄排序，不显示_id
+    db.class0.aggregate([{$match:{gender:'m'}},{$sort:{age:1}},{$project:{_id:0}}])
+  2.统计班级中同名的同学
+    db.class0.aggregate([{$group:{_id:'$name',num:{$sum:1}}},{$match:{num:{$gt:1}}}])
+        
+**********************************************************************************************
+---------------------------- 2018年11月28日 星期三 阴  -------------------MongoDB(day4)---------
+-王丹波       
+
+-前情回顾     
+  1.创建集合
+    db.acct.insert({
+      acct_no:'622345111111',
+      acct_name:'Jerry',
+      acct_type:1,
+      balance:1234.56
+    })
+  2.插入多条文档：
+    db.acct.insert([{acct_no:'622345222222',acct_name:'Tom',acct_type:1,balance:2000},
+    {acct_no:'622345333333',acct_name:'Dokas',acct_type:2,balance:5000}
+    ])
+
+  3.save插入
+    db.acct.save({
+      acct_no:'622345444444',
+      acct_name:'Emma',
+      acct_type:2,
+      balance:10000
+    })
+  
+  4.查找
+    带单个条件查找
+      db.acct.find({acct_no:'622345111111'})
+    带多个条件查找
+      db.acct.find({acct_type:1,acct_name:'Jerry'})
+    用$and实现多个条件查询
+      db.acct.find({$and:[{acct_type:1},{balance:1234.56}]})
+    查找金额大于5000元的账户
+      db.acct.find({balance:{$lt:5000}})
+
+============今日主要内容============
+1.固定集合：限制集合的大小(理解，应用)
+2.文件存储：将文件内容存入数据库(重点，应用)
+3.pymongo(重点，应用)
+
+-固定集合
+  1.有固定大小的集合(空间大小，文档数量)
+  2.我们可以把固定集合想象成一个环形队列，当空间用完后，
+    再插入的数据会覆盖头部的数据
+  3.应用：
+    临时缓存
+    日志
+  4.优点：
+    插入速度快，顺序查找速度快
+    能够淘汰早期的数据
+    能够控制集合的大小
+  5.创建固定集合
+    db.createCollection(collection,{capped:true,size:10000,max:100})
+    参数：collection    集合名称
+          capped       是否为固定集合
+          size         集合的大小(bytes)
+          max          最多存放多少条文档
+    示例：
+        db.createCollection('log',{capped:true,size:10000,max:3})
+      插入三条文档
+        db.log.insert([{oper_date:ISODate(),user_id:'Jerry',oper:'insert'},
+        {oper_date:ISODate(),user_id:'Jerry',oper:'update'},
+        {oper_date:ISODate(),user_id:'Jerry',oper:'delete'}])
+      再插入数据会覆盖之前头部数据
+        db.log.insert({oper_date:ISODate(),user_id:'Tom',oper:'insert'})
+
+-文件存储
+  1.文件的存储方式
+    1.数据库中只存储文件路径，文件存储到某个目录下(常用)
+        优点：占用数据库空间较少
+        缺点：存储路径和实际路径不一致时，文件无法加载
+             (移动了文件，没有改数据库、环境变量设置问题、相对路径绝对路径解析问题等，都有可能造成路径不一致)
+
+    2.将文件数据直接存入数据库
+        优点：数据库和文件绑定共存
+        缺点：占用较多的数据库的空间
+  
+  2.GridFS工具
+    把文件存储到mongo集合中的一种方式
+      通常用来存储二进制文件(图片、音频、视频)
+
+    存储原理：
+      将文件分解成多个小的片段(chunk)存储，一个片段大小一般为256K
+      每个片段作为一个文档存储在chunks集合中
+    
+    GridFS用两个集合来存储文件
+      fs.file：  存储文件的元信息
+      fs.chunks: 存储文件的实际内容
+    
+    优缺点：
+      优点：
+        1.能存储很大的文件
+        2.在分布式环境下，能自动同步文件元数据
+        3.在加载的时候仅加载文件部分内容即可读取，不必讲整个文件加载到内存
+      缺点：
+        1.读取效率比从磁盘读低(分片组合)，所以最好存储16M以上的文件
+        2.只能整体替换，无法局部更新(更改二进制文件的其中一部分，可能会破坏整个文件结构，导致不可用)
+    
+    示例：
+      1.准备二进制文件
+      2.将文件存入mongodb
+        mongofiles -d dbname put filename
+      3.登录mongo，进入2中创建的dbname对应的数据库
+        检查是否保存(在fs.file集合下查看文件信息)
+      4.从数据库中提取该文件(提取时文件命名必须与数据库中命名一致)
+        mongofiles -d dbname get filename
+
+        参数：
+          d   存取的数据库(存文件时，如果不存在该库，会自动创建)
+          put 存入文件
+          get 取文件
+
+-pymongo
+  通过python访问mongo数据库的编程接口
+
+  安装:
+    pip3 install pymongo
+
+  使用:
+    1.创建mongodb的连接对象 conn = pymongo.MongoClient()
+    2.获取数据库对象        db = conn['test']  或  db = conn.test
+    3.获取集合对象          set = db['img']  或  set = db.img
+    4.执行操作语句
+    5.关闭连接
+
+  示例：
+    1.显示mongo数据库服务器上所有的数据库
+      show_dbs.py 
+    2.查询操作
+      find.py
+    3.插入操作
+      insert.py         
+    4.插入多条
+      insert_many.py
+    5.修改操作
+      mycol.update(query,update,upsert=False,multi=False)
+      见update.py
+    6.删除操作
+      -remove(query,multi=True)
+        query:筛选条件
+        multi:是否删除多行
+      见：delete.py
+    7.利用pymongo存储文件
+      bson.binary:可以将内容转换为二进制存储
+      见：file_oper.py
+
+=============================吕泽版pymongo笔记=================================
+python 模块 --》 pymongo 第三方模块
+
+    安装 ： sudo pip3 install pymongo
+
+    操作步骤：
+        1. 创建mongodb数据库连接对象
+           conn = pymongo.MongoClient('ip',27017)
+        2. 生成要操作的数据库对象 (__getitem__ __setitem__)
+           db = conn.stu
+           db = conn['stu']
+
+        3. 生成操作的集合对象
+   
+           myset = db.class0
+           myset = db['class0']
+
+        4. 通过集合对象调用函数进行数据库操作
+
+        5. 关闭数据库连接
+           conn.close()
+
+
+插入操作
+
+insert（） 插入一条或者多条文档
+insert_many()  插入多条文档
+insert_one()  插入一个文档
+
+save()  插入一条文档，当有_id域时_id域重复会替换原文档
+        * pymongo中save参数是字典不能为列表
+
+查找操作
+
+find()
+功能： 查找所有文档
+参数： 同mongo shell 中find
+返回： 游标对象
+
+* pymongo 操作数据库时中所有的操作符均使用引号引起来当做字符串  传入
+* mongodb中 true false 使用python的 True  False即可
+  null 使用python的None即可
+
+cursor游标对象属性函数
+
+next（）  获取下一个文档
+limit()   显示前几条文档
+skip()   跳过前几条显示后面内容
+count()  统计计数
+sort（） 排序
+    pymongo : sort([('age',1),('name',-1)])
+    mongo shell: sort({age:1,name:-1})
+
+* 当使用游标对象调用limit skip sort等函数时，要求游标对象必须  为初始游标，即没有被for或next取值过
+
+
+find_one() 
+功能：查找一条文档
+参数： 同find
+返回： 返回一个字典
+
+
+修改操作
+
+update()
+update_one()
+update_many() 
+
+
+删除操作
+
+remove(query,multi=True)
+* 默认删除多个，当multi设置为False时只删除一个
+
+delete_one()
+delete_many()
+
+索引操作
+
+create_index()   
+功能 ： 创建索引
+参数 ： 域名 则默认对该域创建正向索引
+        传入列表，列表中每个二维元组代表一个索引项
+        e.g.  [(age,-1)] 表示对age创建逆向索引
+
+list_indexes()   查看索引 
+drop_index()    删除一个索引
+drop_indexes()  删除所有索引
+
+
+聚合操作
+aggregate([])
+参数 ： 同mongoshell中的聚合
+返回值 ： 返回一个和find函数相同的游标对象
+
+
+文件操作 
+
+    GridFS文件提取
+  
+       import gridfs
+  
+       1.连接数据库,生成数据库对象
+       2.生成gridfs对象
+          fs = gridfs.GridFS(db)
+       3.通过fs获取存储的文件集合
+          files = fd.find()
+       4.挑选想获取的文件进行读取
+
+    GridFS文件存储
+ 
+       1.连接数据库,生成数据库对象
+       2.生成gridfs对象
+          fs = gridfs.GridFS(db)
+       3.通过fs.put()函数将读取出来的文件内容存入数据库
+          fs.put(data,filename)
+          参数 ： data 要存入的二进制内容
+                  filename  文件存入的名称
+
+    存取小文件
+        import bson.binary
+ 
+	1. 连接数据库，生成数据库对象和集合对象
+        2. 选择要存储的文件使用 rb方式读出
+        3. 将读取的内容转换为mongodb的二进制存储格式
+
+            content = bson.binary.Binary(data)
+            功能: 将bytes字串转换为mongodb二进制存储
+            参数：要转换的bytes字串
+            返回值 ： 转换后的待存储数据
+
+        4. 将内容写入文档，插入数据库	
+
+-作业：
+  1.创建订单集合(orders)，包含域：
+    order_id:订单编号，字符串类型
+    cust_name:订单所属客户，字符串类型
+    order_date:下单时间，Date类型
+    status:订单状态，整数类型
+    order_detail:订单明细，文档数组，数组内部文档域有：
+      product_id:商品编号，字符串
+      product_name:商品名称，字符串
+      amt:商品数量，整数
+      price：单价，浮点数
+
+    use orders
+
+  2.插入三笔订单数据，每个订单至少包含一件商品
+    至少有一个订单包含多件商品
+    db.orders.insert({order_id:'O0001',cust_name:'9527',order_date:new Date(),status:1,
+      order_detail:[{product_id:'P0001',product_name:'飞科剃须刀',amt:1,price:129.9}]})
+    
+    db.orders.insert({order_id:'O0002',cust_name:'008',order_date:new Date(),status:1,
+      order_detail:[{product_id:'P0001',product_name:'漫步者音响',amt:1,price:229.9},
+      {product_id:'P0002',product_name:'骷颅头耳机',amt:1,price:159.9}]})
+
+    db.orders.insert({order_id:'O0003',cust_name:'007',order_date:new Date(),status:1,
+      order_detail:[{product_id:'P0001',product_name:'雷蛇鼠标',amt:1,price:59.9},
+      {product_id:'P0002',product_name:'双立人菜刀',amt:1,price:199.9}]})
+
+  3.编写下列语句
+    1.查找所有状态为1的订单
+    2.查找某个客户状态为1的订单(cust_name,status)
+    3.查找某个时间点以后下单的订单
+      db.orders.find({order_date:{$gt:ISODate('2018-11-29 02:00:00')}})
+    4.统计订单笔数
+    5.修改某个订单状态
+    6.为所有订单添加一个域:支付状态 payment_status 整数型
+    7.查询所有订单中，商品编号为P0001的订单
+      db.orders.find({'order_detail.product_id':'P0001'},{_id:0}).pretty()
+    8.在订单集合的订单编号域上创建升序索引
+      db.orders.createIndex({order_id:1})
+    9.为某个订单增加备注信息(要求为字符串数组)
+      db.orders.update({cust_name:'007'},{$pushAll:{remark:['工作日送达','后付款']}})
+    10.删除一笔无效订单(status无效值自定)
+  
+  2.到github或码云中国申请一个账号
+
+-------------晚上加课-------------------
+算法：
+  根据指导的值，在待查找的数据中确认一个关键字的值是否
+  等于指定的值
+
+**********************************************************************************************
+---------------------------- 2018年11月29日 星期四 晴  -------------------MongoDB(day5)---------
+============今日主要内容============
+1.版本管理工具Git
+2.调试工具pbd
+
+-版本管理工具Git
+  1.什么是版本控制(Revision Control)
+    -项目文档包含:
+      源码
+      文档(需求、设计、会议纪要等,这些资料留存以备追踪,避免扯皮)
+      软件包(开发工具，数据库，第三方库)
+    -对软件涉及到的各种文件进行管理、控制、变更记录、追溯
+    -什么时候，什么人，修改了什么文件，什么内容，完整记录
+      *配置管理岗位:
+        专门进行以上配置管理
+    -解决什么问题
+      -版本管理规范性
+      -解决版本的更新，冲突问题
+      -协调不同的开发者的变更，提高协同开发的效率
+    
+    -版本管理的相关术语
+      -检出：
+        将软件配置(即软件涉及到的相关文件)从配置库中提取出来
+      -检入：
+        将软件配置提交到配置库
+      -主干版本：
+        标准配置库
+      -分支版本：
+        为了某些特殊要求，和主干版本有差异的配置
+      -合并：
+        -A,B两个版本，将A的内容附加到B中
+        -A,B两个版本，A和B合并，形成新版本C
+      -历史记录：
+        文件变更的详细过程
+      -回滚：
+        将配置退回到之前的某个状态
+  
+  2.版本管理方式
+    -集中式管理
+      -配置库集中存放于中央服务器
+      -变更之前要先从中央服务器驱动最新版本，然后再进行变更，修改
+      -修改完成后，将变更提交到中央服务器
+      -缺点：
+        集中式存放，必须连网，速度较慢
+      -典型工具：SVN
+
+    -分布式管理
+      -没有中央服务器
+      -每个开发人员电脑都是一个完整配置库
+      -配置库位于本地，所以不一定需要连网
+      -每个开发者，可以将自己的代码贡献到其他开发者仓库中
+      -典型工具：Git
+
+-git: 分布式配置管理工具
+  1.更适合个人开发，管理配置库
+  2.分布式管理，不同于SVN的集中式管理
+  3.支持强大的分支功能
+  4.完整性优于SVN
+
+  5.git安装：sudo apt-get install git
+  
+  6.git配置
+    1./etc/gitconfig文件：作用于系统所有用户
+    2.~/.gitconfig文件：仅作用于当前用户
+    3.工作目录下.git/config文件，作用于当前目录  //这里没有错误,确实就是.git/config
+    *配置读取优先级：工作目录配置 > 用户配置 > 系统配置
+
+    配置示例：
+      在任意目录下： $ git config --global user.name tarena  
+          *配置git用户名称为tarena(用户级配置,会修改~/.gitconfig文件)
+      在任意目录下： $ git config --global user.email 673305066@qq.com  
+          *配置用户电子邮箱(用户级配置,会修改~/.gitconfig文件)
+      在工作目录下:$ git config --local user.name tarena
+          *配置git用户名称为tarena(工作目录配置,会修改当前目录.git/config文件)
+
+
+      查看已有配置：
+        1.git config --list
+          *会显示所有作用域下的配置
+        2.用cat或者vi打开gitconfig文件直接查看
+
+  7.git基本命令
+    1.init: 初始化，并创建新仓库
+      第一步：创建目录
+      第二步：在该目录下 git init 
+      * 初始化成功后，当前目录会多出.git隐藏目录
+    
+    2.add: 添加文件内容至索引
+      步骤:
+        1.创建文件(如a.txt)
+        2.git add a.txt
+    
+    3.status 查看当前状态
+      git status
+    
+    4.commit: 提交变更至本地仓库
+      git commit 文件名 -m 注释消息
+      e.g. git commit a.txt -m 'create'
+
+    5.git diff 文件名: 查看仓库中的文件与本地文件的差异
+      * '-'号代表仓库中文件的内容
+      * '+'号代表本地文件相比于仓库文件，新增的内容
+
+    6.reset 版本的回滚(从仓库中的最新版本往回退)
+      git reset --hard HEAD^  回退到上一个版本
+      git reset --hard HEAD^^ 回退到上上一个版本
+      git reset --hard HEAD~n 回退到前面第n个版本
+      *如仓库中有版本1/2/3本地已编辑版本4但是未提交，此时reset HEAD~2会回到版本1
+      *本地版本4也会被覆盖成版本1
+    
+    7.log 查看仓库的修改记录信息
+      git log
+  
+  8.分支管理
+    1.分支版本：
+      有别于主版本，例如开发版，某个定制版
+    2.分支操作
+      - 查看所有分支：git branch
+          列出所有版本，带*号表示当前所在分支
+      - 创建分支版本：
+        git branch 分支版本名称
+          e.g. git branch dev #创建名称为dev的分支版本
+      - 切换分支版本
+        git checkout 分支版本名称
+          e.g. git checkout dev
+      
+      -创建并切换分支
+        git checkout -b beta
+        # 创建beta分支，并切换到beta
+      
+      -版本合并
+        git merge dev #把dev版本合并到当前分支
+
+      -删除分支
+        git branch -d beta
+        删除beta分支，如果该分支没有被合并到其他分支，则不允许删除
+        *且不能在当前分支下删除，必须切换到其他分支
+
+
+  9.标签管理
+    1.如果达到一个重要节点，并希望永远记住那个提交的快照，可以使用标签
+    2.标签可以理解成一个指向某次提交的指针，但不能移动
+    3.标签命令：
+      git tag 标签名称 提交编号
+      e.g. git tag v1.0          #缺省提交编号时，则默认将v1.0标签打到最新版本上
+           git tag               #查看所有标签
+           git tag v0.9 1263d1a  #把v0.9标签打到commit标签为1263d1a的那次提交版本
+
+           git reset --hard v0.9  #退回到v0.9标签状态
+
+-使用Github远程仓库
+  第一步：在gitee或github上注册账号
+  第二步：创建项目，拷贝项目地址
+  第三步：在工作目录下加入远程仓库地址
+    git remote add 名称 远程仓库地址
+    例如：
+    git remote add gitee https://gitee.com/lin673305066/git_test2.git
+    以上的"gitee"是仓库的别名,可以随便取,后续针对该仓库的操作,使用该别名
+
+  第四步：从远程仓库获取配置库(切换到master分支下)   ???如果我不想修改master呢？去验证当要推送到远程master时，是否必须是在本地master
+    git pull 远程仓库名称 分支版本名称
+    例如：git pull gitee master
+
+  第五步：修改工作目录文件，并提交到本地仓库
+    git commit a.txt -m 'remote test'
+  第六步：推送到远程仓库
+    git push -u 远程仓库名称 分支版本
+
+    1.切换到master分之下，做一个pull操作，同步本地与远程的版本  ??存在疑问,自己验证
+      git checkout master
+      git pull gitee master
+    2.修改本地文件，提交
+    3.推送
+
+    例：git push -u gitee master
+       *推送到gitee仓库的master分支下  
+  **其他操作
+    克隆远程仓库
+      git clone [远程仓别名,省略则默认origin] https://gitee.com/用户个性地址/HelloGitee.git 
+    查看当前仓库对应的远程地址
+      git remote -v  
+      //通常来讲，会有两条一模一样的记录，分别是fetch和push，其中fetch是用来从远程同步 push是用来推送到远程
+  **\报错:     \object file is empty? \ ... coorupt解决方法:     
+      find .git/objects/ -type f -empty | xargs rm     
+      git fetch -p     
+      git fsck --full
+-调试工具
+  1.程序调试(debug)：
+    程序在开发，测试，维护过程中，需要对程序测试，排除错误
+  2.调试工具：
+    提高调试效率的工具，
+    一般都能单步执行，打印变量，观察函数内部执行过程
+  3.python自带调试工具:pbd
+  4.使用：
+    见mongo/day5
+    启动调试 pdb3.5 test.py  #对test.py调试
+      l 或 list:         查看当前代码段
+      n 或 next:         执行下一行
+      b 或 break:        设置断点  # b 10 在第10行设置断点；直接b则显示所有断点
+      r 或 run :         运行程序，直到遇到断点
+      clear 1 :          删除编号为1的断点,(用b查看断点时，num列的值就是断点编号)
+      p(a) 或 print(a):  查看变量a的值
+      s 或 step:         进入函数
+      r 或 return:       从当前函数返回
+      回车    :          执行上一个执行的命令
+
+
+======================================================================================================================
+----------------------------------------------↓↓↓吕泽版今日笔记↓↓↓-----------------------------------------------------
+======================================================================================================================
+
+git 的使用
+
+   代码协同管理工具
+
+   1. 防止代码丢失，做代码备份
+   2. 做代码的版本管理，创建多个版本或者节点，在多版本之间切换
+   3. 可以将代码在多人之间简单的传输共享
+   4. 可以方便多人协同开发，开辟各自分支和分支管理
+
+   什么是git
+
+   git是一个开源的分布式版本控制系统，可以用于高效的管理大小项   目。
+
+   分布式 ： 每个节点关系平等，都保存完整代码，节点之间相互推             送或者下载代码。工作方式多样
+
+   集中式 ： 有明确的中央服务器统一管理代码，每个节点将代码上             传中央服务器或者从中央服务器下载。逻辑简单
+
+   git特点 
+     * git可以管理各种文件，特别是代码项目，多在*nix系统中使用
+     * 是开源的系统，是唯一可以操作github的管理工具
+     * git是分布式管理，不同于集中式，这也是和svn最大的差别
+     * git 可以脱网操作，传输速度更快
+     * git的安全性很强，有全球唯一的commit版本号
+     * git的分支管理很强大，可以方便多人协同工作
+ 
+git安装 
+
+    sudo apt-get install git
+
+
+git 基本配置
+
+    git  config
+
+    配置级别
+        1. 系统中所有的用户均使用的配置
+           命令 ： git  config  --system
+           配置文件 ： /etc/gitconfig
+
+	   e.g. 配置git用户
+		sudo git config --system user.name  Tedu
+
+        2. 当前用户的所有项目均使用的配置
+           命令： git config  --global
+           配置文件 ： ~/.gitconfig 
+  
+           e.g. 配置用户邮箱
+                git config --global  user.email tarena@tedu.cn
+
+        3. 只在当前项目中使用的配置
+           命令： git  config  （命令要在git项目文件夹中执行）
+           配置文件： project/.git/config
+
+           e.g.  配置编译器
+                 git config core.editor vscode
+            
+        4. 查看当前配置
+           git  config  --list
+      
+git 基本概念
+
+工作区 ： 通过自己的主机操作的git目录
+
+暂存区 ： 用来记录你工作的行为，作为暂时保存
+
+本地仓库 ： 本地用来备份同步工作区内容的区域
+
+远程仓库 ： 其他主机的git仓库
+
+
+git的基本操作命令
+
+   初始化仓库
+       git  init
+       
+       * 初始化仓库后产生.git目录为git的管理目录，初始化仓库的         目录中的内容即可使用git管理
+
+
+   查看工作分支状态
+       git status
+       
+       * 默认工作分支为master，可以通过创建新的分支切换
+
+
+   文件提交到暂存区
+       git  add  [file]
+
+       * 可以一次提交多个内容，中间用空格隔开
+       * 提交的内容可以使文件也可以是目录
+       * 如果想将当前目录下所有内容都提交也可以使用 * 表示
+   
+       删除暂存区的记录
+       git  rm  --cached  [file]      (如果是目录加 -r)
+
+
+    将暂存区记录的修改内容同步到本地仓库
+        git  commit   -m  "some message"
+
+        * -m 为添加的附加信息
+        * 当工作区和本地仓库内容一致是git status提示工作区干净
+
+
+    查看提交日志
+        git  log
+        git  log   --pretty=oneline
+
+
+工作区操作
+
+    查看工作区文件和本地仓库的差异
+        git  diff  [file]
+
+    放弃工作区文件修改
+        git  checkout  --  [file]
+
+    恢复本地仓库文件到工作区
+        git  checkout  [file]
+
+
+文件的移动和删除
+   
+    删除工作区文件并提交到暂存记录
+        git  rm  [file]
+
+    移动工作区文件并提交到暂存记录
+        git  mv  file  dir
+ 
+    * rm  mv 的用法和shell命令rm mv相同，操作后直接commit同步到本地仓库
+
+
+版本控制命令
+   
+    回到之前版本 
+        git  reset  --hard  HEAD^
+  
+        * HEAD 后几个^表示回到之前的几个版本
+
+    通过commit_id回到指定的版本
+        git  reset  --hard  commit_id
+
+
+    查看操作日志
+        git reflog
+
+        * 获取到操作记录后可以根据commit_id去往较新的版本
+
+
+标签管理
+
+    什么是标签 ： 即在当前工作位置添加快照，保存项目的版本信息，一般用于项目版本的迭代
+
+    创建标签
+        git  tag  v1.0
+
+        * 默认会在最新的commit_id处打标签
+
+
+        查看标签
+           git  tag  查看所有标签
+           git  show  V2.0  查看某个标签的具体信息
+
+        在某个指定commig_id处打标签
+           git  tag  v0.9  [commit_id]
+
+        回到某个标签的版本
+           git reset --hard  v0.9
+
+        删除标签
+           git  tag  -d  v2.0
+
+
+保存临时工作区
+
+   创建临时工作区
+       git stash
+
+       * 将工作区修改内容暂时封存，恢复到最近一个“干净”状态
+
+   查看保存的工作区
+       git stash  list
+
+   应用某个工作区
+       git stash apply stash@{1}
+     
+       * 新的工作区总是为stash@{0}，老的工作区会向下排列
+
+       应用上一个工作区，并删除之
+       git  stash  pop
+
+
+   删除工作区
+       git  stash drop  stash@{0}  删除某一个
+       git  stash clear   删除所有
+
+作业 ： 1. 申请一个github账号
+              github.com
+        2. 复习http协议和前两个版本
+        3. 复习并发服务器和ftp文件服务器项目
+
+分支管理
+
+    什么是分支？
+        分支即每个人在获取原有分支（master）代码的基础上，作为自己的工作环境，单独开发，不会影响其他分支操作。开发完成后再同意合并到主线分支。
+
+    好处 ： 安全，不影响其他人工作，自己控制进度
+    问题 ： 冲突，降低耦合度可以有效地减少冲突
+
+查看当前分支
+    git  branch
+
+    前面带 * 的表示当前正在工作的分支
+
+创建分支
+    git  branch  [branch_name]
+
+    * 创建分支之前尽量保证原分支是干净的，避免合并时产生冲突
+
+切换工作分支
+    git  checkout  [branch]  
+
+创建并切换到新的分支
+    git checkout -b   [branch_name]
+
+合并分支 
+    git  merge  [branch]
+
+删除分支
+    git branch -d  [branch]
+
+    强制删除未合并分支
+    git  branch  -D  [branch]
+
+
+远程仓库
+    在远程主机上的仓库。git时分布式的，每一台主机上的git结构基    本相同，只是把其他主机上的git仓库叫做远程仓库
+
+    创建共享仓库 ：
+    1. 创建目录
+       mkdir  gitrepo 
+   
+    2. 设置仓库文件夹的属主
+       chown  tarena:tarena gitrepo
+
+    3. 创建共享仓库
+       git init  --bare  aid.git
+
+    4. 设置git项目文件夹数组
+       chown  -R  tarena:tarena aid.git
+
+
+添加远程仓库
+
+    git  remote add  origin     tarena@127.0.0.1:/home/tarena/gitrepo/aid.git
+
+
+向远程主机推送分支
+    git  push  -u  origin  master
+
+
+从远程主机获取项目
+    git  clone  tarena@127.0.0.1:/home/tarena/gitrepo/aid.git
+
+
+将代码同步到远程主机
+    git  push
+
+
+将远程仓库内容拉取到本地
+    git  pull
+    git  fetch  （获取远程分支到本地，但是暂时不合并）
+
+删除已有的远程主机
+    git remote rm origin
+
+
+github 
+
+   开源的项目社区网站，提供丰富的开源项目，也为用户提供项目管     理服务
+
+   git是github唯一指定的代码管理工具
+
+   网址 ： https://github.com
+
+   创建新的仓库： 右上角 + --》new repository -->填写信息
+
+   操作github ： 
+      1. git  remote  连接远程仓库
+      2. 通过 git  push 上传代码
+  
+      * github就是一个远程仓库
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

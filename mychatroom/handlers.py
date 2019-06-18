@@ -1,4 +1,5 @@
 #! --*-- encoding: utf-8 --*--
+from tornado.websocket import WebSocketHandler
 from kombu.utils import json
 from tornado.web import RequestHandler
 import importlib
@@ -94,6 +95,35 @@ class IndexHandler(BaseRequestHandler):
         return IndexHandler.render(self, 'index.html')
 
 
+class Myserver(WebSocketHandler, BaseRequestHandler):
+    print '执行到这里'
+
+    all_shop_admin = dict()
+    def open(self):
+        print ("new client opened")
+        account = self.get_current_user()
+        self.all_shop_admin[account] = self
+        print self.all_shop_admin
+
+    def on_close(self):
+        account = self.get_current_user()
+        del self.all_shop_admin[account]
+
+    def on_message(self, message):
+        account = self.get_current_user()
+        msg = message.split(':')
+        message = account + ':' + msg[0]
+        account = msg[-1]
+        self.__class__.send_demand_updates(message, account)
+
+
+    @classmethod
+    def send_demand_updates(cls, message, account):
+        print account
+        print message
+        client = cls.all_shop_admin.get(account, '')
+        if client:
+            client.write_message(message)
 
 
 

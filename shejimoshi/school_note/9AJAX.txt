@@ -1,0 +1,365 @@
+**********************************************************************************************
+---------------------------- 2018年1月4日 星期五 阴  ------AJAX-----------PythonWeb(day08)----- 
+-AJAX
+  1.什么是AJAX
+    Asynchronous Javascript And Xml
+      Asynchronous : 异步的
+      Xml : eXtensible Markup Language 可扩展的标签语言
+    
+    **JSON : Javascript Object Notation,用来取代繁琐的xml
+  2.作用:
+    通过js异步地想服务器发送请求,并接受响应回来的XML(JSON)格式的数据
+
+    同步请求:
+      当客户端向服务器发送请求时,服务器在处理的过程中,浏览器只能等待,效率低
+    异步请求:
+      当客户端向服务器发送请求时,服务器在处理过程中,客户端可以
+      做其他操作,不需要一直等待
+
+  3.AJAX优点:
+    1. 异步访问
+    2. 局部刷新
+  4.使用场合:
+    1. 搜索建议(输入部分文本,提示相关词条)
+    2. 表单验证(用户名是否存在等问题)
+    3. 前后端完全分离
+
+-AJAX核心对象 - 异步对象
+  1.异步对象 - XMLHttpRequest (简称xhr)    
+    代替浏览器向服务器发送异步的请求并接收响应
+  2.创建异步对象
+    主流的异步对象是 XMLHttpRequest 类型的,主流的浏览器全部支持该类型;
+    但在IE低版本的浏览器中(IE7及以下),不支持该类型,使用ActiveXObject()来
+    创建异步对象.
+    示例:
+      测试该浏览器支持的XHR类型,day08/01-check-xhr.html
+        // 如果输出的不是null或undefined,则就是支持XMLHttpRequest的
+          alert(window.XMLHttpRequest);
+    创建异步对象:
+      支持XMLHttpRequest的:
+        var xhr = new XMLHttpRequest();
+      不支持XMLHttpRequest的
+        var xhr = new ActiveXObject("Microsoft.XMLHTTP")
+  练习:(day08/02-newXhr.html)
+    1.声明一个方法 - createXhr()
+    2.方法中判断浏览器支持哪种类型的异步对象
+    3.根据支持性创建不同的异步对象并返回
+
+-xhr的成员
+  1.方法 - open()
+    作用: 创建请求
+    语法: open(method,url,async)  
+    参数: 
+      method   请求方法,取"get","post"  
+      url      请求地址,字符串
+      async    是否采用异步的方式,取bool值
+    ex:
+      xhr.open('get','/',true);
+  2.属性 - readyState
+    作用: 请求状态,通过不同的请求状态值来表示xhr与服务器的交互情况
+      由0-4共5个值组成:
+        0  请求尚未初始化
+        1  已经与服务器建立了连接
+        2  服务器端开始接收请求
+        3  服务器正在处理请求
+        4  响应已经完成
+  3.属性 - status
+    作用: 服务器端的响应状态码
+      200  服务器端正确处理所有请求并给出响应
+      404  请求资源不存在
+      500  服务器内部错误
+  4.属性 - responseText
+    响应数据
+    注意: 通常只有在readyState为4,并且status为200时,responseText才是有用的数据
+  5.事件 - onreadystatechange
+    作用: 每当readyState的值发生改变的时候触发,称为 回调函数
+    为 xhr 绑定 onreadystatechange 事件:
+      xhr.onreadystatechange = function(){
+        //通常用来判断readyState是否为4,和status是否为200
+        // 如果以上条件达成则接收响应数据
+        if(xhr.readyState==4 && xhr.status==200){
+          var response = xhr.responseText;
+        };
+      };
+  6.方法 - send(body)
+    作用:  通知xhr向服务器发送请求
+    语法:  xhr.send(body)
+    参数:  body是请求体
+           get请求的话: body的值是null
+           post请求的话 body的值是要提交的数据
+
+-AJAX的操作步骤
+  1.GET请求
+    1.创建xhr对象
+    2.创建请求 - open()
+    3.设置回调函数 - onreadystatechange
+    4.发送请求 - send() 
+
+  练习:(day08/run02.py --> 01-register.html)
+    1.数据库操作
+      1.创建库 - ajax
+      2.创建表 - user
+        id, uname, upwd, nickname
+      3.插入若干数据       
+    2.前端
+      1.验证用户名称是否存在
+        1.当用户名称的文本框失去焦点时则触发验证行为
+        2.要验证输入的用户名称在user表中是否存在
+        3.将存在与否的结果提示在文本框后面 
+
+
+**********************************************************************************************
+---------------------------- 2018年1月7日 星期一 阴  ------AJAX-----------PythonWeb(day09)----- 
+-使用ajax发送post请求
+  1.创建请求时将使用 post 方法
+    xhr.open('post',url,true)
+  2.请求提交的数据放在send()方法中
+    xhr.send("uname=wangwc&uage=30")
+  3.必须设置 Content-Type 的消息头,在send之前设置
+    值为: application/x-www-form-urlencoded
+    语法:
+      xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  示例: (day08/run02.py --> 01-register.html)
+
+-JSON
+  1.什么是JSON
+    JSON: Javascript Object Notation
+    目的: 以JS对象的方式来表示复杂结构的数据
+  2.JSON的表现
+    1.使用JSON表示单个对象
+      1.在JS中使用{}表示一个对象
+      2.在{}中,通过key:value来表示一个属性,每个键值对用,隔开
+      3.key必须用""引起来  //不要用''
+      4.value如果是字符串的话,也必须用""引起来
+      ex:
+        var obj = {
+          "id":1,
+          "uname":"wangwc",
+          "upwd":"bpaas:sha213asdfasd4f654df21asdfas",
+          "nickname":"王老师"
+        }
+      取值: 对象名.属性
+        console.log(obj.uname)
+        
+    2.使用JSON表示数组
+      1.在JS中使用[]表示数组,在[]内允许容纳若干个JS对象
+      ex:
+        var arr = [
+          {
+              "id":1,
+              "uname":"wangwc",
+              "upwd":"123456",
+              "nickname":"王老师"
+          },
+          {
+              "id":2,
+              "uname":"weimz",
+              "upwd":"654321",
+              "nickname":"魏老师"
+          },
+          {
+              "id":3,
+              "uname":"lvze",
+              "upwd":"987654",
+              "nickname":"吕老师"
+          }
+        ];
+      取值:
+        循环遍历取对象,再用:  对象.属性 取值
+    3.使用 jquery 中的 each() 方法迭代数组
+      1.$(arr).each()            //$(arr):表示的是jq中的数组对象
+      语法:
+        $(arr).each(function(i,obj){
+          i : 下标
+          obj : 遍历出来的元素
+        });
+  示例:
+    day08/static/03-users.html
+  练习:
+    day08/static/users.html
+    1.在JS中创建一个JSON数组,并包含若干对象,每个对象具备以下属性
+      uname : 表示用户名称
+      ugender : 表示性别
+      uemail : 表示电子邮箱
+    2.在网页中添加按钮,点击按钮时,将JSON数组中的数据以表格显示在页面
+      用户名称      性别      邮箱
+       xxx          x        xxx     
+
+  3.服务器端处理JSON
+    1.流程
+      1.后台先获取数据
+      2.在后台将数据转换为符合JSON格式的字符串
+      3.将JSON格式的字符串响应给前端  
+      4.在前端将JSON格式的字符串转换成JS对象/数组
+    2.Python中的JSON处理
+      Python中提供了json对象,可以完成JSON的转换
+      import json
+      jsonStr = json.dumps(列表|元组|字典)  //返回字符串
+      **这三者中的元素也必须是可以转成JSON的类型(列表|元组|字典|数字|字符串)
+    2.2 json转python对象
+      json.loads(j_str)
+
+    3.特别注意:
+      从数据库中查出的query对象列表是不能直接被dumps的,通常在实体类中定义一个
+      转换成字典的方法,获取字典,再dumps
+      ex:
+        class User(db.Model):
+          ...
+          def toDic(self):
+            dic = {}
+            dic['uname'] = self.uname
+            dic['upwd'] = self.upwd
+            dic['nickname'] = self.nickname
+            return dic
+        
+        users = User.query.all()
+        user_lst = []
+        for u in users:
+          user_lst.append(user.toDic())
+        jsonStr = json.dumps(user_lst)
+    4.dumps得到的是JSON格式的字符串  所以返回到前端的是字符串,在前端中要转换成JSON对象
+      res = JSON.parse(JSON格式的字符串)
+    示例:
+      day08/ static/04-jason.html
+
+**********************************************************************************************
+---------------------------- 2018年1月8日 星期二 阴  ------AJAX-----------PythonWeb(day10)-----       
+-jquery 对 AJAX 的支持
+  1.$obj.load()
+    作用: 加载远程页面到$obj元素中
+    语法: $abj.load(url[, data, callback])
+    参数: 
+        1. url : 表示远程请求资源的地址
+        2. data : 表示传递到服务器端的参数
+          1. 字符串传参
+              "name=value&name=value"
+              注意: 字符串传参时自动采用get请求
+          2. 字典传参
+              var params = {
+                    "name":"金花婆婆",
+                    "age":"85",
+                    }
+              注意: 字典传参时自动采用post请求
+        3.callback : 表示响应成功之后的处理
+            function(data){
+              data:表示的是响应回来的数据
+            }   
+    说明: 该方法采用的是异步的请求方式,无法改成同步  
+    示例:
+      day10/ajaxDemo03.py --> 01-load.html/02-head.html
+  2.$.get()
+    作用: 采用get方式异步地想服务器端发送请求
+    语法: $.get(url,data,callback,type)
+    参数:
+      1.url : 要请求的地址
+      2.data: 要发送的key / value 参数
+        1.使用字符串拼参数
+        2.使用Map / JSON / 字典
+        {
+          name1: "value1",
+          name2: "value2"
+        }  
+      3.callback : 响应成功后的回调函数
+        function(data){
+          data: 表示响应回来的数据
+        }
+      4.type: 指定响应回来的数据的数据类型
+        1.'text' : 响应回来的是普通文本
+        2.'html' : 响应回来的是html文本
+        3.'json' : 响应回来的是JSON格式的串,可以直接转当成js对象用,不需要JSON.parse()转换
+
+    示例:
+      day10/ajaxDemo03.py --> 03-get.html
+    
+    练习:
+      搜索建议,输入内容,从数据库查询相关内容,给出提示
+      day10/ajax03Demo03.py --> 04-search.html
+  
+  3. $.post()
+    用法同$.get(),区别是采用了post方法
+  4. $.ajax()
+    语法: 
+    $.ajax({
+      url : "/01-index",
+      async : false,
+      ...
+    })
+    常用设置选项:
+      1. url       字符串,表示请求的地址
+      2. type      字符串,请求方式,'get'/'post',默认'get'
+      3. async     Boolean,是否采用异步的方式发送请求,默认true
+      4. data      要传递到服务器的参数,可以采用字符串"name=value&...",也可以用字典{"name":"value",...}
+      5. datatype  字符串,响应回来的数据格式 'html','text','script','json','jsonp'
+      6. success   请求成功时的回调函数
+           success : function(data){ data是响应回来的数据 }
+      --- 以上为常用选项 ---
+      7. error     请求失败时的回调函数
+      8. beforeSend 发送请求前调用的函数,如果该函数return false则终止发送请求
+    ex:
+      向 /05-ajax 发送一个同步请求,并接收响应数据,响应回来的内容是JSON格式
+      $.ajax({
+        url: '/05-ajax',
+        async: false,
+        a
+        success: function(data){
+          //请求成功后的处理
+        }
+      });
+
+  练习: 省市级联(day10/ajaxDemo03.py/05-loadpro -->05-province.html)
+    1.省份发生改变是,加载对应的城市信息到城市的下拉列表中
+    2.网页加载时,根据省份所显示的信息,加载对应的城市信息到城市的下拉列表中   
+    3.[特别注意],第2步中可能加载不到城市信息,是因为异步请求(省还没加载完,就加载市,所以取不到省的ID) 
+
+**********************************************************************************************
+---------------------------- 2018年1月9日 星期三 晴  ------AJAX-----------PythonWeb(day11)-----     
+-跨域
+  1.同源策略
+    同源: 两个访问地址,具备相同的通信协议,相同的域名以及相同的端口,则视为同源
+  2.示例
+    同源:
+      http://www.pxx.com/index.html
+      http://www.pxx.com/load_server
+    非同源:
+      http://www.pxx.com       //http协议走80端口
+      https://www.pxx.com      //https协议走443端口
+    特殊的非同源:
+      http://localhost/index.html
+      http://127.0.0.1/index.html
+  注意:
+    非同源地址不能发送ajax请求,示例day11/run01.py
+  
+  非同源请求称为"跨源请求"也叫"跨域请求"
+
+-跨域请求的解决方法
+  在HTTP协议中<script>和<img>是不受同源策略的限制的.
+  方案:
+    通过<script>标记向服务端发送请求,由服务端响应回JS的代码片段(包含服务器响应回来的数据),
+    再交给网页去执行
+  示例:
+    day11/run01.py --> static/02-crossdomain.html
+
+  练习: day11/run01.py --> static/03-flight.html访问
+    1.通过http://localhost:5000/static/03-flight.html访问
+    2.按钮:[显示航班信息]
+    3.点击时:向 http://127.0.0.1:5000/03-flight 发送请求
+    4.在 /03-flight处理程序中,响应回 
+      flightNO :MM223
+      start: 北京
+      to: 上海
+      date: 17:05
+    5.在03-flight.html中接收响应数据,并显示
+      航班号: MM223
+      始发: 北京
+      到达: 上海
+      时间: 17:05
+
+-jquery对跨域的支持
+  $.ajax({
+    url:"跨域地址",
+    type: 'get',
+    dataType: 'jsonp',
+    success: function(data){}
+  })
+  jsonp - json with padding      
+

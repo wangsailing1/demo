@@ -1,0 +1,1191 @@
+**********************************************************************************************
+---------------------------- 2018年1月11日 星期五 晴  ------Django-----------Django(day01)----- 
+
+1.Django框架的介绍
+  2005年发布,采用Python语言编写的开源框架,早期的时候Django主要做新闻以及
+  内容管理的网站,Django中自带强大的后台管理功能
+
+  版本: 2.1.5
+  使用: 1.11
+
+  官网: www.djangoproject.com
+  中文文档: http://djangobook.py3k.cn
+
+2.Django的框架模式
+  MTV
+    Models/Templates/Views  
+3.Django的安装
+  1.查看已安装的版本
+    pip3 list  或  交互模式下 import django >>> django.VERSION
+  2.安装
+    使用 pip3
+      pip3 install django (安装Django的最新版本)
+    
+      pip3 install django==1.11.8 (安装指定版本)
+
+4.Django框架的使用
+  1.创建项目的指令
+    django-admin
+    语法: django-admin startproject 项目名称 
+    注意: 输入该命令时,终端在哪个目录,项目就创建在哪个目录
+  2.Django项目的目录结构
+    1. manage.py
+      功能: 包含项目管理相关的子命令
+        如:
+          启动服务: runserver
+          创建应用: startapp
+          创建管理员: createsuperuser
+          数据迁移: migrate
+          ... ...
+    2.主文件夹(在项目内与项目名称一致的文件夹)
+      1. __init__.py
+        项目初始化文件,服务启动时自动运行
+      2. wsgi.py
+        WEB服务网关接口的配置文件,部署项目时使用
+      3. urls.py
+        项目的基础路由配置文件
+        所有动态路径必须走该文件进行匹配
+      4. settings.py
+        项目的主配置文件,启动服务时自动调用
+        1. BASE_DIR
+          作用: 表示当前项目的绝对路径
+        2. DEBUG
+          作用: 是否使用调试模式
+          取值:
+            1.True: 开发阶段使用
+            2.False: 生产环境中使用
+        3. ALLOWED_HOSTS
+          作用: 设置允许访问到本项目的Host列表
+          取值: 
+            1.如果为空,表示只能通过'localhost'/ '127.0.0.1' 访问
+            2. 取['*'], 任何能表示本机的地址,都可以访问
+          [注意]: 如果希望能够被其他机器访问,启动项目时要输参数启动: 
+              ./manage.py runserver 0.0.0.0:端口
+        4.INSTALLED_APPS
+          作用: 指定已安装的应用(类似于flask关联蓝图)
+        5.MIDDLEWARE
+          作用: 注册中间件
+        6.TEMPLATES
+          作用:指定模板的配置信息
+        7.DATABASES
+          作用:指定数据库的配置信息
+        8.LANGUAGE_CODE
+          作用: 指定语言设置
+          取值: en-us 英文 / zh-Hans
+        9.TIME_ZONE
+          作用: 指定时区
+          取值: 中国时区  Asia/Shanghai
+
+5.URL的使用
+  1.urls.py
+    默认在主文件夹中,主路由由配置文件,包含最基本的路由-视图的映射关系  
+    该模块文件中会包含 urlpatterns 的列表,用于表示路由-视图的映射
+    在urlpatterns中,通过若干url()来表示具体的路由-视图映射关系     
+  2.url() 的语法
+    from django.conf.urls.import url   
+    语法:
+      url(regex,views,kwargs=None,name=None)
+        1.regex:  字符串,表示匹配的请求由,通过正则表达式匹配
+                  [特别注意] 如果路由仅写'show'  只要路由中包含'show'都会访问到,所以通常用'^show$'精准匹配
+        2.views:  指定地址所对应的视图处理函数的名称
+        3.kwargs: 想views传参
+        4.name:   为url起别名,在地址反向解析时使用
+
+  -视图函数:
+    新建py文件,from django.http import HttpResponse
+    # Django中的视图处理函数,必须有一个参数，名称必须叫request,且必须有返回值
+
+    def show(request):
+      return HttpResponse("Hello Django")
+
+  3.带参数的url
+    http://localhost:8000/show-2/2019/01/01
+    使用正则表达式的子组进行传参 - ()
+    一个子组是一个参数,多个参数的话要使用多个子组,并且使用 / 隔开
+    url(r"^show-2/(\d{4})/(\d{2})/(\d{2})$")
+
+    def show_02(request,year,month,day):
+      return
+  
+6.Django中的应用 - app
+  1. 什么是应用
+    应用是WEB项目中的一个独立的业务模块,可以包含直接的路由,视图,...
+  
+    在django中拆分应用后,主文件夹不再处理用户的具体请求,主文件夹
+    的主要工作就是项目的初始化以及请求的分发(分布式请求处理),具体
+    的请求由应用(app)进行处理
+  2.创建 & 配置应用
+    1. 创建应用的指令
+      ./manage.py startapp 应用名称
+    2.配置应用
+      在settings.py中进行应用的注册
+      INSTALLED_APPS = ["应用名称1","应用名称2",...]
+  3.应用的结构组成
+    1.migrations 文件夹
+      保存数据迁移的中间文件
+    2.__init__.py 
+      应用的初始化文件
+    3. admin.py
+      应用的后台管理配置文件
+    4.apps.py
+      应用的属性配置文件
+    5.models.py
+      与数据库相关的模型映射类
+    6.tests.py
+      应用的单元测试文件
+    7.views.py
+      定义视图处理函数的文件
+      
+  4.分布式请求处理
+    1.请求先到达主文件夹的urls.py,在该文件中按地址找到对应应用,指向应用的urls.py
+    2.在应用中手动创建urls.py书写当前应用的路由,(结构参考主路由设置)
+      from django.conf.urls import url
+      urlpatterns = [
+        url(...),
+        url(...)
+      ]
+    3.在应用中的views.py中书写视图函数
+    实例如:
+      如果访问路径是: http://localhost:8000/music/play
+      则将请求转交给music应用中的urls.py进一步进行处理
+      1.在主文件夹的urls.py中
+        from django.conf.urls import include
+        urlpatterns = [
+          url(r"^music/",include('music.urls'))
+        ]
+      2.在music的urls.py中
+        ** 能进入到urls.py中说明在主文件的urls中已经匹配出来了 http://localhost:8000/music/
+            在本urls.py中仅需要匹配剩下的路径就可以了
+        urlpatterns = [
+          url(r"^play",play)
+        ]
+    示例:
+      day01/Test01/music
+
+作业:
+  1.创建一个Django项目 - DjangoDemo01
+  2.创建以下几个应用:
+    1. index 应用
+    2. music 应用
+    3. sport 应用
+    4. news 应用
+  3.创建分布式路由访问系统
+    主文件夹只做路由的分发
+    每个应用只处理与自己相关的业务
+  4. 
+    1.localhost:8000/index/index
+      交给index应用中的index()函数处理
+    2.localhost:8000/music/index
+      交给music应用中的index()函数处理
+    3.localhost:8000/sport/index
+      交给sport应用中的index()函数处理
+    2.localhost:8000/news/index
+      交给news应用中的index()函数处理
+
+**********************************************************************************************
+---------------------------- 2018年1月14日 星期一 晴  ------Django-----------Django(day02)----- 
+1.路由系统
+  1.路由改版
+    原访问路径: localhost:8000/music/index
+    改版路径: localhost:8000/music/
+      使访问路径是改版路径时,访问music下的index()函数
+    在music/urls.py中
+      url(r'^$',index)  //意为music后路由为空时的处理函数
+
+    [特别注意](day01/DjangoDemo01)
+    index路径改版
+    访问 localhost:8000/           交给index应用中的index()处理
+    访问 localhost:8000/login      交给index应用中的login()处理
+    访问 localhost:8000/register   交给index应用中的register()处理 
+  2.重定向
+    from django.shortcut import redirect
+
+2. Django中的模板 - Templates
+  1.Django中的模板引擎是由Django自己提供,并不是jinja2
+    Django中的模板语法与Flask中的模板语法稍有不同
+  2.模板的配置
+    TEMPLATES 变量  (settings.py中)
+    1. BACKEND      指定模板的引擎
+    2. DIRS         指定存放模板的目录们
+      1. 如果写东西: 则按照写好的路径去查找模板
+      2. 如果为空:   Django会自动到每个应用中的templates目录中查找模板
+        推荐: DIRS: [os.path.join(BASE_DIR,'templates')]  
+        // 代表在当前项目根目录下templates目录中查找模板,
+        // BASE_DIR在项目创建时已经自动定义在setting.py中
+      3. APP_DIRS   是否要搜索应用中的指定名称的目录们
+  3.模板的加载方式
+    1.通过Loader获取模板,通过HttpResponse响应
+      from django.template import loader
+      
+      1.通过loader加载模板
+        t = loader.get_template("模板名称")
+      2.将模板转换成字符串
+        htmlStr = t.render()
+      3.再通过HttpResponse进行响应
+        return HttpResponse(htmlStr)
+    2.使用render()直接加载并响应模板
+      from django.shortcut import render
+      return render(request,'index.html')
+
+    示例见:
+      day01/DjangoDemo01/music
+  4.模板的语法
+    1.变量
+      1.作用
+        传递后端的数据到模板上进行显示
+      2.允许作为变量的数据类型
+        字符串/数字/列表/元组/字典/函数/对象
+      3.变量的语法
+        变量必须封装到字典中,才允许传递到模板
+          dic = {
+            "变量1" : "值1",
+            "变量2" : "值2",
+            ...
+          }
+        1.使用loader加载模板时
+          t = loader.get_template("xxx.html")
+          t.render(dic)
+          return HttpResponse(html)
+        2.使用render加载模板时
+          return render(request,'xxx.html',dic)
+        3.以上两种方式都可以使用locals()传参,用locals()则不用封装
+          ex:
+            return render(request,'01-template.html',locals())
+              在模板中直接使用同名变量即可
+        4.在模板中使用
+          {{直接使用与服务器同名的变量即可}}
+          [注意:] 
+            1.在模板中字典和列表不能用[]取值,只能用.语法
+              ex:
+                list = [1,2,3,4]  //{{list[1]}}取不到值,只能{{list.1}};字典也是一样,只能用.语法
+            2.在模板中调用实例对象的方法时,不能用(),也不能传参
+              ex:
+                person对象有一个 info() 方法
+                在模板中
+                  只能用person.info调用
+      示例:
+        day01/DjangoDemo01/music --> 02-var.html
+        
+    2.标签
+      1. for标签
+        1.语法:
+          {% for 变量 in 可迭代变量 %}
+          {% endfor %}
+        2.内置变量 - forloop
+          1.forloop.counter
+            返回当前循环遍历的次数,从1开始
+          2.forloop.counter0
+            返回当前循环遍历的次数,从0开始
+          3.forloop.first
+            是否为第一次循环,返回布尔值
+          4.forloop.last
+            是否为最后一次循环
+      2. if标签
+        1.语法:
+          1. if结构
+            {% if 条件 %}
+              满足条件时执行的内容
+            {% endif %}
+          2. if else 结构
+            {% if 条件 %}
+              满足条件时执行
+            {% else %}
+              不满足条件时执行
+            {% endif %}
+          3.if ... elif ... else
+            {% if 条件1 %}
+            {% elif 条件2 %}
+            ...
+            {% else %}
+            {% endif %}
+      3.comment标签(注释标签)
+        {% comment %}
+          要注释的内容
+        {% endcomment %}
+
+          
+      示例:
+      day01/DjangoDemo01/music --> 02-var.html
+            
+    3.过滤器
+      1.作用
+        在变量输出前对变量的值进行筛选或过滤
+      2.语法
+        {{变量|过滤器:参数值}}
+      3.常用过滤器
+      4.文档参见
+        django官网->documentation->buid-in tag and filter
+    4.静态文件
+      1.在settings.py中设置以下两点:
+        1.静态文件访问路径
+          通过哪个地址去访问静态的资源们
+          默认:
+          STATIC_URL = '/static/'   //用浏览器访问/下static来访问静态资源
+        2.静态文件存储路径
+          指定静态文件要存放在服务器哪个目录上
+          STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),) 
+          //指静态文件存储在项目目录下的static目录
+      2.访问静态文件
+        1. 使用 静态文件的 url 直接访问
+          http://localhost:8000/static/xxx
+          <img src="/static/images/a.jpg">
+        2. 使用 {% static %} 标签进行访问
+          {% static %} 表示的就是静态资源访问路径
+          1.使用之前要加载static
+            {% load static %}
+          2.使用静态资源时
+            <img src="{% static '进入到static之后的具体资源路径' %}"
+            ex:
+              <img src="{% static 'images/a.jpg' %}"
+      练习:(day02/FruitDay)
+        1.创建Django项目 - FruitDay
+        2.创建应用 - index
+        3.配置路由
+          http://localhost:8000/xxx
+          一律交给index应用做进一步处理
+        4.将html阶段中
+          将果园的首页/登录页/以模板的方式设置到FruitDay项目中,已经配置好
+          所有的静态文件
+        5.访问路径:
+          首页: http://localhost:8000
+          登录: http://loabalhost:8000/login
+
+    5.模板的继承
+      1.语法
+        1.在父模板中
+          要标识出哪些内容在子模板中是允许被修改的
+          {% block 块名 %}
+          {% endblock %}
+
+          block作用:
+            1.在父模板中,正常显示
+            2.在子模板中,不重写则采用父模板中的效果
+              重写则按照重写的效果显示
+        2.在子模板中
+          1.指定继承自哪个模板
+            {% extends '父模板名称' %}
+          2.重写父模板中的内容
+            {% block 块名 %}
+            {% endblock %}
+    6.url()的name参数
+      1.url的语法
+        url(regex,views,kwargs,name='别名')
+          name: 为了给当前的url起别名,反向解析时使用
+          ex:
+            url(r"^user_login/$",views.login,name='log')
+      2.在模板中做反向解析
+        {% url 'url的别名' %}
+        ex:
+          <a href="{% url 'log' %}">访问06-xxx/</a>
+      **带参数的反向解析
+        url(r"^07-thisisanother_user_register/(\d{4})/$",reg_views,name='reg'),
+        模板中:
+        {% url 'reg' '2019' %}  在url标签中传入参数
+
+**********************************************************************************************
+---------------------------- 2018年1月15日 星期二 小雨  ------Django-----------Django(day03)----
+1.模型 - Models
+  1.ORM框架
+    ORM: Object Relational Mapping
+    三大特征:
+      1. 表 到 类 的映射
+      2. 数据类型的映射
+      3. 关系映射
+  2. 创建 和 配置 数据库
+    1.创建数据库
+      create database webdb default charset utf8 collate utf8_general_ci;     
+    2.django中的数据库配置,settings.py中的DATABASES
+      DATABASES = {
+        'default': {
+          'ENGINE': 'django.db.backends.sqlite3',
+          'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+      }
+      解析:
+        1.ENGINE: 指定数据库引擎,使用mysql则将其改为
+            'ENGINE': 'django.db.backends.mysql'
+        2.NAME : 指定要连接的数据库名称
+            "NAME" : 'webdb'
+        3.USER : 指定登录到数据库的用户名称
+            "USER" : "ROOT"
+        4.PASSWORD : 指定登录到数据库的用户密码
+            "PASSWORD" : '123456' 
+        5.HOST : 指定要连接到的主机地址
+            'HOST': 'localhost'
+        6.PORT: 指定数据库端口
+            'PORT': '3306'
+    [注意:] 当报出
+      django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: 
+      No module named 'MySQLdb'.
+      的错误时: 则在主程序的__init__中
+        import pymysql
+        pymysql.install_as_MySQLdb()
+    3.数据库迁移
+      1.  ./manage.py makemigrations
+        作用:
+          将每个应用下的models.py文件生成一个中间迁移文件,并将中间文件保存在
+          migrations目录中
+      2. ./manage.py migrate
+        作用:
+          将每个应用下的migrations目录中的中间文件同步回数据库
+    4.编写Models
+      django中实体类自带id字段,使用主键及整数自增,如果不自己指定主键,默认自动使用
+      1.数据类型的映射
+          mysql  -->  django
+         varchar(n) -->  models.CharField(max_length=n)
+
+        **专门用来表示网址类的字符串
+           varchar --->  models.URLField()
+
+        示例:day03/DjangoDemo03/index/models.py
+      2.Models的语法规范
+        class 类名(models.Model):
+          属性名 = models.字段类型(字段选项)
+        1.类名
+          实体类的名称,自动生成表名时,表名组成:
+            应用名_实体类名(自动变小写)
+        2.属性名
+          映射回数据库就是字段的名称
+        3.字段类型
+          查看官网->documentation->model Layer -> fieldType
+          1. BooleanFiels()
+            在编程语言中,可以使用True/False表示,其映射回数据库是Tinyint,用0/1表示
+          2. CharField()
+            数据类型为varchar,必须指定max_length参数值,ex: models.CharField(max_length=30)
+          3.DateField()
+            编程语言中使用字符串来表示该值
+            数据库中使用日期来表示,Date类型
+          4.DateTimeField()
+            数据类型为: datetime
+          5.DecimalField()
+            编程语言中使用小数表示该列的值
+            数据库中使用定点小数表示,decimal类型
+            ex: 
+              money = models.DecimalField(max_digits=7,decimal_places=2)
+              可以表示12345.67 ?? 还是1234.56?
+          6.FloatField()
+            数据库以及编程语言中都使用小数表示,数据类型为:float
+          7.EmailField()
+            编程语言中使用字符串表示该列的值
+            数据库中也是字符串,varchar
+          8.IntegerField()
+            编程语言和数据库中都使用整数
+            数据类型为int
+          9.URLField()
+            编程语言和数据库中都使用字符串,数据类型为:varchar
+          10.ImageField()
+            存储图片的路径
+            编程语言和数据库中都是使用字符串
+            image = models.ImageField(upload_to='image/users/')
+        4.字段选项
+          指定创建列的额外信息
+          查看官网->documentation->model Layer -> fieldType中的field options
+          1.primary_key
+            设置为True,表示该列为主键
+          2.null
+            如果设置为True,表示该列允许为空,默认为False
+          3.default
+            设置所在列的默认值
+          4.db_index
+            如果设置为True,则为所在列添加索引
+          5.unique
+            如果设置为True,表示所在列的值要唯一
+          6.db_column
+            指定映射到列的列名,如果不指定则采用属性名称作为列名
+      练习:(day03/DjangoDemo03)
+        1.在index应用中再追加两个model类
+        1.Author - 作者
+          1.name - 姓名
+          2.age - 年龄
+          3.email - 邮箱(允许为空)
+        2.Book - 图书
+          1.title - 书名
+          2.publicate_date - 出版时间
+    5.相关指令
+      1.通过数据库自动导出models
+        ./manage.py inspectdb > 文件名.py
+      2.数据的版本切换
+        1.  ./manage.py migrate
+          执行所有应用中最新版本的数据库迁移文件
+        2.  ./manage.py migrate 应用名称 版本号
+          ex:
+            ./manage.py migrate index 0001
+
+  3.数据的CRUD
+    1.增加数据
+      1.  实体类名.objects.create(属性=值,属性=值...)
+          返回值: 返回创建好的实体对象
+      2.  创建 实体类 的对象,并调用save()进行保存
+          user = User(属性=值,属性=值...)
+          obj.属性 = 值 
+          obj.save()
+          无返回值
+      3.  使用字典创建对象,再通过save()方法进行保存
+        dic = {
+          '属性1':'值1',
+          '属性2':'值2',
+          ...
+        }
+        user = User(**dic)
+        user.save()
+    2.查询数据(重点)
+      通过  实体类.objects  属性调用查询接口
+      ex:
+        Entry.objects.all()
+        Entry.objects.filter()
+        ...
+      文档:
+      django官网->documentation->model Layer -> queryset method reference
+      常用方法:
+      1.基本查询操作
+        语法: all()
+        用法: Entry.objects.all()
+        作用: 查询Entry实体中所有行所有列的记录
+        返回: Queryset
+          1.所有的QuerySet都可以通过query属性得到对应的SQL语句
+          2.所有的QuerySet都可以当成列表操作,元素为实体对象,可以遍历得到每个对象
+      2.查询返回指定列
+        语法: values() | values('列1','列2')
+        用法:
+          Entry.objects.values('列1','列2')
+          Entry.objects.all().values('列1','列2')
+        返回值: Queryset
+          会将查询出来的数据(列名:值)封装到字典中,再封装到列表中,
+          可以循环列表得到每个字典
+          ex:
+            [{'age': 65, 'name': '莫言', 'id': 1, 'isActive': True, 'email': 'moyan@163.com'},
+             {'age': 105, 'name': '老舍', 'id': 2, 'isActive': True, 'email': 'laoshe@163.com'}]
+      3.查询返回指定列
+        语法: values_list('列1','列2')
+        用法:
+          Entry.objects.values_list()
+          Entry.objects.all().values_list()
+        返回:Queryset
+          会将查询出来的数据封装到元组中再封装到列表中
+      4.根据条件查询部分行数据(重难点)
+        语法:filter(条件)
+        用法:Entry.objects.filter(条件)
+        返回:Queryset
+        EX:
+          1.查询id为1的Author的信息
+            Author.objects.filter(id=1)
+          2.查询publicate_date为2018-10-12的Book的信息
+            books = Book.objects.filter(publicate_date='2018-10-12')
+          3.查询id为1并且publicate_date为2018-10-12的book的信息
+            Book.objects.filter(id=1,publicate_date='2018-10-12')
+        如果要非等值查询条件,需要使用查询谓词
+          Django: Field Lookup
+          查询谓词: 是一个独立的查询功能
+          django官网->documentation->model Layer -> queryset method reference ↓field Lookup
+          ex:
+            __exact :     等值匹配
+            __contains    包含指定值
+            __in          在指定范围内
+            __gt          大于指定值
+            __gte         
+            __lt
+            __lte
+            __startswith    以xx作为开始
+            __endswith      以xx作为结束
+            __range         在指定区间范围
+            __date          获取日期部分数据
+            __year          获取年
+            __day           
+            ...
+        filter中可以嵌套子查询
+          print('+++++ age大于鲁迅的age的 +++++')
+          authors = Author.objects.filter(age__gt=Author.objects.filter(name='鲁迅').values('age'))
+      5.不等的条件筛选
+        语法: exclude(条件)
+        用法: Entry.objects.exclude(条件)
+      6.排序
+        语法: order_by('列1','列2')默认都是按升序排序,如果要作降序,在列名前加负号,
+              如: order_by('-列1','列2')
+      7.查询只返回一条数据
+        语法: get()
+        用法: Entry.objects.get(条件)  //filter中所有能用的条件都可以使用
+        [特别注意]:
+          填写的条件必须保证能够查询到且仅能查询到1条记录,查到多条,或者查不到
+          数据,会直接报错
+      8.聚合查询(不带分组)
+        语法: aggregate()
+        用法: Entry.objects.aggregate(名=聚合函数('列'))
+        聚合函数:
+          from django.db.models import Avg,Sum,Count,Max,Min...
+        **可以一次查询多个聚合:
+          ex:
+            age = Author.objects.aggregate(avgage=Avg('age'),sumAge=Sum('age'))
+            print(age)
+            ---结果---
+            {'avgage': 352.3333, 'sumAge': 2114}
+        **可以在filter之后用聚合
+          ex:
+            print('========== 年龄>=95的人数 ==========')
+            count = Author.objects.filter(age__gte=95).aggregate(count=Count('age'))
+            ---结果---
+            {'count': 4}
+        示例:
+          day03/DjangoDemo03/index/06-aggregate
+      
+      9.聚合查询(带分组)
+        语法:annotate()
+        用法:
+          Entry.objects.values("分组列名").annotate(名=聚合函数('列')).values('要查询的列名')
+          **省略最后一个values会返回查到的所有列数据,也可以将最后一个values替换成filter/get/等
+          ex:
+            count = Author.objects.values('isActive').annotate(count=Count('id'))
+            <QuerySet [{'count': 5, 'isActive': True}, {'count': 1, 'isActive': False}]>
+
+            count = Author.objects.values('isActive').annotate(count=Count('id')).filter(isActive=1)
+            >>>: <QuerySet [{'count': 5, 'isActive': True}]>
+      练习:
+        print('========== 共有多少本书 ==========')
+        countBook = Book.objects.aggregate(count=Count('id'))
+        print(countBook)
+        print('========== 每个时间发表的书籍的数量 ==========')
+        countBook = Book.objects.values('publicate_date').annotate(count=Count('id'))
+        print(countBook)
+
+        print('========== 1990年后出版的图书数量 ==========')
+        countBook = Book.objects.filter(publicate_date__gte='1990-01-01').aggregate(count=Count('id'))
+        print(countBook)
+        或者(先取出年,再比较):
+        countBook = Book.objects.filter(publicate_date__year__gte=1990).aggregate(count=Count('id'))
+
+    3.修改
+      1.修改单个实体
+        1.查
+          通过get()得到要修改的实体对象
+        2.改
+          通过得到的对象去修改属性值
+          对象.属性 = 值
+        3.保存
+          通过对象.save()保存数据回数据库
+      2.批量修改
+        直接用QuerySet的update(属性=值)实现批量修改(单个修改也常用这种方法)
+
+    4.删除
+      调用实体对象/查询结果集的delete()实现删除
+      1.删除单个对象
+        Author.objects.get(id=1).delete()
+      2.批量删除
+        Author.objects.filter(isActive=False).delete()
+
+    5.F查询 和 Q查询
+      例如要完成以下操作:
+        将author表中所有人的年龄加10岁
+      1.F查询 - F()
+        1.作用:
+          在执行操作过程中用于获取某列的值
+        2.语法:
+          from django.db.models import F
+          F('列名')
+          ex:
+            Author.objects.all().update(age=F('age')+10)
+      2.Q查询 - Q()
+        1.作用:
+          在查询条件中实现or的操作
+        2.语法
+          from django.db.models import Q
+          Q(条件1)|Q(条件2)...
+          ex:
+            查询author中id=1或age>=90的信息
+            Author.objects.filter(Q(id=1)|Q(age__gte=90))
+    6.原生的数据库操作方法
+      1.查询
+        1.语法:
+          raw(sql语句)
+        2.用法
+          Entry.objects.raw('sql语句')
+        3.返回值
+          Queryset
+      2.增删改
+        from django.db import connection
+        def doSQL(request):
+          # 更新index_author表中所有的数据的isActive=1
+          with connection.cursor() as cursor:
+            cursor.execute("update index_author set is isActive=1")
+          return
+
+**********************************************************************************************
+---------------------------- 2018年1月16日 星期三 阴  -------Django-----------Django(day04)---- 
+1.使用后台管理Models
+  1.后台的配置
+    登录地址: http://host:port/admin 
+    使用指令创建后台管理员:  ./manage.py createsuperuser
+    (必须在migrate过默认的数据库后才可以使用,创建的用户会存放在auth_user表中)  
+2.基本的数据管理
+  1.在应用中的admin.py中注册要管理的数据
+    1.admin.py
+      作用:
+        注册要管理的Models类
+    2.注册Models
+      from django.contrib import admin
+      from .models import *
+
+      admin.site.register(实体类名1)     
+      admin.site.register(实体类名2)     
+      ...
+  2.定义models在管理平台的展现形式
+    1.通过重写__str__方法,定义该类的对象展现的形式/否则都 显示object 难以辨认每个对象
+      def __str__(self):
+        return self.name
+    2.通过 verbose_name 字段选项,修改字段显示名称
+      name = Model.CharField(max_length30,verbose_name='姓名')
+    3.通过内部类Meta 修改该类的展现形式
+      class Author(models.Model):
+        class Meta:
+          1. db_table
+              db_table = 'author'
+              指定当前类映射到的表名
+              (若要修改该属性,修改完成后马上同步到数据库,再做其他事情)
+          2. verbose_name
+              指定当前类的显示名称(单数),查询得到多条数据时,会显示时会自动加s
+              (因此建议verbose_name_plural也做修改)
+          3. verbose_name_plural
+              效果同上(复数),查询得到多条数据时的显示名称
+          4. ordering
+              指定数据的排序方式,取值为列表
+              ex:按年龄升序排序,年龄相同的按id降序
+                ordering = ['age','-id']
+          示例:
+            day03/DjangoDemo03
+
+3.高级管理
+  1.在admin.py中创建高级管理类并注册
+    1.定义类 EntryAdmin,继承自admin.ModelAdmin
+      class AuthorAdmin(admin.ModelAdmin):
+        psss
+    2.注册高级管理类
+      admin.site.register(类名,对应的高级管理类名)
+  2.在EntryAdmin中所管理的功能
+    通过 属性 管理功能
+    1.list_display
+      作用: 定义在列表页上允许显示的字段们          
+      取值: 由属性名组成的列表或元组
+      示例: list_display = ('name','age','email','isActive')
+    2.list_display_links
+      作用: 定义在列表也中能连接到详情页的字段们(默认只能点击第一列进入详情页)
+      取值: 同上
+      注意: 所取的值必须是list_diplay中设置了显示的值
+    3.list_editable
+      作用: 定义在列表也中就允许被修改的字段们
+      取值: 同上
+      注意: 所取的值必须是list_diplay中设置了显示的值,且不能出现在list_display_links中
+    4.search_fields
+      作用: 添加允许被搜索的字段们
+      取值: 由属性名组成的列表或元组
+    5.list_filter
+      作用: 列表页右侧增加一个过滤器快速筛选
+      ex:
+        list_filter = ('age','name')
+    6.date_hierarchy
+      作用: 列表页中增加时间分层选择器
+      取值: 只能取一个值,必须是DateField或者DateTimeField的字段名
+      示例: date_hierarchy = 'publicate_date'
+    7.fields
+      作用: 在详情页中,指定要显示的字段以及顺序
+      ex:
+        fields = ('name','email','age')
+    8.fieldsets
+      作用: 详情页中,对字段们进行分组
+      注意: fieldsets与fields不能共存
+      取值:
+        fieldsets = (
+          #分组1
+          ('组名',
+          {'fields':('属性1','属性2'...),
+          'classes':('collapse',)}),            #可折叠
+          #分组2 
+          (...)
+        )
+
+4.models关系映射
+  1.一对一映射
+    1.语法
+      在需要关联的两个类中任何一个:
+        属性=models.OneToOneField(要关联的类)
+      示例:(day03/DjangoDemo03)
+        # 增加属性-author,表示与Author表的一对一关系
+        author = models.OneToOneField(Author,null=True)
+    2.关联属性及反向引用
+      class Author(models.Model):
+        xxx
+      class Wife(models.Model):
+        xxs
+        author = models.OneToOneField(Author)
+      [注意:]
+        Wife的实例可以使用.author获取对应的author
+        Author的实例也会有一个隐式的属性.wife获取其对应的wife
+      [使用关联属性]
+        添加 莫夫人 并关联 莫言
+        方式1:
+          直接存入author_id的值
+          wife.author_id = 1
+        方式2:
+          通过author对象关联
+          author = Author.objects.get(name='金庸')
+          wife.author = author
+
+  2.一对多映射
+    1.语法
+      在"多"实体中增加对"一"实体的引用
+      属性 = models.ForeignKey(Entry)
+
+      ex:
+        一个出版社允许出版多本图书
+        一本图书只能属于一个出版社
+        出版社(1) : 图书(多)
+        class Publisher(models.Model):
+          xxxx 
+
+        class Book(models.Model):
+          xxxx
+          publisher = models.ForeignKey(Publisher)
+		2.数据管理
+			1.增加数据
+				1.通过 book.publisher_id 插入关联数据、
+					book = Book(xxx xxx)
+					book.publisher_id = 1
+					book.save()
+				2.通过 book.publisher 插入关联数据
+					book = Book(xxx)
+					pub = Publisher.objects.get(id=2)
+					book.publisher = pub
+					book.save()
+			2.查询数据
+				1.正向查询
+					通过 Book 查询 Publisher 
+					book = Book.objects.get(id=1)
+					pub = book.publisher
+				2.反向查询
+					通过 Publisher 查询对应的所有的 Book
+					Django会在Publisher中增加一个属性表示对Book的查询引用
+					属性 ：book_set --> (Entry.objects)
+  3.多对多映射
+    1.语法
+        在关联的两个类的任意一个类中，增加：
+        属性 = models.ManyToManyField(Entry)
+
+        class Author(models.Model):
+          xxx
+
+        class Book(models.Model):
+          xxx
+
+          author_set = models.ManyToManyField(Author)
+		2.数据管理
+			1.增加数据
+				通过关联属性的add()方法实现数据的增加
+			2.删除数据
+				通过关联属性的remove()实现删除数据
+			3.查询数据
+				1.正向查询
+					通过Book查询Author,可以通过关联属性来表示对Author的查询对象 --> objects
+					示例：查询射雕英雄传对应所有的作者
+					 book=Book.objects.get(title='射雕英雄传')
+					 book.author_set.all()
+				2.反向查询
+					通过Author查询Book,可以通过Django增加的隐式属性book_set来获取对应的book的查询对象 --> objects
+					author=Author.objects.get(name='金庸')
+					books = author.book_set.all()
+
+
+
+**********************************************************************************************
+---------------------------- 2018年1月17日 星期四 阴  -------Django-----------Django(day05)---- 
+-request
+
+
+3.获取请求提交的数据
+  1.使用get方式时
+    1.语法
+      request.GET['参数名']
+      request.GET.get('参数名')
+      request.Get.getlist('参数名')  //如可以多选的下拉列表,或者name相同的多个复选框
+    2.能够产生get请求方式的场合
+      1.地址栏的请求
+        1.<a href='地址?参数名=值&参数名=值'>
+        2.location.href='地址?参数名=值&参数名=值'
+      2.表单中method为get
+        <form method='get'>
+          姓名:<input type='text' name='uname'>
+        </form>
+      [注意:] url(r'^index/(\d+)')中的参数是不能用此方式取值的
+        因为这种语法是django定义的语法,并不是http的规范,因此与request无关
+  2.使用post方式时
+    1.语法
+      request.POST['参数名']
+      request.POST.get('参数名')
+      request.POST.getlist('参数名')  
+    2.SCRF
+      Cross-site Request Forgery
+      跨    站点   请求     伪装
+      -也叫跨站点伪装攻击
+        django为了防止伪装攻击,把所有的POST请求都禁止了,
+        必须通过CSRF的验证才被允许向服务器发送post请求
+      解决方案:
+        1.取消CSRF(不推荐)
+          删除 settings.py 中 MIDDLEWARE 中的 
+            django.middleware.csrf.CsrfViewMiddleWare
+        2.开放CSRF验证(不推荐)    //CSRF还在,但是不进行验证
+          在视图处理函数上添加: 
+            @csrf_protect 装饰器,则该视图不再进行CSRF验证
+        3.规定可以通过CSRF验证的白名单
+          在表单中添加{% csrf_token %},服务端渲染该表单会生成口令令牌(通常加在表单第一行)
+          如果POST请求中携带有效的令牌,则允许进入
+    示例:(day02/FruitDay)
+      果园项目的注册部分
+      1.创建数据库 - fruitday
+      2.创建实体类 - Users
+        1.uphone - varchar(11)
+        2.upwd - varchar(200)
+        3.uemail - varchar(245)
+        4.uname - varchar(20)
+        5.isActive - tinyint / True or False默认为True
+      3.完善注册 - /register
+        1.如果是get请求,则返回register.html
+        2.如果是post请求,则处理请求数据
+          验证uphone是否存在,如果存在则回到前端并给出提示
+
+-使用forms模块处理表单
+  1.forms模块的作用
+    通过forms模块,允许将表单与class相结合,允许通过class生成表单
+  2.使用forms模块
+    1.在应用中创建forms.py文件
+    2.在forms.py中 from django import forms
+    3.在forms.py创建class,一个class会生成一个表单
+        class ClassName(forms.Form)
+    4.在class中创建属性
+      一个属性对应到表单中成一个控件
+    
+  3.forms.Form 的语法
+    属性=forms.类型函数(参数)
+    1.类型
+      django官网->documentation->Forms->buildin fileds
+      1.label
+        控件前的提示文本
+      2.initial
+        控件的初始值
+      3.widget
+        指定小部件
+      4.error_messages
+        指定数据错误时的提示文本...
+
+  4.在模板中解析form对象
+    1.注意：
+      1.需要自己定义<form>
+      2.表单中的按钮需要自定义
+    2.解析form对象
+      1.在视图中创建form对象并发送到模板中解析
+        ex:
+          form = forms.py中定义好的类()
+          return render(requst,'xxx.html',locals())     
+      2.在模板中解析
+        1.手动解析
+          {% for field in form %}
+            {{field.label}}: 控件中label的值/写在哪就显示该值
+            {{field}} : 表示的就是控件,写在哪就在哪显示该控件
+          {% endfor %}
+        2.自动解析
+          {{form.as_p}}
+            将form中的每个属性都使用p标记进行表示
+          {{form.as_ul}} | {{form.as_ul}}
+            将form中的每个属性使用li标记包裹在显示
+            注意: 必须手动提供<ol></ol>或<ul></ul>
+        3.{{form.as_table}}
+            注意: 必须手动提供<table></table>   
+  5.获取form的数据
+    1.通过request.POST创建Forms类的实例
+      ex:
+        form = RemarkForms(request.POST)
+    2.判断form中是否有有效数据
+      if form.is_valid()
+        返回Ture通过验证
+        返回False验证失败
+    3.接收数据
+      通过 form.cleaned_data 来接收表单数据   
+      返回字典: {'uage': 123, 'uemail': '123@123.com', 'upwd': '123', 'uname': '123'}
+
+  示例:
+    day05/DjangoDemo05/index
+  练习:(day05/DjangoDemo05/index)
+    1.创建一个数据库 djangodb
+    2.创建实体类 User
+      uname - varchar(30)/ upwd - varchar(30)
+      uage - int/ uemail - varchar(30)
+    3.创建forms模块 forms.py  
+      创建RegisterForm -> forms.Form
+    4.解析forms并接收数据
+      1.将RegisterForm的对象发送到模板
+        04/regist/ -> 04-register.html
+      2.post提交时接收数据,并存入数据库
+
+-forms模块的的高级处理
+  将 Models 和 Forms 结合到一起使用     
+    1.在forms.py中创建class,继承自forms.ModelForm
+    2.创建内部类Meta,关联Model
+      1.model: 指定要关联的实体类
+      2.fields: 指定从Model中取哪些字段生成控件
+        1.取值为 '__all__'
+          取全部属性生成控件
+        2.取值为 列表
+          将允许生成控件的属性名放在列表中
+      3.labels: 指定每个属性对应的label值
+        取值为字典
+          labels = {
+            'uname':'登录名称',
+            ... ...
+          }
+
+-内置小部件 widget
+  1.什么是小部件
+    表示的是生成到网页上的控件的类型以及其他的一些html属性
+  2.常用小部件类型
+    django官网->documentation->Forms->buildin widgets
+    1.TextInput:        等同于type='text'
+    2.PasswordInput:          type='password'
+    3.NumverInput:            type='number'
+    4.EmailInput:             type='email'
+    5.URLInput:               type='url'
+    6.HiddenInput:            type='hidden'
+    7.CheckboxInput:          type='chckbox'
+    8.CheckboxSelectMultiple: type='checkbox'  //以<ul>和<li>生成多个checkbox控件
+    9.RadioSelect :           type="radio"     //以 <ul>和<li> 生成多个 radio 控件
+    10.Textarea :             <textarea></textarea>
+    11.Select :               <select></select>
+    12.SelectMultiple:        <select multiple></select>
+  3.小部件的使用
+    1.继承自forms.Form
+      1.基本版
+        1.语法
+          属性=forms.CharField(
+            label='xxx'
+            widget=forms.小部件的类型
+          )
+        2.示例:
+          upwd = forms.CharField(
+            label='用户密码',
+            widget=forms.PasswordInput
+          )
+      2.高级版
+        在指定控件类型的基础之上,还可以指定控件的一些html的属性
+        2.语法
+          属性 = foms.CharField(
+            label='标签',widget=forms.小部件类型(
+              attrs={
+                'html属性名':'值',
+                'html属性名':'值'
+                  ...                  
+              }
+            )
+          )
+    2.继承自forms.ModelForm
+      class LoginForm(forms.ModelForm):
+        class Meta:
+          model=User,
+          fields = "__all__",
+          labels = {
+            'uname':'用户名称',
+            'upwd':'用户密码',
+            ...
+          }
+          #指定小部件
+          widgets = {
+            'upwd':form.PasswordInput(
+              attrs={
+                'html属性名':'值'
+              }
+            )
+          }
+    练习:
+      果园登录,改版成forms与models的结合
+      
+
+-cookie 和 session
+  1.cookie 实现
+    1.Django中使用cookie
+      使用响应对象将cookie保存进客户端
+      1.响应对象
+        HttpResponse() 的返回值
+        resp = HttpResponse('响应的一句话')
+      2.render()
+        resp = render(request,'xxx.htm',locals())
+      3.redirect()
+        resp = redirect('/')
+    2.保存cookie
+      响应对象.set_cookie(key,values,expires)
+      参数:
+        key : cookie名
+        value: cookie值
+        expires: 默认是以 s 为单位的数字
+        (取值为0表示要删除该cookie值)
+    3.获取cookie
+      request.COOKIES
+      封装了当前站点的所有cookie - 返回字典
+    4.删除cookie
+      响应对象.delete_cookie('id')
+
+  2.session 实现
+    1.保存session的值到服务器
+      request.session['KEY']=VALUE
+    2.从服务器中获取session的值
+      VALUE = request.session['key']
+    3.删除session值
+      del request.session['key']
+
+    **通常在进行获取/删除的时候先判断'key' in session
+    4.在settings.py中有关session的设置
+      1.SESSION_COOKIE_AGE
+        作用:设置sessionid在cookies中保存的时长,取数字表示秒数
+        ex:(存2天)
+          SESSION_COOKIE_AGE = 60*60*24*2
+      2.SESSION_EXPIRY_AT_BROUSER_CLOSE
+        作用:设置session是否在关闭浏览器时失效,取bool值
+        ex: (关闭浏览器时使session失效)
+          SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+  练习:(天天果园登录/day02/FruitDay)
+
+**********************************************************************************************
+---------------------------- 2018年1月21日 星期一 阴  -------Django-----------Django(day07)---- 
+-Django与Ajax
+  Ajax属于前端的异步请求技术,与后端框架/后端编程语言无关, 后端只要给出相应的响应即可
+
+  因此在Django中使用Ajax与在Flask中使用,没有区别.
+  [**但是要注意:]
+    Django 的post请求要求CSRF验证,因此使用ajax发送post请求时,要处理CSRF验证问题
+      1.在页面任意位置填写 {% csrf_token %},该标签会生成一个type='hidden',name='csrfmiddlewaretoken'
+        的input标签
+      2.在ajax中将该标签的值一起带过去,即可通过csrf验证
+        var params = {
+            'uname' : $("#uname").val(),
+            'csrfmiddlewaretoken' : $("[name='csrfmiddlewaretoken']").val(),
+        };
+        $.post('/13-ajax-post',params,function(){
+            $('#show').html(data);
+        });
+
+  示例:
+    day05/DjangoDemo05
+    day02/FruitDay主页,ajax版的登录验证
+
+-Django中提供了json序列化的的包
+  **Flask中要返回查询结果对象,需要手动将结果转换成字典,再放到列表里,才能对列表进行json.dumps()
+  在django:
+    from django.core import serializers
+
+    serializers.serialize(要序列化成什么格式,被序列化的对象)
+    ex :
+      serializers.serialize('json',users)  //返回已经序列化完成的json串,不用再dumps了
+      但是该方法不适用于单个对象,可以采用查询all()再前端使用时循环取值,也可以采用flask那种
+      转换成字典的方式
+      
+-利用Ajax实现前后端完全分离
+  /django/day02/FruitDay
+
+        
+
+
+
+

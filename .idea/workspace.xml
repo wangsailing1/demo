@@ -2,15 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="236a529e-3481-4343-8d02-05d42c556698" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/paixusuanfa/插入排序.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/sai/backend/gconfig/front_templates/king_of_song_template.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/sai/backend/logics/king_of_song.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/sai/backend/models/king_of_song.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/sai/backend/models/vip_company.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/sai/backend/templates/admin/data/ltv_for_device_index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/wang.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wang.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/big_sale/backend" beforeDir="false" afterPath="$PROJECT_DIR$/big_sale/backend" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ling.py" beforeDir="false" afterPath="$PROJECT_DIR$/ling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sai.py" beforeDir="false" afterPath="$PROJECT_DIR$/sai.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sai/backend" beforeDir="false" afterPath="$PROJECT_DIR$/sai/backend" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sai/backend/admin/admin_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/sai/backend/admin/admin_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sai/backend/admin/data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/sai/backend/admin/data/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sai/backend/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/sai/backend/handlers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sai/backend/lib/statistics/data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/sai/backend/lib/statistics/data_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shejimoshi/yuanxing.py" beforeDir="false" afterPath="$PROJECT_DIR$/shejimoshi/yuanxing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shejimoshi/自己理解.txt" beforeDir="false" afterPath="$PROJECT_DIR$/shejimoshi/自己理解.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,12 +30,35 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/redistest.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="144">
-              <caret line="8" column="21" lean-forward="true" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+              <caret line="8" column="3" selection-start-line="8" selection-start-column="3" selection-end-line="8" selection-end-column="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ling.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="17" column="31" lean-forward="true" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/hello.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sai.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="23" selection-start-line="23" selection-end-line="44" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -32,18 +66,19 @@
     </leaf>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/big_sale/backend" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/redistest.py" />
+        <option value="$PROJECT_DIR$/ling.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="154" />
-    <option name="y" value="343" />
+    <option name="x" value="337" />
+    <option name="y" value="266" />
     <option name="width" value="1501" />
     <option name="height" value="736" />
   </component>
@@ -53,23 +88,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="wang" type="b2602c69:ProjectViewProjectNode" />
-              <item name="wang" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -126,24 +155,19 @@
       <option name="presentableId" value="Default" />
       <updated>1557728259610</updated>
       <workItem from="1557728264739" duration="979000" />
+      <workItem from="1559209868470" duration="433000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="979000" />
+    <option name="totallyTimeSpent" value="1412000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="154" y="343" width="1501" height="736" extended-state="0" />
+    <frame x="337" y="266" width="1501" height="736" extended-state="0" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24948595" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25291297" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.40527952" />
@@ -151,11 +175,17 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="SciView" />
-      <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,7 +198,27 @@
     <entry file="file://$PROJECT_DIR$/redistest.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
-          <caret line="8" column="21" lean-forward="true" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+          <caret line="8" column="3" selection-start-line="8" selection-start-column="3" selection-end-line="8" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/heihei">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ling.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="17" column="31" lean-forward="true" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hello.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sai.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="23" selection-start-line="23" selection-end-line="44" selection-end-column="20" />
         </state>
       </provider>
     </entry>

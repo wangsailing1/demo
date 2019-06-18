@@ -3,7 +3,6 @@ import time
 from logics.chat import Chat
 from models.user import UserData
 from logics import ModelManager
-from models.chat import MyWebSocketHandler
 
 def search_account(hm):
     mm = hm.mm
@@ -51,7 +50,7 @@ def get_friends(hm):
     chat = public(chat, mm)
     if not chat.content.friends:
         return 1, {'msg':'当前没有好友信息'}
-    return 0,{'msg':'ok','data':chat.content.friends}
+    return 0,{'msg':'ok','data':chat.content.friends,'account':mm.user.account}
 
 def action_chat(hm):
     mm = hm.mm
@@ -59,10 +58,11 @@ def action_chat(hm):
     chat = Chat(mm)
     chat = public(chat, mm)
     friend = chat.content.friends.get(friend, {})
+    friend['new_msg'] = []
     if not friend:
         return 1, {"msg":'没有该好友'}
     chat.content.save()
-    return 0, {'msg':'ok', 'data':{'msg':friend['msg'], 'new_msg':friend['new_msg']}, 'name':friend['name'], 'account':friend['account']}
+    return 0, {'msg':'ok', 'data':{'msg':friend['msg'], 'new_msg':len(friend['new_msg'])}, 'name':friend['name'], 'account':friend['account']}
 
 def send_msg(hm):
     mm = hm.mm
@@ -72,7 +72,6 @@ def send_msg(hm):
     chat = Chat(mm)
     chat = public(chat, mm)
     chat.send_message(account, data1)
-    MyWebSocketHandler.send_demand_updates(account, data)
     m1 = ModelManager(account)
     chat = Chat(m1)
     chat = public(chat, m1)

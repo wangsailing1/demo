@@ -19,6 +19,12 @@ function send_request(method, url='/api/', async=false, type='GET', datatype='js
 }
 function get_msg(id){
     // result = send_request(id);
+     span = id.split('=');
+     num_msg = document.getElementById(span.pop());
+     if (num_msg != null)
+          num_msg.parentNode.removeChild(num_msg);
+     f = document.getElementById(id);
+     $(f).css({'color':'black'});
     $.ajax({
        'url':'/api/?method='+id,
        'type':'get',
@@ -39,3 +45,74 @@ function get_msg(id){
        }
     });
     }
+
+function init(username){
+  var host = "ws://10.0.10.69:8000/websocket/";
+  try{
+    socket = new WebSocket(host);
+    socket.onopen = function(msg){
+        console.log('你已经来到聊天室')
+    };
+    socket.onmessage = function(msg){
+        arr = msg.data.split(':');
+        if (arr[0]==$('[name="friend"]').val()){
+            get_msg('chat.action_chat&friend=' + $("input[name='friend']").val())
+        }else{
+            fid = 'chat.action_chat&friend='+arr[0];
+            f = document.getElementById(fid);
+            $(f).css({'color':'red'})
+        }
+    };
+    socket.onclose   = function(msg){
+        console.log("与服务器连接断开");
+    };
+  }catch(ex){
+      log(ex);
+  }
+  $(".sendInfo").focus();
+}
+
+function send(){
+  var txt,msg;
+  txt = $('input[name="data"]');
+  msg = txt.val()+":"+$('[name="friend"]').val();
+  if(!msg){
+      alert("Message can not be empty");
+      return;
+  }
+  txt.val('');
+  txt.focus();
+  try{
+      console.log(socket);
+      socket.send(msg);
+  } catch(ex){
+      alert(ex);
+  }
+}
+
+window.onbeforeunload=function(){
+    try{
+        socket.send('close');
+        socket.close();
+        socket=null;
+    }
+    catch(ex){
+        log(ex);
+    }
+};
+
+function show(obj){
+    obj.fadeIn()
+}
+
+function getCookie(cookieName) {
+    var strCookie = document.cookie;
+    var arrCookie = strCookie.split("; ");
+    for(var i = 0; i < arrCookie.length; i++){
+        var arr = arrCookie[i].split("=");
+        if(cookieName == arr[0]){
+            return arr[1];
+        }
+    }
+    return "";
+}

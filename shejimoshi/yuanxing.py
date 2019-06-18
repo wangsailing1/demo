@@ -53,9 +53,23 @@ def main():
 
     for i in (b1, b2):
         print(i)
-    print("ID b1 : {} != ID b2 : {}".format(id(b1), id(b2)))
+    print "ID b1 : {} != ID b2 : {}".format(id(b1), id(b2))
 
+
+def paixu(L):
+    for i in range(len(L)):
+        for a in range(len(L)-1):
+            if L[i] < L[a]:
+                L[i],L[a] = L[a],L[i]
+    return L
 if __name__ == '__main__':
-    main()
+    # main()
+    print(paixu([5,4,3,2,1]))
+
+
+
+
+
+
 
     

@@ -1,0 +1,178 @@
+-linux安装pygame
+  $ sudo apt_get install python-pygame
+
+-pygame的导入和初始化
+  import pygame
+  form pygmae.locals import *
+  pygame.init()
+
+-pygame模块一览
+    模块名              功能
+  pygame.cdrom        访问光驱
+  pygame.cursors      加载光标
+  pygame.display      访问显示设备
+  pygame.draw         绘制形状、线和点
+  pygame.event        管理事件
+  pygame.font         使用字体
+  pygame.image        加载和存储图片
+  pygame.joystick     使用游戏手柄或类似设备
+  pygame.key          读取键盘按键
+  pygame.mixer        声音
+  pygame.mouse        鼠标
+  pygame.movie        播放视频
+  pygame.music        播放音频
+  pygame.overlay      访问高级视频叠加
+  pygame.rect         管理矩形区域
+  pygame.sndarray     操作声音数据
+  pygame.sprite       操作移动图像
+  pygame.surface      管理图像和屏幕
+  pygame.surfarray    管理点阵图像数据
+  pygame.time         管理时间和帧信息
+  pygame.transform    缩放和移动图像
+
+-创建窗口
+  1.set_mode函数
+      返回一个surface对象,代表了在桌面上出现的那个窗口
+    例：
+    screen = pg.display.set_mode((600,500) [,标志位, 色深]) #600x500的窗口
+    说明:
+      1.第一个参数是分辨率(长x宽),左上角为原点,x+为向右,y+为向下
+      2.标志位说明:(不需使用特殊标志位时,传入0)
+           参数              说明
+        FULLSCREEN      创建一个全屏窗口
+        DOUBLEBUF       创建一个"双缓冲"窗口,建议在   ??双缓冲窗口??
+                        HWSURFACE或者OPENGL时使用
+        HWSURFACE       创建一个硬件加速的窗口，必须和 ??硬件加速窗口??
+                        FULLSCREEN同时使用
+        OPENGL          创建一个OPENGL的渲染窗口     ??OPENGL??
+        RESIZABLE       创建一个可以改变大小的窗口
+        NOFRAME         创建一个没有边框的窗口
+
+-载入图像
+  background = pygame.image.load('文件名').convert()
+
+  -载入含透明部分的图像(如自定义的鼠标指针)
+    cursor = pygame.image.load('文件名').convert_alpha()
+  说明:
+    convert函数的作用是将图像数据转化为Surface对象
+    convert_alpha保留了alpha通道(简单理解为透明部分)
+
+-blit函数
+    将Surface对象输出到窗口
+  语法：
+    screen.blit(Surface对象,(0,0))  # 第二个参数指定对象的左上角位置
+    画完后移动要用update函数更新一下,否则一片漆黑
+  例：
+    # 把背景图片输出到窗口
+    screen.blit(background, (0, 0))
+    # 刷新一下画面
+    pygame.display.update()
+
+
+-事件
+    pygame会接收用户的各种操作(如按键盘，移动鼠标)等
+  -事件检索
+    pygame.event.get() 会敞开大门让所有的事件进入
+    pygame.event.wait() 发生一个事件才会继续向下进行
+    pygame.event.poll() 根据用户操作返回事件，无操作则返回None
+  -事件一览
+    事件                产生途径             返回参数
+    QUIT              按下关闭按钮          None
+    ATIVEEVENT        pygame被激活或隐藏    gain,state
+    KEYDOWM           键盘被按下            unicode,key,mod  
+    KEYUP             键盘被放开            key,mod
+    MOUSEMOTION       鼠标移动              pos,rel,buttons
+    MOUSEBUTTONDOWN   鼠标按下              pos,button
+    MOUSEBUTTONUP     鼠标放开              pos,button
+    VIDEORESIZE       pygame窗口缩放        size,w,h
+    VIDEOEXPOSE       pygame窗口部分公开    None
+    USEREVENT         触发了一个用户事件     code
+    ------------↓↓↓手柄等相关↓↓↓----------------------
+    JOYAXISMOTION     游戏手柄移动           joy,axis,value
+    JOYBALLMOTION     游戏球移动             joy,axis,value
+    JOYBUTTONDOWN     游戏手柄按下           joy,button
+    JOYBUTTONUP       游戏手柄放开           joy,button     
+  示例：
+    见project/mygame/learningpygame/output_event.py
+
+-处理键盘事件
+    键盘参数：
+      用K_XXX来表示:
+      如：上、下、左、右 : K_UP / K_DOWN / K_LEFT / K_RIGHT
+          a / b / c / d : K_a / K_b / K_c / K_d 
+          还有K_SPACE K_RETURN等
+      另外:mod包含组合键信息
+        KMOD_CTRL (即按下了crtl+a)
+        类似地还有MOD_ALT MOD_SHIFT
+  示例：
+    用键盘操控物体移动:
+    见project/mygame/learningpygame/keybord_event.py
+
+-事件的过滤
+    过滤掉一些我们不感兴趣的事件,直接拒绝事件进入到队列中
+  语法:
+    1.拒绝事件
+      pygame.event.set_blocked(需要拒绝的事件名)
+        1.当传入参数为None时，所有事件都可以进入
+        2.需要拒绝多个事件时,可以传入列表,如:
+          pygame.event.set_blocked([KEYDOWM, KEYUP])
+    2.设置准入事件
+      pygame.event.set_allowed()
+        1.用法同'拒绝事件'语句用法
+        2.只有在列表中的事件才能够进入队列
+
+-人为产生事件
+    有时需要程序模拟一些事件出来,而不是通过用户操作产生事件,如一些镜头回放,
+    在没有录屏的情况下就要我们把用户的操作再现一遍
+  例:
+    my_event = pygame.event.Event(KEYDOWM, key=K_SPACE, mod=0, unicode=u' ')
+    pygame.event.post(my_event)
+   还可以自定义:
+    VIRTURL_KEYBORD = USEREVENT+1
+    my_event = pygame.event.Event(VIRTURL_KEYBORD,message='Bad cat!')
+    pygame.event.post(my_event)
+
+    # 然后获得上述事件
+    for event in pagame.event.get():
+        if event.type == VIRTURL_KEYBORD:
+            print(event.message) 
+
+-窗口的控制
+  1.切换全屏/窗口模式
+    见project/mygame/learningpygame/keybord_event.py
+  2.使窗口可拖动改变尺寸(可变尺寸显示)
+      
+
+        
+-打印字体
+ 1.创建文字对象
+   myfont = pg.font.Font(file,size=-1)
+ 2.用myfont字体来创建文本图像
+   '''因为直接绘制文本是一个重量级的进程，耗费时间，
+      所以将其创建成图像'''
+   textImage = myfont.render('Hello pygame',True, white)
+   说明：render(文本, 是否是抗锯齿字体, RGB值)
+ 3.绘制的通常流程:填充、绘制、刷新
+   screen.fill(blue)
+   screen.blit(textImage,(100,100))            
+   pygame.display.update()
+-绘制矩形(在窗口内反弹)
+  见project/mygame/learningpygame/running_rectangle.py
+-绘制线条
+  需要传入起点和终点，还有线条的颜色和宽度
+  见project/mygame/learningpygame/drawing_line.py
+-绘制弧形
+  见project/mygame/learningpygame/drawing_Arcs.py
+
+
+++++++++++++++++++++++++++++++++飞机大战++++++++++++++++++++++++++++++++++++++++++++
+1.程序中对象分为3类：玩家飞机，敌机，子弹；所有功能都可以在类中定义方法实现
+2.背景可以调用pygame的相关方法读出图片，效果音也可以实现
+3.由于存在复数个敌机和子弹，所以建立一个列表来管理
+4.建立死循环不断刷新屏幕，并通过设定适当睡眠时间控制帧率
+
+文件管理：
+  myGame.py : 主程序
+  myGameRole.py : 定义相关的类
+  myGame.py     : 调用
+  resources     : 使用到的图片及音频文件   

@@ -1,0 +1,254 @@
+1. 进入影视大厅
+/api/?method=script.index
+user_token=d10125587
+mk=f5bc296036
+ks=65007032191558490968
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558490588
+
+dmw=1
+
+2. 准备拍摄
+/api/?method=script.pre_filming
+user_token=d10125587
+mk=66481b28a1
+ks=42596910171558430958
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558434896
+
+dmw=1
+
+3. 确认拍摄
+/api/?method=script.filming
+user_token=d10125587
+mk=f5bc296036
+ks=65007032191558490968
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558490704
+is_sequel=0
+name=%E6%AC%A2%E4%B9%90%E5%96%9C%E5%89%A7%E4%BA%BA
+script_id=371
+
+dmw=1
+
+4. 设置角色
+/api/?method=script.set_card
+user_token=d10125587
+mk=f5bc296036
+ks=65007032191558490968
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558490758
+role_card=271_2-1557816224-yPXCxD
+role_card=268_4-1557816224-dyncVT
+role_card=270_5-1557816224-tkLKRS
+role_card=269_7-1557816224-uFXc5j
+
+dmw=1 (127.0.0.1
+
+5. 设置样式
+[I 190522 10:46:14 web:2162] 200 GET /api/?method=script.set_style
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492596
+style=102
+
+dmw=1 (127.0.0.1) 13.54ms
+
+6. 结算共同奖励
+[I 190522 10:46:41 web:2162] 200 GET /api/?method=script.finished_commmon_reward
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492631
+
+dmw=1 (127.0.0.1) 19.80ms
+
+7. 结算英雄属性奖励
+[I 190522 10:47:33 web:2162] 200 GET /api/?method=script.finished_attr_reward
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492692
+
+dmw=1 (127.0.0.1) 12.91ms
+
+8. 关注度结算
+ /api/?method=script.finished_attention
+ user_token=d10125587
+ mk=6e8d8ec85b
+ ks=7f9a4f3a021558493044
+ version=1.0.17
+ device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+ pt=noplatform
+ ab=1017
+ appd=1
+ device=E6883
+ lan=1
+ __ts=1558492725
+ 
+ dmw=1
+
+9. 首日上映
+/api/?method=script.finished_first_income
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492728
+
+dmw=1
+
+10. 专业评价
+/api/?method=script.finished_medium_judge
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492861
+
+dmw=1
+
+11. 观众评价
+/api/?method=script.finished_audience_judge
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492923
+
+dmw=1
+
+
+12. 持续上映
+/api/?method=script.finished_continue_income
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558492993
+
+dmw=1
+
+13. 票房总结
+/api/?method=script.finished_summary
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558493067
+
+dmw=1
+
+14. 获取排名信息, 结束
+/api/?method=script.get_rank_info
+user_token=d10125587
+mk=6e8d8ec85b
+ks=7f9a4f3a021558493044
+version=1.0.17
+device_mark=8cf86418-a160-45f2-b8b6-6510e70e8d8b
+pt=noplatform
+ab=1017
+appd=1
+device=E6883
+lan=1
+__ts=1558493131
+
+dmw=1
+
+#############################################
+###################  导演  ###################
+#############################################
+网站招聘
+200 GET /api/?method=director.get_gacha&user_token=d10125587&mk=e89332277b&ks=1fce6b0a631558923529&version=1.0.17&device_mark=0668776c-d873-48c7-b28c-a0ad8236c92d&pt=noplatform&ab=1017&appd=1&device=MuMu&lan=1&__ts=1558923326&gacha_type=1&&dmw=1 
+朋友推荐
+200 GET /api/?method=director.get_gacha&user_token=d10125587&mk=e89332277b&ks=1fce6b0a631558923529&version=1.0.17&device_mark=0668776c-d873-48c7-b28c-a0ad8236c92d&pt=noplatform&ab=1017&appd=1&device=MuMu&lan=1&__ts=1558923466&gacha_type=2&&dmw=1
+猎头招聘
+200 GET /api/?method=director.get_gacha&user_token=d10125587&mk=e89332277b&ks=1fce6b0a631558923529&version=1.0.17&device_mark=0668776c-d873-48c7-b28c-a0ad8236c92d&pt=noplatform&ab=1017&appd=1&device=MuMu&lan=1&__ts=1558923528&gacha_type=3&&dmw=1
+
+
+
+
+
+
+
+
+
+
+
+

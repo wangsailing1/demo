@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Demo</title>
+ 
+<style>
+#tips{
+    width:350px;
+    height:580px;    
+    color:red;    
+    font-size:18px;
+    border:5px solid red;
+    word-break:break-all;
+    padding:5px;
+    overflow-y:scroll;
+}
+</style>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
+ 
+<script type="text/javascript">
+$().ready(function(){
+    var msg = "欢迎访问金牛座技术博客：http://www.blogdaren.com<br>";
+    $("#tips").empty();
+    setInterval(function(){
+        $("#tips").append(msg);
+        var tipsDiv = document.getElementById("tips");
+        tipsDiv.scrollTop = tipsDiv.scrollHeight;
+    }, 300);
+})
+</script>
+</head>
+ 
+<body>
+<div id="tips"></div>
+</body>
+ 
+</html>

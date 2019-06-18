@@ -1,0 +1,46 @@
+
+-option
+  backgroundColor: 
+    全图背景颜色,支持rgba,支持十六进制颜色表示方式,默认null,等同于rgba(0,0,0,0)
+    ex:
+      backgroundColor : 'rgb(6,6,6)'
+  color: 数值系列的颜色
+    取数组，eg：['#87cefa', 'rgba(123,123,123,0.5)','...']，
+    当系列数量个数比颜色列表长度大时将循环选取
+    ex:
+      color : ['#fff'],
+  timeline: 时间轴(相关样式设置图片详解:test/web/echarts)
+    取值:
+      名称      默认值           说明
+      show :     true      控制是否显示时间轴
+      x	   :      80       时间轴左上角横坐标，取无单位数值,表示像素，支持百分比（字符串），如'50%'(显示区域横向中心)
+      y    :      null     时间轴左上角纵坐标，取无单位数值,表示像素，支持百分比（字符串），如'50%'(显示区域横向中心)
+      x2   :      80       时间轴右下角横坐标
+      y2   :      null     时间轴右下角纵坐标
+      width:     自适应     时间轴宽度，默认为总宽度 - x - x2，，指定width后将忽略x2。 支持百分比（字符串），如'50%'(显示区域一半的宽度)
+      height:    高度       时间轴高度，数值单位px，支持百分比（字符串），如'50%'(显示区域一半的高度)
+      backgroundColor: 透明  时间轴背景可取"rgb","rgba","#xxx"
+      borderWidth 0         时间轴边框线宽
+      borderColor  #ccc     边框颜色
+      padding     5         内边距,支持分组设定,同css
+      controlPosition "left" 控制器位置,可选为：'left' | 'right' | 'none'
+      autoPlay    false      自动播放
+      loop        true       是否循环播放
+      playInterval 2000      播放间隔ms
+      lineStyle  详见换行     时间轴轴线样式，lineStyle控制线条样式，（详见lineStyle）
+                {
+                  show: true,
+                  interval: 'auto',
+                  rotate: 0,
+                  formatter: null,
+                  textStyle: {
+                      color: '#333'
+                  }
+                }               
+
+        ex:
+          timeline : {
+            show : flase,
+          }
+  title:
+添加数据辅助线:

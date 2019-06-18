@@ -1,0 +1,588 @@
+**********************************************************************************************
+---------------------------- 2018年12月23日 星期日 晴  -------------------web(day13)------------   
+**补12月19日星期三的课     
+-JQuery
+
+-JQuery介绍   
+  JQuery是javaScript工具库，封装了一套定义好的方法，简化JS操作
+  版本：
+    1.xx.xx  包含IE6,7,8的兼容
+    2.xx.xx  不再兼容IE6,7,8  
+  JQueryAPI中文网站:
+    jquery123.com
+
+-JQuery功能和优势
+  1.简化DOM操作，简化样式操作
+  2.可以通过选择器直接获取元素和操作样式
+  3.简化事件处理
+  4.Ajax技术更加简便和完善
+  5.提供大量的特效或功能插件
+  6.允许自定义插件
+
+-JQuery使用
+  1.引入jQuery
+    <script src=""></script>
+    注意：引入操作必须在使用之前，否则无法使用JQuery语法
+  2.jquery对象
+    对原生JS对象进行封装之后，称为Jquery对象
+    原生对象调用原生方法
+    jquery对象使用jquery提供的方法，不能混用
+  3.工厂函数 - $()
+    用来获取元素对象，通过传递参数执行获取，
+    参数为字符串格式，传入选择器名称或DOM对象
+    选择器:
+      "h1"
+      "#d1"
+      ".c1"
+      "div h1"
+    练习：(见01_jquery.html)
+      创建div/h1标签
+      通过$()获取元素并输出
+  4.jquery对象与DOM对象互相转换
+    1.DOM转Jquery
+      var div_dom = document.getElementsByTagName("div")[0];
+      // 转换成jquery对象
+      var $div = $(div_dom);
+      **jquery对象通常使用$前缀，与原生对象区分
+    2.jquery对象转DOM对象
+      1.jquery对象是原生对象的数组，直接从jquery对象中取元素就是dom对象
+        var div_dom = $div[0];
+        或
+        var div_dom = $div.get(0);
+
+  示例：
+    01_jquery.html
+
+-JQuery选择器    
+  1.$()中可以接收选择器名称作为参数，匹配并返回元素对象，返回值
+    是一个包含若干jquery对象的数组
+      语法：$('selector');
+  2.选择器
+    1.基础选择器
+      id  class  tagName group  children
+      语法：
+        1.$('id')
+        2.$('.classNname')
+        3.$('tagName')
+        4.$('selector1,selector2')
+
+    示例：
+      02_basic_selector.html
+    2.层级选择器
+      1.后代选择器
+        $('selector1 selector2')
+          包含直接与间接子元素
+      2.子代选择器
+        $('selector1>selector2')
+          只匹配直接子元素
+      3.相邻兄弟选择器
+        $('selector1+selector2')
+        匹配selector1的下一个兄弟元素，满足selector2则
+        返回，否则匹配失败
+      4.通用兄弟选择器
+        $('selector1~selector2');
+          匹配selector1后面所有满足selector2的兄弟元素
+    3.过滤选择器
+      需要结合其他选择器使用
+      1. :first
+        匹配第一个元素
+        例：
+          $('p:first') 匹配第一个P元素
+      2. :last
+        匹配最后一个元素
+      3. :odd
+        匹配奇数行对应的元素(行号从0开始)
+      4. :even
+        匹配偶数行对应的元素(行号从0开始)
+      5. :eq(index)
+        匹配下标为index的元素(下标从0开始)
+      6. :lt(index)
+        匹配下标小于index的元素
+      7. :gt(index)
+        匹配下标大于index的元素
+      8. :not(selector1,selector2,...)
+        表示除了指定选择器以外，匹配剩余的元素
+        $("span:not(.tips)")
+    示例：
+      03_fillter.html
+    
+    4.属性选择器[]
+      1.[attrName]
+        匹配包含指定属性的元素
+        $('[id]').css('color','red');
+      2.[attrName=value]
+        匹配属性名等于指定属性值的元素
+        $('[class=c1]').css('color','green');
+      3.[attrName^=value]
+        匹配属性值以指定字符开头的元素
+        $('[class^=c]').css('text-align','center');
+      4.[attrName$=value]
+        匹配属性值以指定字符结尾的元素
+      5.[attrName*=value]
+        匹配属性值中包含指定字符的元素
+      6.[attrName!=value]
+        匹配属性名不等于属性值的元素
+        (用该方法时要留意:body标签和html标签通常会被选中)
+        
+      示例：
+        04_attribute.html
+      cookie:
+        jquery链式调用(连续调用、连缀调用)
+        $('[class$=1]').css('width','500px').css('background','red');
+    
+    5.子元素过滤选择器
+      1. :first-child
+        匹配作为第一个子元素的元素
+        如：$('li:first-child')  #匹配作为第一个子元素存在的li元素
+      2. :last-child
+        匹配最后一个子元素
+      3. :nth-child(n)
+        匹配第n个子元素
+
+      示例：
+        05-child.html
+
+-JQuery 操作 DOM
+  1.操作元素内容
+    html('')
+      设置或读取标签内容,可以识别标签语法,类似于原生JS中的innerHTML
+      不传参数表示取值，传参数表示赋值
+    text('')
+      设置或读取标签内容，不能识别标签语法,类似于innerText
+      不传参数表示取值，传参数表示赋值
+    val('')
+      设置或读取表单控件的值，类似于原生的value属性
+      不传参数表示取值，传参数表示赋值
+    data('name','value') //标签中表现形式为data-name='value'
+      不传value表示取data-name的值,传参则为赋值
+    练习：(06-jquery.html)
+      创建文本框,按钮,div
+      点击按钮时，将文本框的输入内容以一级标题的形式显示在div中
+      用jquery完成
+
+  2.操作标签属性
+    ** 需要赋值为false的标签属性，不能直接赋值false，而是应当直接remove这个属性
+    1.attr('attrName','value')
+      设置或读取标签属性
+      例:
+        $('div').attr('id','d1');
+        console.log($('div').attr('id'));
+    2.prop('attrName','value')
+      设置或读取标签属性，用法同attr()
+      区分:
+        attr() prop()方法几乎一致,都表示属性操作，但某些属性取值有所不同
+        如：访问checked属性时:
+          $('input').attr('checked'); //checked='checked'
+          $('input').prop('checked');//checked='true'
+    3.removeAttr('attrName')
+      移除指定属性
+
+    示例：
+      07-attr.html
+  
+  3.操作元素样式
+    1.attr()/prop()
+      为元素添加id/class属性，使其匹配对应的选择器样式
+    2.操作类选择器
+      通过class属性值,结合选择器,修改样式
+      1.addClass('className')
+        为元素添加class属性值,可以反复调用,反复添加
+      2.removeClass('className')
+        移除指定的class属性值
+        省略参数则表示清空全部class属性值
+      3.toggleClass('className')
+        结合用户行为实现元素样式切换
+        元素存在指定className则删除该class属性
+        不存在则添加
+    3.操作行内样式
+      1.css('attrName')
+        获取指定的css属性值
+      2.css('attrName','attrValue')
+        设置元素样式
+      3.css(JSON对象)
+        JSON对象: 指定数据传输格式
+        使用:
+          1.使用{}表示JSON对象
+          2.CSS属性名和属性值都使用字符串表示
+          3.属性名与属性值之间使用 : 隔开
+          4.多组属性之间使用 , 隔开(类似键值对)
+        例：
+          css({'color':'red','width':'200px',...})
+      练习：(08-style.html)
+        创建div,文本内容不限
+        使用css()设置：
+          200*200
+          背景色和文本色自定义
+          文本水平和垂直居中
+          元素居中
+    示例：
+      08-style.html
+
+**********************************************************************************************
+---------------------------- 2018年12月26日 星期三 晴  -------------------web(day14)------------           
+**补12月20日星期四的课   
+-通过层次关系获取节点
+  1.parent()
+    获取父节点
+    ex:
+      $('h1').parent()
+  2.parents('selector')
+    获取指定选择器对应的祖先元素,不给参数时则匹配全部祖先元素
+  3.children()/children('selector')
+    获取所有的直接子元素/获取对应选择器的所有直接子元素
+  4.find('selector')
+    获取满足选择器的后代元素(包含直接和间接)，省略参数则匹配不到任何元素
+  5.next()/next('selector')
+    获取下一个兄弟元素/获取下一个兄弟元素，要求满足selector，否则查找失败
+  6.prev()/prev('selector')
+    获取上一个兄弟元素/获取上一个兄弟元素，要求满足selector，否则查找失败
+  7.siblings()/siblings('selector')
+    获取所有兄弟元素/获取满足选择器的所有兄弟元素
+  示例：
+    01-parent.html
+
+-节点的创建，添加和删除
+  1.创建节点
+    语法1:
+      var $div = $('<div></div>');
+      $div.html('div元素');
+      $div.attr();
+      $div.css();
+    语法2:
+      var $div = $('<div id="d1">div元素</div>')
+  2.添加节点
+    1.作为子元素添加
+      $parent.append($new)
+        将$new作为$parent的最后一个子元素添加
+      $parent.prepend($new)
+        将$new作为$parent的第一个子元素添加
+    2.作为兄弟元素添加
+      $obj.after($new)
+        将$new作为$obj的下一个兄弟元素添加
+      $obj.before($new)
+        将$new作为$obj的上一个兄弟元素添加
+      **创建的元素不能重复添加,想添加多少个,就要创建多少个
+    3.删除节点
+      $obj.remove();
+        删除$obj
+  示例:
+    02-create.html
+
+-事件绑定
+  1.等待文档加载完毕
+    1.$(document).ready(function (){
+      //等待文档加载完毕后执行
+    });
+    2.$().ready(function (){
+      //等待文档加载完毕后执行
+    }); 
+    3.$(function (){
+      //等待文档加载完毕后执行
+    });   
+    注意:
+      原生的onload事件不能重复书写，会被覆盖,只执行最后一次onload中书写的代码
+      jquery中的ready方法，可以重复使用,相关函数会从上至下依次执行，
+      不会产生覆盖
+  2.事件绑定方式
+    1.$obj.bind("事件名称",function)
+      参数:
+        1.事件名称:  省略on前缀
+        2.function: 事件触发后执行的操作
+      ex:
+        $obj.bind('click',function(){});
+    2.$obj.事件名称(function)
+      事件名称作为方法名,直接绑定,省略on前缀
+      ex:
+        $obj.click(function(){});
+  示例：
+    03-ready.html
+  3.事件对象
+    事件对象的获取和属性操作与原生JS一致
+    例：
+      $obj.click(function (evt){
+        //事件对象
+        console.log(evt)
+        //属性访问
+        console.log(evt.offsetX)
+      })
+  4.遍历数组
+    each(function(index, elem){
+
+    });
+    遍历数组或集合，每取出一个元素，自动执行函数
+    (遍历数组时会自动传入下标和元素)
+    ex:
+      var arr = [123,234,435,456];
+      $(arr).each(function (index,elem){
+          console.log(index,elem)
+      })
+    例:
+      04-each.html
+    用法2:
+      $.each(arr,function(index,elem){});
+  5.获取对应下标的元素
+    eq()
+    ex:
+      $("#banner img").eq(3)  获取下标为3的元素
+
+
+===================================================================================================================
+========================================   以下是自学内容   =========================================================
+========================================   以下是自学内容   =========================================================
+===================================================================================================================
+
+-下载jQuery
+  jQuery.com 直接下载
+  有两个版本的 jQuery 可供下载：
+    compressed version - 用于实际的网站中，已被精简和压缩。
+    uncompressed version - 用于测试和开发（未压缩，是可读的代码）
+  **下载下来是一个几k的js文件，直接放到项目文件夹中方便引用
+
+-把 jQuery 添加到您的网页
+    jQuery 库是一个 JavaScript 文件，使用 HTML 的 <script> 标签引用它：
+    <head>
+    <script src="jquery.js"></script>
+    </head>
+    请注意，<script> 标签应该位于页面的 <head> 部分。 
+
+-jQuery 语法实例
+  演示 jQuery hide() 函数，隐藏当前的 HTML 元素。
+  <script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+          $("button").click(function(){
+          $(this).hide();
+      });
+  });
+
+  演示 jQuery hide() 函数，隐藏 id="test" 的元素。
+  <script type="text/javascript" src="/jquery/jquery.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("button").click(function(){
+      $("#test").hide();
+    });
+  });
+  </script>
+
+  演示 jQuery hide() 函数，隐藏所有 <p> 元素。
+  <script type="text/javascript" src="/jquery/jquery.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+  $("button").click(function(){
+  $("p").hide();
+  });
+  });
+  </script>
+
+  演示 jQuery hide() 函数，隐藏所有 class="test" 的元素。 
+  <script type="text/javascript" src="/jquery/jquery.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function()
+  {
+    $("button").click(function()
+    {
+    $(".test").hide();
+    });
+  });
+  </script>
+
+-文档就绪函数
+  您也许已经注意到在我们的实例中的所有 jQuery 函数位于一个 document ready 函数中：
+
+  $(document).ready(function(){
+
+  --- jQuery functions go here ----
+
+  });
+  这是为了防止文档在完全加载（就绪）之前运行 jQuery 代码。
+  如果在文档没有完全加载之前就运行函数，操作可能失败。下面是两个具体的例子：
+    试图隐藏一个不存在的元素
+    获得未完全加载的图像的大小  
+
+-jQuery选择器
+  jQuery 元素选择器
+    jQuery 使用 CSS 选择器来选取 HTML 元素。
+      $("p") 选取 <p> 元素
+      $("p.intro") 选取所有 class="intro" 的 <p> 元素。
+      $("p#demo") 选取所有 id="demo" 的 <p> 元素。
+
+  jQuery 属性选择器
+    jQuery 使用 XPath 表达式来选择带有给定属性的元素。
+    $("[href]") 选取所有带有 href 属性的元素。
+    $("[href='#']") 选取所有带有 href 值等于 "#" 的元素。
+    $("[href!='#']") 选取所有带有 href 值不等于 "#" 的元素。
+    $("[href$='.jpg']") 选取所有 href 值以 ".jpg" 结尾的元素。
+
+  jQuery CSS 选择器
+    jQuery CSS 选择器可用于改变 HTML 元素的 CSS 属性。
+    下面的例子把所有 p 元素的背景颜色更改为红色：
+    实例
+      $("p").css("background-color","red");
+
+  更多的选择器实例
+  语法	                   描述
+  $(this)	               当前 HTML 元素
+  $("p")	               所有 <p> 元素
+  $("p.intro")	         所有 class="intro" 的 <p> 元素
+  $(".intro")	           所有 class="intro" 的元素
+  $("#intro")	           id="intro" 的元素
+  $("ul li:first")	     每个 <ul> 的第一个 <li> 元素
+  $("[href$='.jpg']")	   所有带有以 ".jpg" 结尾的属性值的 href 属性
+  $("div#intro .head")	 id="intro" 的 <div> 元素中的所有 class="head" 的元素
+  
+  选择器参考手册
+  jQuery 选择器
+  选择器	            实例	                  选取
+  *	                 $("*")	                所有元素
+  #id	               $("#lastname")	        id="lastname" 的元素
+  .class	           $(".intro")	          所有 class="intro" 的元素
+  element	           $("p")	                所有 <p> 元素
+  .class.class	     $(".intro.demo")	      所有 class="intro" 且 class="demo" 的元素
+      
+  :first	           $("p:first")	          第一个 <p> 元素
+  :last	             $("p:last")	          最后一个 <p> 元素
+  :even	             $("tr:even")	          所有偶数 <tr> 元素
+  :odd	             $("tr:odd")	          所有奇数 <tr> 元素
+      
+  :eq(index)	       $("ul li:eq(3)")	      列表中的第四个元素（index 从 0 开始）
+  :gt(no)	           $("ul li:gt(3)")	      列出 index 大于 3 的元素
+  :lt(no)	           $("ul li:lt(3)")	      列出 index 小于 3 的元素
+  :not(selector)	   $("input:not(:empty)")	所有不为空的 input 元素
+      
+  :header	           $(":header")	          所有标题元素 <h1> - <h6>
+  :animated	 	                              所有动画元素
+      
+  :contains(text)	   $(":contains('W3School')")	包含指定字符串的所有元素
+  :empty	           $(":empty")	          无子（元素）节点的所有元素
+  :hidden	           $("p:hidden")	        所有隐藏的 <p> 元素
+  :visible	         $("table:visible")	    所有可见的表格
+      
+  s1,s2,s3	         $("th,td,.intro")	    所有带有匹配选择的元素
+      
+  [attribute]	       $("[href]")	          所有带有 href 属性的元素
+  [attribute=value]	 $("[href='#']")	      所有 href 属性的值等于 "#" 的元素
+  [attribute!=value] $("[href!='#']")	      所有 href 属性的值不等于 "#" 的元素
+  [attribute$=value] $("[href$='.jpg']")	  所有 href 属性的值包含以 ".jpg" 结尾的元素
+      
+  :input	           $(":input")	          所有 <input> 元素
+  :text	             $(":text")	            所有 type="text" 的 <input> 元素
+  :password	         $(":password")	        所有 type="password" 的 <input> 元素
+  :radio	           $(":radio")	          所有 type="radio" 的 <input> 元素
+  :checkbox	         $(":checkbox")	        所有 type="checkbox" 的 <input> 元素
+  :submit	           $(":submit")	          所有 type="submit" 的 <input> 元素
+  :reset	           $(":reset")	          所有 type="reset" 的 <input> 元素
+  :button	           $(":button")	          所有 type="button" 的 <input> 元素
+  :image	           $(":image")	          所有 type="image" 的 <input> 元素
+  :file              $(":file")	            所有 type="file" 的 <input> 元素
+      
+  :enabled	         $(":enabled")	        所有激活的 input 元素
+  :disabled	         $(":disabled")	        所有禁用的 input 元素
+  :selected	         $(":selected")	        所有被选取的 input 元素
+  :checked 	         $(":checked")	        所有被选中的 input 元素
+
+-通过<script></script>标签引入jquery函数
+  <head>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="my_jquery_functions.js"></script>
+  </head>
+
+-jQuery 名称冲突
+  jQuery 使用 $ 符号作为 jQuery 的简介方式。
+  某些其他 JavaScript 库中的函数（比如 Prototype）同样使用 $ 符号。
+  jQuery 使用名为 noConflict() 的方法来解决该问题。
+  var jq=jQuery.noConflict()，帮助您使用自己的名称（比如 jq）来代替 $ 符号。
+
+-jQuery事件
+
+  方法	                            描述
+  bind()	                向匹配元素附加一个或更多事件处理器
+  blur()	                触发、或将函数绑定到指定元素的 blur 事件
+  change()	              触发、或将函数绑定到指定元素的 change 事件
+  click()	                触发、或将函数绑定到指定元素的 click 事件
+  dblclick()	            触发、或将函数绑定到指定元素的 double click 事件
+  delegate()	            向匹配元素的当前或未来的子元素附加一个或多个事件处理器
+  die()	                  移除所有通过 live() 函数添加的事件处理程序。
+  error()	                触发、或将函数绑定到指定元素的 error 事件
+  event.isDefaultPrevented()	返回 event 对象上是否调用了 event.preventDefault()。
+  event.pageX	            相对于文档左边缘的鼠标位置。
+  event.pageY	            相对于文档上边缘的鼠标位置。
+  event.preventDefault()	阻止事件的默认动作。
+  event.result	          包含由被指定事件触发的事件处理器返回的最后一个值。
+  event.target	          触发该事件的 DOM 元素。
+  event.timeStamp	        该属性返回从 1970 年 1 月 1 日到事件发生时的毫秒数。
+  event.type	            描述事件的类型。
+  event.which	            指示按了哪个键或按钮。
+  focus()	                触发、或将函数绑定到指定元素的 focus 事件
+  keydown()	              触发、或将函数绑定到指定元素的 key down 事件
+  keypress()	            触发、或将函数绑定到指定元素的 key press 事件
+  keyup()	                触发、或将函数绑定到指定元素的 key up 事件
+  live()	                为当前或未来的匹配元素添加一个或多个事件处理器
+  load()	                触发、或将函数绑定到指定元素的 load 事件
+  mousedown()	            触发、或将函数绑定到指定元素的 mouse down 事件
+  mouseenter()	          触发、或将函数绑定到指定元素的 mouse enter 事件
+  mouseleave()	          触发、或将函数绑定到指定元素的 mouse leave 事件
+  mousemove()	            触发、或将函数绑定到指定元素的 mouse move 事件
+  mouseout()	            触发、或将函数绑定到指定元素的 mouse out 事件
+  mouseover()	            触发、或将函数绑定到指定元素的 mouse over 事件
+  mouseup()	              触发、或将函数绑定到指定元素的 mouse up 事件
+  one()	                  向匹配元素添加事件处理器。每个元素只能触发一次该处理器。
+  ready()	                文档就绪事件（当 HTML 文档就绪可用时）
+  resize()	              触发、或将函数绑定到指定元素的 resize 事件
+  scroll()	              触发、或将函数绑定到指定元素的 scroll 事件
+  select()	              触发、或将函数绑定到指定元素的 select 事件
+  submit()	              触发、或将函数绑定到指定元素的 submit 事件
+  toggle()	              绑定两个或多个事件处理器函数，当发生轮流的 click 事件时执行。
+  trigger()	              所有匹配元素的指定事件
+  triggerHandler()	      第一个被匹配元素的指定事件
+  unbind()	              从匹配元素移除一个被添加的事件处理器
+  undelegate()	          从匹配元素移除一个被添加的事件处理器，现在或将来
+  unload()	              触发、或将函数绑定到指定元素的 unload 事件  
+  index()                 获取当前元素在数组中的index值
+  animate()               动态改变元素的属性
+  hover()                 鼠标悬停在元素上的操作
+                            
+  index()示例:
+    $("#main_navi .lunbo span").mouseover(function(){
+          var index = $(this).index();
+      });  
+  
+  animate()详解:
+    ex: 点击按钮时动态改变p元素的边距,完成后动态把边距变回0
+      $(".btn1").click(function(){
+        $("p").animate({margin:"100px"},"slow",'linear',a);
+      });
+      function a(){
+        $("p").animate({margin:""});
+      };
+    参数:
+      $(selector).animate(styles,speed,easing,callback)
+      style:
+        要动态改变的样式,如{margin:"100px",padding:"10px"}
+      speed:
+        动态改变的速度
+          取值: 1.无单位的数值代表ms
+                2. "normal" / "slow" / "fast"
+      easing:
+        动态改变的速度变化过程
+          取值: 1."linear"  匀速
+                2."swing"   变速
+      callback:
+        animate()样式改变结束后要执行的函数
+        
+  hover()详解:
+    hover() 方法规定当鼠标指针悬停在被选元素上时要运行的两个函数。
+    方法触发 mouseenter 和 mouseleave 事件。
+    **注意: 
+      如果只指定一个函数，则 mouseenter 和 mouseleave 都执行它。
+    实例:
+      $("p").hover(function(){
+        $("p").css("background-color","yellow");
+        },
+        function(){
+          $("p").css("background-color","pink");
+      });
+      实际上:
+       $( selector ).hover( handlerIn, handlerOut )
+       等同于
+       $( selector ).mouseover( handlerIn ).mouseout( handlerOut );
