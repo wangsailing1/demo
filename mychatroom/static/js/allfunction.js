@@ -47,9 +47,10 @@ function get_msg(id){
     }
 
 function init(username){
-  var host = "ws://10.0.10.69:8000/websocket/";
+    var host = "ws://10.0.10.90:800";
   try{
     socket = new WebSocket(host);
+    console.log(socket);
     socket.onopen = function(msg){
         console.log('你已经来到聊天室')
     };
@@ -67,7 +68,7 @@ function init(username){
         console.log("与服务器连接断开");
     };
   }catch(ex){
-      log(ex);
+      console.log(ex);
   }
   $(".sendInfo").focus();
 }
@@ -83,7 +84,6 @@ function send(){
   txt.val('');
   txt.focus();
   try{
-      console.log(socket);
       socket.send(msg);
   } catch(ex){
       alert(ex);

@@ -1,0 +1,25 @@
+#在项目目录中建立个conf文件夹，将nginx和uwsgi文件都放进去，不是必须#但是个好习惯
+
+#my_uwsgi.ini
+ite_uwsgi.ini file
+[uwsgi]
+
+# Django-related settings
+# the base directory (full path)
+chdir           = /to/your/project/#这个是项目的路径
+# Django's wsgi file
+module          = project.wsgi#这个project要换成自己的项目名，也就是uwsgi.py所在的文件夹名
+# the virtualenv (full path)
+home            = /home/ubuntu/.virtualenvs/虚拟环境名#这个就是虚拟环境的路径
+
+# process-related settings
+# master
+master          = true
+# maximum number of worker processes
+processes       = 10
+# the socket (use the full path to be safe
+socket          = 127.0.0.1:8080#这个用来和Nginx对接，端口号可以改，本人项目将uwsgi作为本地服务，外网不能直接访问，用nginx作为代理，所以用本地的地址。
+# ... with appropriate permissions - may be needed
+# chmod-socket    = 664
+# clear environment on exit
+vacuum          = true

@@ -96,15 +96,13 @@ class IndexHandler(BaseRequestHandler):
 
 
 class Myserver(WebSocketHandler, BaseRequestHandler):
-    print '执行到这里'
-
+    print "请求到达"
     all_shop_admin = dict()
     def open(self):
         print ("new client opened")
         account = self.get_current_user()
         self.all_shop_admin[account] = self
         print self.all_shop_admin
-
     def on_close(self):
         account = self.get_current_user()
         del self.all_shop_admin[account]
