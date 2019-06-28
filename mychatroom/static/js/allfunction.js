@@ -47,11 +47,13 @@ function get_msg(id){
     }
 
 function init(username){
-    var host = "ws://10.0.10.90:800";
+    var username = username;
+    var host = "ws://wsl.free.idcfengye.com";
   try{
     socket = new WebSocket(host);
     console.log(socket);
     socket.onopen = function(msg){
+        socket.send(username);
         console.log('你已经来到聊天室')
     };
     socket.onmessage = function(msg){

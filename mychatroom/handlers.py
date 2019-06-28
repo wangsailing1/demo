@@ -95,21 +95,28 @@ class IndexHandler(BaseRequestHandler):
         return IndexHandler.render(self, 'index.html')
 
 
-class Myserver(WebSocketHandler, BaseRequestHandler):
-    print "请求到达"
+class Myserver(WebSocketHandler, APIRequestHandler):
     all_shop_admin = dict()
+
     def open(self):
         print ("new client opened")
-        account = self.get_current_user()
-        self.all_shop_admin[account] = self
-        print self.all_shop_admin
+        if not self.path_args:
+            self.path_args.append(self)
     def on_close(self):
-        account = self.get_current_user()
-        del self.all_shop_admin[account]
+        if self.path_kwargs:
+            user = self.path_kwargs.pop('user')
+        if user in self.all_shop_admin:
+            self.all_shop_admin.pop(user)
 
     def on_message(self, message):
-        account = self.get_current_user()
+        if self.path_args:
+            self.all_shop_admin[message] = self.path_args.pop()
+            if not self.path_kwargs:
+                self.path_kwargs['user'] = message
+            return
         msg = message.split(':')
+        account = self.path_kwargs.get('user','')
+        print account, msg
         message = account + ':' + msg[0]
         account = msg[-1]
         self.__class__.send_demand_updates(message, account)
@@ -117,10 +124,10 @@ class Myserver(WebSocketHandler, BaseRequestHandler):
 
     @classmethod
     def send_demand_updates(cls, message, account):
-        print account
-        print message
+        print account, cls.all_shop_admin,'aaaa'
         client = cls.all_shop_admin.get(account, '')
         if client:
+            print client, '发送消息成功'
             client.write_message(message)
 
 

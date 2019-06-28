@@ -1,5 +1,7 @@
 #! --*-- encoding:utf8 --*--
 from Queue import Queue, Empty
+
+from handlers import Myserver
 from models.user import UserData, md5
 from logics import ModelManager
 from views.chat import Chat

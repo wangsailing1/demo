@@ -11,7 +11,7 @@
         if (result.status==0){
             $("#is_login").html(
                 "<h5>欢迎 : "+ result.data.name+" &nbsp;&nbsp;来到聊天室</h5>"+
-                "<p><a onclick='logout()'>退出</a></p>" +
+                "<p><a onclick='logout()' style='color:darkred;font-size:15px;'>退出</a></p>" +
                 "<input type='hidden' name='uid' value='"+ result.data.uid+"'>"
             );
             $('#search').css({'display':'block'})
@@ -46,8 +46,12 @@
  </div>
 <p id="show"></p>
 <div id="is_login">
-    <p><a href="/template/?template=register_user.html">注册</a></p>
-    <p><a href="/template/?template=login.html">登陆</a></p>
+    <p style="float: right;"><a href="/template/?template=register_user.html" style="font-size: 20px;color:pink;margin-left: 10px;">注册</a></p>
+    <p style="float: right;"><a href="/template/?template=login.html" style="font-size: 20px;color:green;">登录</a></p>
+    <p style="float: left;"><a href="" style="font-size: 20px;color:pink;margin-right: 10px;">来了</a></p>
+    <p style="float: left;"><a href="" style="font-size: 20px;color:green;">老弟</a></p>
+    <h2 style="text-align: center; color: red;">欢迎来到<span style="color: fuchsia;font-size: 50px;">"十"</span>的聊天室</h2>
+    <h2 style="text-align: center;color: darkolivegreen;">聊天功能已经实现了，就差爽哥的前端样式了</h2>
 </div>
 </body>
 </html>
