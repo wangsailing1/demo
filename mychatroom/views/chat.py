@@ -55,6 +55,11 @@ def get_friends(hm):
 def action_chat(hm):
     mm = hm.mm
     friend = hm.get_argument('friend', '')
+    num = hm.get_argument('num', 0)
+    if num == 'undefined' or num == '':
+        num = 0
+    else:
+        num = int(num)
     chat = Chat(mm)
     chat = public(chat, mm)
     friend = chat.content.friends.get(friend, {})
@@ -62,7 +67,11 @@ def action_chat(hm):
     if not friend:
         return 1, {"msg":'没有该好友'}
     chat.content.save()
-    return 0, {'msg':'ok', 'data':{'msg':friend['msg'], 'new_msg':len(friend['new_msg'])}, 'name':friend['name'], 'account':friend['account']}
+    n = len(friend['msg']) - 20 - num
+    a = 0
+    if n < 20:
+        a = n
+    return 0, {'msg':'ok', 'data':{'msg':friend['msg'][-20-num-a:], 'new_msg':len(friend['new_msg'])}, 'name':friend['name'], 'account':friend['account'], 'not_data':n}
 
 def send_msg(hm):
     mm = hm.mm

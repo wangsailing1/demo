@@ -1,3 +1,4 @@
+var num = new Object();
 function send_request(method, url='/api/', async=false, type='GET', datatype='json') {
         data = {};
         var msg;
@@ -6,7 +7,7 @@ function send_request(method, url='/api/', async=false, type='GET', datatype='js
         });
         $.ajax({
             'url': '/api/?method='+method,
-            'type': 'GET',
+            'type': 'POST',
             'datatype': datatype,
             'async': false,
             'data': data,
@@ -17,7 +18,24 @@ function send_request(method, url='/api/', async=false, type='GET', datatype='js
         });
         return msg
 }
-function get_msg(id){
+function get_data(id){
+    get_msg(id);
+    $('#show_msg').scroll(function () {
+        if ($('#show_msg').scrollTop() == 0){
+            var index = 0;
+            var n = num[$("input[name='friend']").val()];
+            var is_data = parseInt($('input[name="num"]').val());
+            if (is_data - 20 > 20){index = 20 * 60}
+            else {index = is_data * 60; is_data = is_data-20}
+            if (is_data>0){
+            get_msg('chat.action_chat&friend=' + $("input[name='friend']").val()+'&num='+n, index);
+            }
+        }
+    });
+}
+
+function get_msg(id, index){
+    index = typeof(index) == 'undefined' ? 0 : index;
     // result = send_request(id);
      span = id.split('=');
      num_msg = document.getElementById(span.pop());
@@ -30,17 +48,21 @@ function get_msg(id){
        'type':'get',
        'datatype':'json',
        'success': function (result) {
-                var result = JSON.parse(result);
+        result = JSON.parse(result);
     if (result.data.name){$('#show_name').html("<h2>"+result.data.name+"</h2>")}
     msg = '';
     if (result.status==0 && result.data.data.msg){
+        num[result.data.account]=result.data.data.msg.length;
         $.each(result.data.data.msg, function (i, obj) {
             msg += "<p class='"+obj[1]+"'>"+obj[0]+"<br>"+obj[2]+"</p>"
         });
         msg += "<input type='hidden' name='method' value='chat.send_msg'>";
         msg += "<input type='hidden' name='friend' value='"+result.data.account+"'>";
+        msg += "<input type='hidden' name='num' value='"+result.data.not_data+"'>";
         $('#show_msg').html(msg);
-        $("#show_msg").scrollTop($("#show_msg")[0].scrollHeight);
+        if (index>0){
+        $("#show_msg").scrollTop($("#show_msg")[0].scrollHeight - ($("#show_msg")[0].scrollHeight-index));
+        }else{$("#show_msg").scrollTop($("#show_msg")[0].scrollHeight)}
     }
        }
     });
@@ -99,7 +121,7 @@ window.onbeforeunload=function(){
         socket=null;
     }
     catch(ex){
-        log(ex);
+        console.log(ex);
     }
 };
 

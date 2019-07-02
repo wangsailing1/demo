@@ -1,0 +1,55 @@
+运维概述
+1、什么是运维 ：服务器运行维护
+2、名词
+  1、IDC(互联网数据中心)
+    机柜租用、服务器租用
+  2、监控软件
+    zabbix、nagios、cactti
+  3、常用Linux操作系统
+    1、CentOS
+    2、RedHat
+    3、Ubuntu
+  4、虚拟化
+3、xshell运维工具
+  1、xshell使用方法
+    文件 - 新建 - 输入服务器IP地址 - 用户名 - 密码 - 确认连接
+  2、互传文件 Windows <-> Linux
+    1、安装lrzsz
+      sudo apt-get install lrzsz
+    2、Windows文件 -> Linux
+      xshell终端 ：rz
+    3、Linux文件 -> Windows
+      xshell终端 ：sz 文件名
+4、Linux常用命令
+  1、ifconfig : 查看IP和MAC地址
+  2、ping     : 测试网络连通性
+     ping IP/域名 -c 2
+  3、top ：Linux任务管理器,动态显示进程所占用资源
+     按q退出
+  4、ps -aux : 显示进程PID号
+     ps -aux | grep 'mysql'
+  5、sudo kill PID : 杀死进程
+  6、ssh ：远程连接到服务器(端口号22)
+     ssh 用户名@IP地址
+  7、scp ：远程复制
+     scp 文件名 用户名@IP地址:绝对路径
+     scp a.tar.gz tarena@X.X.X.X:/home/tarena
+
+
+  
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+

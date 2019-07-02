@@ -5,6 +5,7 @@ import handlers
 import tornado
 import tornado.web
 import os
+import sys
 
 define('port', default=8888, help='设置端口', type=int)
 define('env', default='wang', help='设置配置', type=str)
@@ -31,5 +32,5 @@ app_settings = dict(
 
 if __name__ == '__main__':
     app  = tornado.web.Application(handlers, **app_settings)
-    app.listen(address='127.0.0.1', port=8000)
+    app.listen(address='127.0.0.1', port=sys.argv[1])
     tornado.ioloop.IOLoop.current().start()

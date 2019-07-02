@@ -1,0 +1,22 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main()
+{
+    ifstream fin;
+    ofstream fout;
+    string input;
+
+    fin.open("inputFile.txt");
+    if(fin.fail())
+        cout << "File failed to open." << endl;
+    fin >> input;
+
+    fout.open("outputFile.txt");
+
+    fout << input;
+
+
+}

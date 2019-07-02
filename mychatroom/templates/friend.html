@@ -20,7 +20,7 @@
                 var s = "";
                 $.each(result.data.data, function (i, obj) {
                     var url = 'chat.action_chat&friend='+obj.account;
-                    var p = "<p id='"+url+"' onclick='get_msg(this.id)'>";
+                    var p = "<p id='"+url+"' onclick='get_data(this.id)'>";
                     if (obj.new_msg.length){
                         p += '<span id="'+obj.account+'" style="background: red;">'+obj.new_msg.length+'</span>'
                     }
@@ -46,22 +46,25 @@
                 result = send_request(method, 'friend', 'data');
                 $('#data').val('');
                 if ($("input[name='friend']").val()){
-                    get_msg('chat.action_chat&friend=' + $("input[name='friend']").val())
+                    get_msg('chat.action_chat&friend=' + $("input[name='friend']").val());
+                    send();
                 }
             }
-            send();
         event.returnValue = false; // 用来回车不进行换行
         return false
         }
             }
-
+        $('#show_msg').scroll(function () {
+        // get_msg('chat.action_chat&friend=' + $("input[name='friend']").val());
+        alert('执行')
+        })
     </script>
 </head>
 <body>
     <div id="show_friends"></div>
     <div id="show" style="position: relative; top: -50px; left: 200px;">
         <p id="show_name">开始聊天吧</p>
-        <div id="show_msg" style="background:pink; position: relative; width: 750px; height: 350px; overflow: auto;">欢迎来到聊天室</div>
+        <div id="show_msg" style="background: darkred; position: relative; width: 750px; height: 350px; overflow: auto;">欢迎来到聊天室</div>
         <textarea rows="3" cols="20" style="width: 744px; height: 100px;" id="data" onkeydown="key(event)"></textarea>
         <input type="hidden" name="data">
         <input type="hidden" name="friend">

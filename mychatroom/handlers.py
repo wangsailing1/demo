@@ -5,6 +5,10 @@ from tornado.web import RequestHandler
 import importlib
 from logics import HandlerManager
 from pycket.session import SessionMixin
+
+from models import ModelBase
+
+
 class BaseRequestHandler(RequestHandler, SessionMixin):
     """
     所有请求的基类
@@ -97,20 +101,29 @@ class IndexHandler(BaseRequestHandler):
 
 class Myserver(WebSocketHandler, APIRequestHandler):
     all_shop_admin = dict()
+    # def initialize(self):
+    #     self.redis = ModelBase.get_redis_client()
 
     def open(self):
         print ("new client opened")
+        # if not self.all_shop_admin:
+        #     self.all_shop_admin = self.redis.get('all_shop_admin')
         if not self.path_args:
             self.path_args.append(self)
+
     def on_close(self):
+        user = ''
         if self.path_kwargs:
             user = self.path_kwargs.pop('user')
         if user in self.all_shop_admin:
             self.all_shop_admin.pop(user)
+            # self.redis.set('all_shop_admin', self.all_shop_admin)
 
     def on_message(self, message):
+        print self.all_shop_admin
         if self.path_args:
             self.all_shop_admin[message] = self.path_args.pop()
+            # self.redis.set('all_shop_admin', self.all_shop_admin)
             if not self.path_kwargs:
                 self.path_kwargs['user'] = message
             return
@@ -124,7 +137,6 @@ class Myserver(WebSocketHandler, APIRequestHandler):
 
     @classmethod
     def send_demand_updates(cls, message, account):
-        print account, cls.all_shop_admin,'aaaa'
         client = cls.all_shop_admin.get(account, '')
         if client:
             print client, '发送消息成功'
