@@ -32,5 +32,5 @@ app_settings = dict(
 
 if __name__ == '__main__':
     app  = tornado.web.Application(handlers, **app_settings)
-    app.listen(address='127.0.0.1', port=sys.argv[1])
+    app.listen(address='0.0.0.0', port=sys.argv[1])
     tornado.ioloop.IOLoop.current().start()
